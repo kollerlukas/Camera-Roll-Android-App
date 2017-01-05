@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/refresh"
+          android:icon="@drawable/ic_refresh_white_24dp"
+          android:title="@string/refresh"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/hiddenFolders"
+          android:icon="@drawable/ic_lock_outline_white_24dp"
+          android:title="@string/hidden_folders"
+          android:checkable="true"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/about"
+          android:icon="@drawable/ic_info_white_24dp"
+          android:title="@string/about"
+          app:showAsAction="never"/>
+</menu>

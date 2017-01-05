@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:drawable="@drawable/ic_delete_vector">
+
+    <target android:name="cover"
+            android:animation="@animator/vector_delete_anim_cover"/>
+
+    <target android:name="bucket"
+            android:animation="@animator/vector_delete_anim_bucket"/>
+</animated-vector>

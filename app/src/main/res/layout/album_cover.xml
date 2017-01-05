@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_height="200dp"
+        android:layout_width="match_parent">
+
+    <ImageView
+            android:id="@+id/image"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/image"/>
+
+    <android.support.v7.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:cardBackgroundColor="@color/black_translucent1"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="0dp">
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="16dp">
+
+            <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="sans-serif-medium"/>
+
+            <TextView
+                    android:id="@+id/count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-monospace"
+                    android:layout_marginStart="16dp"/>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

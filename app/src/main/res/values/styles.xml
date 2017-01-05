@@ -1,0 +1,40 @@
+<resources>
+    <style name="Theme.CameraRoll" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">@bool/show_nav_bar</item>
+
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
+    <style name="Theme.CameraRoll.AlbumActivity" parent="Theme.CameraRoll">
+        <item name="android:windowSharedElementEnterTransition">@transition/photo_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/photo_transition</item>
+    </style>
+
+    <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
+        <item name="android:windowSharedElementEnterTransition">@transition/photo_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/photo_transition</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="Theme.CameraRoll.AboutActivity" parent="Theme.CameraRoll">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="android:windowEnterTransition">@transition/about_slide_transition</item>
+        <item name="android:windowReturnTransition">@transition/about_slide_transition</item>
+    </style>
+
+    <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+</resources>
