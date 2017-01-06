@@ -25,12 +25,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -47,35 +52,33 @@ import java.util.Map;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.Util;
 
-public class AlbumActivity extends AppCompatActivity {
+public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener {
 
     public static final String ALBUM = "ALBUM";
     public static final String VIEW_ALBUM = "VIEW_ALBUM";
     public static final String DELETE_PHOTO = "DELETE_PHOTO";
-    public static final String EXTRA_STARTING_ALBUM_POSITION = "EXTRA_STARTING_ALBUM_POSITION";
     public static final String EXTRA_CURRENT_ALBUM_POSITION = "EXTRA_CURRENT_ALBUM_POSITION";
 
-    private Bundle mTmpReenterState;
+    private Bundle tmpReenterState;
 
     private final SharedElementCallback mCallback = new SharedElementCallback() {
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-            if (mTmpReenterState != null) {
-                int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ALBUM_POSITION);
-                int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-                if (startingPosition != currentPosition) {
-                    String newTransitionName = album.getAlbumItems().get(currentPosition).getPath();
-                    View newSharedElement = recyclerView.findViewWithTag(newTransitionName);
-                    if (newSharedElement != null) {
-                        names.clear();
-                        names.add(newTransitionName);
-                        sharedElements.clear();
-                        sharedElements.put(newTransitionName, newSharedElement);
-                    }
+            if (tmpReenterState != null) {
+                int currentPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+                String newTransitionName = album.getAlbumItems().get(currentPosition).getPath();
+                View layout = recyclerView.findViewWithTag(newTransitionName);
+                View newSharedElement = layout.findViewById(R.id.image);
+                if (newSharedElement != null) {
+                    names.clear();
+                    names.add(newTransitionName);
+                    sharedElements.clear();
+                    sharedElements.put(newTransitionName, newSharedElement);
                 }
-                mTmpReenterState = null;
+                tmpReenterState = null;
             } else {
                 View navigationBar = findViewById(android.R.id.navigationBarBackground);
                 View statusBar = findViewById(android.R.id.statusBarBackground);
@@ -106,15 +109,23 @@ public class AlbumActivity extends AppCompatActivity {
 
         setExitSharedElementCallback(mCallback);
 
+        final boolean wasReceated;
+
         if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM)) {
             album = savedInstanceState.getParcelable(ALBUM);
+            wasReceated = true;
         } else {
             album = getIntent().getExtras().getParcelable(ALBUM);
+            wasReceated = false;
         }
 
         if (album == null) {
             return;
         }
+
+        final SwipeBackCoordinatorLayout swipeBackView
+                = (SwipeBackCoordinatorLayout) findViewById(R.id.root_view);
+        swipeBackView.setOnSwipeListener(this);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -154,8 +165,7 @@ public class AlbumActivity extends AppCompatActivity {
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
 
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
-        rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+        swipeBackView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
                 toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
@@ -174,7 +184,7 @@ public class AlbumActivity extends AppCompatActivity {
                 fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
                 fab.setLayoutParams(fabParams);
 
-                rootView.setOnApplyWindowInsetsListener(null);
+                swipeBackView.setOnApplyWindowInsetsListener(null);
                 return insets.consumeSystemWindowInsets();
             }
         });
@@ -188,6 +198,12 @@ public class AlbumActivity extends AppCompatActivity {
                         recyclerView.getPaddingBottom());
 
                 recyclerView.scrollToPosition(0);
+                if (tmpReenterState != null) {
+                    int currentPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+                    if (wasReceated) {
+                        recyclerView.scrollToPosition(currentPosition);
+                    }
+                }
 
                 toolbar.getViewTreeObserver().removeOnPreDrawListener(this);
                 return false;
@@ -212,23 +228,20 @@ public class AlbumActivity extends AppCompatActivity {
     @Override
     public void onActivityReenter(int requestCode, Intent data) {
         super.onActivityReenter(requestCode, data);
-        mTmpReenterState = new Bundle(data.getExtras());
-        int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ALBUM_POSITION);
-        int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-        if (startingPosition != currentPosition) {
+        tmpReenterState = new Bundle(data.getExtras());
+        final int currentPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+        if (recyclerView.getAdapter().getItemCount() > 0) {
+            postponeEnterTransition();
+            recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int l, int t, int r, int b,
+                                           int oL, int oT, int oR, int oB) {
+                    recyclerView.removeOnLayoutChangeListener(this);
+                    startPostponedEnterTransition();
+                }
+            });
             recyclerView.scrollToPosition(currentPosition);
         }
-        postponeEnterTransition();
-
-        recyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                recyclerView.requestLayout();
-                startPostponedEnterTransition();
-                return true;
-            }
-        });
     }
 
     @Override
@@ -354,6 +367,112 @@ public class AlbumActivity extends AppCompatActivity {
         snackbar.show();
     }
 
+    public void fabClicked() {
+        animateFab(false, true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                deletePhotos();
+            }
+        }, 400);
+    }
+
+    public void animateFab(final boolean show, boolean click) {
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if (show) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fabClicked();
+                }
+            });
+        } else {
+            fab.setOnClickListener(null);
+        }
+        if (click) {
+            Drawable drawable = fab.getDrawable();
+            if (drawable instanceof Animatable) {
+                ((Animatable) drawable).start();
+            }
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fab.animate()
+                        .scaleX(show ? 1.0f : 0.0f)
+                        .scaleY(show ? 1.0f : 0.0f)
+                        .alpha(show ? 1.0f : 0.0f)
+                        .setDuration(250)
+                        .start();
+            }
+        }, click ? 400 : 0);
+    }
+
+    private void setSystemUiFlags() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (snackbar != null) {
+            snackbar.dismiss();
+            snackbar = null;
+            refreshMainActivityAfterPhotoWasDeleted = true;
+        }
+        if (((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
+            animateFab(false, false);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(ALBUM, album);
+    }
+
+    private void setupTaskDescription() {
+        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
+                overviewIcon,
+                ContextCompat.getColor(this, R.color.colorAccent)));
+        overviewIcon.recycle();
+    }
+
+    @Override
+    public boolean canSwipeBack(int dir) {
+        return SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir);
+    }
+
+    @Override
+    public void onSwipeProcess(float percent) {
+        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.root_view);
+        viewGroup.setAlpha(1 - percent + 0.5f);
+    }
+
+    @Override
+    public void onSwipeFinish(int dir) {
+        getWindow().setReturnTransition(new TransitionSet()
+                .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
+                .addTransition(new Fade())
+                .setInterpolator(new AccelerateDecelerateInterpolator()));
+        onBackPressed();
+    }
+
     public static class RecyclerViewAdapter extends RecyclerView.Adapter {
 
         int VIEW_TYPE_VIDEO = 1;
@@ -409,6 +528,7 @@ public class AlbumActivity extends AppCompatActivity {
                         intent.putExtra(ItemActivity.ALBUM, album);
                         intent.putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
                         //holder.itemView.getContext().startActivity(intent);
+
                         ActivityOptionsCompat options =
                                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                                         (Activity) holder.itemView.getContext(),
@@ -443,7 +563,7 @@ public class AlbumActivity extends AppCompatActivity {
                     if (!selector_mode) {
                         selector_mode = true;
                         selected_items = new boolean[album.getAlbumItems().size()];
-                        ((AlbumActivity) view.getContext()).animateFab(selector_mode);
+                        ((AlbumActivity) view.getContext()).animateFab(selector_mode, false);
                     }
 
                     selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)]
@@ -465,7 +585,7 @@ public class AlbumActivity extends AppCompatActivity {
             }
             if (k == 0) {
                 selector_mode = false;
-                ((AlbumActivity) context).animateFab(false);
+                ((AlbumActivity) context).animateFab(false, false);
                 cancelSelectorMode();
             }
         }
@@ -481,9 +601,6 @@ public class AlbumActivity extends AppCompatActivity {
             }
             this.selected_items = new boolean[album.getAlbumItems().size()];
             Album.Photo[] arr = new Album.Photo[selected_items.size()];
-            /*for (int i = 0; i < selected_photos.size(); i++) {
-                arr[i] = selected_photos.get(i);
-            }*/
             return selected_items.toArray(arr);
         }
 
@@ -509,14 +626,14 @@ public class AlbumActivity extends AppCompatActivity {
 
             void setAlbumItem(Album.AlbumItem albumItem) {
                 this.albumItem = albumItem;
-                loadImage();
+                ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
+                loadImage(imageView, albumItem);
             }
 
-            void loadImage() {
-                ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
+            static void loadImage(final ImageView imageView, final Album.AlbumItem albumItem) {
                 int imageWidth = Util.getScreenWidth((Activity) imageView.getContext()) / 3;
                 Glide.clear(imageView);
-                Glide.with(itemView.getContext())
+                Glide.with(imageView.getContext())
                         .load(albumItem.getPath())
                         .override(imageWidth, imageWidth)
                         .skipMemoryCache(true)
@@ -538,90 +655,5 @@ public class AlbumActivity extends AppCompatActivity {
                         .into(imageView);
             }
         }
-    }
-
-    public void fabClicked() {
-        animateFab(false);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                deletePhotos();
-            }
-        }, 400);
-    }
-
-    public void animateFab(final boolean b) {
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (b) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    fabClicked();
-                }
-            });
-        } else {
-            fab.setOnClickListener(null);
-            Drawable drawable = fab.getDrawable();
-            if (drawable instanceof Animatable) {
-                ((Animatable) drawable).start();
-            }
-        }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                fab.animate()
-                        .scaleX(b ? 1.0f : 0.0f)
-                        .scaleY(b ? 1.0f : 0.0f)
-                        .alpha(b ? 1.0f : 0.0f)
-                        .setDuration(250)
-                        .start();
-            }
-        }, !b ? 400 : 0);
-    }
-
-    private void setSystemUiFlags() {
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        //| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (snackbar != null) {
-            snackbar.dismiss();
-            snackbar = null;
-            refreshMainActivityAfterPhotoWasDeleted = true;
-        }
-        if (((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
-            animateFab(false);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(ALBUM, album);
-    }
-
-    private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon,
-                ContextCompat.getColor(this, R.color.colorAccent)));
-        overviewIcon.recycle();
     }
 }

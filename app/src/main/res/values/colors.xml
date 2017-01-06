@@ -7,6 +7,7 @@
 
     <color name="white">#FFFFFF</color>
     <color name="black_translucent1">#33000000</color>
+    <color name="dark_bg">#303030</color>
     <color name="grey_900_translucent">#8A212121</color>
     <color name="black_translucent2">#8A000000</color>
     <color name="black">#000000</color>

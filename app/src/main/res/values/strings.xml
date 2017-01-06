@@ -28,22 +28,32 @@
     <string name="share_photo">Share Photo</string>
     <string name="about_text">
         <![CDATA[
-            <b>Developer:</b> Lukas Koller, Munich, Germany<br/><br/>
-            <b>Used Libraries:</b><br/>
+            Developer: Lukas Koller, Munich, Germany<br/>
+            <br/>
+            <a href=\"https://github.com/kollerlukas/Camera-Roll-Android-App\">Source Code</a> for this App<br/>
+            <br/>
+            <br/>
+            Used Libraries:<br/>
             <br>
-                <b><a href=\"https://github.com/bumptech/glide\">Glide</a></b> by Bumptech,
+                <a href=\"https://github.com/bumptech/glide\">Glide</a><br/>
+                An image loading and caching library for Android focused on smooth scrolling.<br/>
                 <a href=\"https://github.com/bumptech/glide/blob/master/LICENSE\">LICENSE</a>
             <br>
+            <br/>
             <br>
-                <b><a href=\"https://github.com/davemorrissey/subsampling-scale-image-view\">Subsampling Scale Image View</a></b> by Dave Morrissey,
+                <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view\">Subsampling Scale Image View</a><br/>
+                Highly configurable, easily extendable view with pan and zoom gestures for displaying huge images without loss of detail. Perfect for photo galleries, maps, building plans etc.<br/>
                 <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view/blob/master/LICENSE\">LICENSE</a>
             <br>
+            <br/>
             <br>
-                <b><a href=\"https://github.com/chrisbanes/PhotoView\">PhotoView</a></b> by Chris Banes,
+                <b><a href=\"https://github.com/chrisbanes/PhotoView\">PhotoView</a></b><br/>
+                Implementation of ImageView for Android that supports zooming, by various touch gestures.<br/>
                 <a href=\"https://github.com/chrisbanes/PhotoView/blob/master/LICENSE\">LICENSE</a>
             <br>
         ]]>
     </string>
     <string name="image">Image</string>
     <string name="video_indicator">Video Indicator</string>
+    <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
 </resources>

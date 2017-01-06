@@ -59,9 +59,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
-import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
 import us.koller.cameraroll.util.Util;
 
@@ -77,7 +77,6 @@ public class ItemActivity extends AppCompatActivity {
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
 
     private boolean isReturning;
-    private int startingPosition;
     private final SharedElementCallback sharedElementCallback = new SharedElementCallback() {
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
@@ -87,7 +86,7 @@ public class ItemActivity extends AppCompatActivity {
                 if (sharedElement == null) {
                     names.clear();
                     sharedElements.clear();
-                } else if (startingPosition != viewPager.getCurrentItem()) {
+                } else {
                     names.clear();
                     names.add(sharedElement.getTransitionName());
                     sharedElements.clear();
@@ -191,12 +190,10 @@ public class ItemActivity extends AppCompatActivity {
             if (savedInstanceState.getBoolean(INFO_DIALOG_SHOWN, false)) {
                 showInfoDialog();
             }
-            startingPosition = savedInstanceState.getInt(AlbumActivity.EXTRA_STARTING_ALBUM_POSITION);
         } else {
             album = getIntent().getExtras().getParcelable(AlbumActivity.ALBUM);
             int position = getIntent().getIntExtra(ITEM_POSITION, 0);
             albumItem = album.getAlbumItems().get(position);
-            startingPosition = album.getAlbumItems().indexOf(albumItem);
             albumItem.isSharedElement = true;
         }
 
@@ -300,42 +297,6 @@ public class ItemActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        showUI(false);
-        if (albumItem.isPhoto() && !((Album.Photo) albumItem).isGif()) {
-            try {
-                final ViewGroup v = (ViewGroup) viewPager.findViewWithTag(albumItem.getPath());
-                final SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) v.findViewById(R.id.subsampling);
-                if (imageView != null) {
-                    imageView.animateScale(0.0f)
-                            .withDuration(300)
-                            .withOnAnimationEventListener(new SubsamplingScaleImageView.DefaultOnAnimationEventListener() {
-                                @Override
-                                public void onComplete() {
-                                    super.onComplete();
-                                    final View sharedElement = v.findViewById(R.id.image);
-                                    final View subsamplingView = v.findViewById(R.id.subsampling);
-                                    new Handler().post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            subsamplingView.setVisibility(View.INVISIBLE);
-                                            sharedElement.setVisibility(View.VISIBLE);
-                                            ItemActivity.super.onBackPressed();
-                                        }
-                                    });
-                                }
-                            })
-                            .start();
-                }
-            } catch (NullPointerException e) {
-                ItemActivity.super.onBackPressed();
-            }
-        } else {
-            ItemActivity.super.onBackPressed();
-        }
     }
 
     public void setPhotoAs() {
@@ -589,31 +550,69 @@ public class ItemActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (viewPager.findViewWithTag(albumItem.getPath()) instanceof SubsamplingScaleImageView) {
-            SubsamplingScaleImageView imageView
-                    = (SubsamplingScaleImageView) viewPager.findViewWithTag(albumItem.getPath());
-            if (imageView != null) {
-                ImageViewState state = imageView.getState();
-                if (state != null) {
-                    outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
-                }
+        View view = viewPager.findViewWithTag(albumItem.getPath()).findViewById(R.id.subsampling);
+        if (view instanceof SubsamplingScaleImageView) {
+            SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
+            ImageViewState state = imageView.getState();
+            if (state != null) {
+                Log.d("ItemActivity", "Saving state");
+                outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
             }
         }
         outState.putParcelable(ALBUM, album);
         outState.putParcelable(ALBUM_ITEM, albumItem);
         outState.putBoolean(WAS_SYSTEM_UI_HIDDEN, !systemUiVisible);
         outState.putBoolean(INFO_DIALOG_SHOWN, infoDialog != null);
-        outState.putInt(AlbumActivity.EXTRA_STARTING_ALBUM_POSITION, startingPosition);
     }
 
     @Override
-    public void finishAfterTransition() {
+    public void onBackPressed() {
+        showUI(false);
+        if (albumItem.isPhoto() && !((Album.Photo) albumItem).isGif()) {
+            try {
+                final ViewGroup v = (ViewGroup) viewPager.findViewWithTag(albumItem.getPath());
+                final SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) v.findViewById(R.id.subsampling);
+                if (imageView != null) {
+                    imageView.animateScale(0.0f)
+                            .withDuration(300)
+                            .withOnAnimationEventListener(new SubsamplingScaleImageView.DefaultOnAnimationEventListener() {
+                                @Override
+                                public void onComplete() {
+                                    super.onComplete();
+                                    final View sharedElement = v.findViewById(R.id.image);
+                                    final View subsamplingView = v.findViewById(R.id.subsampling);
+                                    new Handler().post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            subsamplingView.setVisibility(View.INVISIBLE);
+                                            sharedElement.setVisibility(View.VISIBLE);
+                                            setResultAndFinish();
+                                        }
+                                    });
+                                }
+                            })
+                            .start();
+                }
+            } catch (NullPointerException e) {
+                ItemActivity.super.onBackPressed();
+            }
+        } else {
+            setResultAndFinish();
+        }
+    }
+
+    @Override
+    public boolean onNavigateUp() {
+        setResultAndFinish();
+        return true;
+    }
+
+    public void setResultAndFinish() {
         isReturning = true;
         Intent data = new Intent();
-        data.putExtra(AlbumActivity.EXTRA_STARTING_ALBUM_POSITION, startingPosition);
         data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION, viewPager.getCurrentItem());
         setResult(RESULT_OK, data);
-        super.finishAfterTransition();
+        finishAfterTransition();
     }
 
     public String getFileSize(File file) {
@@ -640,7 +639,6 @@ public class ItemActivity extends AppCompatActivity {
             return null;
         }
         float f = Float.valueOf(input);
-        Log.d("ItemActivity", String.valueOf(f));
         try {
             int i = Math.round(1 / f);
             return String.valueOf(1 + "/" + i);
@@ -732,10 +730,10 @@ public class ItemActivity extends AppCompatActivity {
                 if (!albumItem.isSharedElement) {
                     view = bindSubsamplingImageView((SubsamplingScaleImageView) v.findViewById(R.id.subsampling),
                             container.getContext(), (Album.Photo) albumItem, v.findViewById(R.id.image));
+                    v.findViewById(R.id.image).setVisibility(View.INVISIBLE);
                 } else {
                     view = v.findViewById(R.id.subsampling);
                 }
-                //v.findViewById(R.id.image).setVisibility(View.INVISIBLE);
             } else {
                 v.removeView(v.findViewById(R.id.subsampling));
                 view = v.findViewById(R.id.image);
@@ -843,57 +841,5 @@ public class ItemActivity extends AppCompatActivity {
             }
             return imageView;
         }
-
-        /*ImageView getImageView(Context context, Album.AlbumItem albumItem) {
-            ImageView imageView = new ImageView(context);
-            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-            Glide.clear(imageView);
-            Glide.with(context)
-                    .load(albumItem.getPath())
-                    .skipMemoryCache(true)
-                    .error(R.drawable.error_placeholder)
-                    .into(imageView);
-            imageView.setTransitionName(albumItem.getPath());
-            return imageView;
-        }
-
-        SubsamplingScaleImageView getSubsamplingImageView(Context context, Album.Photo photo) {
-            ImageViewState imageViewState = null;
-            if (photo.getImageViewSavedState() != null) {
-                imageViewState = (ImageViewState) photo.getImageViewSavedState();
-                photo.putImageViewSavedState(null);
-            }
-
-            final SubsamplingScaleImageView imageView = new SubsamplingScaleImageView(context);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-            if (!photo.contentUri) {
-                if (imageViewState != null) {
-                    imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
-                    Log.d("ItemActivity", "restored state...");
-                } else {
-                    imageView.setImage(ImageSource.uri(photo.getPath()));
-                }
-            } else {
-                try {
-                    Bitmap bmp = MediaStore.Images.Media.getBitmap(
-                            context.getContentResolver(), Uri.parse(photo.getPath()));
-                    if (imageViewState != null) {
-                        imageView.setImage(ImageSource.bitmap(bmp), imageViewState);
-                        Log.d("ItemActivity", "restored state...");
-                    } else {
-                        imageView.setImage(ImageSource.bitmap(bmp));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            imageView.setTransitionName(photo.getPath());
-            return imageView;
-        }*/
     }
 }

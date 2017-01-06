@@ -12,18 +12,17 @@
             android:scaleType="centerCrop"
             android:contentDescription="@string/image"/>
 
-    <android.support.v7.widget.CardView
+    <LinearLayout
             android:id="@+id/card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            app:cardBackgroundColor="@color/black_translucent1"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp">
+            android:background="@color/black_translucent1">
 
         <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="horizontal"
                 android:layout_margin="16dp">
 
@@ -45,5 +44,16 @@
                     android:fontFamily="sans-serif-monospace"
                     android:layout_marginStart="16dp"/>
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+
+        <ImageView
+                android:id="@+id/hidden_folder_indicator"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_lock_outline_white_24dp"
+                android:alpha="0.7"
+                android:contentDescription="@string/hidden_folder_indicator"
+                android:layout_margin="16dp"
+                android:visibility="gone"/>
+    </LinearLayout>
 </RelativeLayout>

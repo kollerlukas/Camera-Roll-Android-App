@@ -23,7 +23,7 @@
         </activity>
 
         <activity android:name=".ui.AlbumActivity"
-                  android:theme="@style/Theme.CameraRoll.AlbumActivity"
+                  android:theme="@style/Theme.CameraRoll.Translucent.AlbumActivity"
                   android:launchMode="singleTop"/>
 
         <activity android:name=".ui.ItemActivity"
@@ -31,7 +31,7 @@
                   android:launchMode="singleTop"/>
 
         <activity android:name=".ui.AboutActivity"
-                  android:theme="@style/Theme.CameraRoll.AboutActivity"
+                  android:theme="@style/Theme.CameraRoll.Translucent.AboutActivity"
                   android:launchMode="singleTop"/>
 
         <activity android:name=".IntentReceiver">

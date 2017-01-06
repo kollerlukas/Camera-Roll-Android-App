@@ -1,59 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeBackView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black_translucent2">
+        android:layout_height="match_parent">
 
-    <LinearLayout
-            android:id="@+id/root_view"
-            android:orientation="vertical"
+    <ScrollView
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         <LinearLayout
-                android:id="@+id/header"
+                android:id="@+id/root_view"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@color/colorAccent"
-                android:padding="32dp">
+                android:layout_height="wrap_content">
 
-            <ImageView
-                    android:id="@+id/header_image"
+            <LinearLayout
+                    android:id="@+id/header"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/image"/>
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorAccent"
+                    android:padding="32dp">
+
+                <ImageView
+                        android:id="@+id/header_image"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="center_horizontal"
+                        android:contentDescription="@string/image"
+                        android:padding="16dp"/>
+
+                <TextView
+                        android:id="@+id/version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="sans-serif-monospace"
+                        android:textColor="@color/black_translucent2"
+                        android:textSize="20sp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"/>
+            </LinearLayout>
 
             <TextView
-                    android:id="@+id/version"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/about_text"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|bottom"
                     android:fontFamily="sans-serif-monospace"
-                    android:textColor="@color/black_translucent2"
-                    android:textSize="20sp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="8dp"/>
+                    android:textSize="18sp"
+                    android:paddingTop="24dp"
+                    android:padding="16dp"
+                    android:background="@color/dark_bg"/>
         </LinearLayout>
-
-        <TextView
-                android:id="@+id/about_text"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:fontFamily="sans-serif-monospace"
-                android:textSize="18sp"
-                android:layout_marginTop="24dp"
-                android:layout_margin="16dp"/>
-    </LinearLayout>
+    </ScrollView>
 
     <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-</FrameLayout>
+</us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout>

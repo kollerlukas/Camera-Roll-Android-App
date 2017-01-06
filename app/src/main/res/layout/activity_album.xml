@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/root_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/dark_bg">
 
     <include layout="@layout/recycler_view_layout"/>
 
@@ -17,4 +18,4 @@
             app:backgroundTint="@color/colorAccent"
             app:elevation="6dp"
             app:fabSize="normal"/>
-</android.support.design.widget.CoordinatorLayout>
+</us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout>

@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,9 +32,9 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
-import us.koller.cameraroll.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -255,7 +256,9 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(holder.itemView.getContext(), AlbumActivity.class);
                     intent.setAction(AlbumActivity.VIEW_ALBUM);
                     intent.putExtra(AlbumActivity.ALBUM, album);
-                    holder.itemView.getContext().startActivity(intent);
+                    holder.itemView.getContext().startActivity(intent,
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    (Activity) holder.itemView.getContext()).toBundle());
                 }
             });
         }
@@ -281,6 +284,8 @@ public class MainActivity extends AppCompatActivity {
                         itemView.getContext().getString(R.string.items) :
                         itemView.getContext().getString(R.string.item));
                 ((TextView) itemView.findViewById(R.id.count)).setText(count);
+                itemView.findViewById(R.id.hidden_folder_indicator)
+                        .setVisibility(album.hiddenAlbum ? View.VISIBLE : View.INVISIBLE);
                 loadImage();
             }
 

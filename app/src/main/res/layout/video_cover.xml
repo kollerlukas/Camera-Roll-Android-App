@@ -14,10 +14,12 @@
             android:scaleType="centerCrop"/>
 
     <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:src="@drawable/ic_play_circle_outline_white_24dp"
-            android:layout_margin="5dp"
+            android:layout_margin="8dp"
+            android:paddingBottom="8dp"
+            android:alpha="0.7"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:contentDescription="@string/video_indicator"/>
