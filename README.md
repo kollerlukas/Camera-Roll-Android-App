@@ -1,3 +1,2 @@
-# camera-roll-android-app
+# Camera Roll Android App
 Simple Gallery App for Android, with lovely Material Design.
-# Camera-Roll-Android-App
