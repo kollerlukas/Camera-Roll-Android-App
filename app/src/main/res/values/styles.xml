@@ -11,6 +11,10 @@
         <item name="android:windowContentTransitions">true</item>
     </style>
 
+    <style name="Theme.CameraRoll.Main" parent="Theme.CameraRoll">
+
+    </style>
+
     <style name="Theme.CameraRoll.Translucent" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>

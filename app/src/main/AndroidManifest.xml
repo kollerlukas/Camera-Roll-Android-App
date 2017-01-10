@@ -15,6 +15,7 @@
             android:theme="@style/Theme.CameraRoll">
 
         <activity android:name=".ui.MainActivity"
+                  android:theme="@style/Theme.CameraRoll.Main"
                   android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

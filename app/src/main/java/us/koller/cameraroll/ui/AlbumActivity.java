@@ -1,9 +1,6 @@
 package us.koller.cameraroll.ui;
 
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,10 +13,8 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -28,32 +23,25 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
-import us.koller.cameraroll.util.Util;
 
 public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener {
 
@@ -61,24 +49,24 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
     public static final String VIEW_ALBUM = "VIEW_ALBUM";
     public static final String DELETE_PHOTO = "DELETE_PHOTO";
     public static final String EXTRA_CURRENT_ALBUM_POSITION = "EXTRA_CURRENT_ALBUM_POSITION";
+    public static final String RECYCLER_VIEW_SCROLL_STATE = "RECYCLER_VIEW_SCROLL_STATE";
 
-    private Bundle tmpReenterState;
+    private int sharedElementReturnPosition = -1;
 
     private final SharedElementCallback mCallback = new SharedElementCallback() {
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-            if (tmpReenterState != null) {
-                int currentPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-                String newTransitionName = album.getAlbumItems().get(currentPosition).getPath();
+            if (sharedElementReturnPosition != -1) {
+                String newTransitionName = album.getAlbumItems().get(sharedElementReturnPosition).getPath();
                 View layout = recyclerView.findViewWithTag(newTransitionName);
-                View newSharedElement = layout.findViewById(R.id.image);
+                View newSharedElement = layout != null ? layout.findViewById(R.id.image) : null;
                 if (newSharedElement != null) {
                     names.clear();
                     names.add(newTransitionName);
                     sharedElements.clear();
                     sharedElements.put(newTransitionName, newSharedElement);
                 }
-                tmpReenterState = null;
+                sharedElementReturnPosition = -1;
             } else {
                 View navigationBar = findViewById(android.R.id.navigationBarBackground);
                 View statusBar = findViewById(android.R.id.statusBarBackground);
@@ -108,15 +96,21 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         setContentView(R.layout.activity_album);
 
         setExitSharedElementCallback(mCallback);
-
-        final boolean wasReceated;
+        getWindow().setEnterTransition(new TransitionSet()
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                .addTransition(new Slide(Gravity.BOTTOM))
+                .addTransition(new Fade())
+                .setInterpolator(new AccelerateDecelerateInterpolator()));
+        getWindow().setReturnTransition(new TransitionSet()
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                .addTransition(new Slide(Gravity.BOTTOM))
+                .addTransition(new Fade())
+                .setInterpolator(new AccelerateDecelerateInterpolator()));
 
         if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM)) {
             album = savedInstanceState.getParcelable(ALBUM);
-            wasReceated = true;
         } else {
             album = getIntent().getExtras().getParcelable(ALBUM);
-            wasReceated = false;
         }
 
         if (album == null) {
@@ -140,8 +134,36 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         boolean landscape = getResources().getBoolean(R.bool.landscape);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, !landscape ? 3 : 4));
+        final int columnCount = !landscape ? 3 : 4;
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
+        /*gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                Album.AlbumItem albumItem = album.getAlbumItems().get(position);
+                int[] size = Util.getImageSize(albumItem);
+                Log.d("AlbumActivity", size[0] + ", " + size[1]);
+                if(size[0] == 0 || size[1] == 0) {
+                    return 1;
+                }
+                int ratio = size[0]/size[1];
+                if(ratio == 0) {
+                    return new Random().nextInt(2) + 1;
+                } else if (ratio > columnCount) {
+                    return columnCount;
+                } else {
+                    return ratio;
+                }
+            }
+        });*/
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.addItemDecoration(new GridMarginDecoration(
+                (int) getResources().getDimension(R.dimen.grid_spacing)));
         recyclerView.setAdapter(new RecyclerViewAdapter(album));
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {
+            recyclerView.getLayoutManager().onRestoreInstanceState(
+                    savedInstanceState.getParcelable(RECYCLER_VIEW_SCROLL_STATE));
+        }
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -197,13 +219,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                         recyclerView.getPaddingEnd(),
                         recyclerView.getPaddingBottom());
 
-                recyclerView.scrollToPosition(0);
-                if (tmpReenterState != null) {
-                    int currentPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-                    if (wasReceated) {
-                        recyclerView.scrollToPosition(currentPosition);
-                    }
-                }
+                recyclerView.scrollBy(0, -toolbar.getHeight());
 
                 toolbar.getViewTreeObserver().removeOnPreDrawListener(this);
                 return false;
@@ -228,19 +244,23 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
     @Override
     public void onActivityReenter(int requestCode, Intent data) {
         super.onActivityReenter(requestCode, data);
-        tmpReenterState = new Bundle(data.getExtras());
-        final int currentPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+        Log.d("AlbumActivity", "onActivityReenter()");
+        Bundle tmpReenterState = new Bundle(data.getExtras());
+        sharedElementReturnPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+        album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
         if (recyclerView.getAdapter().getItemCount() > 0) {
             postponeEnterTransition();
+            Log.d("AlbumActivity", "postponeEnterTransition()");
             recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View v, int l, int t, int r, int b,
                                            int oL, int oT, int oR, int oB) {
                     recyclerView.removeOnLayoutChangeListener(this);
                     startPostponedEnterTransition();
+                    Log.d("AlbumActivity", "startPostponedEnterTransition()");
                 }
             });
-            recyclerView.scrollToPosition(currentPosition);
+            recyclerView.scrollToPosition(sharedElementReturnPosition);
         }
     }
 
@@ -443,6 +463,14 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(ALBUM, album);
+        outState.putParcelable(RECYCLER_VIEW_SCROLL_STATE,
+                recyclerView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
     }
 
     private void setupTaskDescription() {
@@ -461,199 +489,16 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
     @Override
     public void onSwipeProcess(float percent) {
         ViewGroup viewGroup = (ViewGroup) findViewById(R.id.root_view);
-        viewGroup.setAlpha(1 - percent + 0.5f);
+        viewGroup.setAlpha(1 - percent + 0.7f);
     }
 
     @Override
     public void onSwipeFinish(int dir) {
         getWindow().setReturnTransition(new TransitionSet()
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
                 .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
                 .addTransition(new Fade())
                 .setInterpolator(new AccelerateDecelerateInterpolator()));
         onBackPressed();
-    }
-
-    public static class RecyclerViewAdapter extends RecyclerView.Adapter {
-
-        int VIEW_TYPE_VIDEO = 1;
-        int VIEW_TYPE_PHOTO = 2;
-
-        private Album album;
-
-        private boolean selector_mode = false;
-        private boolean[] selected_items;
-
-        RecyclerViewAdapter(Album album) {
-            this.album = album;
-            selected_items = new boolean[album.getAlbumItems().size()];
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return album.getAlbumItems().get(position).isPhoto() ? VIEW_TYPE_PHOTO : VIEW_TYPE_VIDEO;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(viewType == VIEW_TYPE_PHOTO ?
-                    R.layout.photo_cover : R.layout.video_cover, parent, false);
-            return new AlbumItemHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-            final Album.AlbumItem albumItem = album.getAlbumItems().get(position);
-            ((AlbumItemHolder) holder).setAlbumItem(albumItem);
-            holder.itemView.findViewById(R.id.image)
-                    .setSelected(selected_items[album.getAlbumItems().indexOf(albumItem)]);
-
-            holder.itemView.setTag(albumItem.getPath());
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (albumItem.error) {
-                        return;
-                    }
-
-                    if (selector_mode) {
-                        selected_items[album.getAlbumItems().indexOf(albumItem)]
-                                = !selected_items[album.getAlbumItems().indexOf(albumItem)];
-                        holder.itemView.findViewById(R.id.image)
-                                .setSelected(selected_items[album.getAlbumItems().indexOf(albumItem)]);
-                        checkForNoSelectedItems(holder.itemView.getContext());
-                    } else if (albumItem.isPhoto()) {
-                        Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
-                        intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
-                        intent.putExtra(ItemActivity.ALBUM, album);
-                        intent.putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
-                        //holder.itemView.getContext().startActivity(intent);
-
-                        ActivityOptionsCompat options =
-                                ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                        (Activity) holder.itemView.getContext(),
-                                        holder.itemView.findViewById(R.id.image),
-                                        albumItem.getPath());
-                        holder.itemView.getContext().startActivity(intent, options.toBundle());
-                    } else {
-                        File file = new File(albumItem.getPath());
-                        Uri uri = FileProvider.getUriForFile(holder.itemView.getContext(),
-                                holder.itemView.getContext().getApplicationContext().getPackageName() + ".provider", file);
-
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(uri, "video/*");
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        try {
-                            holder.itemView.getContext().startActivity(intent);
-                        } catch (ActivityNotFoundException e) {
-                            Toast.makeText(holder.itemView.getContext(), "No App found to play your video", Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    if (((AlbumItemHolder) holder).albumItem.error) {
-                        return true;
-                    }
-
-                    if (!selector_mode) {
-                        selector_mode = true;
-                        selected_items = new boolean[album.getAlbumItems().size()];
-                        ((AlbumActivity) view.getContext()).animateFab(selector_mode, false);
-                    }
-
-                    selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)]
-                            = !selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)];
-                    holder.itemView.findViewById(R.id.image)
-                            .setSelected(selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)]);
-                    checkForNoSelectedItems(holder.itemView.getContext());
-                    return true;
-                }
-            });
-        }
-
-        void checkForNoSelectedItems(Context context) {
-            int k = 0;
-            for (int i = 0; i < selected_items.length; i++) {
-                if (selected_items[i]) {
-                    k++;
-                }
-            }
-            if (k == 0) {
-                selector_mode = false;
-                ((AlbumActivity) context).animateFab(false, false);
-                cancelSelectorMode();
-            }
-        }
-
-        Album.Photo[] cancelSelectorMode() {
-            ArrayList<Album.AlbumItem> selected_items = new ArrayList<>();
-            selector_mode = false;
-            for (int i = 0; i < this.selected_items.length; i++) {
-                if (this.selected_items[i]) {
-                    notifyItemChanged(i);
-                    selected_items.add(album.getAlbumItems().get(i));
-                }
-            }
-            this.selected_items = new boolean[album.getAlbumItems().size()];
-            Album.Photo[] arr = new Album.Photo[selected_items.size()];
-            return selected_items.toArray(arr);
-        }
-
-        boolean onBackPressed() {
-            if (selector_mode) {
-                cancelSelectorMode();
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public int getItemCount() {
-            return album.getAlbumItems().size();
-        }
-
-        static class AlbumItemHolder extends RecyclerView.ViewHolder {
-            Album.AlbumItem albumItem;
-
-            AlbumItemHolder(View itemView) {
-                super(itemView);
-            }
-
-            void setAlbumItem(Album.AlbumItem albumItem) {
-                this.albumItem = albumItem;
-                ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
-                loadImage(imageView, albumItem);
-            }
-
-            static void loadImage(final ImageView imageView, final Album.AlbumItem albumItem) {
-                int imageWidth = Util.getScreenWidth((Activity) imageView.getContext()) / 3;
-                Glide.clear(imageView);
-                Glide.with(imageView.getContext())
-                        .load(albumItem.getPath())
-                        .override(imageWidth, imageWidth)
-                        .skipMemoryCache(true)
-                        .error(R.drawable.error_placeholder)
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target,
-                                                       boolean isFirstResource) {
-                                albumItem.error = true;
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                                                           boolean isFromMemoryCache, boolean isFirstResource) {
-                                return false;
-                            }
-                        })
-                        .into(imageView);
-            }
-        }
     }
 }

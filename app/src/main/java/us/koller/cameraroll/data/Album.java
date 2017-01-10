@@ -1,10 +1,16 @@
 package us.koller.cameraroll.data;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import us.koller.cameraroll.util.MediaType;
 
 public class Album implements Parcelable {
 
@@ -72,19 +78,47 @@ public class Album implements Parcelable {
 
     public static abstract class AlbumItem implements Parcelable {
         private static final int PHOTO = 1;
-        private static final int VIDEO = 2;
+        private static final int GIF = 2;
+        private static final int VIDEO = 3;
 
         private String name;
         private String path;
         public boolean error = false;
+        public boolean contentUri = false;
         public boolean isSharedElement = false;
+
+        public static AlbumItem getInstance(Context context, String path) {
+            if (path == null) {
+                return null;
+            }
+            AlbumItem albumItem = null;
+            if (MediaType.isImage(context, path)) {
+                if (!MediaType.isGif(context, path)) {
+                    albumItem = new Photo();
+                } else {
+                    albumItem = new Gif();
+                }
+            } else if (MediaType.isVideo(context, path)) {
+                albumItem = new Video();
+            }
+
+            if (albumItem != null) {
+                albumItem
+                        .setPath(path)
+                        .setName(new File(path).getName());
+
+                if (path.startsWith("content")) {
+                    albumItem.contentUri = true;
+                }
+            }
+
+            return albumItem;
+        }
 
         AlbumItem() {
             name = "";
             path = "";
         }
-
-        public abstract boolean isPhoto();
 
         public AlbumItem setName(String name) {
             this.name = name;
@@ -108,6 +142,7 @@ public class Album implements Parcelable {
             this.name = parcel.readString();
             this.path = parcel.readString();
             this.error = Boolean.parseBoolean(parcel.readString());
+            this.contentUri = Boolean.parseBoolean(parcel.readString());
         }
 
         @Override
@@ -122,19 +157,36 @@ public class Album implements Parcelable {
 
         @Override
         public void writeToParcel(Parcel parcel, int i) {
-            parcel.writeInt(this.isPhoto() ? PHOTO : VIDEO);
+            int k;
+            if (this instanceof Photo) {
+                k = PHOTO;
+            } else if (this instanceof Gif) {
+                k = GIF;
+            } else {
+                k = VIDEO;
+            }
+            parcel.writeInt(k);
             parcel.writeString(name);
             parcel.writeString(path);
             parcel.writeString(String.valueOf(error));
+            parcel.writeString(String.valueOf(contentUri));
         }
 
         public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
             @Override
             public AlbumItem createFromParcel(Parcel parcel) {
-                if (parcel.readInt() == PHOTO) {
+                /*if (parcel.readInt() == PHOTO) {
                     return new Photo(parcel);
                 }
-                return new Video(parcel);
+                return new Video(parcel);*/
+                switch (parcel.readInt()) {
+                    case PHOTO:
+                        return new Photo(parcel);
+                    case GIF:
+                        return new Gif(parcel);
+                    default:
+                        return new Video(parcel);
+                }
             }
 
             public AlbumItem[] newArray(int i) {
@@ -146,24 +198,12 @@ public class Album implements Parcelable {
     public static class Photo extends AlbumItem implements Parcelable {
         private Serializable imageViewSavedState;
 
-        public boolean contentUri = false;
-
         Photo() {
 
         }
 
         Photo(Parcel parcel) {
             super(parcel);
-            this.contentUri = Boolean.parseBoolean(parcel.readString());
-        }
-
-        @Override
-        public boolean isPhoto() {
-            return true;
-        }
-
-        public boolean isGif() {
-            return getPath().endsWith(".gif");
         }
 
         public void putImageViewSavedState(Serializable imageViewSavedState) {
@@ -178,16 +218,24 @@ public class Album implements Parcelable {
         public String toString() {
             return "Photo: " + super.toString();
         }
+    }
+
+    public static class Gif extends AlbumItem implements Parcelable {
+        Gif() {
+
+        }
+
+        Gif(Parcel parcel) {
+            super(parcel);
+        }
 
         @Override
-        public void writeToParcel(Parcel parcel, int i) {
-            super.writeToParcel(parcel, i);
-            parcel.writeString(String.valueOf(contentUri));
+        public String toString() {
+            return "Gif: " + super.toString();
         }
     }
 
-
-    static class Video extends AlbumItem implements Parcelable {
+    public static class Video extends AlbumItem implements Parcelable {
 
         Video() {
 
@@ -196,12 +244,6 @@ public class Album implements Parcelable {
         Video(Parcel parcel) {
             super(parcel);
         }
-
-        @Override
-        public boolean isPhoto() {
-            return false;
-        }
-
 
         @Override
         public String toString() {

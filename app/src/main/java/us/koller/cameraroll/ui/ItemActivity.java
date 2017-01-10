@@ -1,9 +1,7 @@
 package us.koller.cameraroll.ui;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,7 +11,6 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -22,7 +19,6 @@ import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -44,15 +40,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,10 +49,13 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
+import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
+import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
-import us.koller.cameraroll.util.Util;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -100,10 +92,12 @@ public class ItemActivity extends AppCompatActivity {
             = new TransitionListenerAdapter() {
         @Override
         public void onTransitionStart(Transition transition) {
-            if (albumItem.isPhoto() && !((Album.Photo) albumItem).isGif()) {
-                ViewGroup v = (ViewGroup) viewPager.findViewWithTag(albumItem.getPath());
-                View subsamplingView = v.findViewById(R.id.subsampling);
-                subsamplingView.setVisibility(View.INVISIBLE);
+            if (albumItem instanceof Album.Photo && isReturning) {
+                ViewHolder viewHolder = ((ViewPagerAdapter)
+                        viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
+                if (viewHolder instanceof PhotoViewHolder) {
+                    ((PhotoViewHolder) viewHolder).swapView(isReturning);
+                }
             }
 
             float toolbar_translationY = -(toolbar.getHeight());
@@ -115,40 +109,24 @@ public class ItemActivity extends AppCompatActivity {
 
         @Override
         public void onTransitionEnd(Transition transition) {
-            ViewGroup v = (ViewGroup) viewPager.findViewWithTag(albumItem.getPath());
-            if (albumItem.isPhoto() && !((Album.Photo) albumItem).isGif()) {
-                final View sharedElement = v.findViewById(R.id.image);
-                final SubsamplingScaleImageView subsamplingView
-                        = (SubsamplingScaleImageView) v.findViewById(R.id.subsampling);
-                subsamplingView.setVisibility(View.VISIBLE);
-                ((ViewPagerAdapter) viewPager.getAdapter()).bindSubsamplingImageView(subsamplingView,
-                        ItemActivity.this, (Album.Photo) albumItem, sharedElement);
-            } else if (!isReturning && albumItem.isPhoto() && ((Album.Photo) albumItem).isGif()) {
-                final View imageView = v.findViewById(R.id.image);
-                if (imageView instanceof ImageView) {
-                    Glide.with(ItemActivity.this)
-                            .load(albumItem.getPath())
-                            .listener(new RequestListener<String, GlideDrawable>() {
-                                @Override
-                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                                                               boolean isFromMemoryCache, boolean isFirstResource) {
-                                    new PhotoViewAttacher((ImageView) imageView);
-                                    return false;
-                                }
-                            })
-                            .skipMemoryCache(true)
-                            .into((ImageView) imageView);
-                }
+            ViewHolder viewHolder = ((ViewPagerAdapter)
+                    viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
+            if (viewHolder == null) {
+                return;
             }
+            if (albumItem instanceof Album.Photo
+                    && viewHolder instanceof PhotoViewHolder && !isReturning) {
+                ((PhotoViewHolder) viewHolder).swapView(isReturning);
+            } else if (!isReturning && albumItem instanceof Album.Gif
+                    && viewHolder instanceof GifViewHolder) {
+                ((GifViewHolder) viewHolder).reloadGif();
+            }
+
             showUI(!isReturning);
             if (transition != null) {
                 super.onTransitionEnd(transition);
             }
+            albumItem.isSharedElement = false;
         }
     };
 
@@ -181,7 +159,7 @@ public class ItemActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             album = savedInstanceState.getParcelable(ALBUM);
             albumItem = savedInstanceState.getParcelable(ALBUM_ITEM);
-            if (albumItem != null && albumItem.isPhoto()) {
+            if (albumItem != null && albumItem instanceof Album.Photo) {
                 Album.Photo photo = (Album.Photo) albumItem;
                 ImageViewState imageViewState
                         = (ImageViewState) savedInstanceState.getSerializable(IMAGE_VIEW_SAVED_STATE);
@@ -335,7 +313,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void editPhoto() {
-        if (!albumItem.isPhoto()) {
+        if (!(albumItem instanceof Album.Video)) {
             return;
         }
 
@@ -565,36 +543,23 @@ public class ItemActivity extends AppCompatActivity {
         outState.putBoolean(INFO_DIALOG_SHOWN, infoDialog != null);
     }
 
+    public static interface Callback {
+        public void callback();
+    }
+
     @Override
     public void onBackPressed() {
         showUI(false);
-        if (albumItem.isPhoto() && !((Album.Photo) albumItem).isGif()) {
-            try {
-                final ViewGroup v = (ViewGroup) viewPager.findViewWithTag(albumItem.getPath());
-                final SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) v.findViewById(R.id.subsampling);
-                if (imageView != null) {
-                    imageView.animateScale(0.0f)
-                            .withDuration(300)
-                            .withOnAnimationEventListener(new SubsamplingScaleImageView.DefaultOnAnimationEventListener() {
-                                @Override
-                                public void onComplete() {
-                                    super.onComplete();
-                                    final View sharedElement = v.findViewById(R.id.image);
-                                    final View subsamplingView = v.findViewById(R.id.subsampling);
-                                    new Handler().post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            subsamplingView.setVisibility(View.INVISIBLE);
-                                            sharedElement.setVisibility(View.VISIBLE);
-                                            setResultAndFinish();
-                                        }
-                                    });
-                                }
-                            })
-                            .start();
-                }
-            } catch (NullPointerException e) {
-                ItemActivity.super.onBackPressed();
+        if (albumItem instanceof Album.Photo) {
+            ViewHolder viewHolder = ((ViewPagerAdapter)
+                    viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
+            if (viewHolder instanceof PhotoViewHolder) {
+                ((PhotoViewHolder) viewHolder).scaleDown(new Callback() {
+                    @Override
+                    public void callback() {
+                        setResultAndFinish();
+                    }
+                });
             }
         } else {
             setResultAndFinish();
@@ -696,150 +661,6 @@ public class ItemActivity extends AppCompatActivity {
             InfoHolder(View itemView) {
                 super(itemView);
             }
-        }
-    }
-
-    public static class ViewPagerAdapter extends PagerAdapter {
-
-        private Album album;
-
-        ViewPagerAdapter(Album album) {
-            this.album = album;
-        }
-
-        @Override
-        public int getCount() {
-            return album.getAlbumItems().size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(final ViewGroup container, int position) {
-            Album.AlbumItem albumItem = album.getAlbumItems().get(position);
-
-            final ViewGroup v = (ViewGroup) LayoutInflater.from(container.getContext())
-                    .inflate(R.layout.photo_view, container, false);
-
-            View view;
-
-            if (albumItem.isPhoto() && !((Album.Photo) albumItem).isGif()) {
-                if (!albumItem.isSharedElement) {
-                    view = bindSubsamplingImageView((SubsamplingScaleImageView) v.findViewById(R.id.subsampling),
-                            container.getContext(), (Album.Photo) albumItem, v.findViewById(R.id.image));
-                    v.findViewById(R.id.image).setVisibility(View.INVISIBLE);
-                } else {
-                    view = v.findViewById(R.id.subsampling);
-                }
-            } else {
-                v.removeView(v.findViewById(R.id.subsampling));
-                view = v.findViewById(R.id.image);
-            }
-            bindTransitionView((ImageView) v.findViewById(R.id.image), container.getContext(), albumItem);
-
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    try {
-                        ((ItemActivity) view.getContext()).imageOnClick();
-                    } catch (ClassCastException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            v.setTag(albumItem.getPath());
-            container.addView(v);
-            return v;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
-        }
-
-        View bindTransitionView(final ImageView imageView, Context context, final Album.AlbumItem albumItem) {
-            int imageWidth = Util.getScreenWidth((Activity) context) / 2;
-            Glide.clear(imageView);
-            Glide.with(context)
-                    .load(albumItem.getPath())
-                    .override(imageWidth, imageWidth)
-                    .skipMemoryCache(true)
-                    .error(R.drawable.error_placeholder)
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model,
-                                                   Target<GlideDrawable> target, boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable>
-                                target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            if (albumItem.isSharedElement) {
-                                albumItem.isSharedElement = false;
-                                ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
-                            }
-                            if (!albumItem.isSharedElement && albumItem.isPhoto()
-                                    && ((Album.Photo) albumItem).isGif()) {
-                                new PhotoViewAttacher(imageView);
-                            }
-                            return false;
-                        }
-                    })
-                    .into(imageView);
-            imageView.setTransitionName(albumItem.getPath());
-            return imageView;
-        }
-
-        View bindSubsamplingImageView(SubsamplingScaleImageView imageView, Context context, Album.Photo photo, final View placeholerView) {
-            ImageViewState imageViewState = null;
-            if (photo.getImageViewSavedState() != null) {
-                imageViewState = (ImageViewState) photo.getImageViewSavedState();
-                photo.putImageViewSavedState(null);
-            }
-
-            if (!photo.contentUri) {
-                if (imageViewState != null) {
-                    imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
-                    Log.d("ItemActivity", "restored state...");
-                } else {
-                    imageView.setImage(ImageSource.uri(photo.getPath()));
-                }
-            } else {
-                try {
-                    Bitmap bmp = MediaStore.Images.Media.getBitmap(
-                            context.getContentResolver(), Uri.parse(photo.getPath()));
-                    if (imageViewState != null) {
-                        imageView.setImage(ImageSource.bitmap(bmp), imageViewState);
-                        Log.d("ItemActivity", "restored state...");
-                    } else {
-                        imageView.setImage(ImageSource.bitmap(bmp));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            imageView.setMinimumDpi(1);
-            if (placeholerView != null) {
-                imageView.setOnImageEventListener(
-                        new SubsamplingScaleImageView.DefaultOnImageEventListener() {
-                            @Override
-                            public void onImageLoaded() {
-                                new Handler().post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        placeholerView.setVisibility(View.INVISIBLE);
-                                    }
-                                });
-                                super.onImageLoaded();
-                            }
-                        });
-            }
-            return imageView;
         }
     }
 }

@@ -16,11 +16,15 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 
+import us.koller.cameraroll.util.MediaType;
+
 public class MediaLoader {
 
-    public static final int PERMISSION_REQUEST_CODE = 16;
+    private String[] projection = new String[]{
+            MediaStore.Files.FileColumns.DATA,
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
-    private final String[] imageFileEndings = new String[]{"jpg", "png", "gif", "jpeg"};
+    public static final int PERMISSION_REQUEST_CODE = 16;
 
     public MediaLoader() {
 
@@ -32,13 +36,6 @@ public class MediaLoader {
         }
 
         ArrayList<Album> albums = new ArrayList<>();
-
-        // Get relevant columns for use later.
-        String[] projection = {
-                MediaStore.Files.FileColumns.TITLE,
-                MediaStore.Files.FileColumns.DATA,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME
-        };
 
         // Return only video and image metadata.
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
@@ -64,44 +61,33 @@ public class MediaLoader {
         }
 
         if (cursor.moveToFirst()) {
-            String name;
             String path;
             String bucket;
 
-            int bucketColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-            int nameColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE);
             int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+            int bucketColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
             do {
-                name = cursor.getString(nameColumn);
                 path = cursor.getString(pathColumn);
                 bucket = cursor.getString(bucketColumn);
 
-                Album.AlbumItem albumItem;
-                if (isImage(path)) {
-                    albumItem = new Album.Photo()
-                            .setName(name)
-                            .setPath(path);
-                } else {
-                    albumItem = new Album.Video()
-                            .setName(name)
-                            .setPath(path);
-                }
-
-                //search bucket
-                boolean foundBucket = false;
-                for (int i = 0; i < albums.size(); i++) {
-                    if (albums.get(i).getName().equals(bucket)) {
-                        albums.get(i).getAlbumItems().add(0, albumItem);
-                        foundBucket = true;
-                        break;
+                Album.AlbumItem albumItem = Album.AlbumItem.getInstance(context, path);
+                if (albumItem != null) {
+                    //search bucket
+                    boolean foundBucket = false;
+                    for (int i = 0; i < albums.size(); i++) {
+                        if (albums.get(i).getName().equals(bucket)) {
+                            albums.get(i).getAlbumItems().add(0, albumItem);
+                            foundBucket = true;
+                            break;
+                        }
                     }
-                }
 
-                if (!foundBucket) {
-                    //no bucket found
-                    albums.add(new Album().setName(bucket));
-                    albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
+                    if (!foundBucket) {
+                        //no bucket found
+                        albums.add(new Album().setName(bucket));
+                        albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
+                    }
                 }
 
             } while (cursor.moveToNext());
@@ -119,14 +105,7 @@ public class MediaLoader {
         return albums;
     }
 
-    public Album.Photo loadPhoto(Activity context, Uri uri) {
-        // which image properties are we querying
-        String[] projection = new String[]{
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DISPLAY_NAME,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-        };
-
+    public Album.AlbumItem loadMediaItem(Activity context, Uri uri) {
         // Make the query.
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(uri,
@@ -137,25 +116,14 @@ public class MediaLoader {
         );
 
         if (cursor == null) {
-            return (Album.Photo) new Album.Photo()
-                    .setName(new File(uri.getPath()).getName())
-                    .setPath(uri.getPath());
+            return Album.AlbumItem.getInstance(context, uri.toString());
         }
 
         cursor.moveToFirst();
-        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
         String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
         cursor.close();
 
-        Album.Photo photo = (Album.Photo) new Album.Photo()
-                .setName(name)
-                .setPath(path);
-
-        photo.contentUri = path == null;
-        if (photo.contentUri) {
-            photo.setPath(uri.toString());
-        }
-        return photo;
+        return Album.AlbumItem.getInstance(context, path != null ? path : uri.toString());
     }
 
     private static final String FILE_TYPE_NO_MEDIA = ".nomedia";
@@ -163,9 +131,6 @@ public class MediaLoader {
     private ArrayList<Album> loadHiddenFolders(Activity context) {
 
         ArrayList<Album> hiddenAlbums = new ArrayList<>();
-
-        // which image properties are we querying
-        String[] projection = new String[]{MediaStore.Images.Media.DATA};
 
         // Scan all no Media files
         String nonMediaCondition = MediaStore.Files.FileColumns.MEDIA_TYPE
@@ -193,7 +158,7 @@ public class MediaLoader {
         if (cursor.moveToFirst()) {
             int pathColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             do {
-                Album album = checkDirForImages(context, cursor.getString(pathColumn));
+                Album album = checkDirForMedia(context, cursor.getString(pathColumn));
                 if (album != null) {
                     hiddenAlbums.add(album);
                 }
@@ -204,7 +169,7 @@ public class MediaLoader {
         return hiddenAlbums;
     }
 
-    private Album checkDirForImages(Activity context, String path) {
+    private Album checkDirForMedia(final Activity context, String path) {
         path = path.replace(FILE_TYPE_NO_MEDIA, "");
         File folder = new File(path);
         Album album = new Album().setName(folder.getName());
@@ -212,14 +177,14 @@ public class MediaLoader {
         File[] files = folder.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return isImage(file.getPath());
+                return MediaType.isImage(context, file.getPath());
             }
         });
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
-                if (isImage(files[i].getPath())) {
-                    Album.Photo photo = loadPhoto(context, Uri.parse(files[i].getPath()));
-                    album.getAlbumItems().add(photo);
+                if (MediaType.isImage(context, files[i].getPath()) || MediaType.isVideo(context, files[i].getPath())) {
+                    Album.AlbumItem albumItem = loadMediaItem(context, Uri.parse(files[i].getPath()));
+                    album.getAlbumItems().add(albumItem);
                 }
             }
         }
@@ -227,19 +192,6 @@ public class MediaLoader {
             return null;
         }
         return album;
-    }
-
-    private boolean isImage(String filename) {
-        if (filename == null) {
-            return false;
-        }
-
-        for (int i = 0; i < imageFileEndings.length; i++) {
-            if (filename.endsWith(imageFileEndings[i])) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static boolean checkPermission(Activity context) {

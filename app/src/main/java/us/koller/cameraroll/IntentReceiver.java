@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.MediaLoader;
 
 public class IntentReceiver extends AppCompatActivity {
     @Override
@@ -19,9 +18,6 @@ public class IntentReceiver extends AppCompatActivity {
         switch (getIntent().getAction()) {
             case Intent.ACTION_VIEW:
                 viewPhoto(getIntent());
-                break;
-            case Intent.ACTION_GET_CONTENT:
-                pickPhoto(getIntent());
                 break;
         }
 
@@ -37,22 +33,18 @@ public class IntentReceiver extends AppCompatActivity {
         }
 
         Album album = new Album();
-        Album.Photo photo = new MediaLoader().loadPhoto(this, uri);
-        if (photo == null) {
+        Album.AlbumItem albumItem = Album.AlbumItem.getInstance(this, uri.toString());
+        if (albumItem == null || albumItem instanceof Album.Video) {
             Toast.makeText(this, getString(R.string.error), Toast.LENGTH_SHORT).show();
             this.finish();
             return;
         }
-        album.getAlbumItems().add(photo);
+        album.getAlbumItems().add(albumItem);
 
         startActivity(new Intent(this, ItemActivity.class)
-                .putExtra(ItemActivity.ALBUM_ITEM, photo)
+                .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
                 .putExtra(ItemActivity.VIEW_ONLY, true)
                 .putExtra(ItemActivity.ALBUM, album)
-                .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(photo)));
-    }
-
-    public void pickPhoto(Intent intent) {
-        Toast.makeText(this, "pickPhoto()", Toast.LENGTH_SHORT).show();
+                .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem)));
     }
 }
