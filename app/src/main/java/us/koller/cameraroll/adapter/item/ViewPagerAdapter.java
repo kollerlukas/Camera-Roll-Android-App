@@ -10,6 +10,8 @@ import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Photo;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
@@ -34,10 +36,10 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(final ViewGroup container, int position) {
-        Album.AlbumItem albumItem = album.getAlbumItems().get(position);
+        AlbumItem albumItem = album.getAlbumItems().get(position);
 
         ViewHolder viewHolder;
-        if (albumItem instanceof Album.Photo) {
+        if (albumItem instanceof Photo) {
             viewHolder = new PhotoViewHolder(albumItem, position);
         } else {
             viewHolder = new GifViewHolder(albumItem, position);

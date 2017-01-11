@@ -71,7 +71,7 @@ public class MediaLoader {
                 path = cursor.getString(pathColumn);
                 bucket = cursor.getString(bucketColumn);
 
-                Album.AlbumItem albumItem = Album.AlbumItem.getInstance(context, path);
+                AlbumItem albumItem = AlbumItem.getInstance(context, path);
                 if (albumItem != null) {
                     //search bucket
                     boolean foundBucket = false;
@@ -105,7 +105,7 @@ public class MediaLoader {
         return albums;
     }
 
-    public Album.AlbumItem loadMediaItem(Activity context, Uri uri) {
+    private AlbumItem loadMediaItem(Activity context, Uri uri) {
         // Make the query.
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(uri,
@@ -116,14 +116,14 @@ public class MediaLoader {
         );
 
         if (cursor == null) {
-            return Album.AlbumItem.getInstance(context, uri.toString());
+            return AlbumItem.getInstance(context, uri.toString());
         }
 
         cursor.moveToFirst();
         String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
         cursor.close();
 
-        return Album.AlbumItem.getInstance(context, path != null ? path : uri.toString());
+        return AlbumItem.getInstance(context, path != null ? path : uri.toString());
     }
 
     private static final String FILE_TYPE_NO_MEDIA = ".nomedia";
@@ -183,7 +183,7 @@ public class MediaLoader {
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
                 if (MediaType.isImage(context, files[i].getPath()) || MediaType.isVideo(context, files[i].getPath())) {
-                    Album.AlbumItem albumItem = loadMediaItem(context, Uri.parse(files[i].getPath()));
+                    AlbumItem albumItem = loadMediaItem(context, Uri.parse(files[i].getPath()));
                     album.getAlbumItems().add(albumItem);
                 }
             }

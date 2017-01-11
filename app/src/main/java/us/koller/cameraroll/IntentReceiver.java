@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
 
@@ -33,8 +35,8 @@ public class IntentReceiver extends AppCompatActivity {
         }
 
         Album album = new Album();
-        Album.AlbumItem albumItem = Album.AlbumItem.getInstance(this, uri.toString());
-        if (albumItem == null || albumItem instanceof Album.Video) {
+        AlbumItem albumItem = AlbumItem.getInstance(this, uri.toString());
+        if (albumItem == null || albumItem instanceof Video) {
             Toast.makeText(this, getString(R.string.error), Toast.LENGTH_SHORT).show();
             this.finish();
             return;

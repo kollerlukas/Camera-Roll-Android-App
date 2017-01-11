@@ -5,11 +5,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.util.ViewUtil;
 
 public class GifViewHolder extends ViewHolder {
 
-    public GifViewHolder(Album.AlbumItem albumItem, int position) {
+    public GifViewHolder(AlbumItem albumItem, int position) {
         super(albumItem, position);
     }
 
@@ -19,13 +20,13 @@ public class GifViewHolder extends ViewHolder {
         v.removeView(v.findViewById(R.id.subsampling));
         View view = v.findViewById(R.id.image);
         super.setOnClickListener(view);
-        ViewHolder.ViewUtil.bindTransitionView((ImageView) view, albumItem);
+        ViewUtil.bindTransitionView((ImageView) view, albumItem);
         return v;
     }
 
     public void reloadGif() {
         View view = itemView.findViewById(R.id.image);
-        ViewHolder.ViewUtil.bindTransitionView((ImageView) view, albumItem);
+        ViewUtil.bindTransitionView((ImageView) view, albumItem);
         super.setOnClickListener(view);
     }
 }

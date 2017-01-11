@@ -54,7 +54,11 @@ import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
 
 public class ItemActivity extends AppCompatActivity {
@@ -92,7 +96,7 @@ public class ItemActivity extends AppCompatActivity {
             = new TransitionListenerAdapter() {
         @Override
         public void onTransitionStart(Transition transition) {
-            if (albumItem instanceof Album.Photo && isReturning) {
+            if (albumItem instanceof Photo && isReturning) {
                 ViewHolder viewHolder = ((ViewPagerAdapter)
                         viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
                 if (viewHolder instanceof PhotoViewHolder) {
@@ -114,10 +118,10 @@ public class ItemActivity extends AppCompatActivity {
             if (viewHolder == null) {
                 return;
             }
-            if (albumItem instanceof Album.Photo
+            if (albumItem instanceof Photo
                     && viewHolder instanceof PhotoViewHolder && !isReturning) {
-                ((PhotoViewHolder) viewHolder).swapView(isReturning);
-            } else if (!isReturning && albumItem instanceof Album.Gif
+                ((PhotoViewHolder) viewHolder).swapView(false);
+            } else if (!isReturning && albumItem instanceof Gif
                     && viewHolder instanceof GifViewHolder) {
                 ((GifViewHolder) viewHolder).reloadGif();
             }
@@ -139,7 +143,7 @@ public class ItemActivity extends AppCompatActivity {
     private boolean systemUiVisible = true;
 
     private Album album;
-    private Album.AlbumItem albumItem;
+    private AlbumItem albumItem;
 
     public boolean view_only;
 
@@ -159,8 +163,8 @@ public class ItemActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             album = savedInstanceState.getParcelable(ALBUM);
             albumItem = savedInstanceState.getParcelable(ALBUM_ITEM);
-            if (albumItem != null && albumItem instanceof Album.Photo) {
-                Album.Photo photo = (Album.Photo) albumItem;
+            if (albumItem != null && albumItem instanceof Photo) {
+                Photo photo = (Photo) albumItem;
                 ImageViewState imageViewState
                         = (ImageViewState) savedInstanceState.getSerializable(IMAGE_VIEW_SAVED_STATE);
                 photo.putImageViewSavedState(imageViewState);
@@ -313,7 +317,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void editPhoto() {
-        if (!(albumItem instanceof Album.Video)) {
+        if (!(albumItem instanceof Video)) {
             return;
         }
 
@@ -543,14 +547,14 @@ public class ItemActivity extends AppCompatActivity {
         outState.putBoolean(INFO_DIALOG_SHOWN, infoDialog != null);
     }
 
-    public static interface Callback {
-        public void callback();
+    public interface Callback {
+        void callback();
     }
 
     @Override
     public void onBackPressed() {
         showUI(false);
-        if (albumItem instanceof Album.Photo) {
+        if (albumItem instanceof Photo) {
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             if (viewHolder instanceof PhotoViewHolder) {

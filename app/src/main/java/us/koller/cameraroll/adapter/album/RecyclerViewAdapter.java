@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.album.ViewHolder.AlbumItemHolder;
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Gif;
+import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.util.Util;
@@ -47,10 +50,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        Album.AlbumItem albumItem = album.getAlbumItems().get(position);
-        if (albumItem instanceof Album.Photo) {
+        AlbumItem albumItem = album.getAlbumItems().get(position);
+        if (albumItem instanceof Photo) {
             return VIEW_TYPE_PHOTO;
-        } else if (albumItem instanceof Album.Gif) {
+        } else if (albumItem instanceof Gif) {
             return VIEW_TYPE_GIF;
         } else {
             return VIEW_TYPE_VIDEO;
@@ -66,7 +69,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        final Album.AlbumItem albumItem = album.getAlbumItems().get(position);
+        final AlbumItem albumItem = album.getAlbumItems().get(position);
         ((AlbumItemHolder) holder).setAlbumItem(albumItem);
         holder.itemView.findViewById(R.id.image)
                 .setSelected(selected_items[album.getAlbumItems().indexOf(albumItem)]);
@@ -86,7 +89,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     holder.itemView.findViewById(R.id.image)
                             .setSelected(selected_items[album.getAlbumItems().indexOf(albumItem)]);
                     checkForNoSelectedItems(holder.itemView.getContext());
-                } else if (albumItem instanceof Album.Photo || albumItem instanceof Album.Gif) {
+                } else if (albumItem instanceof Photo || albumItem instanceof Gif) {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
                     intent.putExtra(ItemActivity.ALBUM, album);
@@ -153,8 +156,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public Album.Photo[] cancelSelectorMode() {
-        ArrayList<Album.AlbumItem> selected_items = new ArrayList<>();
+    public Photo[] cancelSelectorMode() {
+        ArrayList<AlbumItem> selected_items = new ArrayList<>();
         selector_mode = false;
         for (int i = 0; i < this.selected_items.length; i++) {
             if (this.selected_items[i]) {
@@ -163,7 +166,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             }
         }
         this.selected_items = new boolean[album.getAlbumItems().size()];
-        Album.Photo[] arr = new Album.Photo[selected_items.size()];
+        Photo[] arr = new Photo[selected_items.size()];
         return selected_items.toArray(arr);
     }
 
@@ -178,44 +181,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return album.getAlbumItems().size();
-    }
-
-    private static class AlbumItemHolder extends RecyclerView.ViewHolder {
-        Album.AlbumItem albumItem;
-
-        AlbumItemHolder(View itemView) {
-            super(itemView);
-        }
-
-        void setAlbumItem(Album.AlbumItem albumItem) {
-            this.albumItem = albumItem;
-            ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
-            loadImage(imageView, albumItem);
-        }
-
-        static void loadImage(final ImageView imageView, final Album.AlbumItem albumItem) {
-            int imageWidth = Util.getScreenWidth((Activity) imageView.getContext()) / 3;
-            Glide.clear(imageView);
-            Glide.with(imageView.getContext())
-                    .load(albumItem.getPath())
-                    .override(imageWidth, imageWidth)
-                    .skipMemoryCache(true)
-                    .error(R.drawable.error_placeholder)
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target,
-                                                   boolean isFirstResource) {
-                            albumItem.error = true;
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                                                       boolean isFromMemoryCache, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(imageView);
-        }
     }
 }

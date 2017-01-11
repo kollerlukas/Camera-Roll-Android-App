@@ -8,12 +8,14 @@ import android.widget.ImageView;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.ui.ItemActivity;
+import us.koller.cameraroll.util.ViewUtil;
 
 public class PhotoViewHolder extends ViewHolder {
 
-    public PhotoViewHolder(Album.AlbumItem albumItem, int position) {
+    public PhotoViewHolder(AlbumItem albumItem, int position) {
         super(albumItem, position);
     }
 
@@ -24,14 +26,13 @@ public class PhotoViewHolder extends ViewHolder {
         super.setOnClickListener(view);
         final View transitionView = itemView.findViewById(R.id.image);
 
-        ViewHolder.ViewUtil
-                .bindTransitionView((ImageView) transitionView, albumItem);
+        ViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
         if (albumItem.isSharedElement) {
             view.setVisibility(View.INVISIBLE);
         } else {
-            ViewHolder.ViewUtil.bindSubsamplingImageView(
+            ViewUtil.bindSubsamplingImageView(
                     (SubsamplingScaleImageView) view,
-                    (Album.Photo) albumItem, transitionView);
+                    (Photo) albumItem, transitionView);
         }
         return v;
     }
@@ -42,9 +43,9 @@ public class PhotoViewHolder extends ViewHolder {
         final View transitionView = itemView.findViewById(R.id.image);
         if (!isReturning) {
             view.setVisibility(View.VISIBLE);
-            ViewHolder.ViewUtil.bindSubsamplingImageView(
+            ViewUtil.bindSubsamplingImageView(
                     (SubsamplingScaleImageView) view,
-                    (Album.Photo) albumItem, transitionView);
+                    (Photo) albumItem, transitionView);
         } else {
             view.setVisibility(View.INVISIBLE);
             transitionView.setVisibility(View.VISIBLE);

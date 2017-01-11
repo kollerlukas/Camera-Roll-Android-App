@@ -40,6 +40,7 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 
@@ -235,7 +236,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.getAction().equals(DELETE_PHOTO)) {
-            final Album.Photo photo = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
+            final Photo photo = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
             deletePhoto(photo, intent.getBooleanExtra(ItemActivity.HIDDEN_PHOTO, false),
                     intent.getBooleanExtra(ItemActivity.VIEW_ONLY, false));
         }
@@ -272,7 +273,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         }
     }
 
-    public void deletePhoto(final Album.Photo photo, final boolean hiddenPhoto, boolean VIEW_ONLY) {
+    public void deletePhoto(final Photo photo, final boolean hiddenPhoto, boolean VIEW_ONLY) {
         if (!MediaLoader.checkPermission(this)) {
             return;
         }
@@ -333,10 +334,10 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
             return;
         }
 
-        final Album.Photo[] selected_photos = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
+        final Photo[] selected_photos = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
         final int[] indices = new int[selected_photos.length];
         for (int i = 0; i < selected_photos.length; i++) {
-            Album.Photo photo = selected_photos[i];
+            Photo photo = selected_photos[i];
             indices[i] = album.getAlbumItems().indexOf(photo);
             album.getAlbumItems().remove(photo);
             recyclerView.getAdapter().notifyItemRemoved(indices[i]);
@@ -351,7 +352,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                     @Override
                     public void onClick(View view) {
                         for (int i = 0; i < selected_photos.length; i++) {
-                            Album.Photo photo = selected_photos[i];
+                            Photo photo = selected_photos[i];
                             int index = indices[i];
                             album.getAlbumItems().add(index, photo);
                             recyclerView.getAdapter().notifyItemInserted(index);
