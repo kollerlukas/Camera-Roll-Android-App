@@ -156,7 +156,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public Photo[] cancelSelectorMode() {
+    public AlbumItem[] cancelSelectorMode() {
         ArrayList<AlbumItem> selected_items = new ArrayList<>();
         selector_mode = false;
         for (int i = 0; i < this.selected_items.length; i++) {
@@ -166,7 +166,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             }
         }
         this.selected_items = new boolean[album.getAlbumItems().size()];
-        Photo[] arr = new Photo[selected_items.size()];
+        AlbumItem[] arr = new AlbumItem[selected_items.size()];
         return selected_items.toArray(arr);
     }
 

@@ -1,5 +1,6 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,8 +26,9 @@ public class GifViewHolder extends ViewHolder {
     }
 
     public void reloadGif() {
+        Log.d("GifViewHolder", "reloadGif() called");
         View view = itemView.findViewById(R.id.image);
-        ViewUtil.bindTransitionView((ImageView) view, albumItem);
+        ViewUtil.bindGif((ImageView) view, albumItem);
         super.setOnClickListener(view);
     }
 }

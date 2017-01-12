@@ -3,6 +3,7 @@ package us.koller.cameraroll.data;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.File;
 
@@ -35,8 +36,7 @@ public abstract class AlbumItem implements Parcelable {
         }
 
         if (albumItem != null) {
-            albumItem
-                    .setPath(path)
+            albumItem.setPath(path)
                     .setName(new File(path).getName());
 
             if (path.startsWith("content")) {

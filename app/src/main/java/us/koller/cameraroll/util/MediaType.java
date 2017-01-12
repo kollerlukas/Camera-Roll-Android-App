@@ -2,6 +2,7 @@ package us.koller.cameraroll.util;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 public class MediaType {
@@ -32,7 +33,7 @@ public class MediaType {
     }
 
     public static boolean isGif(Context context, String path) {
-        if (path == null || isImage(context, path)) {
+        if (path == null || !isImage(context, path)) {
             return false;
         }
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(path);

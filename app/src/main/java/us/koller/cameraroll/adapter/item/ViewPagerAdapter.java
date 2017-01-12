@@ -1,6 +1,7 @@
 package us.koller.cameraroll.adapter.item;
 
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 

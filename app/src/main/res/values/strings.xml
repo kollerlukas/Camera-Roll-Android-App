@@ -56,4 +56,5 @@
     <string name="image">Image</string>
     <string name="video_indicator">Video Indicator</string>
     <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
+    <string name="successfully_deleted">"successfully deleted "</string>
 </resources>

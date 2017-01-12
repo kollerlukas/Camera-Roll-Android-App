@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
@@ -39,10 +40,12 @@ import java.util.Map;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.MediaLoader;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
+import us.koller.cameraroll.util.Util;
 
 public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener {
 
@@ -132,10 +135,8 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
             actionBar.setTitle(album.getName());
         }
 
-        boolean landscape = getResources().getBoolean(R.bool.landscape);
-
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        final int columnCount = !landscape ? 3 : 4;
+        final int columnCount = Util.getAlbumActivityGridColumnCount(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         /*gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -237,7 +238,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         super.onNewIntent(intent);
         if (intent.getAction().equals(DELETE_PHOTO)) {
             final Photo photo = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
-            deletePhoto(photo, intent.getBooleanExtra(ItemActivity.HIDDEN_PHOTO, false),
+            deletePhotoSnackbar(photo, intent.getBooleanExtra(ItemActivity.HIDDEN_PHOTO, false),
                     intent.getBooleanExtra(ItemActivity.VIEW_ONLY, false));
         }
     }
@@ -273,14 +274,14 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         }
     }
 
-    public void deletePhoto(final Photo photo, final boolean hiddenPhoto, boolean VIEW_ONLY) {
+    public void deletePhotoSnackbar(final AlbumItem albumItem, final boolean hiddenPhoto, boolean VIEW_ONLY) {
         if (!MediaLoader.checkPermission(this)) {
             return;
         }
 
-        int k = album.getAlbumItems().indexOf(photo);
+        int k = album.getAlbumItems().indexOf(albumItem);
         for (int i = 0; i < album.getAlbumItems().size(); i++) {
-            if (album.getAlbumItems().get(i).getPath().equals(photo.getPath())) {
+            if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
                 k = i;
                 break;
             }
@@ -293,15 +294,19 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                 .setAction(R.string.undo, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        album.getAlbumItems().add(index, photo);
+                        album.getAlbumItems().add(index, albumItem);
                         recyclerView.getAdapter().notifyItemInserted(index);
                     }
                 })
                 .setCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
                         if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                            if (!hiddenPhoto) {
+                            AlbumItem[] albumItems = {albumItem};
+                            int[] indices = {index};
+                            deletePhotos(albumItems, indices);
+                            /*if (!hiddenPhoto) {
                                 getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                                         MediaStore.Images.ImageColumns.DATA + "=?", new String[]{photo.getPath()});
                             } else {
@@ -316,9 +321,8 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                                 Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
                                 intent.setAction(MainActivity.REFRESH_PHOTOS);
                                 startActivity(intent);
-                            }
+                            }*/
                         }
-                        super.onDismissed(snackbar, event);
                     }
                 });
         snackbar.show();
@@ -329,32 +333,32 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         }
     }
 
-    public void deletePhotos() {
+    public void deletePhotosSnackbar() {
         if (!MediaLoader.checkPermission(this)) {
             return;
         }
 
-        final Photo[] selected_photos = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
-        final int[] indices = new int[selected_photos.length];
-        for (int i = 0; i < selected_photos.length; i++) {
-            Photo photo = selected_photos[i];
-            indices[i] = album.getAlbumItems().indexOf(photo);
-            album.getAlbumItems().remove(photo);
+        final AlbumItem[] selected_items = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
+        final int[] indices = new int[selected_items.length];
+        for (int i = 0; i < selected_items.length; i++) {
+            AlbumItem albumItem = selected_items[i];
+            indices[i] = album.getAlbumItems().indexOf(albumItem);
+            album.getAlbumItems().remove(albumItem);
             recyclerView.getAdapter().notifyItemRemoved(indices[i]);
         }
 
-        String message = selected_photos.length == 1 ?
-                selected_photos.length + " " + getString(R.string.photo_deleted) :
-                selected_photos.length + " " + getString(R.string.photos_deleted);
+        String message = selected_items.length == 1 ?
+                selected_items.length + " " + getString(R.string.photo_deleted) :
+                selected_items.length + " " + getString(R.string.photos_deleted);
 
         snackbar = Snackbar.make(findViewById(R.id.root_view), message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.undo, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        for (int i = 0; i < selected_photos.length; i++) {
-                            Photo photo = selected_photos[i];
+                        for (int i = 0; i < selected_items.length; i++) {
+                            AlbumItem albumItem = selected_items[i];
                             int index = indices[i];
-                            album.getAlbumItems().add(index, photo);
+                            album.getAlbumItems().add(index, albumItem);
                             recyclerView.getAdapter().notifyItemInserted(index);
                         }
                     }
@@ -364,28 +368,72 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
                         if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                            for (int i = 0; i < selected_photos.length; i++) {
+                            deletePhotos(selected_items, indices);
+                            /*int successfully_deleted = 0;
+                            for (int i = 0; i < selected_items.length; i++) {
+                                boolean success;
                                 if (!album.hiddenAlbum) {
-                                    getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                            MediaStore.Images.ImageColumns.DATA + "=?", new String[]{selected_photos[i].getPath()});
+                                    int result = getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                            MediaStore.Images.ImageColumns.DATA + "=?", new String[]{selected_items[i].getPath()});
+                                    success = result > 0;
                                 } else {
-                                    File file = new File(selected_photos[i].getPath());
-                                    boolean result = file.delete();
+                                    File file = new File(selected_items[i].getPath());
+                                    success = file.delete();
                                 }
 
-                                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                                        Uri.parse(selected_photos[i].getPath())));
+                                if(!success) {
+                                    album.getAlbumItems().add(indices[i], selected_items[i]);
+                                    recyclerView.getAdapter().notifyItemInserted(indices[i]);
+                                } else {
+                                    successfully_deleted++;
 
-                                if (refreshMainActivityAfterPhotoWasDeleted) {
-                                    Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
-                                    intent.setAction(MainActivity.REFRESH_PHOTOS);
-                                    startActivity(intent);
+                                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                                            Uri.parse(selected_items[i].getPath())));
+
+                                    if (refreshMainActivityAfterPhotoWasDeleted) {
+                                        Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
+                                        intent.setAction(MainActivity.REFRESH_PHOTOS);
+                                        startActivity(intent);
+                                    }
                                 }
                             }
+                            Toast.makeText(AlbumActivity.this, "successfully deleted " + successfully_deleted + " from " + selected_items.length, Toast.LENGTH_SHORT).show();*/
                         }
                     }
                 });
         snackbar.show();
+    }
+
+    public void deletePhotos(AlbumItem[] selected_items, int[] indices) {
+        int successfully_deleted = 0;
+        for (int i = 0; i < selected_items.length; i++) {
+            boolean success;
+            if (!album.hiddenAlbum) {
+                int result = getContentResolver().delete(MediaStore.Files.getContentUri("external"),
+                        MediaStore.Files.FileColumns.DATA + "=?", new String[]{selected_items[i].getPath()});
+                success = result > 0;
+            } else {
+                File file = new File(selected_items[i].getPath());
+                success = file.delete();
+            }
+
+            if (!success) {
+                album.getAlbumItems().add(indices[i], selected_items[i]);
+                recyclerView.getAdapter().notifyItemInserted(indices[i]);
+            } else {
+                successfully_deleted++;
+
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse(selected_items[i].getPath())));
+
+                if (refreshMainActivityAfterPhotoWasDeleted) {
+                    Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
+                    intent.setAction(MainActivity.REFRESH_PHOTOS);
+                    startActivity(intent);
+                }
+            }
+        }
+        Toast.makeText(AlbumActivity.this, getString(R.string.successfully_deleted) + successfully_deleted + " / " + selected_items.length, Toast.LENGTH_SHORT).show();
     }
 
     public void fabClicked() {
@@ -393,7 +441,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                deletePhotos();
+                deletePhotosSnackbar();
             }
         }, 400);
     }

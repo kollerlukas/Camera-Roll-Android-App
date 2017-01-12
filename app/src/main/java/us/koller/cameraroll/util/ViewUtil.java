@@ -1,5 +1,7 @@
 package us.koller.cameraroll.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -11,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -29,6 +31,7 @@ import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class ViewUtil {
+
     public static ViewGroup inflateView(ViewGroup container) {
         final ViewGroup v = (ViewGroup) LayoutInflater.from(container.getContext())
                 .inflate(R.layout.photo_view, container, false);
@@ -78,37 +81,61 @@ public class ViewUtil {
         return imageView;
     }
 
-    public static View bindTransitionView(final ImageView imageView,
-                                          final AlbumItem albumItem) {
-        int imageWidth = Util.getScreenWidth((Activity) imageView.getContext())
-                / (albumItem instanceof Gif ? 1 : 2);
+    public static View bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
+        int[] imageDimens = Util.getImageDimensions(albumItem.getPath());
+        int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
+        float scale = ((float) screenWidth) / (float) imageDimens[0];
+        scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
+
         Glide.clear(imageView);
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
-                .override(imageWidth, imageWidth)
+                .asBitmap()
+                .override((int) (imageDimens[0] * scale), (int) (imageDimens[1] * scale))
                 .skipMemoryCache(true)
                 .error(R.drawable.error_placeholder)
-                .listener(new RequestListener<String, GlideDrawable>() {
+                .listener(new RequestListener<String, Bitmap>() {
                     @Override
-                    public boolean onException(Exception e, String model,
-                                               Target<GlideDrawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable>
-                            target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         if (albumItem.isSharedElement) {
                             albumItem.isSharedElement = false;
                             ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
                         }
+                        return false;
+                    }
+                })
+                .into(imageView);
+        imageView.setTransitionName(albumItem.getPath());
+        return imageView;
+    }
 
+    public static View bindGif(final ImageView imageView, final AlbumItem albumItem) {
+        Glide.clear(imageView);
+        Glide.with(imageView.getContext())
+                .load(albumItem.getPath())
+                .asGif()
+                .skipMemoryCache(true)
+                .error(R.drawable.error_placeholder)
+                .listener(new RequestListener<String, GifDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GifDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GifDrawable resource, String model, Target<GifDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         if (!albumItem.isSharedElement && albumItem instanceof Gif) {
                             new PhotoViewAttacher(imageView);
                         }
                         return false;
                     }
                 })
+                .dontAnimate()
                 .into(imageView);
         imageView.setTransitionName(albumItem.getPath());
         return imageView;

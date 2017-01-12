@@ -2,13 +2,11 @@ package us.koller.cameraroll.adapter.album.ViewHolder;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
@@ -28,27 +26,18 @@ public class AlbumItemHolder extends RecyclerView.ViewHolder {
     }
 
     private static void loadImage(final ImageView imageView, final AlbumItem albumItem) {
-        int imageWidth = Util.getScreenWidth((Activity) imageView.getContext()) / 3;
+        int[] imageDimens = Util.getImageDimensions(albumItem.getPath());
+        int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
+        float scale = ((float) screenWidth / 3) / (float) imageDimens[0];
+        scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
+
         Glide.clear(imageView);
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
-                .override(imageWidth, imageWidth)
+                .asBitmap()
+                .override((int) (imageDimens[0] * scale), (int) (imageDimens[1] * scale))
                 .skipMemoryCache(true)
                 .error(R.drawable.error_placeholder)
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
-                                               boolean isFirstResource) {
-                        albumItem.error = true;
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                                                   boolean isFromMemoryCache, boolean isFirstResource) {
-                        return false;
-                    }
-                })
                 .into(imageView);
     }
 }
