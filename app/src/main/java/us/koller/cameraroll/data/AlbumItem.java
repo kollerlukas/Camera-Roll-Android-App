@@ -1,8 +1,10 @@
 package us.koller.cameraroll.data;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import java.io.File;
@@ -68,6 +70,18 @@ public abstract class AlbumItem implements Parcelable {
 
     public String getPath() {
         return path;
+    }
+
+    public Uri getUri(Context context) {
+        Uri uri;
+        if (!contentUri) {
+            File file = new File(getPath());
+            uri = FileProvider.getUriForFile(context,
+                    context.getApplicationContext().getPackageName() + ".provider", file);
+        } else {
+            uri = Uri.parse(getPath());
+        }
+        return uri;
     }
 
     AlbumItem(Parcel parcel) {

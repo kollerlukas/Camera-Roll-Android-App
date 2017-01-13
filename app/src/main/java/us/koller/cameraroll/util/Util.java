@@ -26,8 +26,8 @@ public class Util {
         options.inJustDecodeBounds = true;
 
         BitmapFactory.decodeFile(path, options);
-        dimensions[0] = options.outWidth;
-        dimensions[1] = options.outHeight;
+        dimensions[0] = options.outWidth > 0 ? options.outWidth : 1;
+        dimensions[1] = options.outHeight > 0 ? options.outHeight : 1;
         return dimensions;
     }
 }

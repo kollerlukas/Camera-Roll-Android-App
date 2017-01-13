@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -83,6 +84,7 @@ public class ViewUtil {
 
     public static View bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
         int[] imageDimens = Util.getImageDimensions(albumItem.getPath());
+        Log.d("ViewUtil", String.valueOf(imageDimens[0]) + "; " + String.valueOf(imageDimens[0]));
         int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
         float scale = ((float) screenWidth) / (float) imageDimens[0];
         scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
@@ -93,6 +95,7 @@ public class ViewUtil {
                 .asBitmap()
                 .override((int) (imageDimens[0] * scale), (int) (imageDimens[1] * scale))
                 .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override

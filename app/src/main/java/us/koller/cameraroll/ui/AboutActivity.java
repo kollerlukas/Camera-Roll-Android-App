@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
@@ -51,7 +52,6 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
         ImageView headerImage = (ImageView) findViewById(R.id.header_image);
         Glide.with(this)
                 .load("http://koller.us/Lukas/camera_roll/logo_outline_guidelines.png")
-                .skipMemoryCache(true)
                 .into(headerImage);
 
         TextView version = (TextView) findViewById(R.id.version);

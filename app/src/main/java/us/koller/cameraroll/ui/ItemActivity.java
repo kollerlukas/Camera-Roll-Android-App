@@ -18,7 +18,6 @@ import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -59,6 +58,7 @@ import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.MediaLoader;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
 
 public class ItemActivity extends AppCompatActivity {
@@ -139,6 +139,7 @@ public class ItemActivity extends AppCompatActivity {
     private ViewPager viewPager;
 
     private AlertDialog infoDialog;
+    private Snackbar snackbar;
 
     private boolean systemUiVisible = true;
 
@@ -189,7 +190,8 @@ public class ItemActivity extends AppCompatActivity {
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
+            actionBar.setTitle(albumItem.getName() != null
+                    && !view_only ? albumItem.getName() : "");
             actionBar.setDisplayHomeAsUpEnabled(!view_only);
         }
 
@@ -215,15 +217,27 @@ public class ItemActivity extends AppCompatActivity {
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                toolbar.setPadding(toolbar.getPaddingStart(),
                         toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingEnd(),
                         toolbar.getPaddingBottom());
 
-                bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                ViewGroup.MarginLayoutParams toolbarParams
+                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                toolbar.setLayoutParams(toolbarParams);
+
+                bottomBar.setPadding(bottomBar.getPaddingStart(),
                         bottomBar.getPaddingTop(),
-                        bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        bottomBar.getPaddingEnd(),
                         bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+
+                ViewGroup.MarginLayoutParams bottomBarParams
+                        = (ViewGroup.MarginLayoutParams) ((View) bottomBar.getParent()).getLayoutParams();
+                bottomBarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                bottomBarParams.rightMargin += insets.getSystemWindowInsetRight();
+                ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);
 
                 // clear this listener so insets aren't re-applied
                 rootView.setOnApplyWindowInsetsListener(null);
@@ -282,13 +296,14 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void setPhotoAs() {
-        File file = new File(albumItem.getPath());
-        Uri uri = FileProvider.getUriForFile(this,
-                this.getApplicationContext().getPackageName() + ".provider", file);
+        if (!(albumItem instanceof Photo)) {
+            return;
+        }
+
+        Uri uri = albumItem.getUri(this);
 
         Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-        intent.setDataAndType(uri, "image/*");
-        intent.putExtra("jpg", "image/*");
+        intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
@@ -301,13 +316,15 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void sharePhoto() {
-        File file = new File(albumItem.getPath());
-        Uri uri = FileProvider.getUriForFile(this,
-                this.getApplicationContext().getPackageName() + ".provider", file);
+        if (albumItem instanceof Video) {
+            return;
+        }
+
+        Uri uri = albumItem.getUri(this);
 
         Intent shareIntent = ShareCompat.IntentBuilder.from(this)
                 .addStream(uri)
-                .setType("image*/*")
+                .setType(MediaType.getMimeType(this, albumItem.getPath()))
                 .getIntent();
 
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -317,16 +334,14 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void editPhoto() {
-        if (!(albumItem instanceof Video)) {
+        if (albumItem instanceof Video) {
             return;
         }
 
-        File file = new File(albumItem.getPath());
-        Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
+        Uri uri = albumItem.getUri(this);
 
         Intent intent = new Intent(Intent.ACTION_EDIT);
-        intent.setDataAndType(uri, "image/*");
-        intent.putExtra("jpg", "image/*");
+        intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             startActivity(intent);
@@ -377,7 +392,8 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         if (exif == null) {
-            Snackbar.make(findViewById(R.id.root_view), R.string.error, Snackbar.LENGTH_LONG).show();
+            snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.error, Snackbar.LENGTH_LONG);
+            snackbar.show();
             return;
         }
 
@@ -476,6 +492,10 @@ public class ItemActivity extends AppCompatActivity {
                 .translationY(bottomBar_translationY)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
+
+        if (snackbar != null && !show) {
+            snackbar.dismiss();
+        }
     }
 
     private void showSystemUI(final boolean show) {
@@ -514,17 +534,17 @@ public class ItemActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission granted
-                    //deletePhotoSnackbar();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Snackbar.make(findViewById(R.id.root_view), R.string.write_permission_denied, Snackbar.LENGTH_LONG)
+                    snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.write_permission_denied, Snackbar.LENGTH_LONG)
                             .setAction("Retry", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     MediaLoader.checkPermission(ItemActivity.this);
                                 }
-                            }).show();
+                            });
+                    snackbar.show();
                 }
             }
         }
@@ -554,7 +574,9 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         showUI(false);
-        if (albumItem instanceof Photo) {
+        if (view_only) {
+            this.finishAffinity();
+        } else if (albumItem instanceof Photo) {
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             if (viewHolder instanceof PhotoViewHolder) {
