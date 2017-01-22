@@ -10,10 +10,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,12 +29,16 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String REFRESH_PHOTOS = "REFRESH_PHOTOS";
+    public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
     public static final String SHARED_PREF_NAME = "CAMERA_ROLL_SETTINGS";
     public static final String HIDDEN_FOLDERS = "HIDDEN_FOLDERS";
+    public static final String PICK_PHOTOS = "PICK_PHOTOS";
+
+    public static final int PICK_PHOTOS_REQUEST_CODE = 6;
 
     private ArrayList<Album> albums;
 
@@ -41,27 +47,57 @@ public class MainActivity extends AppCompatActivity {
     private Snackbar snackbar;
 
     private boolean hiddenFolders = false;
+    private boolean pick_photos;
+    private boolean allowMultiple;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        pick_photos = getIntent().getAction() != null && getIntent().getAction().equals(PICK_PHOTOS);
+        allowMultiple = getIntent().getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+
         albums = new ArrayList<>();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
+        toolbar.setBackgroundColor(!pick_photos ?
+                ContextCompat.getColor(this, R.color.black_translucent2) :
+                ContextCompat.getColor(this, R.color.colorAccent));
+
+        if (pick_photos) {
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) : getString(R.string.pick_photo));
+            }
+            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            toolbar.setActivated(true);
+            toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
+            toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        }
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewAdapter = new RecyclerViewAdapter().setAlbums(albums);
+        recyclerViewAdapter = new RecyclerViewAdapter(pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if (pick_photos) {
+                    return;
+                }
+
                 float translationY = toolbar.getTranslationY() - dy;
                 if (-translationY > (toolbar.getHeight() + getResources().getDimension(R.dimen.statusBarSize))) {
                     translationY = -(toolbar.getHeight() + getResources().getDimension(R.dimen.statusBarSize));
@@ -77,13 +113,19 @@ public class MainActivity extends AppCompatActivity {
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
                         toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
                         toolbar.getPaddingBottom());
 
+                ViewGroup.MarginLayoutParams toolbarParams
+                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                toolbar.setLayoutParams(toolbarParams);
+
                 recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                        recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        recyclerView.getPaddingTop() + (pick_photos ? 0 : +insets.getSystemWindowInsetTop()),
                         recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                         recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
@@ -119,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent.getAction().equals(REFRESH_PHOTOS)) {
+        if (intent.getAction().equals(REFRESH_MEDIA)) {
             refreshPhotos();
         }
     }
@@ -155,8 +197,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main, menu);
-        menu.findItem(R.id.hiddenFolders).setChecked(hiddenFolders);
+        if (!pick_photos) {
+            getMenuInflater().inflate(R.menu.main, menu);
+            menu.findItem(R.id.hiddenFolders).setChecked(hiddenFolders);
+        }
         return true;
     }
 
@@ -211,6 +255,19 @@ public class MainActivity extends AppCompatActivity {
                     snackbar.show();
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PICK_PHOTOS_REQUEST_CODE:
+                if (resultCode != RESULT_CANCELED) {
+                    setResult(RESULT_OK, data);
+                    this.finish();
+                }
+                break;
         }
     }
 }

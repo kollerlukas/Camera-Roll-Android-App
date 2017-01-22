@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:drawable="@drawable/back_to_cancel_vector">
+
+    <target android:name="group"
+            android:animation="@animator/back_to_cancel_anim_group"/>
+
+    <target android:name="stem"
+            android:animation="@animator/back_to_cancel_anim_stem"/>
+
+    <target android:name="clear_top_right"
+            android:animation="@animator/back_to_cancel_anim_clear"/>
+
+    <target android:name="clear_bottom_right"
+            android:animation="@animator/back_to_cancel_anim_clear"/>
+
+    <target android:name="arrow_head_top"
+            android:animation="@animator/back_to_cancel_anim_arrow_head"/>
+
+    <target android:name="arrow_head_bottom"
+            android:animation="@animator/back_to_cancel_anim_arrow_head"/>
+</animated-vector>

@@ -31,7 +31,7 @@ public class MediaType {
     }
 
     public static boolean isGif(Context context, String path) {
-        if (path == null || !isImage(context, path)) {
+        if (path == null || isImage(context, path)) {
             String mimeType = getMimeType(context, path);
             return mimeType != null && mimeType.contains("gif");
         }

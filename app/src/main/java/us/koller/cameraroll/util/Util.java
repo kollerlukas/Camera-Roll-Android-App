@@ -3,7 +3,9 @@ package us.koller.cameraroll.util;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import us.koller.cameraroll.R;
 
@@ -19,7 +21,7 @@ public class Util {
         return displaymetrics.widthPixels;
     }
 
-    public static int[] getImageDimensions(String path) {
+    static int[] getImageDimensions(String path) {
         int[] dimensions = new int[2];
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -29,5 +31,27 @@ public class Util {
         dimensions[0] = options.outWidth > 0 ? options.outWidth : 1;
         dimensions[1] = options.outHeight > 0 ? options.outHeight : 1;
         return dimensions;
+    }
+
+    public static void setDarkStatusBarIcons(final View v) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            v.post(new Runnable() {
+                @Override
+                public void run() {
+                    v.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                }
+            });
+        }
+    }
+
+    public static void setLightStatusBarIcons(final View v) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            v.post(new Runnable() {
+                @Override
+                public void run() {
+                    v.setSystemUiVisibility(0);
+                }
+            });
+        }
     }
 }

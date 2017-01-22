@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+            android:name="group"
+            android:propertyName="translateX"
+            android:duration="300"
+            android:valueFrom="0"
+            android:valueTo="-7.3"
+            android:valueType="floatType"
+            android:interpolator="@android:anim/decelerate_interpolator"/>
+
+    <!--<objectAnimator
+            android:name="group"
+            android:propertyName="rotation"
+            android:duration="300"
+            android:valueFrom="0"
+            android:valueTo="180"
+            android:valueType="floatType"
+            android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>-->
+</set>

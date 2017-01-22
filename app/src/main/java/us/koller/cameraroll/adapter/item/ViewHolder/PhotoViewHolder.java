@@ -30,6 +30,7 @@ public class PhotoViewHolder extends ViewHolder {
         if (albumItem.isSharedElement) {
             view.setVisibility(View.INVISIBLE);
         } else {
+            transitionView.setVisibility(View.INVISIBLE);
             ViewUtil.bindSubsamplingImageView(
                     (SubsamplingScaleImageView) view,
                     (Photo) albumItem, transitionView);
@@ -38,7 +39,6 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     public void swapView(final boolean isReturning) {
-        Log.d(this.getClass().getName(), "swapView()");
         final View view = itemView.findViewById(R.id.subsampling);
         final View transitionView = itemView.findViewById(R.id.image);
         if (!isReturning) {

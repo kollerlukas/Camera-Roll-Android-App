@@ -18,6 +18,7 @@ import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -26,7 +27,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,7 +67,7 @@ public class ItemActivity extends AppCompatActivity {
     public static final String ALBUM = "ALBUM";
     public static final String ITEM_POSITION = "ITEM_POSITION";
     public static final String VIEW_ONLY = "VIEW_ONLY";
-    public static final String HIDDEN_PHOTO = "HIDDEN_PHOTO";
+    public static final String HIDDEN_ALBUMITEM = "HIDDEN_ALBUMITEM";
     private static final String WAS_SYSTEM_UI_HIDDEN = "WAS_SYSTEM_UI_HIDDEN";
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
@@ -140,6 +140,7 @@ public class ItemActivity extends AppCompatActivity {
 
     private AlertDialog infoDialog;
     private Snackbar snackbar;
+    private Menu menu;
 
     private boolean systemUiVisible = true;
 
@@ -151,7 +152,9 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_view);
+        setContentView(R.layout.activity_item);
+
+        MediaLoader.checkPermission(this);
 
         view_only = getIntent().getBooleanExtra(VIEW_ONLY, false);
 
@@ -205,6 +208,8 @@ public class ItemActivity extends AppCompatActivity {
                 if (actionBar != null) {
                     actionBar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
                 }
+
+                menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
             }
         });
 
@@ -266,7 +271,9 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.photo, menu);
+        getMenuInflater().inflate(R.menu.item, menu);
+        this.menu = menu;
+        menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
         return true;
     }
 
@@ -310,7 +317,7 @@ public class ItemActivity extends AppCompatActivity {
             startActivityForResult(Intent.createChooser(intent,
                     getString(R.string.set_as)), 13);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App found to edit your photo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No App found to edit your item", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -375,10 +382,10 @@ public class ItemActivity extends AppCompatActivity {
         this.finish();
 
         Intent intent = new Intent(this, AlbumActivity.class);
-        intent.setAction(AlbumActivity.DELETE_PHOTO);
+        intent.setAction(AlbumActivity.DELETE_ALBUMITEM);
         intent.putExtra(AlbumActivity.ALBUM, album);
         intent.putExtra(ALBUM_ITEM, albumItem);
-        intent.putExtra(HIDDEN_PHOTO, album.hiddenAlbum);
+        intent.putExtra(HIDDEN_ALBUMITEM, album.hiddenAlbum);
         intent.putExtra(VIEW_ONLY, view_only);
         startActivity(intent);
     }
@@ -417,30 +424,36 @@ public class ItemActivity extends AppCompatActivity {
         String[] values = {name, path, size, width + " x " + height,
                 date, model, focal_length, exposure, aperture, iso};
 
-        RecyclerView recyclerView = new RecyclerView(this);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        View rootView = LayoutInflater.from(this)
+                .inflate(R.layout.info_dialog_layout,
+                        (ViewGroup) findViewById(R.id.root_view), false);
+
+        final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
+        final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
+
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new InfoRecyclerViewAdapter(values));
 
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                scrollbar_top.setVisibility(
-                        linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0 ?
-                                View.INVISIBLE : View.VISIBLE);
+                scrollIndicatorTop.setVisibility(
+                        ViewCompat.canScrollVertically(recyclerView, -1) ?
+                                View.VISIBLE : View.INVISIBLE);
 
-                scrollbar_bottom.setVisibility(
-                        linearLayoutManager.findLastCompletelyVisibleItemPosition()
-                                != recyclerView.getAdapter().getItemCount() -1 ?
+                scrollIndicatorBottom.setVisibility(
+                        ViewCompat.canScrollVertically(recyclerView, 1) ?
                                 View.VISIBLE : View.INVISIBLE);
             }
-        });*/
+        });
 
         infoDialog = new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
                 .setTitle(getString(R.string.info))
                 .setPositiveButton(R.string.done, null)
-                .setView(recyclerView)
+                .setView(rootView)
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
@@ -499,7 +512,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void showSystemUI(final boolean show) {
-        new Handler().postDelayed(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 getWindow().getDecorView().setSystemUiVisibility(show ?
@@ -511,19 +524,20 @@ public class ItemActivity extends AppCompatActivity {
                                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
             }
-        }, 1);
+        });
 
         showUI(show);
     }
 
     private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon,
+                icon,
                 ContextCompat.getColor(this, R.color.colorAccent)));
-        overviewIcon.recycle();
+        icon.recycle();
     }
 
 
@@ -534,10 +548,11 @@ public class ItemActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission granted
+                    this.finish();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.write_permission_denied, Snackbar.LENGTH_LONG)
+                    snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.write_permission_denied, Snackbar.LENGTH_INDEFINITE)
                             .setAction("Retry", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -557,7 +572,6 @@ public class ItemActivity extends AppCompatActivity {
             SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
             ImageViewState state = imageView.getState();
             if (state != null) {
-                Log.d("ItemActivity", "Saving state");
                 outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
             }
         }

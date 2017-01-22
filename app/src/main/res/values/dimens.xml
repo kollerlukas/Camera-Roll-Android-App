@@ -2,4 +2,5 @@
     <dimen name="statusBarSize">24dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="grid_spacing">1dp</dimen>
+    <dimen name="touch_raise">6dp</dimen>
 </resources>

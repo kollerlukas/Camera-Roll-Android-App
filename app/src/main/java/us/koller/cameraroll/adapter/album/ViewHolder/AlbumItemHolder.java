@@ -1,16 +1,18 @@
 package us.koller.cameraroll.adapter.album.ViewHolder;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import java.util.concurrent.ExecutionException;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.Util;
 
@@ -28,28 +30,35 @@ public class AlbumItemHolder extends RecyclerView.ViewHolder {
     }
 
     private static void loadImage(final ImageView imageView, final AlbumItem albumItem) {
+        int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
+        int columnCount = Util.getAlbumActivityGridColumnCount(imageView.getContext());
+        //square image
+        int[] imageDimens = {
+                (int) ((float) screenWidth / columnCount),
+                (int) ((float) screenWidth / columnCount)};
+
         if (albumItem instanceof Video) {
             Glide.clear(imageView);
             Glide.with(imageView.getContext())
                     .load(albumItem.getPath())
                     .asBitmap()
-                    .skipMemoryCache(true)
-                    //.diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .override(imageDimens[0], imageDimens[1])
+                    .error(R.drawable.error_placeholder)
+                    .into(imageView);
+        } else if (albumItem instanceof Gif) {
+            Glide.clear(imageView);
+            Glide.with(imageView.getContext())
+                    .load(albumItem.getPath())
+                    .asGif()
+                    .override(imageDimens[0], imageDimens[1])
                     .error(R.drawable.error_placeholder)
                     .into(imageView);
         } else {
-            int[] imageDimens = Util.getImageDimensions(albumItem.getPath());
-            int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
-            float scale = ((float) screenWidth / 3) / (float) imageDimens[0];
-            scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-
             Glide.clear(imageView);
             Glide.with(imageView.getContext())
                     .load(albumItem.getPath())
                     .asBitmap()
-                    .override((int) (imageDimens[0] * scale), (int) (imageDimens[1] * scale))
-                    .skipMemoryCache(true)
-                    //.diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .override(imageDimens[0], imageDimens[1])
                     .error(R.drawable.error_placeholder)
                     .into(imageView);
         }

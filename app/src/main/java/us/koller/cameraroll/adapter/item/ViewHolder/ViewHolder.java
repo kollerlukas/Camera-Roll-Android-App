@@ -1,5 +1,6 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -33,13 +34,17 @@ public abstract class ViewHolder {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    ((ItemActivity) view.getContext()).imageOnClick();
-                } catch (ClassCastException e) {
-                    e.printStackTrace();
-                }
+                imageOnClick(view);
             }
         });
+    }
+
+    public void imageOnClick(View view) {
+        try {
+            ((ItemActivity) view.getContext()).imageOnClick();
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
     }
 
     public abstract View getView(ViewGroup container);

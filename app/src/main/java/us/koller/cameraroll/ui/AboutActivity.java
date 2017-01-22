@@ -16,6 +16,7 @@ import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -79,6 +80,13 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
                         aboutText.getPaddingTop(),
                         aboutText.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                         aboutText.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+
+                View viewGroup = findViewById(R.id.swipeBackView);
+                ViewGroup.MarginLayoutParams viewGroupParams
+                        = (ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams();
+                viewGroupParams.leftMargin += insets.getSystemWindowInsetLeft();
+                viewGroupParams.rightMargin += insets.getSystemWindowInsetRight();
+                viewGroup.setLayoutParams(viewGroupParams);
 
                 // clear this listener so insets aren't re-applied
                 rootView.setOnApplyWindowInsetsListener(null);

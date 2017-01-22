@@ -52,10 +52,6 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
         SWIPE_TRIGGER = (float) (getResources().getDisplayMetrics().heightPixels / 5.0);
     }
 
-    /**
-     * <br> touch.
-     */
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         super.dispatchTouchEvent(ev);
@@ -121,10 +117,6 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
         return false;
     }
 
-    /**
-     * <br> UI.
-     */
-
     private void onSwipe(float newY) {
         if (swipeDistance * (newY - oldY) < 0) {
             swipeDistance = 0;
@@ -170,10 +162,6 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
         return !ViewCompat.canScrollVertically(v, dir);
     }
 
-    /**
-     * <br> anim.
-     */
-
     private class ResetAnimation extends Animation {
         // data
         private int fromDistance;
@@ -207,10 +195,6 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
             // do nothing.
         }
     };
-
-    /**
-     * <br> interface.
-     */
 
     public interface OnSwipeListener {
         boolean canSwipeBack(int dir);

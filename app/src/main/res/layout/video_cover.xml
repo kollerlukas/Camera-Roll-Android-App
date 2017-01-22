@@ -9,7 +9,7 @@
             android:id="@+id/image"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:foreground="@animator/photo_selector"
+            android:foreground="@animator/albumitem_foreground"
             android:contentDescription="@string/photo"
             android:scaleType="centerCrop"/>
 

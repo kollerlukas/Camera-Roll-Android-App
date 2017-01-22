@@ -1,10 +1,9 @@
 package us.koller.cameraroll.util;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +25,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 import java.io.IOException;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
@@ -84,18 +84,18 @@ public class ViewUtil {
 
     public static View bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
         int[] imageDimens = Util.getImageDimensions(albumItem.getPath());
-        Log.d("ViewUtil", String.valueOf(imageDimens[0]) + "; " + String.valueOf(imageDimens[0]));
         int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
         float scale = ((float) screenWidth) / (float) imageDimens[0];
         scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
+        imageDimens[0] = (int) (imageDimens[0] * scale);
+        imageDimens[1] = (int) (imageDimens[1] * scale);
+        Log.d("ViewUtil", String.valueOf(imageDimens[0]) + "; " + String.valueOf(imageDimens[0]));
 
         Glide.clear(imageView);
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
                 .asBitmap()
-                .override((int) (imageDimens[0] * scale), (int) (imageDimens[1] * scale))
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .override(imageDimens[0], imageDimens[1])
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
@@ -113,16 +113,26 @@ public class ViewUtil {
                     }
                 })
                 .into(imageView);
+
+        //Handle timeout
         imageView.setTransitionName(albumItem.getPath());
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
+            }
+        }, 200);
+
         return imageView;
     }
 
-    public static View bindGif(final ImageView imageView, final AlbumItem albumItem) {
+    public static View bindGif(final GifViewHolder gifViewHolder, final ImageView imageView, final AlbumItem albumItem) {
         Glide.clear(imageView);
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
                 .asGif()
-                .skipMemoryCache(true)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, GifDrawable>() {
                     @Override
@@ -133,12 +143,17 @@ public class ViewUtil {
                     @Override
                     public boolean onResourceReady(GifDrawable resource, String model, Target<GifDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         if (!albumItem.isSharedElement && albumItem instanceof Gif) {
-                            new PhotoViewAttacher(imageView);
+                            new PhotoViewAttacher(imageView)
+                                    .setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+                                        @Override
+                                        public void onViewTap(View view, float x, float y) {
+                                            gifViewHolder.imageOnClick(view);
+                                        }
+                                    });
                         }
                         return false;
                     }
                 })
-                .dontAnimate()
                 .into(imageView);
         imageView.setTransitionName(albumItem.getPath());
         return imageView;

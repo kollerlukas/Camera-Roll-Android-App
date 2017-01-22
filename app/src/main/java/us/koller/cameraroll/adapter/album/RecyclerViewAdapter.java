@@ -2,7 +2,6 @@ package us.koller.cameraroll.adapter.album;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -11,13 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,9 +21,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ItemActivity;
-import us.koller.cameraroll.util.Util;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
@@ -41,10 +32,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private Album album;
 
     private boolean selector_mode = false;
+    private boolean pick_photos;
+
     private boolean[] selected_items;
 
-    public RecyclerViewAdapter(Album album) {
+    private Callback callback;
+
+    public RecyclerViewAdapter(Callback callback, Album album, boolean pick_photos) {
+        this.callback = callback;
         this.album = album;
+        this.pick_photos = pick_photos;
+        if (pick_photos) {
+            selector_mode = true;
+            callback.onSelectorModeEnter();
+        }
         selected_items = new boolean[album.getAlbumItems().size()];
     }
 
@@ -84,11 +85,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 }
 
                 if (selector_mode) {
-                    selected_items[album.getAlbumItems().indexOf(albumItem)]
-                            = !selected_items[album.getAlbumItems().indexOf(albumItem)];
-                    holder.itemView.findViewById(R.id.image)
-                            .setSelected(selected_items[album.getAlbumItems().indexOf(albumItem)]);
-                    checkForNoSelectedItems(holder.itemView.getContext());
+                    onItemSelected((AlbumItemHolder) holder);
                 } else if (albumItem instanceof Photo || albumItem instanceof Gif) {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
@@ -129,31 +126,43 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 if (!selector_mode) {
                     selector_mode = true;
                     selected_items = new boolean[album.getAlbumItems().size()];
-                    ((AlbumActivity) view.getContext()).animateFab(selector_mode, false);
+                    callback.onSelectorModeEnter();
                 }
 
-                selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)]
-                        = !selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)];
-                holder.itemView.findViewById(R.id.image)
-                        .setSelected(selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)]);
-                checkForNoSelectedItems(holder.itemView.getContext());
+                onItemSelected((AlbumItemHolder) holder);
                 return true;
             }
         });
     }
 
-    private void checkForNoSelectedItems(Context context) {
+    public boolean isSelectorModeActive() {
+        return selector_mode && !pick_photos;
+    }
+
+    private void checkForNoSelectedItems() {
+        if (getSelectedItemCount() == 0 && !pick_photos) {
+            selector_mode = false;
+            cancelSelectorMode();
+        }
+    }
+
+    private int getSelectedItemCount() {
         int k = 0;
         for (int i = 0; i < selected_items.length; i++) {
             if (selected_items[i]) {
                 k++;
             }
         }
-        if (k == 0) {
-            selector_mode = false;
-            ((AlbumActivity) context).animateFab(false, false);
-            cancelSelectorMode();
-        }
+        return k;
+    }
+
+    private void onItemSelected(AlbumItemHolder holder) {
+        selected_items[album.getAlbumItems().indexOf(holder.albumItem)]
+                = !selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
+        holder.itemView.findViewById(R.id.image)
+                .setSelected(selected_items[album.getAlbumItems().indexOf(holder.albumItem)]);
+        callback.onItemSelected(getSelectedItemCount());
+        checkForNoSelectedItems();
     }
 
     public AlbumItem[] cancelSelectorMode() {
@@ -167,11 +176,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         }
         this.selected_items = new boolean[album.getAlbumItems().size()];
         AlbumItem[] arr = new AlbumItem[selected_items.size()];
+        callback.onSelectorModeExit();
         return selected_items.toArray(arr);
     }
 
     public boolean onBackPressed() {
-        if (selector_mode) {
+        if (selector_mode && !pick_photos) {
             cancelSelectorMode();
             return true;
         }
@@ -181,5 +191,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return album.getAlbumItems().size();
+    }
+
+    public static interface Callback {
+        public void onSelectorModeEnter();
+
+        public void onSelectorModeExit();
+
+        public void onItemSelected(int selectedItemCount);
     }
 }

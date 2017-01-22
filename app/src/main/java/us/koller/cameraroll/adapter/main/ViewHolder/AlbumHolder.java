@@ -6,7 +6,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -40,8 +39,6 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
         Glide.with(itemView.getContext())
                 .load(album.getAlbumItems().get(0).getPath())
                 .error(R.drawable.error_placeholder)
-                .skipMemoryCache(true)
-                //.diskCacheStrategy(DiskCacheStrategy.NONE)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target,

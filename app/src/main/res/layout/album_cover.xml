@@ -9,6 +9,7 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:scaleType="centerCrop"
+            android:foreground="@drawable/ripple"
             android:contentDescription="@string/image"/>
 
     <LinearLayout

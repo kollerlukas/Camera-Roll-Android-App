@@ -20,15 +20,16 @@ public class GifViewHolder extends ViewHolder {
         ViewGroup v = super.inflateView(container);
         v.removeView(v.findViewById(R.id.subsampling));
         View view = v.findViewById(R.id.image);
-        super.setOnClickListener(view);
-        ViewUtil.bindTransitionView((ImageView) view, albumItem);
+        if (albumItem.isSharedElement) {
+            ViewUtil.bindTransitionView((ImageView) view, albumItem);
+        } else {
+            ViewUtil.bindGif(this, (ImageView) view, albumItem);
+        }
         return v;
     }
 
     public void reloadGif() {
-        Log.d("GifViewHolder", "reloadGif() called");
         View view = itemView.findViewById(R.id.image);
-        ViewUtil.bindGif((ImageView) view, albumItem);
-        super.setOnClickListener(view);
+        ViewUtil.bindGif(this, (ImageView) view, albumItem);
     }
 }
