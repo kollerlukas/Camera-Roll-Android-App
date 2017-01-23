@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Animatable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -96,7 +97,7 @@ public class ItemActivity extends AppCompatActivity {
             = new TransitionListenerAdapter() {
         @Override
         public void onTransitionStart(Transition transition) {
-            if (albumItem instanceof Photo && isReturning) {
+            if (isReturning && albumItem instanceof Photo) {
                 ViewHolder viewHolder = ((ViewPagerAdapter)
                         viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
                 if (viewHolder instanceof PhotoViewHolder) {
@@ -118,19 +119,18 @@ public class ItemActivity extends AppCompatActivity {
             if (viewHolder == null) {
                 return;
             }
-            if (albumItem instanceof Photo
-                    && viewHolder instanceof PhotoViewHolder && !isReturning) {
+            if (!isReturning && albumItem instanceof Photo) {
                 ((PhotoViewHolder) viewHolder).swapView(false);
             } else if (!isReturning && albumItem instanceof Gif
                     && viewHolder instanceof GifViewHolder) {
                 ((GifViewHolder) viewHolder).reloadGif();
             }
 
-            showUI(!isReturning);
             if (transition != null) {
                 super.onTransitionEnd(transition);
             }
             albumItem.isSharedElement = false;
+            showUI(!isReturning);
         }
     };
 
@@ -195,7 +195,7 @@ public class ItemActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle(albumItem.getName() != null
                     && !view_only ? albumItem.getName() : "");
-            actionBar.setDisplayHomeAsUpEnabled(!view_only);
+            actionBar.setDisplayHomeAsUpEnabled(true/*!view_only*/);
         }
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -222,9 +222,9 @@ public class ItemActivity extends AppCompatActivity {
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart(),
+                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
                         toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd(),
+                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
                         toolbar.getPaddingBottom());
 
                 ViewGroup.MarginLayoutParams toolbarParams
@@ -233,9 +233,9 @@ public class ItemActivity extends AppCompatActivity {
                 toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
                 toolbar.setLayoutParams(toolbarParams);
 
-                bottomBar.setPadding(bottomBar.getPaddingStart(),
+                bottomBar.setPadding(bottomBar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
                         bottomBar.getPaddingTop(),
-                        bottomBar.getPaddingEnd(),
+                        bottomBar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
                         bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
                 ViewGroup.MarginLayoutParams bottomBarParams
@@ -253,6 +253,12 @@ public class ItemActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey(WAS_SYSTEM_UI_HIDDEN)) {
             systemUiVisible = !savedInstanceState.getBoolean(WAS_SYSTEM_UI_HIDDEN);
         }
+
+        //needed to achieve transparent navBar
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         setupTaskDescription();
 
@@ -296,7 +302,15 @@ public class ItemActivity extends AppCompatActivity {
                 editPhoto();
                 break;
             case R.id.delete:
-                showDeleteDialog();
+                if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
+                    new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
+                            .setTitle(R.string.missing_permission_title)
+                            .setMessage(R.string.missing_delete_permission)
+                            .setPositiveButton(R.string.ok, null)
+                            .create().show();
+                } else {
+                    showDeleteDialog();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -311,7 +325,8 @@ public class ItemActivity extends AppCompatActivity {
 
         Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
         intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         try {
             startActivityForResult(Intent.createChooser(intent,
@@ -334,7 +349,8 @@ public class ItemActivity extends AppCompatActivity {
                 .setType(MediaType.getMimeType(this, albumItem.getPath()))
                 .getIntent();
 
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         if (shareIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_photo)));
         }
@@ -349,7 +365,8 @@ public class ItemActivity extends AppCompatActivity {
 
         Intent intent = new Intent(Intent.ACTION_EDIT);
         intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
@@ -406,8 +423,8 @@ public class ItemActivity extends AppCompatActivity {
 
         File file = new File(albumItem.getPath());
 
-        String name = albumItem.getName();
-        String path = albumItem.getPath();
+        String name = file.getName(); /*albumItem.getName();*/
+        String path = file.getPath(); /*albumItem.getPath();*/
         String size = getFileSize(file);
         String height = exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
         String width = exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
@@ -452,8 +469,8 @@ public class ItemActivity extends AppCompatActivity {
 
         infoDialog = new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
                 .setTitle(getString(R.string.info))
-                .setPositiveButton(R.string.done, null)
                 .setView(rootView)
+                .setPositiveButton(R.string.done, null)
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
@@ -477,11 +494,19 @@ public class ItemActivity extends AppCompatActivity {
                 break;
             case R.id.delete_button:
                 ImageView delete_button = (ImageView) v;
-                ((AnimatedVectorDrawableCompat) delete_button.getDrawable()).start();
+                ((Animatable) delete_button.getDrawable()).start();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        showDeleteDialog();
+                        if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
+                            new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
+                                    .setTitle(R.string.missing_permission_title)
+                                    .setMessage(R.string.missing_delete_permission)
+                                    .setPositiveButton(R.string.ok, null)
+                                    .create().show();
+                        } else {
+                            showDeleteDialog();
+                        }
                     }
                 }, 400);
                 break;

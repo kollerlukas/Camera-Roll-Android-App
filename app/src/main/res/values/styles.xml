@@ -13,7 +13,7 @@
     </style>
 
     <style name="Theme.CameraRoll.Translucent" parent="Theme.CameraRoll">
-        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/white_translucent2</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">false</item>
@@ -41,7 +41,8 @@
         <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
         </item>
 
-        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
 

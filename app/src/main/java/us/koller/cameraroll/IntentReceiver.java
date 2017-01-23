@@ -58,8 +58,7 @@ public class IntentReceiver extends AppCompatActivity {
                 .putExtra(ItemActivity.VIEW_ONLY, true)
                 .putExtra(ItemActivity.ALBUM, album)
                 .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
+                .addFlags(intent.getFlags());
         startActivity(view_photo);
     }
 

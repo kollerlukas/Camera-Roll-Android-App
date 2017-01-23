@@ -29,6 +29,7 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends AppCompatActivity {
@@ -86,9 +87,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new RecyclerViewAdapter(pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setHasFixedSize(true);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -99,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 float translationY = toolbar.getTranslationY() - dy;
-                if (-translationY > (toolbar.getHeight() + getResources().getDimension(R.dimen.statusBarSize))) {
-                    translationY = -(toolbar.getHeight() + getResources().getDimension(R.dimen.statusBarSize));
+                if (-translationY > toolbar.getHeight()) {
+                    translationY = -toolbar.getHeight();
                 } else if (translationY > 0) {
                     translationY = 0;
                 }

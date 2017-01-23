@@ -1,14 +1,11 @@
 package us.koller.cameraroll.adapter.album.ViewHolder;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-
-import java.util.concurrent.ExecutionException;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
@@ -38,7 +35,6 @@ public class AlbumItemHolder extends RecyclerView.ViewHolder {
                 (int) ((float) screenWidth / columnCount)};
 
         if (albumItem instanceof Video) {
-            Glide.clear(imageView);
             Glide.with(imageView.getContext())
                     .load(albumItem.getPath())
                     .asBitmap()
@@ -46,7 +42,6 @@ public class AlbumItemHolder extends RecyclerView.ViewHolder {
                     .error(R.drawable.error_placeholder)
                     .into(imageView);
         } else if (albumItem instanceof Gif) {
-            Glide.clear(imageView);
             Glide.with(imageView.getContext())
                     .load(albumItem.getPath())
                     .asGif()
@@ -54,7 +49,6 @@ public class AlbumItemHolder extends RecyclerView.ViewHolder {
                     .error(R.drawable.error_placeholder)
                     .into(imageView);
         } else {
-            Glide.clear(imageView);
             Glide.with(imageView.getContext())
                     .load(albumItem.getPath())
                     .asBitmap()

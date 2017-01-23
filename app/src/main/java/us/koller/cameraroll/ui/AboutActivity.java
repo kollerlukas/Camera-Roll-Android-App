@@ -71,14 +71,14 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
                         toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
                         toolbar.getPaddingBottom());
 
-                aboutText.setPadding(aboutText.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                aboutText.setPadding(aboutText.getPaddingStart(),
                         aboutText.getPaddingTop(),
-                        aboutText.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        aboutText.getPaddingEnd(),
                         aboutText.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
                 View viewGroup = findViewById(R.id.swipeBackView);

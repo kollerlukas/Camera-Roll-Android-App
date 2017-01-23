@@ -4,7 +4,15 @@
         android:layout_height="200dp"
         android:layout_width="match_parent">
 
-    <ImageView
+    <!--<ImageView
+            android:id="@+id/image"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:scaleType="centerCrop"
+            android:foreground="@drawable/ripple"
+            android:contentDescription="@string/image"/>-->
+
+    <us.koller.cameraroll.ui.widget.ParallaxImageView
             android:id="@+id/image"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"

@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
-//Solution heavily inspired from: https://github.com/WangDaYeeeeee/Mysplash/blob/master/app/src/main/res/about/layout/activity_about.xml
+//Solution heavily inspired by: https://github.com/WangDaYeeeeee/Mysplash/blob/master/app/src/main/res/about/layout/activity_about.xml
 
 public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
     // widget

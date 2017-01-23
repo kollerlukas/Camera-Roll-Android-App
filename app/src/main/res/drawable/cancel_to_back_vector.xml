@@ -5,7 +5,7 @@
         android:height="24dp"
         android:viewportWidth="24"
         android:viewportHeight="24"
-        android:alpha="138">
+        android:alpha="0.54">
     <group
             android:name="group"
             android:pivotX="12"

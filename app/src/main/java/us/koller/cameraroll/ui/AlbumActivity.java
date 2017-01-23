@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +26,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -144,9 +142,13 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
-        toolbar.setNavigationIcon(!pick_photos ?
-                R.drawable.back_to_cancel_animateable :
-                R.drawable.ic_clear_black_24dp);
+        if (!pick_photos) {
+            toolbar.setNavigationIcon(AnimatedVectorDrawableCompat.create(this, R.drawable.back_to_cancel_animateable));
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
+            toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+        }
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,8 +183,8 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                 }
 
                 float translationY = toolbar.getTranslationY() - dy;
-                if (-translationY > (toolbar.getHeight() + getResources().getDimension(R.dimen.statusBarSize))) {
-                    translationY = -(toolbar.getHeight() + getResources().getDimension(R.dimen.statusBarSize));
+                if (-translationY > toolbar.getHeight()) {
+                    translationY = -toolbar.getHeight();
                 } else if (translationY > 0) {
                     translationY = 0;
                 }
@@ -191,10 +193,12 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         });
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(!pick_photos ?
-                R.drawable.ic_delete_vector_animateable :
-                R.drawable.ic_send_white_24dp);
-        Drawable d = fab.getDrawable(); // .mutate();
+        if (!pick_photos) {
+            fab.setImageDrawable(AnimatedVectorDrawableCompat.create(this, R.drawable.ic_delete_vector_animateable));
+        } else {
+            fab.setImageResource(R.drawable.ic_send_white_24dp);
+        }
+        Drawable d = fab.getDrawable();
         d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
         fab.setImageDrawable(d);
         fab.setScaleX(0.0f);
@@ -255,8 +259,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         super.onNewIntent(intent);
         if (intent.getAction().equals(DELETE_ALBUMITEM)) {
             final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
-            deleteAlbumItemSnackbar(albumItem, /*intent.getBooleanExtra(ItemActivity.HIDDEN_ALBUMITEM, false),*/
-                    intent.getBooleanExtra(ItemActivity.VIEW_ONLY, false));
+            deleteAlbumItemSnackbar(albumItem, intent.getBooleanExtra(ItemActivity.VIEW_ONLY, false));
         }
     }
 
@@ -465,28 +468,26 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
+        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+
         if (!pick_photos) {
             ColorFade.fadeBackgroundColor(toolbar,
                     ContextCompat.getColor(this, R.color.black_translucent2),
                     ContextCompat.getColor(this, R.color.colorAccent));
 
-            ((AnimatedVectorDrawable) toolbar.getNavigationIcon()).start();
+            ((Animatable) toolbar.getNavigationIcon()).start();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                            .create(AlbumActivity.this, R.drawable.cancel_to_back_vector_animateable));
+                    toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
+                }
+            }, 300);
         } else {
             toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
             toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
         }
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!pick_photos) {
-                    toolbar.setNavigationIcon(R.drawable.cancel_to_back_vector_animateable);
-                    toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
-                }
-
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            }
-        }, 300);
 
         if (!pick_photos) {
             animateFab(true, false);
@@ -507,12 +508,12 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                 ContextCompat.getColor(this, R.color.black_translucent2));
         toolbar.setTitle(album.getName());
 
-        ((AnimatedVectorDrawable) toolbar.getNavigationIcon()).start();
+        ((Animatable) toolbar.getNavigationIcon()).start();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                toolbar.setNavigationIcon(R.drawable.back_to_cancel_animateable);
-
+                toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                        .create(AlbumActivity.this, R.drawable.back_to_cancel_animateable));
                 toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.white));
 
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
@@ -529,15 +530,12 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(title);
 
-        if (pick_photos && selectedItemCount > 0) {
-            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            if (fab.getScaleX() != 1.0f) {
+        if (pick_photos) {
+            if (selectedItemCount > 0) {
                 animateFab(true, false);
+            } else {
+                animateFab(false, false);
             }
-
-            /*if (!allowMultiple) {
-                setPhotosResult();
-            }*/
         }
     }
 
@@ -557,6 +555,12 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
 
     public void animateFab(final boolean show, boolean click) {
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        if ((fab.getScaleX() == 1.0f && show)
+                || (fab.getScaleX() == 0.0f && !show)) {
+            return;
+        }
+
         if (show) {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override

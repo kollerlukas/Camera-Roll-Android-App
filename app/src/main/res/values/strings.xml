@@ -61,4 +61,9 @@
     <string name="pick_photos">Pick Photos</string>
     <string name="pick_photo">Pick Photo</string>
     <string name="toolbar_transition_name">toolbar_transition_name</string>
+    <string name="missing_delete_permission">Camera Roll does not have Permission to delete this
+        file.
+    </string>
+    <string name="ok">OK</string>
+    <string name="missing_permission_title">Missing Permission</string>
 </resources>

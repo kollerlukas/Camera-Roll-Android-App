@@ -21,7 +21,7 @@ public class Util {
         return displaymetrics.widthPixels;
     }
 
-    static int[] getImageDimensions(String path) {
+    public static int[] getImageDimensions(String path) {
         int[] dimensions = new int[2];
 
         BitmapFactory.Options options = new BitmapFactory.Options();

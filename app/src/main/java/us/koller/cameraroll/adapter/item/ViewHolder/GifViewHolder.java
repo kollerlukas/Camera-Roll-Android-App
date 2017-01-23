@@ -1,6 +1,5 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
