@@ -21,6 +21,7 @@ public abstract class AlbumItem implements Parcelable {
     public boolean error = false;
     public boolean contentUri = false;
     public boolean isSharedElement = false;
+    public boolean hasFadedIn = false;
 
     public static AlbumItem getInstance(Context context, String path) {
         if (path == null) {
