@@ -1,5 +1,5 @@
 <resources>
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
-        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor">@color/black_translucent2</item>
     </style>
 </resources>
