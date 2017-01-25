@@ -6,11 +6,12 @@ import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -30,14 +31,14 @@ public class MediaLoader {
 
     }
 
-    public ArrayList<Album> loadPhotos(Activity context, boolean hiddenFolders) {
+    public ArrayList<Album> loadAlbums(Activity context, boolean hiddenFolders) {
         if (!checkPermission(context)) {
             return new ArrayList<>();
         }
 
         ArrayList<Album> albums = new ArrayList<>();
 
-        // Return only video and image metadata.
+        /*// Return only video and image metadata.
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                 + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
                 + " OR "
@@ -85,7 +86,7 @@ public class MediaLoader {
 
                     if (!foundBucket) {
                         //no bucket found
-                        albums.add(new Album().setName(bucket));
+                        albums.add(new Album().setPath(bucket));
                         albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
                     }
                 }
@@ -100,9 +101,69 @@ public class MediaLoader {
             for (int i = 0; i < hiddenAlbums.size(); i++) {
                 albums.add(hiddenAlbums.get(i));
             }
+        }*/
+
+        albums = searchStorage(context, albums);
+
+        if (!hiddenFolders) {
+            for (int i = albums.size() - 1; i >= 0; i--) {
+                if (albums.get(i).hiddenAlbum) {
+                    albums.remove(i);
+                }
+            }
         }
 
         return albums;
+    }
+
+    private ArrayList<Album> searchStorage(final Activity context, final ArrayList<Album> albums) {
+        File file = new File("/storage/emulated/0");
+        File[] files = file.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (!files[i].getPath().equals("/storage/emulated/0/Android")) {
+                recursivelySearchStorage(context, files[i], albums);
+            }
+        }
+        return albums;
+    }
+
+    private void recursivelySearchStorage(Activity context, File file, ArrayList<Album> albums) {
+        if (file == null) {
+            return;
+        }
+
+        if (!file.isDirectory()) {
+            return;
+        }
+
+        Log.d("MediaLoader", file.getPath());
+
+        Album album = checkDirForMedia(context, file.getPath());
+        if (album != null) {
+            boolean alreadyExists = false;
+            for (int k = 0; k < albums.size(); k++) {
+                if (file.getPath().equals(albums.get(k).getPath())) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if (!alreadyExists) {
+                albums.add(album);
+            }
+        }
+
+        File[] files = file.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.isDirectory();
+            }
+        });
+
+        for (int i = 0; i < files.length; i++) {
+            Log.d("MediaLoader", file.getPath());
+            recursivelySearchStorage(context, files[i], albums);
+        }
     }
 
     private AlbumItem loadMediaItem(Activity context, Uri uri) {
@@ -172,22 +233,25 @@ public class MediaLoader {
     private Album checkDirForMedia(final Activity context, String path) {
         path = path.replace(FILE_TYPE_NO_MEDIA, "");
         File folder = new File(path);
-        Album album = new Album().setName(folder.getName());
-        album.hiddenAlbum = true;
+        Album album = new Album().setPath(folder.getPath());
+        album.hiddenAlbum = folder.isHidden();
+
         File[] files = folder.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return MediaType.isImage(context, file.getPath());
+                return MediaType.isMedia(context, file.getPath());
             }
         });
+
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
-                if (MediaType.isImage(context, files[i].getPath()) || MediaType.isVideo(context, files[i].getPath())) {
+                if (MediaType.isMedia(context, files[i].getPath())) {
                     AlbumItem albumItem = loadMediaItem(context, Uri.parse(files[i].getPath()));
                     album.getAlbumItems().add(albumItem);
                 }
             }
         }
+
         if (album.getAlbumItems().size() == 0) {
             return null;
         }

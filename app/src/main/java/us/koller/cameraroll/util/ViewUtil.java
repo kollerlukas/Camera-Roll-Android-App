@@ -13,7 +13,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -69,6 +68,7 @@ public class ViewUtil {
                 e.printStackTrace();
             }
         }
+        imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_0);
         imageView.setMinimumDpi(1);
         if (placeholderView != null) {
             imageView.setOnImageEventListener(

@@ -4,14 +4,6 @@
         android:layout_height="200dp"
         android:layout_width="match_parent">
 
-    <!--<ImageView
-            android:id="@+id/image"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:scaleType="centerCrop"
-            android:foreground="@drawable/ripple"
-            android:contentDescription="@string/image"/>-->
-
     <us.koller.cameraroll.ui.widget.ParallaxImageView
             android:id="@+id/image"
             android:layout_height="wrap_content"
@@ -58,7 +50,7 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_lock_outline_white_24dp"
+                android:src="@drawable/ic_eye_off_white_24dp"
                 android:alpha="0.7"
                 android:contentDescription="@string/hidden_folder_indicator"
                 android:layout_margin="16dp"

@@ -3,14 +3,14 @@ package us.koller.cameraroll.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
 public class Album implements Parcelable {
 
     private ArrayList<AlbumItem> albumItems;
-
-    private String name;
+    private String path;
 
     public boolean hiddenAlbum = false;
 
@@ -18,13 +18,17 @@ public class Album implements Parcelable {
         albumItems = new ArrayList<>();
     }
 
-    public Album setName(String name) {
-        this.name = name;
+    public Album setPath(String path) {
+        this.path = path;
         return this;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public String getName() {
-        return name;
+        return new File(path).getName();
     }
 
     public ArrayList<AlbumItem> getAlbumItems() {
@@ -32,7 +36,7 @@ public class Album implements Parcelable {
     }
 
     private Album(Parcel parcel) {
-        name = parcel.readString();
+        path = parcel.readString();
         hiddenAlbum = Boolean.parseBoolean(parcel.readString());
         albumItems = new ArrayList<>();
         albumItems = parcel.createTypedArrayList(AlbumItem.CREATOR);
@@ -50,7 +54,7 @@ public class Album implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(name);
+        parcel.writeString(path);
         parcel.writeString(String.valueOf(hiddenAlbum));
         AlbumItem[] albumItems = new AlbumItem[this.albumItems.size()];
         for (int k = 0; k < albumItems.length; k++) {

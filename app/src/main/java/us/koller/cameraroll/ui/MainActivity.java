@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -34,6 +35,7 @@ import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
     public static final String SHARED_PREF_NAME = "CAMERA_ROLL_SETTINGS";
     public static final String HIDDEN_FOLDERS = "HIDDEN_FOLDERS";
@@ -59,7 +61,15 @@ public class MainActivity extends AppCompatActivity {
         pick_photos = getIntent().getAction() != null && getIntent().getAction().equals(PICK_PHOTOS);
         allowMultiple = getIntent().getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
 
-        albums = new ArrayList<>();
+        hiddenFolders = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
+                .getBoolean(HIDDEN_FOLDERS, false);
+
+        //loading media
+        if (savedInstanceState != null && savedInstanceState.containsKey(ALBUMS)) {
+            albums = savedInstanceState.getParcelableArrayList(ALBUMS);
+        } else {
+            albums = new ArrayList<>();
+        }
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -101,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                //hiding toolbar on scroll
                 float translationY = toolbar.getTranslationY() - dy;
                 if (-translationY > toolbar.getHeight()) {
                     translationY = -toolbar.getHeight();
@@ -111,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        //setting window insets manually
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
@@ -138,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //setting recyclerView top padding, so recyclerView starts below the toolbar
         toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -155,10 +167,10 @@ public class MainActivity extends AppCompatActivity {
 
         setupTaskDescription();
 
-        hiddenFolders = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
-                .getBoolean(HIDDEN_FOLDERS, false);
-
-        refreshPhotos();
+        //loading media
+        if (savedInstanceState == null) {
+            refreshPhotos();
+        }
     }
 
     @Override
@@ -193,8 +205,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshPhotos() {
-        albums = new MediaLoader().loadPhotos(this, hiddenFolders);
-        recyclerViewAdapter.setAlbums(albums).notifyDataSetChanged();
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
+                R.string.loading, Snackbar.LENGTH_INDEFINITE);
+        snackbar.show();
+
+        class AsyncMediaLoader extends AsyncTask<Void, Void, ArrayList<Album>> {
+            @Override
+            protected ArrayList<Album> doInBackground(Void... voids) {
+                return new MediaLoader().loadAlbums(MainActivity.this, hiddenFolders);
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<Album> albums) {
+                super.onPostExecute(albums);
+                MainActivity.this.albums = albums;
+                recyclerViewAdapter.setAlbums(albums).notifyDataSetChanged();
+                snackbar.dismiss();
+            }
+        }
+        new AsyncMediaLoader().execute();
     }
 
     @Override
@@ -272,5 +301,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(ALBUMS, albums);
     }
 }

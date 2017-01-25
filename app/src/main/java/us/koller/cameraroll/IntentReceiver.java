@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import us.koller.cameraroll.data.AlbumItem;
@@ -16,14 +15,16 @@ import us.koller.cameraroll.ui.MainActivity;
 
 public class IntentReceiver extends AppCompatActivity {
 
-    public static final String ACTIVITY_ALREADY_LAUNCHED = "ACTIVITY_ALREADY_LAUNCHED";
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         switch (getIntent().getAction()) {
             case Intent.ACTION_VIEW:
+                viewPhoto(getIntent());
+                this.finish();
+                break;
+            case "com.android.camera.action.REVIEW":
                 viewPhoto(getIntent());
                 this.finish();
                 break;

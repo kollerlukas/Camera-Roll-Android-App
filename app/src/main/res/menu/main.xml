@@ -8,7 +8,7 @@
           app:showAsAction="never"/>
 
     <item android:id="@+id/hiddenFolders"
-          android:icon="@drawable/ic_lock_outline_white_24dp"
+          android:icon="@drawable/ic_eye_off_white_24dp"
           android:title="@string/hidden_folders"
           android:checkable="true"
           app:showAsAction="never"/>
