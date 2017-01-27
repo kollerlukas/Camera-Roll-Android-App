@@ -12,11 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
+
 import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.ViewHolder.AlbumItemHolder;
+import us.koller.cameraroll.adapter.album.ViewHolder.GifViewHolder;
+import us.koller.cameraroll.adapter.album.ViewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.album.ViewHolder.VideoViewHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
@@ -25,9 +30,9 @@ import us.koller.cameraroll.ui.ItemActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
-    private int VIEW_TYPE_PHOTO = 1;
-    private int VIEW_TYPE_GIF = 2;
-    private int VIEW_TYPE_VIDEO = 3;
+    private final int VIEW_TYPE_PHOTO = 1;
+    private final int VIEW_TYPE_GIF = 2;
+    private final int VIEW_TYPE_VIDEO = 3;
 
     private Album album;
 
@@ -38,7 +43,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     private Callback callback;
 
-    public RecyclerViewAdapter(Callback callback, Album album, boolean pick_photos) {
+    private DragSelectTouchListener dragSelectTouchListener;
+
+    public RecyclerViewAdapter(Callback callback, final RecyclerView recyclerView,
+                               Album album, boolean pick_photos) {
         this.callback = callback;
         this.album = album;
         this.pick_photos = pick_photos;
@@ -47,6 +55,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             callback.onSelectorModeEnter();
         }
         selected_items = new boolean[album.getAlbumItems().size()];
+
+        dragSelectTouchListener = new DragSelectTouchListener()
+                .withSelectListener(new DragSelectTouchListener.OnDragSelectListener() {
+                    @Override
+                    public void onSelectChange(int start, int end, boolean isSelected) {
+                        for (int i = start; i <= end; i++) {
+                            selected_items[i] = isSelected;
+
+                            //update ViewHolder
+                            notifyItemChanged(i);
+                        }
+                    }
+                });
+        recyclerView.addOnItemTouchListener(dragSelectTouchListener);
     }
 
     @Override
@@ -63,9 +85,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(viewType == VIEW_TYPE_VIDEO ?
-                R.layout.video_cover : R.layout.photo_cover, parent, false);
-        return new AlbumItemHolder(v);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.albumitem_cover, parent, false);
+        switch (viewType) {
+            case VIEW_TYPE_VIDEO:
+                return new VideoViewHolder(v);
+            case VIEW_TYPE_GIF:
+                return new GifViewHolder(v);
+            default:
+                return new PhotoViewHolder(v);
+        }
     }
 
     @Override
@@ -126,7 +154,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 if (!selector_mode) {
                     selector_mode = true;
                     selected_items = new boolean[album.getAlbumItems().size()];
+
+                    //notify AlbumActivity
                     callback.onSelectorModeEnter();
+
+                    //notify DragSelectTouchListener
+                    int position = album.getAlbumItems().indexOf(albumItem);
+                    dragSelectTouchListener.startDragSelection(position);
                 }
 
                 onItemSelected((AlbumItemHolder) holder);
@@ -193,11 +227,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return album.getAlbumItems().size();
     }
 
-    public static interface Callback {
-        public void onSelectorModeEnter();
+    public interface Callback {
+        void onSelectorModeEnter();
 
-        public void onSelectorModeExit();
+        void onSelectorModeExit();
 
-        public void onItemSelected(int selectedItemCount);
+        void onItemSelected(int selectedItemCount);
     }
 }

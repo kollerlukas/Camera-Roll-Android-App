@@ -1,6 +1,5 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,7 +38,7 @@ public abstract class ViewHolder {
         });
     }
 
-    public void imageOnClick(View view) {
+    void imageOnClick(View view) {
         try {
             ((ItemActivity) view.getContext()).imageOnClick();
         } catch (ClassCastException e) {
@@ -58,4 +57,6 @@ public abstract class ViewHolder {
     public String getTag() {
         return albumItem.getPath();
     }
+
+    public abstract void onSharedElement();
 }

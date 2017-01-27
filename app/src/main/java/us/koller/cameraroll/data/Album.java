@@ -1,13 +1,15 @@
 package us.koller.cameraroll.data;
 
+import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import us.koller.cameraroll.util.SortUtil;
 
-public class Album implements Parcelable {
+public class Album implements Parcelable, SortUtil.Sortable {
 
     private ArrayList<AlbumItem> albumItems;
     private String path;
@@ -27,8 +29,20 @@ public class Album implements Parcelable {
         return path;
     }
 
+    @Override
     public String getName() {
         return new File(path).getName();
+    }
+
+    @Override
+    public long getDate(Activity context) {
+        long newestItem = -1;
+        for (int i = 0; i < albumItems.size(); i++) {
+            if (albumItems.get(i).getDate(context) > newestItem) {
+                newestItem = albumItems.get(i).getDate(context);
+            }
+        }
+        return newestItem;
     }
 
     public ArrayList<AlbumItem> getAlbumItems() {

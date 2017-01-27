@@ -1,32 +1,6 @@
 <resources>
-    <string name="app_name">Camera Roll</string>
-    <string name="read_permission_denied">Camera Roll needs the permission access your Storage to
-        depict
-        your pictures.
-    </string>
-    <string name="refresh">Refresh</string>
-    <string name="undo">Undo</string>
-    <string name="photo_deleted">Photo deleted</string>
-    <string name="error">Error</string>
-    <string name="delete">Delete</string>
-    <string name="write_permission_denied">Camera Roll need the permission to write to your Storage
-        in order to delete this photo.
-    </string>
-    <string name="info">Info</string>
-    <string name="done">Done</string>
-    <string name="item">" Item"</string>
-    <string name="items">" Items"</string>
-    <string name="retry">Retry</string>
-    <string name="photos_deleted">Photos deleted</string>
-    <string name="edit">Edit</string>
-    <string name="share">Share</string>
-    <string name="set_as">Set as…</string>
-    <string name="about">About</string>
-    <string name="hidden_folders">Hidden Folders</string>
-    <string name="photo">Photo</string>
-    <string name="direct_share_service_name">Share</string>
-    <string name="share_photo">Share Photo</string>
-    <string name="about_text">
+    <!--<string name="app_name">Camera Roll</string>-->
+    <string name="about_text" translatable="false">
         <![CDATA[
             Developer: Lukas Koller, Munich, Germany<br/>
             <br/>
@@ -51,20 +25,67 @@
                 Implementation of ImageView for Android that supports zooming, by various touch gestures.<br/>
                 <a href=\"https://github.com/chrisbanes/PhotoView/blob/master/LICENSE\">LICENSE</a>
             <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/MFlisar/DragSelectRecyclerView\">DragSelectRecyclerView</a></b><br/>
+                TouchListener that can be attached to any RecyclerView and handles multi selection for you.<br/>
+                <a href=\"https://github.com/MFlisar/DragSelectRecyclerView/blob/master/LICENSE\">LICENSE</a>
+            <br>
         ]]>
     </string>
-    <string name="image">Image</string>
-    <string name="video_indicator">Video Indicator</string>
-    <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
-    <string name="successfully_deleted">"successfully deleted "</string>
-    <string name="cancel">Cancel</string>
-    <string name="pick_photos">Pick Photos</string>
-    <string name="pick_photo">Pick Photo</string>
-    <string name="toolbar_transition_name">toolbar_transition_name</string>
+    <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
+
+    <!--translatable-->
+    <string name="read_permission_denied">Camera Roll needs the permission access your Storage to
+        depict your pictures.
+    </string>
+    <string name="write_permission_denied">Camera Roll need the permission to write to your Storage
+        in order to delete this photo.
+    </string>
+    <string name="missing_permission_title">Missing Permission</string>
     <string name="missing_delete_permission">Camera Roll does not have Permission to delete this
         file.
     </string>
+
+    <string name="refresh">Refresh</string>
+    <string name="sort_by">Sort by…</string>
+    <string name="hidden_folders">Hidden Folders</string>
+    <string name="about">About</string>
+
+    <string name="set_as">Set as…</string>
+    <string name="info">Info</string>
+    <string name="share">Share</string>
+    <string name="share_photo">Share Photo</string>
+    <string name="edit">Edit</string>
+
+    <string name="delete">Delete</string>
+    <string name="photo_deleted">Photo deleted</string>
+    <string name="photos_deleted">Photos deleted</string>
+    <string name="successfully_deleted">"successfully deleted "</string>
+
+    <string name="pick_photo">Pick Photo</string>
+    <string name="pick_photos">Pick Photos</string>
+
+    <string name="item">" Item"</string>
+    <string name="items">" Items"</string>
+
+    <string name="loading">Loading…</string>
+
     <string name="ok">OK</string>
-    <string name="missing_permission_title">Missing Permission</string>
-    <string name="loading">Loading...</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="undo">Undo</string>
+    <string name="done">Done</string>
+    <string name="retry">Retry</string>
+
+    <string name="error">Error</string>
+
+    <string name="photo">Photo</string>
+
+    <!--ImageView ContentDescription-->
+    <string name="image">Image</string>
+    <string name="indicator">Indicator</string>
+
+    <string name="video_indicator">Video Indicator</string>
+    <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
 </resources>

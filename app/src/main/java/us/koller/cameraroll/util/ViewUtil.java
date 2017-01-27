@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,9 +35,8 @@ import us.koller.cameraroll.ui.ItemActivity;
 public class ViewUtil {
 
     public static ViewGroup inflateView(ViewGroup container) {
-        final ViewGroup v = (ViewGroup) LayoutInflater.from(container.getContext())
+        return (ViewGroup) LayoutInflater.from(container.getContext())
                 .inflate(R.layout.photo_view, container, false);
-        return v;
     }
 
     public static View bindSubsamplingImageView(SubsamplingScaleImageView imageView,
@@ -69,7 +69,7 @@ public class ViewUtil {
             }
         }
         imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_0);
-        imageView.setMinimumDpi(1);
+        imageView.setMinimumDpi(160);
         if (placeholderView != null) {
             imageView.setOnImageEventListener(
                     new SubsamplingScaleImageView.DefaultOnImageEventListener() {
@@ -83,7 +83,8 @@ public class ViewUtil {
         return imageView;
     }
 
-    public static View bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
+    public static View bindTransitionView(final ImageView imageView,
+                                          final AlbumItem albumItem) {
         int[] imageDimens = Util.getImageDimensions(albumItem.getPath());
         int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
         float scale = ((float) screenWidth) / (float) imageDimens[0];
@@ -99,12 +100,16 @@ public class ViewUtil {
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model,
+                                               Target<Bitmap> target,
+                                               boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(Bitmap resource, String model,
+                                                   Target<Bitmap> target, boolean isFromMemoryCache,
+                                                   boolean isFirstResource) {
                         if (albumItem.isSharedElement) {
                             albumItem.isSharedElement = false;
                             ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
@@ -126,30 +131,29 @@ public class ViewUtil {
         return imageView;
     }
 
-    public static View bindGif(final GifViewHolder gifViewHolder, final ImageView imageView, final AlbumItem albumItem) {
+    public static View bindGif(final GifViewHolder gifViewHolder,
+                               final ImageView imageView,
+                               final AlbumItem albumItem) {
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
                 .asGif()
-                .dontAnimate()
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, GifDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GifDrawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model,
+                                               Target<GifDrawable> target,
+                                               boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GifDrawable resource, String model, Target<GifDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        if (!albumItem.isSharedElement && albumItem instanceof Gif) {
-                            new PhotoViewAttacher(imageView)
-                                    .setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
-                                        @Override
-                                        public void onViewTap(View view, float x, float y) {
-                                            gifViewHolder.imageOnClick(view);
-                                        }
-                                    });
-                        }
+                    public boolean onResourceReady(GifDrawable resource, String model,
+                                                   Target<GifDrawable> target, boolean isFromMemoryCache,
+                                                   boolean isFirstResource) {
+                        resource.start();
+                        gifViewHolder.setAttacher(imageView);
                         return false;
                     }
                 })

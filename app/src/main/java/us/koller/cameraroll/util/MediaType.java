@@ -61,16 +61,21 @@ public class MediaType {
     private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp", "webp"};
     private static String[] videoExtensions = {"mp4", "mkv", "webm", "avi"};
     private static String[] gifExtension = {"gif"};
+    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "bmp"};
 
-    public static boolean checkImageExtension(String path) {
+    public static boolean doesSupportExif(String path) {
+        return checkExtension(path, exifExtensions);
+    }
+
+    private static boolean checkImageExtension(String path) {
         return checkExtension(path, imageExtensions);
     }
 
-    public static boolean checkVideoExtension(String path) {
+    private static boolean checkVideoExtension(String path) {
         return checkExtension(path, videoExtensions);
     }
 
-    public static boolean checkGifExtension(String path) {
+    private static boolean checkGifExtension(String path) {
         return checkExtension(path, gifExtension);
     }
 

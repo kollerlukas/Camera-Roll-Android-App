@@ -1,5 +1,6 @@
 package us.koller.cameraroll.data;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
@@ -10,8 +11,9 @@ import android.util.Log;
 import java.io.File;
 
 import us.koller.cameraroll.util.MediaType;
+import us.koller.cameraroll.util.SortUtil;
 
-public abstract class AlbumItem implements Parcelable {
+public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
     private static final int PHOTO = 1;
     private static final int GIF = 2;
     private static final int VIDEO = 3;
@@ -65,12 +67,18 @@ public abstract class AlbumItem implements Parcelable {
         return this;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
     public String getPath() {
         return path;
+    }
+
+    @Override
+    public long getDate(Activity context) {
+        return MediaLoader.getDateAdded(context, getPath());
     }
 
     public Uri getUri(Context context) {

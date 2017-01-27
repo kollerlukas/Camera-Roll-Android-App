@@ -28,6 +28,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,6 +62,7 @@ import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
+import us.koller.cameraroll.util.Util;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -72,6 +74,7 @@ public class ItemActivity extends AppCompatActivity {
     private static final String WAS_SYSTEM_UI_HIDDEN = "WAS_SYSTEM_UI_HIDDEN";
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
+    private static final String NO_DATA = "N/A";
 
     private boolean isReturning;
     private final SharedElementCallback sharedElementCallback = new SharedElementCallback() {
@@ -121,6 +124,7 @@ public class ItemActivity extends AppCompatActivity {
             }
             if (!isReturning && albumItem instanceof Photo) {
                 ((PhotoViewHolder) viewHolder).swapView(false);
+                Log.d("ItemActivity", "swapView()");
             } else if (!isReturning && albumItem instanceof Gif
                     && viewHolder instanceof GifViewHolder) {
                 ((GifViewHolder) viewHolder).reloadGif();
@@ -263,15 +267,14 @@ public class ItemActivity extends AppCompatActivity {
         setupTaskDescription();
 
         if (view_only) {
-            viewPager.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    viewPager.getViewTreeObserver().removeOnPreDrawListener(this);
-                    transitionListener.onTransitionEnd(null);
-                    return false;
-                }
-            });
+            albumItem.isSharedElement = false;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("ItemActivity", "onResume() called; " + this);
     }
 
     @Override
@@ -417,26 +420,36 @@ public class ItemActivity extends AppCompatActivity {
 
         if (exif == null) {
             snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.error, Snackbar.LENGTH_LONG);
-            snackbar.show();
+            //snackbar.show();
+            Util.showSnackbar(snackbar);
             return;
         }
 
         File file = new File(albumItem.getPath());
 
-        String name = file.getName(); /*albumItem.getName();*/
-        String path = file.getPath(); /*albumItem.getPath();*/
+        String name = file.getName();
+        String path = file.getPath();
         String size = getFileSize(file);
-        String height = exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
-        String width = exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
-        String date = exif.getAttribute(ExifInterface.TAG_DATETIME);
-        String focal_length = parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH)) + " mm";
-        String exposure = parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)) + " sec";
-        String model = exif.getAttribute(ExifInterface.TAG_MAKE) + " " + exif.getAttribute(ExifInterface.TAG_MODEL);
-        String aperture = "", iso = "";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+
+        boolean exifSupported = MediaType.doesSupportExif(albumItem.getPath());
+
+        int[] imageDimens = null;
+        if (!exifSupported) {
+            imageDimens = Util.getImageDimensions(albumItem.getPath());
+        }
+
+        String height = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) : String.valueOf(imageDimens[1]);
+        String width = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) : String.valueOf(imageDimens[0]);
+        String date = exifSupported ? exif.getAttribute(ExifInterface.TAG_DATETIME) : NO_DATA;
+        String focal_length = exifSupported ? parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH)) + " mm" : NO_DATA;
+        String exposure = exifSupported ? parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)) + " sec" : NO_DATA;
+        String model = exifSupported ? exif.getAttribute(ExifInterface.TAG_MAKE) + " " + exif.getAttribute(ExifInterface.TAG_MODEL) : NO_DATA;
+        String aperture = NO_DATA, iso = NO_DATA;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N && exifSupported) {
             aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
             iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
         }
+
 
         String[] values = {name, path, size, width + " x " + height,
                 date, model, focal_length, exposure, aperture, iso};
@@ -577,14 +590,14 @@ public class ItemActivity extends AppCompatActivity {
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.write_permission_denied, Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Retry", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    MediaLoader.checkPermission(ItemActivity.this);
-                                }
-                            });
-                    snackbar.show();
+                    Snackbar snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
+                    snackbar.setAction(R.string.retry, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            MediaLoader.checkPermission(ItemActivity.this);
+                        }
+                    });
+                    Util.showSnackbar(snackbar);
                 }
             }
         }

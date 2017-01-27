@@ -8,9 +8,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
 import android.util.Log;
 
 import java.io.File;
@@ -18,12 +20,18 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.util.MediaType;
+import us.koller.cameraroll.util.SortUtil;
+import us.koller.cameraroll.util.Util;
 
 public class MediaLoader {
 
+    public interface MediaLoaderCallback {
+        void onMediaLoaded(ArrayList<Album> albums, boolean wasStorageSearched);
+    }
+
     private String[] projection = new String[]{
             MediaStore.Files.FileColumns.DATA,
-            MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
+            MediaStore.Files.FileColumns.PARENT};
 
     public static final int PERMISSION_REQUEST_CODE = 16;
 
@@ -31,14 +39,18 @@ public class MediaLoader {
 
     }
 
-    public ArrayList<Album> loadAlbums(Activity context, boolean hiddenFolders) {
+    public void loadAlbums(final Activity context, final boolean hiddenFolders,
+                           final MediaLoaderCallback callback) {
         if (!checkPermission(context)) {
-            return new ArrayList<>();
+            return;
         }
 
-        ArrayList<Album> albums = new ArrayList<>();
+        //Idea: load content resolver media first,
+        // then asynchronous search the external storage for media
 
-        /*// Return only video and image metadata.
+        final ArrayList<Album> albums = new ArrayList<>();
+
+        // Return only video and image metadata.
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                 + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
                 + " OR "
@@ -55,69 +67,82 @@ public class MediaLoader {
                 null, // Selection args (none).
                 MediaStore.Files.FileColumns.DATE_ADDED);
 
-        Cursor cursor = cursorLoader.loadInBackground();
+        final Cursor cursor = cursorLoader.loadInBackground();
 
         if (cursor == null) {
-            return albums;
+            return;
         }
 
-        if (cursor.moveToFirst()) {
-            String path;
-            String bucket;
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (cursor.moveToFirst()) {
+                    String path;
 
-            int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-            int bucketColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+                    int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
 
-            do {
-                path = cursor.getString(pathColumn);
-                bucket = cursor.getString(bucketColumn);
+                    do {
+                        path = cursor.getString(pathColumn);
 
-                AlbumItem albumItem = AlbumItem.getInstance(context, path);
-                if (albumItem != null) {
-                    //search bucket
-                    boolean foundBucket = false;
-                    for (int i = 0; i < albums.size(); i++) {
-                        if (albums.get(i).getName().equals(bucket)) {
-                            albums.get(i).getAlbumItems().add(0, albumItem);
-                            foundBucket = true;
-                            break;
+                        AlbumItem albumItem = AlbumItem.getInstance(context, path);
+                        if (albumItem != null) {
+                            //search bucket
+                            boolean foundBucket = false;
+                            for (int i = 0; i < albums.size(); i++) {
+                                if (albums.get(i).getPath().equals(Util.getParentPath(path))) {
+                                    albums.get(i).getAlbumItems().add(0, albumItem);
+                                    foundBucket = true;
+                                    break;
+                                }
+                            }
+
+                            if (!foundBucket) {
+                                //no bucket found
+                                albums.add(new Album().setPath(Util.getParentPath(path)));
+                                albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
+                            }
+                        }
+
+                    } while (cursor.moveToNext());
+
+                }
+                cursor.close();
+
+                if (hiddenFolders) {
+                    ArrayList<Album> hiddenAlbums = loadHiddenFolders(context);
+                    for (int i = 0; i < hiddenAlbums.size(); i++) {
+                        albums.add(hiddenAlbums.get(i));
+                    }
+                }
+                //done loading media with content resolver
+                SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
+                callback.onMediaLoaded(albums, false);
+            }
+        });
+
+        //load storage albums asynchronous
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Album> albumsWithStorage = searchStorage(context, albums);
+
+                if (!hiddenFolders) {
+                    for (int i = albumsWithStorage.size() - 1; i >= 0; i--) {
+                        if (albumsWithStorage.get(i).hiddenAlbum) {
+                            albumsWithStorage.remove(i);
                         }
                     }
-
-                    if (!foundBucket) {
-                        //no bucket found
-                        albums.add(new Album().setPath(bucket));
-                        albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
-                    }
                 }
 
-            } while (cursor.moveToNext());
-
-        }
-        cursor.close();
-
-        if (hiddenFolders) {
-            ArrayList<Album> hiddenAlbums = loadHiddenFolders(context);
-            for (int i = 0; i < hiddenAlbums.size(); i++) {
-                albums.add(hiddenAlbums.get(i));
+                //done loading media from storage
+                SortUtil.sortAlbums(context, albumsWithStorage, SortUtil.BY_NAME);
+                callback.onMediaLoaded(albumsWithStorage, true);
             }
-        }*/
-
-        albums = searchStorage(context, albums);
-
-        if (!hiddenFolders) {
-            for (int i = albums.size() - 1; i >= 0; i--) {
-                if (albums.get(i).hiddenAlbum) {
-                    albums.remove(i);
-                }
-            }
-        }
-
-        return albums;
+        });
     }
 
     private ArrayList<Album> searchStorage(final Activity context, final ArrayList<Album> albums) {
-        File file = new File("/storage/emulated/0");
+        File file = Environment.getExternalStorageDirectory(); //new File("/storage/emulated/0");
         File[] files = file.listFiles();
         for (int i = 0; i < files.length; i++) {
             if (!files[i].getPath().equals("/storage/emulated/0/Android")) {
@@ -173,7 +198,7 @@ public class MediaLoader {
                 projection, // Which columns to return
                 null,       // Which rows to return (all rows)
                 null,       // Selection arguments (none)
-                MediaStore.Images.Media.DATE_TAKEN        // Ordering
+                null        // Ordering
         );
 
         if (cursor == null) {
@@ -181,10 +206,38 @@ public class MediaLoader {
         }
 
         cursor.moveToFirst();
-        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
         cursor.close();
 
         return AlbumItem.getInstance(context, path != null ? path : uri.toString());
+    }
+
+    static long getDateAdded(Activity context, String path) {
+
+        long dateAdded = new File(path).lastModified();
+
+        String[] projection = {MediaStore.Images.Media.DATE_TAKEN};
+
+        // Make the query.
+        ContentResolver resolver = context.getContentResolver();
+        Cursor cursor = resolver.query(Uri.parse(path),
+                projection, // Which columns to return
+                null,       // Which rows to return (all rows)
+                null,       // Selection arguments (none)
+                MediaStore.Images.Media.DATE_TAKEN        // Ordering
+        );
+
+        if (cursor == null) {
+            return dateAdded;
+        }
+
+        cursor.moveToFirst();
+        String dateTaken = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+        cursor.close();
+
+        dateAdded = Long.parseLong(dateTaken);
+
+        return dateAdded;
     }
 
     private static final String FILE_TYPE_NO_MEDIA = ".nomedia";
@@ -217,7 +270,7 @@ public class MediaLoader {
         }
 
         if (cursor.moveToFirst()) {
-            int pathColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+            int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
             do {
                 Album album = checkDirForMedia(context, cursor.getString(pathColumn));
                 if (album != null) {

@@ -16,7 +16,7 @@
             android:id="@+id/indicator"
             android:layout_width="38dp"
             android:layout_height="38dp"
-            android:src="@drawable/video_indicator"
+            android:src="@drawable/gif_indicator"
             android:layout_margin="8dp"
             android:paddingBottom="8dp"
             android:alpha="0.7"

@@ -14,6 +14,7 @@ import com.bumptech.glide.request.target.Target;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.ColorFade;
 import us.koller.cameraroll.util.Util;
 
@@ -43,6 +44,12 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
     private void loadImage() {
         final AlbumItem coverImage = album.getAlbumItems().get(0);
 
+        final ImageView image = (ImageView) itemView.findViewById(R.id.image);
+
+        if (image instanceof ParallaxImageView) {
+            ((ParallaxImageView) image).setParallaxTranslation();
+        }
+
         int[] imageDimens = Util.getImageDimensions(coverImage.getPath());
         int screenWidth = Util.getScreenWidth((Activity) itemView.getContext());
         float scale = ((float) screenWidth) / (float) imageDimens[0];
@@ -67,11 +74,11 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
                                                    boolean isFirstResource) {
                         if (!coverImage.hasFadedIn) {
                             coverImage.hasFadedIn = true;
-                            ColorFade.fadeSaturation((ImageView) itemView.findViewById(R.id.image));
+                            ColorFade.fadeSaturation(image);
                         }
                         return false;
                     }
                 })
-                .into((ImageView) itemView.findViewById(R.id.image));
+                .into(image);
     }
 }

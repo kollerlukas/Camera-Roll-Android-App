@@ -73,4 +73,9 @@ public class PhotoViewHolder extends ViewHolder {
             }
         }
     }
+
+    @Override
+    public void onSharedElement() {
+
+    }
 }

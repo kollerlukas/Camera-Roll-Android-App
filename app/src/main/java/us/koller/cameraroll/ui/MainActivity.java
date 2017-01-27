@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +30,7 @@ import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.MediaLoader;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
+import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Album> albums;
 
+    private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
 
     private Snackbar snackbar;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new RecyclerViewAdapter(pick_photos).setAlbums(albums);
@@ -177,6 +178,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.getAction().equals(REFRESH_MEDIA)) {
+            //refreshPhotos();
+        }
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent intent) {
+        super.onActivityReenter(resultCode, intent);
+        if (intent.getAction().equals(REFRESH_MEDIA)) {
             refreshPhotos();
         }
     }
@@ -207,23 +216,32 @@ public class MainActivity extends AppCompatActivity {
     public void refreshPhotos() {
         final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
-        snackbar.show();
+        //snackbar.show();
+        Util.showSnackbar(snackbar);
 
-        class AsyncMediaLoader extends AsyncTask<Void, Void, ArrayList<Album>> {
+        final MediaLoader.MediaLoaderCallback callback
+                = new MediaLoader.MediaLoaderCallback() {
             @Override
-            protected ArrayList<Album> doInBackground(Void... voids) {
-                return new MediaLoader().loadAlbums(MainActivity.this, hiddenFolders);
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<Album> albums) {
-                super.onPostExecute(albums);
+            public void onMediaLoaded(final ArrayList<Album> albums,
+                                      final boolean wasStorageSearched) {
+                final int oldAlbumsSize = MainActivity.this.albums.size();
                 MainActivity.this.albums = albums;
-                recyclerViewAdapter.setAlbums(albums).notifyDataSetChanged();
-                snackbar.dismiss();
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        recyclerViewAdapter.setAlbums(albums);
+                        if (!wasStorageSearched) {
+                            recyclerViewAdapter.notifyDataSetChanged();
+                        } else {
+                            snackbar.dismiss();
+                            recyclerViewAdapter.notifyItemRangeInserted(oldAlbumsSize, albums.size());
+                        }
+                    }
+                });
             }
-        }
-        new AsyncMediaLoader().execute();
+        };
+
+        new MediaLoader().loadAlbums(MainActivity.this, hiddenFolders, callback);
     }
 
     @Override
@@ -276,15 +294,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     // permission denied
-                    snackbar = Snackbar.make(findViewById(R.id.root_view),
-                            R.string.read_permission_denied, Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.retry, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    refreshPhotos();
-                                }
-                            });
-                    snackbar.show();
+                    Snackbar snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
+                    snackbar.setAction(R.string.retry, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            refreshPhotos();
+                        }
+                    });
+                    Util.showSnackbar(snackbar);
                 }
             }
         }

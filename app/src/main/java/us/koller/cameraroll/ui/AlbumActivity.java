@@ -25,6 +25,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
+import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.View;
@@ -47,6 +48,7 @@ import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.ColorFade;
 import us.koller.cameraroll.util.MediaType;
+import us.koller.cameraroll.util.TransitionListenerAdapter;
 import us.koller.cameraroll.util.Util;
 
 public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
@@ -166,7 +168,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new GridMarginDecoration(
                 (int) getResources().getDimension(R.dimen.grid_spacing)));
-        recyclerView.setAdapter(new RecyclerViewAdapter(this, album, pick_photos));
+        recyclerView.setAdapter(new RecyclerViewAdapter(this, recyclerView, album, pick_photos));
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {
             recyclerView.getLayoutManager().onRestoreInstanceState(
@@ -307,15 +309,14 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                     recyclerView.getAdapter().notifyDataSetChanged();
                 } else {
                     // permission denied
-                    snackbar = Snackbar.make(findViewById(R.id.root_view),
-                            R.string.read_permission_denied, Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.retry, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    MediaLoader.checkPermission(AlbumActivity.this);
-                                }
-                            });
-                    snackbar.show();
+                    Snackbar snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
+                    snackbar.setAction(R.string.retry, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            MediaLoader.checkPermission(AlbumActivity.this);
+                        }
+                    });
+                    Util.showSnackbar(snackbar);
                 }
             }
         }
@@ -356,7 +357,8 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                         }
                     }
                 });
-        snackbar.show();
+        //snackbar.show();
+        Util.showSnackbar(snackbar);
 
         if (VIEW_ONLY) {
             snackbar.dismiss();
@@ -403,7 +405,8 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                         }
                     }
                 });
-        snackbar.show();
+        //snackbar.show();
+        Util.showSnackbar(snackbar);
     }
 
     public void deleteAlbumItems(AlbumItem[] selected_items, int[] indices) {
@@ -427,14 +430,17 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
 
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                         Uri.parse(selected_items[i].getPath())));
-
-                if (refreshMainActivityAfterItemWasDeleted) {
-                    Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
-                    intent.setAction(MainActivity.REFRESH_MEDIA);
-                    startActivity(intent);
-                }
             }
         }
+
+        if (refreshMainActivityAfterItemWasDeleted) {
+            setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
+            onBackPressed();
+            /*Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
+            intent.setAction(MainActivity.REFRESH_MEDIA);
+            startActivity(intent);*/
+        }
+
         Toast.makeText(AlbumActivity.this, getString(R.string.successfully_deleted) + successfully_deleted + " / " + selected_items.length, Toast.LENGTH_SHORT).show();
     }
 
@@ -600,13 +606,12 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
 
     @Override
     public void onBackPressed() {
-        if (snackbar != null) {
+        if (((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
+            animateFab(false, false);
+        } else if (snackbar != null) {
             snackbar.dismiss();
             snackbar = null;
             refreshMainActivityAfterItemWasDeleted = true;
-        }
-        if (((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
-            animateFab(false, false);
         } else {
             super.onBackPressed();
         }
@@ -635,7 +640,8 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
 
     @Override
     public boolean canSwipeBack(int dir) {
-        return SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir) && !pick_photos;
+        return !((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()
+                && SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir) && !pick_photos;
     }
 
     @Override

@@ -7,6 +7,11 @@
           android:title="@string/refresh"
           app:showAsAction="never"/>
 
+    <!--<item android:id="@+id/sort_by"
+          android:icon="@drawable/ic_sort_white_24dp"
+          android:title="@string/sort_by"
+          app:showAsAction="never"/>-->
+
     <item android:id="@+id/hiddenFolders"
           android:icon="@drawable/ic_eye_off_white_24dp"
           android:title="@string/hidden_folders"

@@ -3,9 +3,15 @@ package us.koller.cameraroll.util;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 
 import us.koller.cameraroll.R;
 
@@ -53,5 +59,30 @@ public class Util {
                 }
             });
         }
+    }
+
+    public static String getParentPath(String path) {
+        return new File(path).getParent();
+    }
+
+    public static void showSnackbar(Snackbar snackbar) {
+        snackbar.show();
+        TextView textView = (TextView) (snackbar.getView())
+                .findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
+    }
+
+    public static Snackbar getPermissionDeniedSnackbar(final View rootView) {
+        Snackbar snackbar = Snackbar.make(rootView,
+                R.string.read_permission_denied,
+                Snackbar.LENGTH_INDEFINITE);
+        snackbar.getView().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(rootView.getContext(), R.string.read_permission_denied, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        return snackbar;
     }
 }
