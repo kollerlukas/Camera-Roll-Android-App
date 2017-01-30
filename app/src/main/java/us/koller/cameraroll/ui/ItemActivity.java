@@ -34,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -52,12 +51,12 @@ import java.util.Map;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.item.ViewHolder.VideoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Gif;
-import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.data.MediaLoader.MediaLoader;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.MediaType;
@@ -122,12 +121,15 @@ public class ItemActivity extends AppCompatActivity {
             if (viewHolder == null) {
                 return;
             }
-            if (!isReturning && albumItem instanceof Photo) {
-                ((PhotoViewHolder) viewHolder).swapView(false);
-                Log.d("ItemActivity", "swapView()");
-            } else if (!isReturning && albumItem instanceof Gif
-                    && viewHolder instanceof GifViewHolder) {
-                ((GifViewHolder) viewHolder).reloadGif();
+
+            if (!isReturning) {
+                if (viewHolder instanceof PhotoViewHolder) {
+                    ((PhotoViewHolder) viewHolder).swapView(false);
+                } else if (viewHolder instanceof GifViewHolder) {
+                    ((GifViewHolder) viewHolder).reloadGif();
+                } else if (viewHolder instanceof VideoViewHolder) {
+                    ((VideoViewHolder) viewHolder).bindView();
+                }
             }
 
             if (transition != null) {
@@ -199,7 +201,7 @@ public class ItemActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle(albumItem.getName() != null
                     && !view_only ? albumItem.getName() : "");
-            actionBar.setDisplayHomeAsUpEnabled(true/*!view_only*/);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -272,12 +274,6 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("ItemActivity", "onResume() called; " + this);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.item, menu);
@@ -341,10 +337,6 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void sharePhoto() {
-        if (albumItem instanceof Video) {
-            return;
-        }
-
         Uri uri = albumItem.getUri(this);
 
         Intent shareIntent = ShareCompat.IntentBuilder.from(this)
@@ -420,7 +412,6 @@ public class ItemActivity extends AppCompatActivity {
 
         if (exif == null) {
             snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.error, Snackbar.LENGTH_LONG);
-            //snackbar.show();
             Util.showSnackbar(snackbar);
             return;
         }
@@ -435,7 +426,9 @@ public class ItemActivity extends AppCompatActivity {
 
         int[] imageDimens = null;
         if (!exifSupported) {
-            imageDimens = Util.getImageDimensions(albumItem.getPath());
+            imageDimens = albumItem instanceof Video ?
+                    Util.getVideoDimensions(albumItem.getPath()) :
+                    Util.getImageDimensions(albumItem.getPath());
         }
 
         String height = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) : String.valueOf(imageDimens[1]);
@@ -610,6 +603,7 @@ public class ItemActivity extends AppCompatActivity {
             SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
             ImageViewState state = imageView.getState();
             if (state != null) {
+                Log.d("ItemActivity", "saving state...");
                 outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
             }
         }
@@ -628,19 +622,15 @@ public class ItemActivity extends AppCompatActivity {
         showUI(false);
         if (view_only) {
             this.finishAffinity();
-        } else if (albumItem instanceof Photo) {
+        } else {
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
-            if (viewHolder instanceof PhotoViewHolder) {
-                ((PhotoViewHolder) viewHolder).scaleDown(new Callback() {
-                    @Override
-                    public void callback() {
-                        setResultAndFinish();
-                    }
-                });
-            }
-        } else {
-            setResultAndFinish();
+            viewHolder.onSharedElement(new ItemActivity.Callback() {
+                @Override
+                public void callback() {
+                    setResultAndFinish();
+                }
+            });
         }
     }
 

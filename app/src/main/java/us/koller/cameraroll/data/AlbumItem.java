@@ -12,6 +12,7 @@ import java.io.File;
 
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
+import us.koller.cameraroll.util.Util;
 
 public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
     private static final int PHOTO = 1;
@@ -78,7 +79,7 @@ public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
 
     @Override
     public long getDate(Activity context) {
-        return MediaLoader.getDateAdded(context, getPath());
+        return Util.getDateAdded(context, getPath());
     }
 
     public Uri getUri(Context context) {

@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.ui.ItemActivity;
-import us.koller.cameraroll.util.ViewUtil;
+import us.koller.cameraroll.util.ItemViewUtil;
 
 public abstract class ViewHolder {
 
@@ -13,7 +13,7 @@ public abstract class ViewHolder {
     public AlbumItem albumItem;
     private int position;
 
-    ViewHolder(AlbumItem albumItem, int position) {
+    public ViewHolder(AlbumItem albumItem, int position) {
         this.albumItem = albumItem;
         this.position = position;
     }
@@ -23,7 +23,7 @@ public abstract class ViewHolder {
     }
 
     ViewGroup inflateView(ViewGroup container) {
-        ViewGroup v = ViewUtil.inflateView(container);
+        ViewGroup v = ItemViewUtil.inflateView(container);
         v.setTag(albumItem.getPath());
         this.itemView = v;
         return v;
@@ -58,5 +58,5 @@ public abstract class ViewHolder {
         return albumItem.getPath();
     }
 
-    public abstract void onSharedElement();
+    public abstract void onSharedElement(ItemActivity.Callback callback);
 }

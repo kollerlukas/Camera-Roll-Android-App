@@ -1,10 +1,16 @@
 package us.koller.cameraroll.util;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -37,6 +43,20 @@ public class Util {
         dimensions[0] = options.outWidth > 0 ? options.outWidth : 1;
         dimensions[1] = options.outHeight > 0 ? options.outHeight : 1;
         return dimensions;
+    }
+
+    public static int[] getVideoDimensions(String path) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+        retriever.setDataSource(path);
+        Bitmap bitmap = retriever.getFrameAtTime();
+
+        int[] dimensions = new int[2];
+
+        dimensions[0] = bitmap.getWidth() > 0 ? bitmap.getWidth() : 1;
+        dimensions[1] = bitmap.getHeight() > 0 ? bitmap.getHeight() : 1;
+        return dimensions;
+
     }
 
     public static void setDarkStatusBarIcons(final View v) {
@@ -84,5 +104,33 @@ public class Util {
             }
         });
         return snackbar;
+    }
+
+    public static long getDateAdded(Activity context, String path) {
+
+        long dateAdded = new File(path).lastModified();
+
+        String[] projection = {MediaStore.Images.Media.DATE_TAKEN};
+
+        // Make the query.
+        ContentResolver resolver = context.getContentResolver();
+        Cursor cursor = resolver.query(Uri.parse(path),
+                projection, // Which columns to return
+                null,       // Which rows to return (all rows)
+                null,       // Selection arguments (none)
+                MediaStore.Images.Media.DATE_TAKEN        // Ordering
+        );
+
+        if (cursor == null) {
+            return dateAdded;
+        }
+
+        cursor.moveToFirst();
+        String dateTaken = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+        cursor.close();
+
+        dateAdded = Long.parseLong(dateTaken);
+
+        return dateAdded;
     }
 }

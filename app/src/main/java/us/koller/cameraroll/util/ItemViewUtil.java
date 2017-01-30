@@ -5,12 +5,12 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -21,18 +21,16 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 import java.io.IOException;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 
-public class ViewUtil {
+public class ItemViewUtil {
 
     public static ViewGroup inflateView(ViewGroup container) {
         return (ViewGroup) LayoutInflater.from(container.getContext())
@@ -50,7 +48,7 @@ public class ViewUtil {
         if (!photo.contentUri) {
             if (imageViewState != null) {
                 imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
-                Log.d("ViewUtil", "restored state...");
+                Log.d("ItemViewUtil", "restored state...");
             } else {
                 imageView.setImage(ImageSource.uri(photo.getPath()));
             }
@@ -60,7 +58,7 @@ public class ViewUtil {
                         imageView.getContext().getContentResolver(), Uri.parse(photo.getPath()));
                 if (imageViewState != null) {
                     imageView.setImage(ImageSource.bitmap(bmp), imageViewState);
-                    Log.d("ViewUtil", "restored state...");
+                    Log.d("ItemViewUtil", "restored state...");
                 } else {
                     imageView.setImage(ImageSource.bitmap(bmp));
                 }
@@ -85,12 +83,15 @@ public class ViewUtil {
 
     public static View bindTransitionView(final ImageView imageView,
                                           final AlbumItem albumItem) {
-        int[] imageDimens = Util.getImageDimensions(albumItem.getPath());
+        int[] imageDimens = albumItem instanceof Video ?
+                Util.getVideoDimensions(albumItem.getPath()) :
+                Util.getImageDimensions(albumItem.getPath());
+
         int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
         float scale = ((float) screenWidth) / (float) imageDimens[0];
         scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-        imageDimens[0] = (int) (imageDimens[0] * scale);
-        imageDimens[1] = (int) (imageDimens[1] * scale);
+        imageDimens[0] = (int) (imageDimens[0] * scale * 0.5f);
+        imageDimens[1] = (int) (imageDimens[1] * scale * 0.5f);
 
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
@@ -138,7 +139,7 @@ public class ViewUtil {
                 .load(albumItem.getPath())
                 .asGif()
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, GifDrawable>() {
                     @Override
@@ -160,5 +161,44 @@ public class ViewUtil {
                 .into(imageView);
         imageView.setTransitionName(albumItem.getPath());
         return imageView;
+    }
+
+    public static final String VIDEO_PLAY_BUTTON_TAG = "VIDEO_PLAY_BUTTON_TAG";
+
+    public static ViewGroup bindImageViewForVideo(final ImageView imageView,
+                                                  final AlbumItem albumItem) {
+        int[] imageDimens = albumItem instanceof Video ?
+                Util.getVideoDimensions(albumItem.getPath()) :
+                Util.getImageDimensions(albumItem.getPath());
+
+        int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
+        float scale = ((float) screenWidth) / (float) imageDimens[0];
+        scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
+        imageDimens[0] = (int) (imageDimens[0] * scale);
+        imageDimens[1] = (int) (imageDimens[1] * scale);
+
+        Glide.with(imageView.getContext())
+                .load(albumItem.getPath())
+                .asBitmap()
+                .override(imageDimens[0], imageDimens[1])
+                .skipMemoryCache(true)
+                .error(R.drawable.error_placeholder)
+                .into(imageView);
+        imageView.setTransitionName(albumItem.getPath());
+
+        ImageView playButton = new ImageView(imageView.getContext());
+        playButton.setTag(VIDEO_PLAY_BUTTON_TAG);
+        playButton.setImageResource(R.drawable.ic_play_circle_filled_white_24dp);
+        playButton.setAlpha(0.54f);
+        RelativeLayout.LayoutParams params
+                = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        playButton.setLayoutParams(params);
+
+        ViewGroup v = (ViewGroup) imageView.getParent();
+        v.addView(playButton);
+        return v;
     }
 }

@@ -21,9 +21,9 @@ public class SortUtil {
 
     public static ArrayList<? extends Sortable> sortAlbums(Activity context, ArrayList<? extends Sortable> albums, int by) {
         //sort each individual album
-        for (int i = 0; i < albums.size(); i++) {
+        /*for (int i = 0; i < albums.size(); i++) {
             sort(context, albums, BY_DATE);
-        }
+        }*/
 
         //sort albums arrayList
         sort(context, albums, by);

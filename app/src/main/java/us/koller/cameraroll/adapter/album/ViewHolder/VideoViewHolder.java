@@ -12,7 +12,6 @@ import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.Util;
 
 public class VideoViewHolder extends AlbumItemHolder {
@@ -34,32 +33,30 @@ public class VideoViewHolder extends AlbumItemHolder {
                 (int) ((float) screenWidth / columnCount),
                 (int) ((float) screenWidth / columnCount)};
 
-        if (albumItem instanceof Video) {
-            Glide.with(context)
-                    .load(albumItem.getPath())
-                    .asBitmap()
-                    .thumbnail(0.1f)
-                    .skipMemoryCache(true)
-                    .override(imageDimens[0], imageDimens[1])
-                    .listener(new RequestListener<String, Bitmap>() {
-                        @Override
-                        public boolean onException(Exception e, String model,
-                                                   Target<Bitmap> target, boolean isFirstResource) {
-                            return false;
-                        }
+        Glide.with(context)
+                .load(albumItem.getPath())
+                .asBitmap()
+                .thumbnail(0.1f)
+                .skipMemoryCache(true)
+                .override(imageDimens[0], imageDimens[1])
+                .listener(new RequestListener<String, Bitmap>() {
+                    @Override
+                    public boolean onException(Exception e, String model,
+                                               Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
 
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, String model,
-                                                       Target<Bitmap> target, boolean isFromMemoryCache,
-                                                       boolean isFirstResource) {
-                            if (!albumItem.hasFadedIn) {
-                                fadeIn();
-                            }
-                            return false;
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, String model,
+                                                   Target<Bitmap> target, boolean isFromMemoryCache,
+                                                   boolean isFirstResource) {
+                        if (!albumItem.hasFadedIn) {
+                            fadeIn();
                         }
-                    })
-                    .error(R.drawable.error_placeholder)
-                    .into(imageView);
-        }
+                        return false;
+                    }
+                })
+                .error(R.drawable.error_placeholder)
+                .into(imageView);
     }
 }

@@ -1,7 +1,6 @@
 package us.koller.cameraroll.adapter.item;
 
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -9,10 +8,12 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.item.ViewHolder.VideoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Gif;
+import us.koller.cameraroll.data.Video;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
@@ -40,10 +41,12 @@ public class ViewPagerAdapter extends PagerAdapter {
         AlbumItem albumItem = album.getAlbumItems().get(position);
 
         ViewHolder viewHolder;
-        if (albumItem instanceof Photo) {
-            viewHolder = new PhotoViewHolder(albumItem, position);
-        } else {
+        if (albumItem instanceof Video) {
+            viewHolder = new VideoViewHolder(albumItem, position);
+        } else if (albumItem instanceof Gif) {
             viewHolder = new GifViewHolder(albumItem, position);
+        } else {
+            viewHolder = new PhotoViewHolder(albumItem, position);
         }
         viewHolders.add(viewHolder);
 
@@ -62,7 +65,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
     }
 
-    public ViewHolder findViewHolderByPosition(int position) {
+    private ViewHolder findViewHolderByPosition(int position) {
         for (int i = 0; i < viewHolders.size(); i++) {
             if (position == viewHolders.get(i).getPosition()) {
                 return viewHolders.get(i);

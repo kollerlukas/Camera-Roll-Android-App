@@ -1,6 +1,8 @@
 package us.koller.cameraroll.ui;
 
+import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,13 +21,13 @@ import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
-import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.View;
@@ -43,12 +45,12 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.data.MediaLoader.MediaLoader;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.ColorFade;
 import us.koller.cameraroll.util.MediaType;
-import us.koller.cameraroll.util.TransitionListenerAdapter;
 import us.koller.cameraroll.util.Util;
 
 public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
@@ -137,9 +139,10 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
             return;
         }
 
-        final SwipeBackCoordinatorLayout swipeBackView
-                = (SwipeBackCoordinatorLayout) findViewById(R.id.root_view);
-        swipeBackView.setOnSwipeListener(this);
+        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        if (rootView instanceof SwipeBackCoordinatorLayout) {
+            ((SwipeBackCoordinatorLayout) rootView).setOnSwipeListener(this);
+        }
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -206,7 +209,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
 
-        swipeBackView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+        rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
                 toolbar.setPadding(toolbar.getPaddingStart(),
@@ -231,7 +234,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                 fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
                 fab.setLayoutParams(fabParams);
 
-                swipeBackView.setOnApplyWindowInsetsListener(null);
+                rootView.setOnApplyWindowInsetsListener(null);
                 return insets.consumeSystemWindowInsets();
             }
         });
@@ -357,7 +360,6 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                         }
                     }
                 });
-        //snackbar.show();
         Util.showSnackbar(snackbar);
 
         if (VIEW_ONLY) {
@@ -405,7 +407,6 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
                         }
                     }
                 });
-        //snackbar.show();
         Util.showSnackbar(snackbar);
     }
 
@@ -436,9 +437,6 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         if (refreshMainActivityAfterItemWasDeleted) {
             setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
             onBackPressed();
-            /*Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
-            intent.setAction(MainActivity.REFRESH_MEDIA);
-            startActivity(intent);*/
         }
 
         Toast.makeText(AlbumActivity.this, getString(R.string.successfully_deleted) + successfully_deleted + " / " + selected_items.length, Toast.LENGTH_SHORT).show();
@@ -545,6 +543,26 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         }
     }
 
+    public static void videoOnClick(Activity context, AlbumItem albumItem) {
+        if (!(albumItem instanceof Video)) {
+            return;
+        }
+
+        File file = new File(albumItem.getPath());
+        Uri uri = FileProvider.getUriForFile(context,
+                context.getApplicationContext().getPackageName() + ".provider", file);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, "video/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, "No App found to play your video", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
     public void fabClicked() {
         animateFab(false, true);
         new Handler().postDelayed(new Runnable() {
@@ -640,8 +658,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
 
     @Override
     public boolean canSwipeBack(int dir) {
-        return !((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()
-                && SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir) && !pick_photos;
+        return SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir) && !pick_photos;
     }
 
     @Override

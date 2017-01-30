@@ -1,11 +1,11 @@
 package us.koller.cameraroll.adapter.album;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
@@ -26,6 +25,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
@@ -114,7 +114,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                 if (selector_mode) {
                     onItemSelected((AlbumItemHolder) holder);
-                } else if (albumItem instanceof Photo || albumItem instanceof Gif) {
+
+                    //notify DragSelectTouchListener
+                    int position = album.getAlbumItems().indexOf(albumItem);
+                    dragSelectTouchListener.startDragSelection(position);
+                } else if (albumItem instanceof Photo || albumItem instanceof Gif || albumItem instanceof Video) {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
                     intent.putExtra(ItemActivity.ALBUM, album);
@@ -126,21 +130,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                                     holder.itemView.findViewById(R.id.image),
                                     albumItem.getPath());
                     holder.itemView.getContext().startActivity(intent, options.toBundle());
-                } else {
-                    File file = new File(albumItem.getPath());
-                    Uri uri = FileProvider.getUriForFile(holder.itemView.getContext(),
-                            holder.itemView.getContext().getApplicationContext().getPackageName() + ".provider", file);
-
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(uri, "video/*");
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    try {
-                        holder.itemView.getContext().startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        Toast.makeText(holder.itemView.getContext(), "No App found to play your video", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
                 }
+
+                /*else if (albumItem instanceof Video){
+                    AlbumActivity.videoOnClick((Activity) holder.itemView.getContext(), albumItem);
+                }*/
             }
         });
 
@@ -157,13 +151,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                     //notify AlbumActivity
                     callback.onSelectorModeEnter();
-
-                    //notify DragSelectTouchListener
-                    int position = album.getAlbumItems().indexOf(albumItem);
-                    dragSelectTouchListener.startDragSelection(position);
                 }
 
                 onItemSelected((AlbumItemHolder) holder);
+
+                //notify DragSelectTouchListener
+                if (selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)]) {
+                    int position = album.getAlbumItems().indexOf(albumItem);
+                    dragSelectTouchListener.startDragSelection(position);
+                }
                 return true;
             }
         });
@@ -195,6 +191,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 = !selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
         holder.itemView.findViewById(R.id.image)
                 .setSelected(selected_items[album.getAlbumItems().indexOf(holder.albumItem)]);
+
+        //fade selected indicator
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            boolean selected = selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
+            Drawable foreground = holder.itemView.findViewById(R.id.image).getForeground();
+
+            ObjectAnimator
+                    .ofPropertyValuesHolder(foreground,
+                            PropertyValuesHolder.ofInt("alpha",
+                                    selected ? 0 : 255,
+                                    selected ? 255 : 0)).start();
+        }
+
         callback.onItemSelected(getSelectedItemCount());
         checkForNoSelectedItems();
     }

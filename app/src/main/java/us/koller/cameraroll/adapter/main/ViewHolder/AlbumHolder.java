@@ -1,13 +1,14 @@
 package us.koller.cameraroll.adapter.main.ViewHolder;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
@@ -45,7 +46,6 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
         final AlbumItem coverImage = album.getAlbumItems().get(0);
 
         final ImageView image = (ImageView) itemView.findViewById(R.id.image);
-
         if (image instanceof ParallaxImageView) {
             ((ParallaxImageView) image).setParallaxTranslation();
         }
@@ -59,26 +59,30 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
 
         Glide.with(itemView.getContext())
                 .load(coverImage.getPath())
+                .asBitmap()
                 .error(R.drawable.error_placeholder)
-                .listener(new RequestListener<String, GlideDrawable>() {
+                .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
-                                               Target<GlideDrawable> target, boolean isFirstResource) {
+                                               Target<Bitmap> target, boolean isFirstResource) {
                         coverImage.error = true;
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model,
-                                                   Target<GlideDrawable> target, boolean isFromMemoryCache,
+                    public boolean onResourceReady(Bitmap resource, String model,
+                                                   Target<Bitmap> target, boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
                         if (!coverImage.hasFadedIn) {
                             coverImage.hasFadedIn = true;
                             ColorFade.fadeSaturation(image);
                         }
+
+                        if (image instanceof ParallaxImageView) {
+                            ((ParallaxImageView) image).setParallaxTranslation();
+                        }
                         return false;
                     }
-                })
-                .into(image);
+                }).into(image);
     }
 }

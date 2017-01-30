@@ -1,22 +1,21 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
-import android.os.Handler;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.util.ItemViewUtil;
 
-public class GifViewHolder extends ViewHolder {
+public class VideoViewHolder extends ViewHolder {
 
-    private PhotoViewAttacher attacher;
-
-    public GifViewHolder(AlbumItem albumItem, int position) {
+    public VideoViewHolder(AlbumItem albumItem, int position) {
         super(albumItem, position);
     }
 
@@ -28,35 +27,28 @@ public class GifViewHolder extends ViewHolder {
         if (albumItem.isSharedElement) {
             ItemViewUtil.bindTransitionView((ImageView) view, albumItem);
         } else {
-            ItemViewUtil.bindGif(this, (ImageView) view, albumItem);
+            itemView = v;
+            bindView();
         }
         return v;
     }
 
-    public void reloadGif() {
+    public void bindView() {
         View view = itemView.findViewById(R.id.image);
-        ItemViewUtil.bindGif(this, (ImageView) view, albumItem);
-    }
-
-    public void setAttacher(ImageView imageView) {
-        if (attacher != null) {
-            attacher.update();
-        } else {
-            attacher = new PhotoViewAttacher(imageView);
-            attacher.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
-                @Override
-                public void onViewTap(View view, float x, float y) {
-                    imageOnClick(view);
-                }
-            });
-        }
+        ViewGroup v = ItemViewUtil.bindImageViewForVideo((ImageView) view, albumItem);
+        View playButton = v.findViewWithTag(ItemViewUtil.VIDEO_PLAY_BUTTON_TAG);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlbumActivity.videoOnClick((Activity) view.getContext(), albumItem);
+            }
+        });
+        playButton.setAlpha(0.0f);
+        playButton.animate().alpha(0.54f).start();
     }
 
     @Override
     public void onSharedElement(final ItemActivity.Callback callback) {
-        if (attacher != null) {
-            attacher.cleanup();
-        }
         callback.callback();
     }
 }

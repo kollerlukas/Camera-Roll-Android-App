@@ -7,12 +7,13 @@ android {
         applicationId "us.koller.cameraroll"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 1
+        versionCode 3
         versionName "v1.0"
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -30,6 +31,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

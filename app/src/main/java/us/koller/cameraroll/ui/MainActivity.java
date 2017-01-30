@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -28,12 +27,15 @@ import java.util.ArrayList;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.MediaLoader;
+import us.koller.cameraroll.data.MediaLoader.MediaLoader;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
-import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static interface ActivityListener {
+        public void onDestroy();
+    }
 
     public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerViewAdapter recyclerViewAdapter;
 
     private Snackbar snackbar;
+
+    private MediaLoader mediaLoader;
 
     private boolean hiddenFolders = false;
     private boolean pick_photos;
@@ -102,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new RecyclerViewAdapter(pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.setHasFixedSize(true);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -168,17 +171,9 @@ public class MainActivity extends AppCompatActivity {
 
         setupTaskDescription();
 
-        //loading media
+        //load media
         if (savedInstanceState == null) {
             refreshPhotos();
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (intent.getAction().equals(REFRESH_MEDIA)) {
-            //refreshPhotos();
         }
     }
 
@@ -216,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
     public void refreshPhotos() {
         final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
-        //snackbar.show();
         Util.showSnackbar(snackbar);
 
         final MediaLoader.MediaLoaderCallback callback
@@ -224,24 +218,40 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMediaLoaded(final ArrayList<Album> albums,
                                       final boolean wasStorageSearched) {
-                final int oldAlbumsSize = MainActivity.this.albums.size();
-                MainActivity.this.albums = albums;
                 recyclerView.post(new Runnable() {
                     @Override
                     public void run() {
                         recyclerViewAdapter.setAlbums(albums);
-                        if (!wasStorageSearched) {
-                            recyclerViewAdapter.notifyDataSetChanged();
-                        } else {
+
+                        if (wasStorageSearched) {
+                            if (albums.size() > 0
+                                    && MainActivity.this.albums.size() > 0
+                                    && albums.size() > MainActivity.this.albums.size()) {
+                                int i = 0, k = 0;
+                                while (i < albums.size()) {
+                                    if (!albums.get(i).equals(MainActivity.this.albums.get(k))) {
+                                        recyclerViewAdapter.notifyItemInserted(i);
+                                    } else if (k < MainActivity.this.albums.size() - 1) {
+                                        k++;
+                                    }
+                                    i++;
+                                }
+                            }
+
                             snackbar.dismiss();
-                            recyclerViewAdapter.notifyItemRangeInserted(oldAlbumsSize, albums.size());
+                            mediaLoader = null;
+                        } else {
+                            recyclerViewAdapter.notifyDataSetChanged();
                         }
+
+                        MainActivity.this.albums = albums;
                     }
                 });
             }
         };
 
-        new MediaLoader().loadAlbums(MainActivity.this, hiddenFolders, callback);
+        mediaLoader = new MediaLoader();
+        mediaLoader.loadAlbums(MainActivity.this, hiddenFolders, callback);
     }
 
     @Override
@@ -294,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     // permission denied
-                    Snackbar snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
+                    snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
                     snackbar.setAction(R.string.retry, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -324,5 +334,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(ALBUMS, albums);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaLoader != null) {
+            mediaLoader.onDestroy();
+        }
     }
 }
