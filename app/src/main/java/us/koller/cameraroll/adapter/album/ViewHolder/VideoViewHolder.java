@@ -3,6 +3,7 @@ package us.koller.cameraroll.adapter.album.ViewHolder;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -12,6 +13,7 @@ import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.util.SizedColorDrawable;
 import us.koller.cameraroll.util.Util;
 
 public class VideoViewHolder extends AlbumItemHolder {
@@ -23,21 +25,16 @@ public class VideoViewHolder extends AlbumItemHolder {
     }
 
     @Override
-    void loadImage(ImageView imageView, final AlbumItem albumItem) {
-        Context context = imageView.getContext();
+    public int[] loadImage(ImageView imageView, final AlbumItem albumItem) {
+        int[] imageDimens = super.loadImage(imageView, albumItem);
 
-        int screenWidth = Util.getScreenWidth((Activity) context);
-        int columnCount = Util.getAlbumActivityGridColumnCount(context);
-        //square image
-        int[] imageDimens = {
-                (int) ((float) screenWidth / columnCount),
-                (int) ((float) screenWidth / columnCount)};
+        Context context = imageView.getContext();
 
         Glide.with(context)
                 .load(albumItem.getPath())
                 .asBitmap()
-                .thumbnail(0.1f)
                 .skipMemoryCache(true)
+                .placeholder(new SizedColorDrawable(ContextCompat.getColor(context, R.color.white_translucent2), imageDimens))
                 .override(imageDimens[0], imageDimens[1])
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
@@ -58,5 +55,7 @@ public class VideoViewHolder extends AlbumItemHolder {
                 })
                 .error(R.drawable.error_placeholder)
                 .into(imageView);
+
+        return imageDimens;
     }
 }

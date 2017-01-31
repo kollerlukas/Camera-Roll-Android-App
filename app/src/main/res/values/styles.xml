@@ -13,7 +13,7 @@
     </style>
 
     <style name="Theme.CameraRoll.Translucent" parent="Theme.CameraRoll">
-        <item name="android:windowBackground">@color/white_translucent2</item>
+        <item name="android:windowBackground">@color/black_translucent2</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">false</item>

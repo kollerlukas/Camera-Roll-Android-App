@@ -29,18 +29,17 @@ public abstract class ViewHolder {
         return v;
     }
 
-    void setOnClickListener(View view) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                imageOnClick(view);
-            }
-        });
-    }
-
     void imageOnClick(View view) {
         try {
             ((ItemActivity) view.getContext()).imageOnClick();
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void imageOnClick(View view, boolean show) {
+        try {
+            ((ItemActivity) view.getContext()).imageOnClick(show);
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
@@ -59,4 +58,6 @@ public abstract class ViewHolder {
     }
 
     public abstract void onSharedElement(ItemActivity.Callback callback);
+
+
 }

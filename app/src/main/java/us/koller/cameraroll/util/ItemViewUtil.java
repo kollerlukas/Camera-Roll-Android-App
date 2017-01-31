@@ -45,29 +45,20 @@ public class ItemViewUtil {
             photo.putImageViewSavedState(null);
         }
 
+        imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
+        imageView.setMinimumDpi(160);
+
         if (!photo.contentUri) {
-            if (imageViewState != null) {
-                imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
-                Log.d("ItemViewUtil", "restored state...");
-            } else {
-                imageView.setImage(ImageSource.uri(photo.getPath()));
-            }
+            imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
         } else {
             try {
                 Bitmap bmp = MediaStore.Images.Media.getBitmap(
                         imageView.getContext().getContentResolver(), Uri.parse(photo.getPath()));
-                if (imageViewState != null) {
-                    imageView.setImage(ImageSource.bitmap(bmp), imageViewState);
-                    Log.d("ItemViewUtil", "restored state...");
-                } else {
-                    imageView.setImage(ImageSource.bitmap(bmp));
-                }
+                imageView.setImage(ImageSource.bitmap(bmp), imageViewState);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_0);
-        imageView.setMinimumDpi(160);
         if (placeholderView != null) {
             imageView.setOnImageEventListener(
                     new SubsamplingScaleImageView.DefaultOnImageEventListener() {

@@ -1,5 +1,8 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,7 +25,6 @@ public class PhotoViewHolder extends ViewHolder {
     public View getView(ViewGroup container) {
         ViewGroup v = super.inflateView(container);
         final View view = v.findViewById(R.id.subsampling);
-        super.setOnClickListener(view);
         final View transitionView = itemView.findViewById(R.id.image);
 
         ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
@@ -30,9 +32,7 @@ public class PhotoViewHolder extends ViewHolder {
             view.setVisibility(View.INVISIBLE);
         } else {
             transitionView.setVisibility(View.INVISIBLE);
-            ItemViewUtil.bindSubsamplingImageView(
-                    (SubsamplingScaleImageView) view,
-                    (Photo) albumItem, transitionView);
+            bindImageView(view, transitionView);
         }
         return v;
     }
@@ -42,13 +42,34 @@ public class PhotoViewHolder extends ViewHolder {
         final View transitionView = itemView.findViewById(R.id.image);
         if (!isReturning) {
             view.setVisibility(View.VISIBLE);
-            ItemViewUtil.bindSubsamplingImageView(
-                    (SubsamplingScaleImageView) view,
-                    (Photo) albumItem, transitionView);
+            bindImageView(view, transitionView);
         } else {
             view.setVisibility(View.INVISIBLE);
             transitionView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void bindImageView(View view, View transitionView) {
+        final SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
+
+        final GestureDetector gestureDetector
+                = new GestureDetector(imageView.getContext(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent e) {
+                        PhotoViewHolder.super.imageOnClick(imageView);
+                        return super.onSingleTapUp(e);
+                    }
+                });
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return gestureDetector.onTouchEvent(motionEvent);
+            }
+        });
+
+        ItemViewUtil.bindSubsamplingImageView(
+                imageView, (Photo) albumItem, transitionView);
     }
 
     private void scaleDown(final ItemActivity.Callback callback) {
@@ -81,5 +102,16 @@ public class PhotoViewHolder extends ViewHolder {
                 callback.callback();
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        final SubsamplingScaleImageView imageView
+                = (SubsamplingScaleImageView) itemView.findViewById(R.id.subsampling);
+        if (imageView != null) {
+            imageView.recycle();
+        }
+
+        super.onDestroy();
     }
 }

@@ -1,6 +1,7 @@
 package us.koller.cameraroll.ui.widget;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -138,6 +139,10 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
                             1,
                             Math.abs(1.0 * swipeDistance / SWIPE_TRIGGER)));
         }
+    }
+
+    public static int getBackgroundColor(float percent) {
+        return Color.argb((int) (255 * 0.5 * (2 - percent)), 0, 0, 0);
     }
 
     public static boolean canSwipeBackForThisView(View v, int dir) {

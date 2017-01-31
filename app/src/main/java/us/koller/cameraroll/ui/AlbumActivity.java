@@ -663,8 +663,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
 
     @Override
     public void onSwipeProcess(float percent) {
-        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.root_view);
-        viewGroup.setAlpha(1 - percent + 0.7f);
+        getWindow().getDecorView().setBackgroundColor(SwipeBackCoordinatorLayout.getBackgroundColor(percent));
     }
 
     @Override

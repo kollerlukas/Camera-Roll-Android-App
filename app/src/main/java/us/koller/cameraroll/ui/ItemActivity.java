@@ -34,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -255,10 +256,6 @@ public class ItemActivity extends AppCompatActivity {
                 return insets.consumeSystemWindowInsets();
             }
         });
-
-        if (savedInstanceState != null && savedInstanceState.containsKey(WAS_SYSTEM_UI_HIDDEN)) {
-            systemUiVisible = !savedInstanceState.getBoolean(WAS_SYSTEM_UI_HIDDEN);
-        }
 
         //needed to achieve transparent navBar
         getWindow().getDecorView().setSystemUiVisibility(
@@ -524,6 +521,11 @@ public class ItemActivity extends AppCompatActivity {
         showSystemUI(systemUiVisible);
     }
 
+    public void imageOnClick(boolean show) {
+        systemUiVisible = show;
+        showSystemUI(systemUiVisible);
+    }
+
     private void showUI(boolean show) {
         float toolbar_translationY = show ? 0 : -(toolbar.getHeight());
         float bottomBar_translationY = show ? 0 : ((View) bottomBar.getParent()).getHeight();
@@ -603,7 +605,6 @@ public class ItemActivity extends AppCompatActivity {
             SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
             ImageViewState state = imageView.getState();
             if (state != null) {
-                Log.d("ItemActivity", "saving state...");
                 outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
             }
         }

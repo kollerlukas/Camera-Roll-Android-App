@@ -1,9 +1,10 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -56,7 +57,17 @@ public class GifViewHolder extends ViewHolder {
     public void onSharedElement(final ItemActivity.Callback callback) {
         if (attacher != null) {
             attacher.cleanup();
+            attacher = null;
         }
         callback.callback();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (attacher != null) {
+            attacher.cleanup();
+            attacher = null;
+        }
+        super.onDestroy();
     }
 }
