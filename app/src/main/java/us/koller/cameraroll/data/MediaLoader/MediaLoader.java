@@ -152,8 +152,6 @@ public class MediaLoader implements MainActivity.ActivityListener {
     }
 
     private void searchStorage(final Activity context, final ArrayList<Album> albums, final Callback callback) {
-        final long startTime = System.currentTimeMillis();
-
         File dir = Environment.getExternalStorageDirectory(); //new File("/storage/emulated/0");
         File[] dirs = dir.listFiles(new FileFilter() {
             @Override
@@ -176,8 +174,6 @@ public class MediaLoader implements MainActivity.ActivityListener {
                     if (mediaLoaderThreads.size() == 0) {
                         callback.callback(albums);
                         mediaLoaderThreads = null;
-
-                        Log.d("MediaLoader", "searchStorage(): " + String.valueOf(System.currentTimeMillis() - startTime));
                     }
                 }
             });

@@ -63,6 +63,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                         for (int i = start; i <= end; i++) {
                             selected_items[i] = isSelected;
 
+                            RecyclerViewAdapter.this.callback.onItemSelected(getSelectedItemCount());
+                            checkForNoSelectedItems();
+
                             //update ViewHolder
                             notifyItemChanged(i);
                         }
@@ -99,9 +102,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final AlbumItem albumItem = album.getAlbumItems().get(position);
+
         ((AlbumItemHolder) holder).setAlbumItem(albumItem);
+
         holder.itemView.findViewById(R.id.image)
                 .setSelected(selected_items[album.getAlbumItems().indexOf(albumItem)]);
+        //fade selected indicator
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            boolean selected = selected_items[album.getAlbumItems()
+                    .indexOf(((AlbumItemHolder) holder).albumItem)];
+
+            Drawable foreground = holder.itemView.findViewById(R.id.image).getForeground();
+
+            ObjectAnimator
+                    .ofPropertyValuesHolder(foreground,
+                            PropertyValuesHolder.ofInt("alpha",
+                                    selected ? 0 : 255,
+                                    selected ? 255 : 0)).start();
+        }
 
         holder.itemView.setTag(albumItem.getPath());
 
@@ -114,10 +132,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                 if (selector_mode) {
                     onItemSelected((AlbumItemHolder) holder);
-
-                    //notify DragSelectTouchListener
-                    int position = album.getAlbumItems().indexOf(albumItem);
-                    dragSelectTouchListener.startDragSelection(position);
                 } else if (albumItem instanceof Photo || albumItem instanceof Gif || albumItem instanceof Video) {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
@@ -189,10 +203,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private void onItemSelected(AlbumItemHolder holder) {
         selected_items[album.getAlbumItems().indexOf(holder.albumItem)]
                 = !selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
-        holder.itemView.findViewById(R.id.image)
-                .setSelected(selected_items[album.getAlbumItems().indexOf(holder.albumItem)]);
+        notifyItemChanged(album.getAlbumItems().indexOf(holder.albumItem));
+        /*holder.itemView.findViewById(R.id.image)
+                .setSelected(selected_items[album.getAlbumItems().indexOf(holder.albumItem)]);*/
 
-        //fade selected indicator
+        /*//fade selected indicator
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             boolean selected = selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
             Drawable foreground = holder.itemView.findViewById(R.id.image).getForeground();
@@ -202,7 +217,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                             PropertyValuesHolder.ofInt("alpha",
                                     selected ? 0 : 255,
                                     selected ? 255 : 0)).start();
-        }
+        }*/
 
         callback.onItemSelected(getSelectedItemCount());
         checkForNoSelectedItems();
