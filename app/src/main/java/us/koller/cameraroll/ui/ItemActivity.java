@@ -10,8 +10,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -28,13 +30,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -402,7 +402,12 @@ public class ItemActivity extends AppCompatActivity {
     public void showInfoDialog() {
         ExifInterface exif = null;
         try {
-            exif = new ExifInterface(albumItem.getPath());
+            if (albumItem.contentUri && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                exif = new ExifInterface(getContentResolver()
+                        .openInputStream(albumItem.getUri(this)));
+            } else {
+                exif = new ExifInterface(albumItem.getPath());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -425,7 +430,7 @@ public class ItemActivity extends AppCompatActivity {
         if (!exifSupported) {
             imageDimens = albumItem instanceof Video ?
                     Util.getVideoDimensions(albumItem.getPath()) :
-                    Util.getImageDimensions(albumItem.getPath());
+                    Util.getImageDimensions(this, albumItem.getPath());
         }
 
         String height = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) : String.valueOf(imageDimens[1]);
@@ -435,7 +440,7 @@ public class ItemActivity extends AppCompatActivity {
         String exposure = exifSupported ? parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)) + " sec" : NO_DATA;
         String model = exifSupported ? exif.getAttribute(ExifInterface.TAG_MAKE) + " " + exif.getAttribute(ExifInterface.TAG_MODEL) : NO_DATA;
         String aperture = NO_DATA, iso = NO_DATA;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N && exifSupported) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && exifSupported) {
             aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
             iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
         }

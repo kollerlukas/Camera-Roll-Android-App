@@ -33,10 +33,6 @@ import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static interface ActivityListener {
-        public void onDestroy();
-    }
-
     public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
     public static final String SHARED_PREF_NAME = "CAMERA_ROLL_SETTINGS";
@@ -209,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshPhotos() {
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
+        snackbar = Snackbar.make(findViewById(R.id.root_view),
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
         Util.showSnackbar(snackbar);
 
@@ -247,6 +243,20 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.albums = albums;
                     }
                 });
+            }
+
+            @Override
+            public void timeout() {
+                snackbar = Snackbar.make(findViewById(R.id.root_view),
+                        R.string.loading_failed, Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(getString(R.string.retry), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        refreshPhotos();
+                        snackbar.dismiss();
+                    }
+                });
+                Util.showSnackbar(snackbar);
             }
         };
 

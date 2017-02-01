@@ -70,6 +70,7 @@
     <string name="items">" Items"</string>
 
     <string name="loading">Loading…</string>
+    <string name="loading_failed">Loading failed</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

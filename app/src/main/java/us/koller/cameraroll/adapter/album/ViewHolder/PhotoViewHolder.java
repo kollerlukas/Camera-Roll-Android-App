@@ -3,6 +3,7 @@ package us.koller.cameraroll.adapter.album.ViewHolder;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -22,8 +23,8 @@ public class PhotoViewHolder extends AlbumItemHolder {
     }
 
     @Override
-    public int[] loadImage(final ImageView imageView, final AlbumItem albumItem) {
-        final int[] imageDimens = super.loadImage(imageView, albumItem);
+    public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
+        super.loadImage(imageView, albumItem);
 
         final Context context = imageView.getContext();
 
@@ -31,8 +32,8 @@ public class PhotoViewHolder extends AlbumItemHolder {
                 .load(albumItem.getPath())
                 .asBitmap()
                 .skipMemoryCache(true)
-                .placeholder(new SizedColorDrawable(ContextCompat.getColor(context, R.color.white_translucent2), imageDimens))
-                .override(imageDimens[0], imageDimens[1])
+                .thumbnail(0.1f)
+                //.placeholder(new SizedColorDrawable(ContextCompat.getColor(context, R.color.white_translucent2), imageDimens))
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -52,7 +53,5 @@ public class PhotoViewHolder extends AlbumItemHolder {
                 })
                 .error(R.drawable.error_placeholder)
                 .into(imageView);
-
-        return imageDimens;
     }
 }

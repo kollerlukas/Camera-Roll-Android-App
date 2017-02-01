@@ -55,6 +55,7 @@ public class IntentReceiver extends AppCompatActivity {
         album.getAlbumItems().add(albumItem);
 
         Intent view_photo = new Intent(this, ItemActivity.class)
+                .setData(uri)
                 .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
                 .putExtra(ItemActivity.VIEW_ONLY, true)
                 .putExtra(ItemActivity.ALBUM, album)

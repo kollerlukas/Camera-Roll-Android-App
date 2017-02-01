@@ -49,16 +49,10 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
             ((ParallaxImageView) image).setParallaxTranslation();
         }
 
-        int[] imageDimens = Util.getImageDimensions(coverImage.getPath());
-        int screenWidth = Util.getScreenWidth((Activity) itemView.getContext());
-        float scale = ((float) screenWidth) / (float) imageDimens[0];
-        scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-        imageDimens[0] = (int) (imageDimens[0] * scale);
-        imageDimens[1] = (int) (imageDimens[1] * scale);
-
         Glide.with(itemView.getContext())
                 .load(coverImage.getPath())
                 .asBitmap()
+                .thumbnail(0.1f)
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override

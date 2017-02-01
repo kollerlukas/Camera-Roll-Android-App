@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -25,10 +26,12 @@ import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
-public class MediaLoader implements MainActivity.ActivityListener {
+public class MediaLoader {
 
     public interface MediaLoaderCallback {
         void onMediaLoaded(ArrayList<Album> albums, boolean wasStorageSearched);
+
+        void timeout();
     }
 
     private interface Callback {
@@ -89,6 +92,16 @@ public class MediaLoader implements MainActivity.ActivityListener {
             albums.addAll(hiddenAlbums);
         }
 
+        //handle timeout
+        final Handler handler = new Handler();
+        final Runnable timeout = new Runnable() {
+            @Override
+            public void run() {
+                callback.timeout();
+            }
+        };
+        handler.postDelayed(timeout, 1000);
+
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -144,6 +157,7 @@ public class MediaLoader implements MainActivity.ActivityListener {
                         //done loading media from storage
                         SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
                         callback.onMediaLoaded(albums, true);
+                        handler.removeCallbacks(timeout);
                         Log.d("MediaLoader", "onMediaLoaded(..., true): " + String.valueOf(System.currentTimeMillis() - startTime));
                     }
                 });
@@ -195,7 +209,6 @@ public class MediaLoader implements MainActivity.ActivityListener {
         albums.addAll(albumsToAdd);
     }
 
-    @Override
     public void onDestroy() {
         //cancel all mediaLoaderThreads when Activity is being destroyed
         if (mediaLoaderThreads != null) {

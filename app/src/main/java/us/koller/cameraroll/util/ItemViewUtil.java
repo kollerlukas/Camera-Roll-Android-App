@@ -74,15 +74,20 @@ public class ItemViewUtil {
 
     public static View bindTransitionView(final ImageView imageView,
                                           final AlbumItem albumItem) {
+
         int[] imageDimens = albumItem instanceof Video ?
                 Util.getVideoDimensions(albumItem.getPath()) :
-                Util.getImageDimensions(albumItem.getPath());
+                Util.getImageDimensions(imageView.getContext(), albumItem.getPath());
 
         int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
         float scale = ((float) screenWidth) / (float) imageDimens[0];
         scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-        imageDimens[0] = (int) (imageDimens[0] * scale * 0.5f);
-        imageDimens[1] = (int) (imageDimens[1] * scale * 0.5f);
+        imageDimens[0] =
+                (int) (imageDimens[0] * scale * 0.5f) > 0
+                        ? (int) (imageDimens[0] * scale * 0.5f) : 1;
+        imageDimens[1] =
+                (int) (imageDimens[1] * scale * 0.5f) > 0
+                        ? (int) (imageDimens[1] * scale * 0.5f) : 1;
 
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
@@ -160,7 +165,7 @@ public class ItemViewUtil {
                                                   final AlbumItem albumItem) {
         int[] imageDimens = albumItem instanceof Video ?
                 Util.getVideoDimensions(albumItem.getPath()) :
-                Util.getImageDimensions(albumItem.getPath());
+                Util.getImageDimensions(imageView.getContext(), albumItem.getPath());
 
         int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
         float scale = ((float) screenWidth) / (float) imageDimens[0];

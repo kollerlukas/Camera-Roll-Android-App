@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.util.ColorFade;
@@ -25,18 +27,18 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
         loadImage(imageView, albumItem);
     }
 
-    public int[] loadImage(final ImageView imageView, final AlbumItem albumItem) {
+    public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
 
-        final Context context = itemView.getContext();
+        /*final Context context = itemView.getContext();
 
         int screenWidth = Util.getScreenWidth((Activity) context);
         int columnCount = Util.getAlbumActivityGridColumnCount(context);
         //square image
         int[] imageDimens = {
                 (int) ((float) screenWidth / columnCount),
-                (int) ((float) screenWidth / columnCount)};
+                (int) ((float) screenWidth / columnCount)};*/
 
-        return imageDimens;
+        Glide.clear(imageView);
     }
 
     void fadeIn() {

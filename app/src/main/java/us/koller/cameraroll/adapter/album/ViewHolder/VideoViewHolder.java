@@ -25,8 +25,8 @@ public class VideoViewHolder extends AlbumItemHolder {
     }
 
     @Override
-    public int[] loadImage(ImageView imageView, final AlbumItem albumItem) {
-        int[] imageDimens = super.loadImage(imageView, albumItem);
+    public void loadImage(ImageView imageView, final AlbumItem albumItem) {
+        super.loadImage(imageView, albumItem);
 
         Context context = imageView.getContext();
 
@@ -34,8 +34,8 @@ public class VideoViewHolder extends AlbumItemHolder {
                 .load(albumItem.getPath())
                 .asBitmap()
                 .skipMemoryCache(true)
-                .placeholder(new SizedColorDrawable(ContextCompat.getColor(context, R.color.white_translucent2), imageDimens))
-                .override(imageDimens[0], imageDimens[1])
+                .thumbnail(0.1f)
+                //.placeholder(new SizedColorDrawable(ContextCompat.getColor(context, R.color.white_translucent2), imageDimens))
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -55,7 +55,5 @@ public class VideoViewHolder extends AlbumItemHolder {
                 })
                 .error(R.drawable.error_placeholder)
                 .into(imageView);
-
-        return imageDimens;
     }
 }

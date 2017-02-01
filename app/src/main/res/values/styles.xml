@@ -36,6 +36,8 @@
 
 
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
+        <item name="android:windowBackground">@color/black</item>
+
         <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition
         </item>
         <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
