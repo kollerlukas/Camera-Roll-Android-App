@@ -445,7 +445,6 @@ public class ItemActivity extends AppCompatActivity {
             iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
         }
 
-
         String[] values = {name, path, size, width + " x " + height,
                 date, model, focal_length, exposure, aperture, iso};
 

@@ -209,44 +209,30 @@ public class MainActivity extends AppCompatActivity {
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
         Util.showSnackbar(snackbar);
 
-        final MediaLoader.MediaLoaderCallback callback
-                = new MediaLoader.MediaLoaderCallback() {
+        final MediaLoader.LoaderCallback callback
+                = new MediaLoader.LoaderCallback() {
             @Override
-            public void onMediaLoaded(final ArrayList<Album> albums,
-                                      final boolean wasStorageSearched) {
-                recyclerView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        recyclerViewAdapter.setAlbums(albums);
-
-                        if (wasStorageSearched) {
-                            if (albums.size() > 0
-                                    && MainActivity.this.albums.size() > 0
-                                    && albums.size() > MainActivity.this.albums.size()) {
-                                int i = 0, k = 0;
-                                while (i < albums.size()) {
-                                    if (!albums.get(i).equals(MainActivity.this.albums.get(k))) {
-                                        recyclerViewAdapter.notifyItemInserted(i);
-                                    } else if (k < MainActivity.this.albums.size() - 1) {
-                                        k++;
-                                    }
-                                    i++;
-                                }
-                            }
+            public void onMediaLoaded(final ArrayList<Album> albums) {
+                if (albums != null) {
+                    recyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            MainActivity.this.albums = albums;
+                            recyclerViewAdapter.setAlbums(albums);
+                            recyclerViewAdapter.notifyDataSetChanged();
 
                             snackbar.dismiss();
-                            mediaLoader = null;
-                        } else {
-                            recyclerViewAdapter.notifyDataSetChanged();
-                        }
 
-                        MainActivity.this.albums = albums;
-                    }
-                });
+                            mediaLoader.onDestroy();
+                            mediaLoader = null;
+                        }
+                    });
+                }
             }
 
             @Override
             public void timeout() {
+                //handle timeout
                 snackbar = Snackbar.make(findViewById(R.id.root_view),
                         R.string.loading_failed, Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(getString(R.string.retry), new View.OnClickListener() {
@@ -257,6 +243,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 Util.showSnackbar(snackbar);
+
+                mediaLoader.onDestroy();
+                mediaLoader = null;
             }
         };
 
@@ -267,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         if (!pick_photos) {
-            getMenuInflater().inflate(R.menu.main, menu);
             menu.findItem(R.id.hiddenFolders).setChecked(hiddenFolders);
         }
         return true;

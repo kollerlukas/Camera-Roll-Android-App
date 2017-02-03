@@ -79,7 +79,7 @@ public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
 
     @Override
     public long getDate(Activity context) {
-        return Util.getDateAdded(context, getPath());
+        return new File(getPath()).lastModified();
     }
 
     public Uri getUri(Context context) {

@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import java.io.File;
 import java.util.ArrayList;
 
+import us.koller.cameraroll.data.MediaLoader.MediaLoader;
 import us.koller.cameraroll.util.SortUtil;
 
 public class Album implements Parcelable, SortUtil.Sortable {
@@ -22,7 +23,23 @@ public class Album implements Parcelable, SortUtil.Sortable {
 
     public Album setPath(String path) {
         this.path = path;
+        hiddenAlbum = isHidden();
         return this;
+    }
+
+    private boolean isHidden() {
+        if (getName().startsWith(".")) {
+            return true;
+        } else {
+            File dir = new File(getPath());
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].getName().equals(MediaLoader.FILE_TYPE_NO_MEDIA)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public String getPath() {

@@ -126,13 +126,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (albumItem.error) {
-                    return;
-                }
-
                 if (selector_mode) {
                     onItemSelected((AlbumItemHolder) holder);
-                } else if (albumItem instanceof Photo || albumItem instanceof Gif || albumItem instanceof Video) {
+                } else if ((albumItem instanceof Photo
+                        || albumItem instanceof Gif
+                        || albumItem instanceof Video) && !albumItem.error) {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
                     intent.putExtra(ItemActivity.ALBUM, album);
@@ -155,9 +153,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (((AlbumItemHolder) holder).albumItem.error) {
+                /*if (((AlbumItemHolder) holder).albumItem.error) {
                     return true;
-                }
+                }*/
 
                 if (!selector_mode) {
                     selector_mode = true;

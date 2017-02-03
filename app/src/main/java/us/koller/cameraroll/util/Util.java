@@ -7,20 +7,26 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
+import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.AlbumItem;
 
 public class Util {
     public static int getAlbumActivityGridColumnCount(Context context) {
@@ -120,33 +126,5 @@ public class Util {
             }
         });
         return snackbar;
-    }
-
-    public static long getDateAdded(Activity context, String path) {
-
-        long dateAdded = new File(path).lastModified();
-
-        String[] projection = {MediaStore.Images.Media.DATE_TAKEN};
-
-        // Make the query.
-        ContentResolver resolver = context.getContentResolver();
-        Cursor cursor = resolver.query(Uri.parse(path),
-                projection, // Which columns to return
-                null,       // Which rows to return (all rows)
-                null,       // Selection arguments (none)
-                MediaStore.Images.Media.DATE_TAKEN        // Ordering
-        );
-
-        if (cursor == null) {
-            return dateAdded;
-        }
-
-        cursor.moveToFirst();
-        String dateTaken = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
-        cursor.close();
-
-        dateAdded = Long.parseLong(dateTaken);
-
-        return dateAdded;
     }
 }

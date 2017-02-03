@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import us.koller.cameraroll.data.Album;
+
 public class SortUtil {
 
     public interface Sortable {
@@ -21,9 +23,11 @@ public class SortUtil {
 
     public static ArrayList<? extends Sortable> sortAlbums(Activity context, ArrayList<? extends Sortable> albums, int by) {
         //sort each individual album
-        /*for (int i = 0; i < albums.size(); i++) {
-            sort(context, albums, BY_DATE);
-        }*/
+        if (albums.size() > 0 && albums.get(0) instanceof Album) {
+            for (int i = 0; i < albums.size(); i++) {
+                sort(context, ((Album) albums.get(i)).getAlbumItems(), BY_DATE);
+            }
+        }
 
         //sort albums arrayList
         sort(context, albums, by);
@@ -31,7 +35,7 @@ public class SortUtil {
         return albums;
     }
 
-    private static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
+    public static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
         switch (by) {
             case BY_DATE:
                 return sortByDate(context, sortables);
@@ -46,7 +50,7 @@ public class SortUtil {
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                return (int) (s1.getDate(context) - s2.getDate(context));
+                return Long.valueOf(s2.getDate(context)).compareTo(s1.getDate(context));
             }
         });
         return sortables;

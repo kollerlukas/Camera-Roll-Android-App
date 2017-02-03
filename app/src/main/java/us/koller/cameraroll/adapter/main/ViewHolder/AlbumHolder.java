@@ -16,7 +16,6 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.ColorFade;
-import us.koller.cameraroll.util.Util;
 
 public class AlbumHolder extends RecyclerView.ViewHolder {
 
@@ -52,7 +51,6 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
         Glide.with(itemView.getContext())
                 .load(coverImage.getPath())
                 .asBitmap()
-                .thumbnail(0.1f)
                 .error(R.drawable.error_placeholder)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
@@ -76,6 +74,8 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
                         }
                         return false;
                     }
-                }).into(image);
+
+                })
+                .into(image);
     }
 }

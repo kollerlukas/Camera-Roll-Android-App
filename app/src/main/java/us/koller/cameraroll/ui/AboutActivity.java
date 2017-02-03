@@ -4,6 +4,7 @@ import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -13,6 +14,7 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,10 +23,12 @@ import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.MediaLoader.MediaLoader;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 
 public class AboutActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener {
@@ -58,7 +62,16 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
         try {
             String versionName = getPackageManager()
                     .getPackageInfo(getPackageName(), 0).versionName;
+            final int versionCode = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionCode;
             version.setText(getString(R.string.app_name) + " " + versionName);
+            version.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    Toast.makeText(view.getContext(), "versionCode: " + String.valueOf(versionCode), Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            });
         } catch (PackageManager.NameNotFoundException e) {
         }
 
@@ -133,9 +146,37 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
                 .canSwipeBackForThisView(findViewById(R.id.scroll_view), dir);
     }
 
+    private Handler handler;
+    private Runnable runnable;
+    private boolean consumed = false;
+
     @Override
     public void onSwipeProcess(float percent) {
         getWindow().getDecorView().setBackgroundColor(SwipeBackCoordinatorLayout.getBackgroundColor(percent));
+
+        //hidden ability to change the way media is loaded (either through MediaStore or custom Storage traversal)
+        if (percent == 1.0f) {
+            if (handler == null) {
+                handler = new Handler();
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!consumed) {
+                            MediaLoader.toggleMode(AboutActivity.this);
+                            consumed = true;
+                        }
+                    }
+                };
+                handler.postDelayed(runnable, 5000);
+            }
+        } else {
+            if (handler != null && runnable != null) {
+                handler.removeCallbacks(runnable);
+                consumed = false;
+            }
+            handler = null;
+            runnable = null;
+        }
     }
 
     @Override

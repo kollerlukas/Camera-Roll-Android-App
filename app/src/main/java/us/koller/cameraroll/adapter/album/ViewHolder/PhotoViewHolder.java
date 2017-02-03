@@ -33,7 +33,6 @@ public class PhotoViewHolder extends AlbumItemHolder {
                 .asBitmap()
                 .skipMemoryCache(true)
                 .thumbnail(0.1f)
-                //.placeholder(new SizedColorDrawable(ContextCompat.getColor(context, R.color.white_translucent2), imageDimens))
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
