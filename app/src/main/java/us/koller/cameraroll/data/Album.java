@@ -12,10 +12,13 @@ import us.koller.cameraroll.util.SortUtil;
 
 public class Album implements Parcelable, SortUtil.Sortable {
 
+    private static final int NOT_HIDDEN = 1;
+    private static final int HIDDEN = 2;
+
     private ArrayList<AlbumItem> albumItems;
     private String path;
 
-    public boolean hiddenAlbum = false;
+    private int hidden = -1;
 
     public Album() {
         albumItems = new ArrayList<>();
@@ -23,22 +26,28 @@ public class Album implements Parcelable, SortUtil.Sortable {
 
     public Album setPath(String path) {
         this.path = path;
-        hiddenAlbum = isHidden();
         return this;
     }
 
-    private boolean isHidden() {
+    public boolean isHidden() {
+        if (hidden != -1) {
+            return hidden == HIDDEN;
+        }
+
         if (getName().startsWith(".")) {
+            hidden = HIDDEN;
             return true;
         } else {
             File dir = new File(getPath());
             File[] files = dir.listFiles();
             for (int i = 0; i < files.length; i++) {
                 if (files[i].getName().equals(MediaLoader.FILE_TYPE_NO_MEDIA)) {
+                    hidden = HIDDEN;
                     return true;
                 }
             }
         }
+        hidden = NOT_HIDDEN;
         return false;
     }
 
@@ -68,7 +77,7 @@ public class Album implements Parcelable, SortUtil.Sortable {
 
     private Album(Parcel parcel) {
         path = parcel.readString();
-        hiddenAlbum = Boolean.parseBoolean(parcel.readString());
+        hidden = parcel.readInt();
         albumItems = new ArrayList<>();
         albumItems = parcel.createTypedArrayList(AlbumItem.CREATOR);
     }
@@ -86,7 +95,7 @@ public class Album implements Parcelable, SortUtil.Sortable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(path);
-        parcel.writeString(String.valueOf(hiddenAlbum));
+        parcel.writeInt(hidden);
         AlbumItem[] albumItems = new AlbumItem[this.albumItems.size()];
         for (int k = 0; k < albumItems.length; k++) {
             albumItems[k] = this.albumItems.get(k);

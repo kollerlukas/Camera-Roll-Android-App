@@ -1,16 +1,17 @@
 package us.koller.cameraroll.data.MediaLoader.Loader;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
@@ -20,7 +21,9 @@ import us.koller.cameraroll.util.SortUtil;
 
 public class StorageLoader implements MediaLoader.Loader {
 
-    private ArrayList<Thread> mediaLoaderThreads;
+    private static final int THREAD_COUNT = 8;
+
+    private ArrayList<Thread> threads;
 
     @Override
     public void loadAlbums(final Activity context, final boolean hiddenFolders,
@@ -50,7 +53,7 @@ public class StorageLoader implements MediaLoader.Loader {
                     public void callback(ArrayList<Album> albums) {
                         if (!hiddenFolders) {
                             for (int i = albums.size() - 1; i >= 0; i--) {
-                                if (albums.get(i).hiddenAlbum) {
+                                if (albums.get(i).isHidden()) {
                                     albums.remove(i);
                                 }
                             }
@@ -60,6 +63,8 @@ public class StorageLoader implements MediaLoader.Loader {
                         SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
                         callback.onMediaLoaded(albums);
                         handler.removeCallbacks(timeout);
+                        /*Log.d("StorageLoader", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
+                                + "): " + String.valueOf(System.currentTimeMillis() - startTime));*/
                         Log.d("StorageLoader", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
                     }
                 });
@@ -70,9 +75,9 @@ public class StorageLoader implements MediaLoader.Loader {
     @Override
     public void onDestroy() {
         //cancel all mediaLoaderThreads when Activity is being destroyed
-        if (mediaLoaderThreads != null) {
-            for (int i = 0; i < mediaLoaderThreads.size(); i++) {
-                mediaLoaderThreads.get(i).cancel();
+        if (threads != null) {
+            for (int i = 0; i < threads.size(); i++) {
+                threads.get(i).cancel();
             }
         }
     }
@@ -86,25 +91,37 @@ public class StorageLoader implements MediaLoader.Loader {
             }
         });
 
-        mediaLoaderThreads = new ArrayList<>();
+        threads = new ArrayList<>();
+
+        Thread.Callback threadCallback = new Thread.Callback() {
+            @Override
+            public void done(Thread thread,
+                             ArrayList<Album> albumsToAdd) {
+                mergeAlbums(albums, albumsToAdd);
+                threads.remove(thread);
+                thread.cancel();
+                if (threads.size() == 0) {
+                    callback.callback(albums);
+                    threads = null;
+                }
+            }
+        };
+
+        //overhead is to big!!
+        /*final File[][] threadDirs = divideDirs(dirs);
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            final File[] files = threadDirs[i];
+            Thread thread = new Thread(context, files, threadCallback);
+            thread.start();
+            threads.add(thread);
+        }*/
 
         for (int i = 0; i < dirs.length; i++) {
-            final File file = dirs[i];
-            Thread mediaLoaderThread
-                    = new Thread(context, file, new Thread.Callback() {
-                @Override
-                public void done(Thread thread, ArrayList<Album> albumsToAdd) {
-                    mergeAlbums(albums, albumsToAdd);
-                    mediaLoaderThreads.remove(thread);
-                    thread.cancel();
-                    if (mediaLoaderThreads.size() == 0) {
-                        callback.callback(albums);
-                        mediaLoaderThreads = null;
-                    }
-                }
-            });
+            final File[] files = {dirs[i]};
+            Thread mediaLoaderThread = new Thread(context, files, threadCallback);
             mediaLoaderThread.start();
-            mediaLoaderThreads.add(mediaLoaderThread);
+            threads.add(mediaLoaderThread);
         }
     }
 
@@ -121,7 +138,31 @@ public class StorageLoader implements MediaLoader.Loader {
         albums.addAll(albumsToAdd);
     }
 
-    public static class Thread extends java.lang.Thread {
+    private File[][] divideDirs(File[] dirs) {
+        int[] threadDirs_sizes = new int[THREAD_COUNT];
+        int rest = dirs.length % THREAD_COUNT;
+        for (int i = 0; i < threadDirs_sizes.length; i++) {
+            threadDirs_sizes[i] = dirs.length / THREAD_COUNT;
+            if (rest > 0) {
+                threadDirs_sizes[i]++;
+                rest--;
+            }
+        }
+
+        Log.d("StorageLoader", Arrays.toString(threadDirs_sizes));
+
+        File[][] threadDirs = new File[THREAD_COUNT][dirs.length / THREAD_COUNT + 1];
+        int index = 0;
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            File[] threadDir = Arrays.copyOfRange(dirs, index, index + threadDirs_sizes[i]);
+            threadDirs[i] = threadDir;
+            index = index + threadDirs_sizes[i];
+        }
+
+        return threadDirs;
+    }
+
+    private static class Thread extends java.lang.Thread {
 
         interface Callback {
             void done(Thread thread, ArrayList<Album> albums);
@@ -130,24 +171,24 @@ public class StorageLoader implements MediaLoader.Loader {
         private Activity context;
         private Callback callback;
 
-        private File dir;
+        private File[] dirs;
 
-        Thread(Activity context, File dir, Callback callback) {
+        Thread(Activity context, File[] dirs, Callback callback) {
             this.context = context;
             this.callback = callback;
-            this.dir = dir;
+            this.dirs = dirs;
         }
 
         @Override
         public void run() {
             super.run();
 
-            Looper.prepare();
+            final ArrayList<Album> albums = new ArrayList<>();
 
-            ArrayList<Album> albums = new ArrayList<>();
-
-            if (dir != null) {
-                recursivelySearchStorage(context, dir, albums);
+            if (dirs != null) {
+                for (int i = 0; i < dirs.length; i++) {
+                    recursivelySearchStorage(context, dirs[i], albums);
+                }
             }
 
             if (callback != null) {
@@ -162,7 +203,7 @@ public class StorageLoader implements MediaLoader.Loader {
                 return;
             }
 
-            if (!file.isDirectory()) {
+            if (file.isFile()) {
                 return;
             }
 
@@ -171,16 +212,14 @@ public class StorageLoader implements MediaLoader.Loader {
             File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
                 if (MediaType.isMedia(context, files[i].getPath())) {
-                    AlbumItem albumItem = AlbumItem
-                            .getInstance(context, files[i].getPath());
-                    album.getAlbumItems().add(albumItem);
+                    album.getAlbumItems()
+                            .add(AlbumItem.getInstance(context, files[i].getPath()));
                 } else if (file.isDirectory()) {
                     recursivelySearchStorage(context, files[i], albums);
                 }
             }
 
             if (album.getAlbumItems().size() > 0) {
-                SortUtil.sort(context, album.getAlbumItems(), SortUtil.BY_DATE);
                 albums.add(album);
             }
         }

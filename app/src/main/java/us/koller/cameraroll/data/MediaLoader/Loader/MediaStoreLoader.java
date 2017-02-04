@@ -139,7 +139,7 @@ public class MediaStoreLoader implements MediaLoader.Loader {
                 path = path.replace(MediaLoader.FILE_TYPE_NO_MEDIA, "");
                 File folder = new File(path);
                 final Album album = new Album().setPath(folder.getPath());
-                album.hiddenAlbum = true;
+                //album.isHidden() = true;
 
                 folder.listFiles(new FileFilter() {
                     @Override

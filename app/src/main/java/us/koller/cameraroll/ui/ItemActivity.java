@@ -394,7 +394,7 @@ public class ItemActivity extends AppCompatActivity {
         intent.setAction(AlbumActivity.DELETE_ALBUMITEM);
         intent.putExtra(AlbumActivity.ALBUM, album);
         intent.putExtra(ALBUM_ITEM, albumItem);
-        intent.putExtra(HIDDEN_ALBUMITEM, album.hiddenAlbum);
+        intent.putExtra(HIDDEN_ALBUMITEM, album.isHidden());
         intent.putExtra(VIEW_ONLY, view_only);
         startActivity(intent);
     }

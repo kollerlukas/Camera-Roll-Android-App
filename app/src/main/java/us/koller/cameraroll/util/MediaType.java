@@ -24,36 +24,39 @@ public class MediaType {
 
     public static boolean isImage(Context context, String path) {
         if (path != null) {
-            String mimeType = getMimeType(context, path);
+            //fix performance
+            /*String mimeType = getMimeType(context, path);
             if (mimeType != null) {
                 return mimeType.contains("image");
-            } else {
+            } else {*/
                 return checkImageExtension(path);
-            }
+            //}
         }
         return false;
     }
 
     public static boolean isVideo(Context context, String path) {
         if (path != null) {
-            String mimeType = getMimeType(context, path);
+            //fix performance
+            /*String mimeType = getMimeType(context, path);
             if (mimeType != null) {
                 return mimeType.contains("video");
-            } else {
+            } else {*/
                 return checkVideoExtension(path);
-            }
+            //}
         }
         return false;
     }
 
     public static boolean isGif(Context context, String path) {
         if (path == null || isImage(context, path)) {
-            String mimeType = getMimeType(context, path);
+            //fix performance
+            /*String mimeType = getMimeType(context, path);
             if (mimeType != null) {
                 return mimeType.contains("gif");
-            } else {
+            } else {*/
                 return checkGifExtension(path);
-            }
+            //}
         }
         return false;
     }

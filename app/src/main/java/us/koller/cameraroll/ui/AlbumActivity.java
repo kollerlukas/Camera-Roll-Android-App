@@ -414,7 +414,7 @@ public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordin
         int successfully_deleted = 0;
         for (int i = 0; i < selected_items.length; i++) {
             boolean success;
-            if (!album.hiddenAlbum) {
+            if (!album.isHidden()) {
                 int result = getContentResolver().delete(MediaStore.Files.getContentUri("external"),
                         MediaStore.Files.FileColumns.DATA + "=?", new String[]{selected_items[i].getPath()});
                 success = result > 0;

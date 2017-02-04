@@ -35,7 +35,7 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
         ((TextView) itemView.findViewById(R.id.count)).setText(count);
 
         itemView.findViewById(R.id.hidden_folder_indicator)
-                .setVisibility(album.hiddenAlbum ? View.VISIBLE : View.INVISIBLE);
+                .setVisibility(album.isHidden() ? View.VISIBLE : View.INVISIBLE);
 
         loadImage();
     }

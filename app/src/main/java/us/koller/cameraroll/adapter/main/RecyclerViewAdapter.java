@@ -15,6 +15,7 @@ import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.MainActivity;
+import us.koller.cameraroll.ui.widget.ParallaxImageView;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
@@ -40,6 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final Album album = albums.get(position);
+
         ((AlbumHolder) holder).setAlbum(album);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
