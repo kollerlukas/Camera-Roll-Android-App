@@ -1,32 +1,21 @@
 package us.koller.cameraroll.util;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
-import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
 
 public class Util {
     public static int getAlbumActivityGridColumnCount(Context context) {

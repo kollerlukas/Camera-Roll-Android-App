@@ -3,6 +3,7 @@ package us.koller.cameraroll.adapter.main.ViewHolder;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;

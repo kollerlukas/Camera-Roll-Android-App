@@ -2,7 +2,6 @@ package us.koller.cameraroll.util;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 public class MediaType {
@@ -24,39 +23,42 @@ public class MediaType {
 
     public static boolean isImage(Context context, String path) {
         if (path != null) {
-            //fix performance
-            /*String mimeType = getMimeType(context, path);
-            if (mimeType != null) {
-                return mimeType.contains("image");
-            } else {*/
-                return checkImageExtension(path);
-            //}
+            if (path.startsWith("content")) {
+                //performance
+                String mimeType = getMimeType(context, path);
+                if (mimeType != null) {
+                    return mimeType.contains("image");
+                }
+            }
+            return checkImageExtension(path);
         }
         return false;
     }
 
     public static boolean isVideo(Context context, String path) {
         if (path != null) {
-            //fix performance
-            /*String mimeType = getMimeType(context, path);
-            if (mimeType != null) {
-                return mimeType.contains("video");
-            } else {*/
-                return checkVideoExtension(path);
-            //}
+            if (path.startsWith("content")) {
+                //performance
+                String mimeType = getMimeType(context, path);
+                if (mimeType != null) {
+                    return mimeType.contains("video");
+                }
+            }
+            return checkVideoExtension(path);
         }
         return false;
     }
 
     public static boolean isGif(Context context, String path) {
-        if (path == null || isImage(context, path)) {
-            //fix performance
-            /*String mimeType = getMimeType(context, path);
-            if (mimeType != null) {
-                return mimeType.contains("gif");
-            } else {*/
-                return checkGifExtension(path);
-            //}
+        if (path != null && isImage(context, path)) {
+            if (path.startsWith("content")) {
+                //performance
+                String mimeType = getMimeType(context, path);
+                if (mimeType != null) {
+                    return mimeType.contains("gif");
+                }
+            }
+            return checkGifExtension(path);
         }
         return false;
     }
@@ -84,7 +86,7 @@ public class MediaType {
 
     private static boolean checkExtension(String path, String[] extensions) {
         for (int i = 0; i < extensions.length; i++) {
-            if (path.endsWith(extensions[i])) {
+            if (path.endsWith(extensions[i]) || path.endsWith(extensions[i].toUpperCase())) {
                 return true;
             }
         }

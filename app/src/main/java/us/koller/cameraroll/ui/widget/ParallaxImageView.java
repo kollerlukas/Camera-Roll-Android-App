@@ -39,13 +39,13 @@ public class ParallaxImageView extends ImageView {
                 + (int) getContext().getResources().getDimension(R.dimen.parallax_image_view_offset));
     }
 
-    boolean viewDetached = true;
+    boolean attached = false;
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        viewDetached = false;
+        attached = true;
 
         setParallaxTranslation();
 
@@ -56,7 +56,7 @@ public class ParallaxImageView extends ImageView {
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
 
-                    if (viewDetached) {
+                    if (!attached) {
                         recyclerView.removeOnScrollListener(this);
                         return;
                     }
@@ -76,7 +76,7 @@ public class ParallaxImageView extends ImageView {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        viewDetached = true;
+        attached = false;
     }
 
     public void setParallaxTranslation() {

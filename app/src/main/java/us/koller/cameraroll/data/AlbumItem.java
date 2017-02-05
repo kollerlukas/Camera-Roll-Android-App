@@ -12,7 +12,6 @@ import java.io.File;
 
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
-import us.koller.cameraroll.util.Util;
 
 public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
     private static final int PHOTO = 1;
@@ -26,16 +25,18 @@ public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
     public boolean isSharedElement = false;
     public boolean hasFadedIn = false;
 
+    //factory method
     public static AlbumItem getInstance(Context context, String path) {
         if (path == null) {
             return null;
         }
+
         AlbumItem albumItem = null;
         if (MediaType.isImage(context, path)) {
-            if (!MediaType.isGif(context, path)) {
-                albumItem = new Photo();
-            } else {
+            if (MediaType.isGif(context, path)) {
                 albumItem = new Gif();
+            } else {
+                albumItem = new Photo();
             }
         } else if (MediaType.isVideo(context, path)) {
             albumItem = new Video();

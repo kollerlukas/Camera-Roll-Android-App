@@ -7,8 +7,8 @@ android {
         applicationId "us.koller.cameraroll"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 6
-        versionName "v1.0"
+        versionCode 7
+        versionName "v1.0 Beta"
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
