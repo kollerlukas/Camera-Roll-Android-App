@@ -21,6 +21,7 @@ public class MediaType {
         return mimeType;
     }
 
+    //trying to check via mimeType
     public static boolean isImage(Context context, String path) {
         if (path != null) {
             if (path.startsWith("content")) {
@@ -50,7 +51,7 @@ public class MediaType {
     }
 
     public static boolean isGif(Context context, String path) {
-        if (path != null && isImage(context, path)) {
+        if (path != null) {
             if (path.startsWith("content")) {
                 //performance
                 String mimeType = getMimeType(context, path);
@@ -63,7 +64,9 @@ public class MediaType {
         return false;
     }
 
-    private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp", "webp"};
+
+    //checking via extension
+    private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp"};
     private static String[] videoExtensions = {"mp4", "mkv", "webm", "avi"};
     private static String[] gifExtension = {"gif"};
     private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "bmp"};

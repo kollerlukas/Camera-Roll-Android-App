@@ -20,13 +20,14 @@ public class MediaLoader {
 
     public interface Loader {
         void loadAlbums(final Activity context, final boolean hiddenFolders, final LoaderCallback callback);
-
         void onDestroy();
     }
 
     public interface LoaderCallback {
         void onMediaLoaded(ArrayList<Album> albums);
         void timeout();
+
+        void needPermission();
     }
 
     public interface Callback {
@@ -40,10 +41,12 @@ public class MediaLoader {
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
 
+    private static int mode = -1;
+
     private Loader loader;
 
     public MediaLoader() {
-        loader = new StorageLoader();
+
     }
 
     public static boolean checkPermission(Activity context) {
@@ -64,6 +67,7 @@ public class MediaLoader {
                            LoaderCallback callback) {
 
         if (!MediaLoader.checkPermission(context)) {
+            callback.needPermission();
             return;
         }
 
@@ -89,13 +93,10 @@ public class MediaLoader {
         loader.onDestroy();
     }
 
-    private static int getMode(Context context) {
-        return context.getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE)
-                .getInt(MODE_KEY, MODE_MEDIASTORE);
-    }
-
     public static void toggleMode(Context context) {
-        int mode = getMode(context);
+        if (mode == -1) {
+            mode = getMode(context);
+        }
 
         int newMode = mode == MODE_STORAGE ? MODE_MEDIASTORE : MODE_STORAGE;
 
@@ -107,5 +108,10 @@ public class MediaLoader {
         String s = newMode == MODE_STORAGE ? "MODE_STORAGE" : "MODE_MEDIASTORE";
 
         Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+    }
+
+    private static int getMode(Context context) {
+        return context.getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE)
+                .getInt(MODE_KEY, MODE_MEDIASTORE);
     }
 }

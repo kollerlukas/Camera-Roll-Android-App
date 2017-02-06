@@ -19,6 +19,8 @@ import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
+//loading media through MediaStore
+//advantage: speed, disadvantage: might be missing some items
 public class MediaStoreLoader implements MediaLoader.Loader {
 
     private static final String[] projection = new String[]{

@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import us.koller.cameraroll.data.MediaLoader.MediaLoader;
 import us.koller.cameraroll.util.SortUtil;
 
-public class Album implements Parcelable, SortUtil.Sortable {
+public class Album
+        implements Parcelable, SortUtil.Sortable {
 
     private static final int NOT_HIDDEN = 1;
     private static final int HIDDEN = 2;

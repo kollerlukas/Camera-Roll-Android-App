@@ -55,7 +55,7 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
 
         ImageView headerImage = (ImageView) findViewById(R.id.header_image);
         Glide.with(this)
-                .load("http://koller.us/Lukas/camera_roll/logo_outline_guidelines.png")
+                .load("http://koller.us/Lukas/camera_roll/logo_guidelines.png")
                 .into(headerImage);
 
         TextView version = (TextView) findViewById(R.id.version);
@@ -64,7 +64,7 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
                     .getPackageInfo(getPackageName(), 0).versionName;
             final int versionCode = getPackageManager()
                     .getPackageInfo(getPackageName(), 0).versionCode;
-            version.setText(getString(R.string.app_name) + " " + versionName);
+            version.setText(Html.fromHtml(/*getString(R.string.app_name) + "<br/>" +*/ versionName));
             version.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {

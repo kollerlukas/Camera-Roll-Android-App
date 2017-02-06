@@ -1,7 +1,6 @@
 package us.koller.cameraroll.data.MediaLoader.Loader;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
@@ -19,9 +18,13 @@ import us.koller.cameraroll.data.MediaLoader.MediaLoader;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 
+//loading media by searching through Storage
+//advantage: all items, disadvantage: slower than MediaStore
 public class StorageLoader implements MediaLoader.Loader {
 
-    private static final int THREAD_COUNT = 8;
+    //option to set thread count;
+    //if set to -1 every dir in home dir get its own thread
+    private static final int THREAD_COUNT = -1;
 
     private ArrayList<Thread> threads;
 
@@ -63,9 +66,12 @@ public class StorageLoader implements MediaLoader.Loader {
                         SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
                         callback.onMediaLoaded(albums);
                         handler.removeCallbacks(timeout);
-                        /*Log.d("StorageLoader", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
-                                + "): " + String.valueOf(System.currentTimeMillis() - startTime));*/
-                        Log.d("StorageLoader", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
+                        if (THREAD_COUNT == -1) {
+                            Log.d("StorageLoader", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
+                        } else {
+                            Log.d("StorageLoader", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
+                                    + "): " + String.valueOf(System.currentTimeMillis() - startTime));
+                        }
                     }
                 });
             }
@@ -107,21 +113,23 @@ public class StorageLoader implements MediaLoader.Loader {
             }
         };
 
-        //overhead is to big!!
-        /*final File[][] threadDirs = divideDirs(dirs);
+        if (THREAD_COUNT == -1) {
+            for (int i = 0; i < dirs.length; i++) {
+                final File[] files = {dirs[i]};
+                Thread mediaLoaderThread = new Thread(context, files, threadCallback);
+                mediaLoaderThread.start();
+                threads.add(mediaLoaderThread);
+            }
+        } else {
+            //overhead is to big!!
+            final File[][] threadDirs = divideDirs(dirs);
 
-        for (int i = 0; i < THREAD_COUNT; i++) {
-            final File[] files = threadDirs[i];
-            Thread thread = new Thread(context, files, threadCallback);
-            thread.start();
-            threads.add(thread);
-        }*/
-
-        for (int i = 0; i < dirs.length; i++) {
-            final File[] files = {dirs[i]};
-            Thread mediaLoaderThread = new Thread(context, files, threadCallback);
-            mediaLoaderThread.start();
-            threads.add(mediaLoaderThread);
+            for (int i = 0; i < THREAD_COUNT; i++) {
+                final File[] files = threadDirs[i];
+                Thread thread = new Thread(context, files, threadCallback);
+                thread.start();
+                threads.add(thread);
+            }
         }
     }
 
@@ -212,8 +220,12 @@ public class StorageLoader implements MediaLoader.Loader {
             File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
                 if (MediaType.isMedia(context, files[i].getPath())) {
-                    album.getAlbumItems()
-                            .add(AlbumItem.getInstance(context, files[i].getPath()));
+                    AlbumItem albumItem
+                            = AlbumItem.getInstance(context, files[i].getPath());
+                    if (albumItem != null) {
+                        album.getAlbumItems()
+                                .add(albumItem);
+                    }
                 } else if (file.isDirectory()) {
                     recursivelySearchStorage(context, files[i], albums);
                 }

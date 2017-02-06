@@ -6,20 +6,22 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import java.io.File;
 
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 
-public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
+public abstract class AlbumItem
+        implements Parcelable, SortUtil.Sortable {
+
     private static final int PHOTO = 1;
     private static final int GIF = 2;
     private static final int VIDEO = 3;
 
     private String name;
     private String path;
+
     public boolean error = false;
     public boolean contentUri = false;
     public boolean isSharedElement = false;
@@ -32,12 +34,10 @@ public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
         }
 
         AlbumItem albumItem = null;
-        if (MediaType.isImage(context, path)) {
-            if (MediaType.isGif(context, path)) {
-                albumItem = new Gif();
-            } else {
-                albumItem = new Photo();
-            }
+        if (MediaType.isGif(context, path)) {
+            albumItem = new Gif();
+        } else if (MediaType.isImage(context, path)) {
+            albumItem = new Photo();
         } else if (MediaType.isVideo(context, path)) {
             albumItem = new Video();
         }

@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean hiddenFolders = false;
     private boolean pick_photos;
+
     private boolean allowMultiple;
 
     @Override
@@ -214,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMediaLoaded(final ArrayList<Album> albums) {
                 if (albums != null) {
-                    recyclerView.post(new Runnable() {
+                    MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             MainActivity.this.albums = albums;
@@ -233,19 +235,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void timeout() {
                 //handle timeout
+                snackbar.dismiss();
                 snackbar = Snackbar.make(findViewById(R.id.root_view),
                         R.string.loading_failed, Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(getString(R.string.retry), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        mediaLoader.onDestroy();
                         refreshPhotos();
                         snackbar.dismiss();
                     }
                 });
                 Util.showSnackbar(snackbar);
 
-                mediaLoader.onDestroy();
+                if (mediaLoader != null) {
+                    mediaLoader.onDestroy();
+                }
                 mediaLoader = null;
+            }
+
+            @Override
+            public void needPermission() {
+                snackbar.dismiss();
             }
         };
 

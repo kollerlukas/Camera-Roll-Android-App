@@ -10,6 +10,7 @@ import us.koller.cameraroll.data.Album;
 
 public class SortUtil {
 
+    //interface, implemented by Album & AlbumItem, to sort them
     public interface Sortable {
         String getName();
 
@@ -35,7 +36,7 @@ public class SortUtil {
         return albums;
     }
 
-    public static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
+    private static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
         switch (by) {
             case BY_DATE:
                 return sortByDate(context, sortables);

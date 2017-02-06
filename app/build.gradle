@@ -7,7 +7,7 @@ android {
         applicationId "us.koller.cameraroll"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 7
+        versionCode 8
         versionName "v1.0 Beta"
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
