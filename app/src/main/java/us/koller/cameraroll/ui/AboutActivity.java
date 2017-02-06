@@ -181,6 +181,13 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
 
     @Override
     public void onSwipeFinish(int dir) {
+        if (handler != null && runnable != null) {
+            handler.removeCallbacks(runnable);
+            consumed = false;
+        }
+        handler = null;
+        runnable = null;
+
         getWindow().setReturnTransition(new TransitionSet()
                 .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
                 .setInterpolator(new AccelerateDecelerateInterpolator()));

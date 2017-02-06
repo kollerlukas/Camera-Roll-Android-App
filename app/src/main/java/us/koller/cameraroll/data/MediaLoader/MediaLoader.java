@@ -41,8 +41,6 @@ public class MediaLoader {
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
 
-    private static int mode = -1;
-
     private Loader loader;
 
     public MediaLoader() {
@@ -94,9 +92,7 @@ public class MediaLoader {
     }
 
     public static void toggleMode(Context context) {
-        if (mode == -1) {
-            mode = getMode(context);
-        }
+        int mode = getMode(context);
 
         int newMode = mode == MODE_STORAGE ? MODE_MEDIASTORE : MODE_STORAGE;
 
