@@ -1,6 +1,5 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -50,6 +49,12 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     private void bindImageView(View view, View transitionView) {
+        if (albumItem.error) {
+            transitionView.setVisibility(View.VISIBLE);
+            ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
+            return;
+        }
+
         final SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
 
         final GestureDetector gestureDetector

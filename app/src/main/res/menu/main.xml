@@ -18,6 +18,11 @@
           android:checkable="true"
           app:showAsAction="never"/>
 
+    <item android:id="@+id/file_explorer"
+          android:icon="@drawable/ic_folder_white_24dp"
+          android:title="@string/file_explorer"
+          app:showAsAction="never"/>
+
     <item android:id="@+id/about"
           android:icon="@drawable/ic_info_white_24dp"
           android:title="@string/about"

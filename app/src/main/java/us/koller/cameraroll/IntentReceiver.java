@@ -60,6 +60,7 @@ public class IntentReceiver extends AppCompatActivity {
                 .putExtra(ItemActivity.VIEW_ONLY, true)
                 .putExtra(ItemActivity.ALBUM, album)
                 .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
+                .putExtra(ItemActivity.FINISH_AFTER, true)
                 .addFlags(intent.getFlags());
         startActivity(view_photo);
     }

@@ -86,13 +86,16 @@ public abstract class AlbumItem
     public Uri getUri(Context context) {
         Uri uri;
         if (!contentUri) {
-            File file = new File(getPath());
-            uri = FileProvider.getUriForFile(context,
-                    context.getApplicationContext().getPackageName() + ".provider", file);
-        } else {
-            uri = Uri.parse(getPath());
+            try {
+                File file = new File(getPath());
+                uri = FileProvider.getUriForFile(context,
+                        context.getApplicationContext().getPackageName() + ".provider", file);
+                return uri;
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
-        return uri;
+        return Uri.parse(getPath());
     }
 
     AlbumItem(Parcel parcel) {

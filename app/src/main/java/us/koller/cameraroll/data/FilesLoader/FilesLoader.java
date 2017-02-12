@@ -1,4 +1,4 @@
-package us.koller.cameraroll.data.MediaLoader.Loader;
+package us.koller.cameraroll.data.FilesLoader;
 
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -12,15 +12,24 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.MediaLoader.MediaLoader;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 
-//loading media by searching through Storage
-//advantage: all items, disadvantage: slower than MediaStore
-public class StorageLoader implements MediaLoader.Loader {
+public class FilesLoader {
+
+    public interface LoaderCallback {
+        void onMediaLoaded(File_POJO files);
+
+        void timeout();
+
+        void needPermission();
+    }
+
+    public interface Callback {
+        void callback(File_POJO files);
+    }
 
     //option to set thread count;
     //if set to -1 every dir in home dir get its own thread
@@ -32,13 +41,15 @@ public class StorageLoader implements MediaLoader.Loader {
     private Handler handler;
     private Runnable timeout;
 
-    @Override
-    public void loadAlbums(final Activity context, final boolean hiddenFolders,
-                           final MediaLoader.LoaderCallback callback) {
+    public void loadFiles(final Activity context,
+                          final LoaderCallback callback) {
+
+        if (!MediaLoader.checkPermission(context)) {
+            callback.needPermission();
+            return;
+        }
 
         final long startTime = System.currentTimeMillis();
-
-        final ArrayList<Album> albums = new ArrayList<>();
 
         //handle timeout
         handler = new Handler();
@@ -51,30 +62,24 @@ public class StorageLoader implements MediaLoader.Loader {
         };
         handler.postDelayed(timeout, 5000);
 
-        //load media from storage
+        //load files from storage
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                searchStorage(context, albums, new MediaLoader.Callback() {
+                searchStorage(context, new FilesLoader.Callback() {
                     @Override
-                    public void callback(ArrayList<Album> albums) {
-                        if (!hiddenFolders) {
-                            for (int i = albums.size() - 1; i >= 0; i--) {
-                                if (albums.get(i).isHidden()) {
-                                    albums.remove(i);
-                                }
-                            }
-                        }
+                    public void callback(File_POJO files) {
+                        //sort files by name
+                        SortUtil.sortFiles(context, files);
 
-                        //done loading media from storage
-                        SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
-                        callback.onMediaLoaded(albums);
+                        //done loading files from storage
+                        callback.onMediaLoaded(files);
                         cancelTimeout();
                         if (THREAD_COUNT == -1) {
-                            Log.d("StorageLoader", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
+                            Log.d("FilesLoader", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime) + "; " + files.getChildren());
                         } else {
-                            Log.d("StorageLoader", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
-                                    + "): " + String.valueOf(System.currentTimeMillis() - startTime));
+                            Log.d("FilesLoader", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
+                                    + "): " + String.valueOf(System.currentTimeMillis() - startTime) + "; " + files.getChildren());
                         }
                     }
                 });
@@ -88,20 +93,18 @@ public class StorageLoader implements MediaLoader.Loader {
         }
     }
 
-    @Override
     public void onDestroy() {
         //cancel all threads when Activity is being destroyed
         if (threads != null) {
             for (int i = 0; i < threads.size(); i++) {
-                if (threads.get(i) != null) {
-                    threads.get(i).cancel();
-                }
+                threads.get(i).cancel();
             }
         }
         cancelTimeout();
     }
 
-    private void searchStorage(final Activity context, final ArrayList<Album> albums, final MediaLoader.Callback callback) {
+    private void searchStorage(final Activity context, final FilesLoader.Callback callback) {
+        final File_POJO files = new File_POJO(Environment.getExternalStorageDirectory().toString(), false);
         File dir = Environment.getExternalStorageDirectory(); //new File("/storage/emulated/0");
         File[] dirs = dir.listFiles(new FileFilter() {
             @Override
@@ -115,12 +118,14 @@ public class StorageLoader implements MediaLoader.Loader {
         Thread.Callback threadCallback = new Thread.Callback() {
             @Override
             public void done(Thread thread,
-                             ArrayList<Album> albumsToAdd) {
-                mergeAlbums(albums, albumsToAdd);
+                             ArrayList<File_POJO> filesToAdd) {
+                for (int i = 0; i < filesToAdd.size(); i++) {
+                    files.addChild(filesToAdd.get(i));
+                }
                 threads.remove(thread);
                 thread.cancel();
                 if (threads.size() == 0) {
-                    callback.callback(albums);
+                    callback.callback(files);
                     threads = null;
                 }
             }
@@ -128,8 +133,8 @@ public class StorageLoader implements MediaLoader.Loader {
 
         if (THREAD_COUNT == -1) {
             for (int i = 0; i < dirs.length; i++) {
-                final File[] files = {dirs[i]};
-                Thread thread = new Thread(context, files, threadCallback);
+                final File[] threadFiles = {dirs[i]};
+                Thread thread = new Thread(context, threadFiles, threadCallback);
                 thread.start();
                 threads.add(thread);
             }
@@ -138,25 +143,12 @@ public class StorageLoader implements MediaLoader.Loader {
             final File[][] threadDirs = divideDirs(dirs);
 
             for (int i = 0; i < THREAD_COUNT; i++) {
-                final File[] files = threadDirs[i];
-                Thread thread = new Thread(context, files, threadCallback);
+                final File[] threadFiles = threadDirs[i];
+                Thread thread = new Thread(context, threadFiles, threadCallback);
                 thread.start();
                 threads.add(thread);
             }
         }
-    }
-
-    private void mergeAlbums(ArrayList<Album> albums, ArrayList<Album> albumsToAdd) {
-        for (int i = albumsToAdd.size() - 1; i >= 0; i--) {
-            for (int k = 0; k < albums.size(); k++) {
-                if (albumsToAdd.get(i).getPath()
-                        .equals(albums.get(k).getPath())) {
-                    albumsToAdd.remove(i);
-                    break;
-                }
-            }
-        }
-        albums.addAll(albumsToAdd);
     }
 
     private File[][] divideDirs(File[] dirs) {
@@ -170,7 +162,7 @@ public class StorageLoader implements MediaLoader.Loader {
             }
         }
 
-        Log.d("StorageLoader", Arrays.toString(threadDirs_sizes));
+        Log.d("FilesLoader", Arrays.toString(threadDirs_sizes));
 
         File[][] threadDirs = new File[THREAD_COUNT][dirs.length / THREAD_COUNT + 1];
         int index = 0;
@@ -186,7 +178,7 @@ public class StorageLoader implements MediaLoader.Loader {
     private static class Thread extends java.lang.Thread {
 
         interface Callback {
-            void done(Thread thread, ArrayList<Album> albums);
+            void done(Thread thread, ArrayList<File_POJO> files);
         }
 
         private Activity context;
@@ -204,22 +196,25 @@ public class StorageLoader implements MediaLoader.Loader {
         public void run() {
             super.run();
 
-            final ArrayList<Album> albums = new ArrayList<>();
+            final ArrayList<File_POJO> files = new ArrayList<>();
 
             if (dirs != null) {
                 for (int i = 0; i < dirs.length; i++) {
-                    recursivelySearchStorage(context, dirs[i], albums);
+                    File_POJO file_pojo = new File_POJO(dirs[i].getPath(),
+                            MediaType.isMedia(context, dirs[i].getPath()));
+                    recursivelySearchStorage(context, dirs[i], file_pojo);
+                    files.add(file_pojo);
                 }
             }
 
             if (callback != null) {
-                callback.done(this, albums);
+                callback.done(this, files);
             }
         }
 
         private void recursivelySearchStorage(final Activity context,
                                               final File file,
-                                              final ArrayList<Album> albums) {
+                                              final File_POJO files) {
             if (interrupted() || file == null) {
                 return;
             }
@@ -228,24 +223,17 @@ public class StorageLoader implements MediaLoader.Loader {
                 return;
             }
 
-            final Album album = new Album().setPath(file.getPath());
+            java.io.File[] filesToSearch = file.listFiles();
 
-            File[] files = file.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (MediaType.isMedia(context, files[i].getPath())) {
-                    AlbumItem albumItem
-                            = AlbumItem.getInstance(context, files[i].getPath());
-                    if (albumItem != null) {
-                        album.getAlbumItems()
-                                .add(albumItem);
+            for (int i = 0; i < filesToSearch.length; i++) {
+                boolean isMedia = MediaType.isMedia(context, filesToSearch[i].getPath());
+                if (filesToSearch[i].isDirectory() || isMedia) {
+                    File_POJO file_pojo = new File_POJO(filesToSearch[i].getPath(), isMedia);
+                    files.addChild(file_pojo);
+                    if (filesToSearch[i].isDirectory()) {
+                        recursivelySearchStorage(context, filesToSearch[i], file_pojo);
                     }
-                } else if (files[i].isDirectory()) {
-                    recursivelySearchStorage(context, files[i], albums);
                 }
-            }
-
-            if (album.getAlbumItems().size() > 0) {
-                albums.add(album);
             }
         }
 

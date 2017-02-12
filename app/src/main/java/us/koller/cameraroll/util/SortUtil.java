@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.File_POJO;
 
 public class SortUtil {
 
@@ -34,6 +35,12 @@ public class SortUtil {
         sort(context, albums, by);
 
         return albums;
+    }
+
+    public static File_POJO sortFiles(Activity context, File_POJO files) {
+        sort(context, files.getChildren(), BY_NAME);
+
+        return files;
     }
 
     private static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {

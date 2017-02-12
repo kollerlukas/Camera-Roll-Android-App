@@ -53,7 +53,8 @@ import us.koller.cameraroll.util.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
-public class AlbumActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
+public class AlbumActivity extends AppCompatActivity
+        implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
 
     public static final String ALBUM = "ALBUM";
     public static final String VIEW_ALBUM = "VIEW_ALBUM";

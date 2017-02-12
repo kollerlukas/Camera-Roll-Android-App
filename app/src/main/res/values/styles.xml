@@ -26,6 +26,11 @@
 
     </style>
 
+    <style name="Theme.CameraRoll.Translucent.FileExplorerActivity"
+           parent="Theme.CameraRoll.Translucent">
+
+    </style>
+
 
     <style name="Theme.CameraRoll.Translucent.AlbumActivity" parent="Theme.CameraRoll.Translucent">
         <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition

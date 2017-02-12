@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -94,6 +96,15 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
             });
+
+            //set Toolbar overflow icon color
+            Drawable drawable = toolbar.getOverflowIcon();
+            if (drawable != null) {
+                drawable = DrawableCompat.wrap(drawable);
+                DrawableCompat.setTint(drawable.mutate(),
+                        ContextCompat.getColor(this, R.color.grey_900_translucent));
+                toolbar.setOverflowIcon(drawable);
+            }
 
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
@@ -240,7 +251,9 @@ public class MainActivity extends AppCompatActivity {
                 snackbar.setAction(getString(R.string.retry), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mediaLoader.onDestroy();
+                        if (mediaLoader != null) {
+                            mediaLoader.onDestroy();
+                        }
                         refreshPhotos();
                         snackbar.dismiss();
                     }
@@ -267,8 +280,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main, menu);
-        if (!pick_photos) {
-            menu.findItem(R.id.hiddenFolders).setChecked(hiddenFolders);
+        menu.findItem(R.id.hiddenFolders).setChecked(hiddenFolders);
+        if (pick_photos) {
+            menu.findItem(R.id.about).setVisible(false);
+            menu.findItem(R.id.file_explorer).setVisible(false);
         }
         return true;
     }
@@ -283,6 +298,10 @@ public class MainActivity extends AppCompatActivity {
                 hiddenFolders = !hiddenFolders;
                 item.setChecked(hiddenFolders);
                 refreshPhotos();
+                break;
+            case R.id.file_explorer:
+                startActivity(new Intent(this, FileExplorerActivity.class),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class),

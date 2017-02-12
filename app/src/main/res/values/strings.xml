@@ -50,6 +50,7 @@
     <string name="refresh">Refresh</string>
     <string name="sort_by">Sort by…</string>
     <string name="hidden_folders">Hidden Folders</string>
+    <string name="file_explorer">File Explorer</string>
     <string name="about">About</string>
 
     <string name="set_as">Set as…</string>
@@ -62,6 +63,12 @@
     <string name="photo_deleted">Photo deleted</string>
     <string name="photos_deleted">Photos deleted</string>
     <string name="successfully_deleted">"successfully deleted "</string>
+
+    <string name="move">Move</string>
+    <string name="copy">Copy</string>
+    <string name="paste">Paste</string>
+    <string name="successfully_moved">successfully moved</string>
+    <string name="successfully_copied">successfully copied</string>
 
     <string name="pick_photo">Pick Photo</string>
     <string name="pick_photos">Pick Photos</string>
@@ -82,6 +89,8 @@
     <string name="error">Error</string>
 
     <string name="photo">Photo</string>
+
+    <string name="no_files">no Files</string>
 
     <!--ImageView ContentDescription-->
     <string name="image">Image</string>

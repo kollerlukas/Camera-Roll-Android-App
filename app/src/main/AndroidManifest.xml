@@ -35,6 +35,10 @@
                   android:theme="@style/Theme.CameraRoll.Translucent.AboutActivity"
                   android:launchMode="singleTop"/>
 
+        <activity android:name=".ui.FileExplorerActivity"
+                  android:theme="@style/Theme.CameraRoll.Translucent.FileExplorerActivity"
+                  android:launchMode="singleTop"/>
+
         <activity android:name=".IntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

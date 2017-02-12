@@ -69,6 +69,7 @@ public class ItemActivity extends AppCompatActivity {
     public static final String ALBUM = "ALBUM";
     public static final String ITEM_POSITION = "ITEM_POSITION";
     public static final String VIEW_ONLY = "VIEW_ONLY";
+    public static final String FINISH_AFTER = "FINISH_AFTER";
     public static final String HIDDEN_ALBUMITEM = "HIDDEN_ALBUMITEM";
     private static final String WAS_SYSTEM_UI_HIDDEN = "WAS_SYSTEM_UI_HIDDEN";
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
@@ -625,7 +626,11 @@ public class ItemActivity extends AppCompatActivity {
     public void onBackPressed() {
         showUI(false);
         if (view_only) {
-            this.finishAffinity();
+            if (getIntent().getBooleanExtra(FINISH_AFTER, false)) {
+                this.finishAffinity();
+            } else {
+                this.finish();
+            }
         } else {
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
