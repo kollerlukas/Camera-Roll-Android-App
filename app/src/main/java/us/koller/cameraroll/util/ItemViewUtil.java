@@ -55,8 +55,8 @@ public class ItemViewUtil {
                     new SubsamplingScaleImageView.DefaultOnImageEventListener() {
                         @Override
                         public void onImageLoaded() {
-                            placeholderView.setVisibility(View.INVISIBLE);
                             super.onImageLoaded();
+                            placeholderView.setVisibility(View.INVISIBLE);
                         }
                     });
         }

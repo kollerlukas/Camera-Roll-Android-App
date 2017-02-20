@@ -5,7 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:cardBackgroundColor="@color/black_translucent2"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
         app:cardElevation="0dp">
 
@@ -14,7 +14,8 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:baselineAligned="false">
+            android:baselineAligned="false"
+            android:background="@drawable/transparent_to_dark_gradient">
 
         <RelativeLayout
                 android:layout_width="0dp"

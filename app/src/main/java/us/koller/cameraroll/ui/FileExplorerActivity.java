@@ -1,5 +1,7 @@
 package us.koller.cameraroll.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +31,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,11 +43,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.FilesLoader.FilesLoader;
+import us.koller.cameraroll.data.Provider.FilesProvider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.ColorFade;
@@ -50,13 +57,18 @@ import us.koller.cameraroll.util.Util;
 public class FileExplorerActivity extends AppCompatActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
 
-    public static final String FILES = "FILES";
-    public static final String CURRENT_FILE = "CURRENT_FILE";
+    public interface OnDirectoryChangeCallback {
+        public void changeDir(String path);
+    }
+
+    public static final String CURRENT_DIR = "CURRENT_DIR";
     public static final String SELECTED_ITEMS = "SELECTED_ITEMS";
 
-    private File_POJO files;
+    private File_POJO[] roots;
 
-    private FilesLoader loader;
+    private File_POJO currentDir;
+
+    private FilesProvider filesProvider;
 
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
@@ -70,17 +82,12 @@ public class FileExplorerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_explorer);
 
-        //load files
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(FILES)) {
-            files = savedInstanceState.getParcelable(FILES);
-        } else {
-            files = new File_POJO("", false);
-        }
+        currentDir = new File_POJO("", false);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
-        toolbar.setNavigationIcon(AnimatedVectorDrawableCompat.create(this, R.drawable.back_to_cancel_animateable));
+        toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                .create(this, R.drawable.back_to_cancel_animateable));
         setSupportActionBar(toolbar);
 
         //set Toolbar overflow icon color
@@ -96,9 +103,10 @@ public class FileExplorerActivity extends AppCompatActivity
         if (actionBar != null) {
             actionBar.setTitle(getString(R.string.file_explorer));
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
         }
 
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        final ViewGroup rootView = (ViewGroup) findViewById(R.id.swipeBackView);
         if (rootView instanceof SwipeBackCoordinatorLayout) {
             ((SwipeBackCoordinatorLayout) rootView).setOnSwipeListener(this);
         }
@@ -106,12 +114,15 @@ public class FileExplorerActivity extends AppCompatActivity
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        if (savedInstanceState != null && savedInstanceState.containsKey(CURRENT_FILE)) {
-            recyclerViewAdapter = new RecyclerViewAdapter(this)
-                    .setFiles((File_POJO) savedInstanceState.getParcelable(CURRENT_FILE));
-        } else {
-            recyclerViewAdapter = new RecyclerViewAdapter(this)
-                    .setFiles(files);
+        recyclerViewAdapter = new RecyclerViewAdapter(
+                new OnDirectoryChangeCallback() {
+                    @Override
+                    public void changeDir(String path) {
+                        loadDirectory(path);
+                    }
+                }, this);
+        if (savedInstanceState != null && savedInstanceState.containsKey(CURRENT_DIR)) {
+            recyclerViewAdapter.setFiles(currentDir);
         }
         recyclerViewAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -165,7 +176,11 @@ public class FileExplorerActivity extends AppCompatActivity
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         //load files
-        if (savedInstanceState == null) {
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(CURRENT_DIR)) {
+            currentDir = savedInstanceState.getParcelable(CURRENT_DIR);
+            onDataChanged();
+        } else {
             loadFiles();
         }
     }
@@ -175,21 +190,40 @@ public class FileExplorerActivity extends AppCompatActivity
                 getString(R.string.loading), Snackbar.LENGTH_INDEFINITE);
         Util.showSnackbar(snackbar);
 
-        loader = new FilesLoader();
-        loader.loadFiles(this, new FilesLoader.LoaderCallback() {
+        filesProvider = new FilesProvider();
+
+        roots = filesProvider.getRoots();
+        setupSpinner();
+
+        loadDirectory(roots[0].getPath());
+    }
+
+    public void loadDirectory(final String path) {
+        Log.d("FileExplorerActivity", "loadDirectory(): " + path);
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
+                getString(R.string.loading), Snackbar.LENGTH_INDEFINITE);
+        Util.showSnackbar(snackbar);
+
+        filesProvider = new FilesProvider();
+
+        final FilesProvider.Callback callback = new FilesProvider.Callback() {
             @Override
-            public void onMediaLoaded(final File_POJO files) {
+            public void onDirLoaded(final File_POJO dir) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        loader.onDestroy();
-                        loader = null;
-                        FileExplorerActivity.this.files = files;
-                        if (recyclerViewAdapter != null) {
-                            recyclerViewAdapter.setFiles(files);
-                            recyclerViewAdapter.notifyDataSetChanged();
-                            onDataChanged();
+                        filesProvider.onDestroy();
+                        filesProvider = null;
+
+                        if (dir != null) {
+                            FileExplorerActivity.this.currentDir = dir;
+                            if (recyclerViewAdapter != null) {
+                                recyclerViewAdapter.setFiles(currentDir);
+                                recyclerViewAdapter.notifyDataSetChanged();
+                                onDataChanged();
+                            }
                         }
+
                         snackbar.dismiss();
                     }
                 });
@@ -203,11 +237,11 @@ public class FileExplorerActivity extends AppCompatActivity
                         snackbar.dismiss();
 
                         final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
-                                getString(R.string.loading), Snackbar.LENGTH_INDEFINITE);
+                                R.string.loading_failed, Snackbar.LENGTH_INDEFINITE);
                         snackbar.setAction(getString(R.string.retry), new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                loadFiles();
+                                loadDirectory(path);
                             }
                         });
                         Util.showSnackbar(snackbar);
@@ -224,14 +258,48 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 });
             }
-        });
+        };
+
+        filesProvider.loadDir(this, path, callback);
+    }
+
+    public void setupSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.toolbar_spinner);
+        ArrayList<String> spinnerList = new ArrayList<>();
+        for (int i = 0; i < roots.length; i++) {
+            spinnerList.add(roots[i].getPath());
+        }
+        ArrayAdapter<String> dataAdapter
+                = new ArrayAdapter<>(this, R.layout.simple_spinner_item, spinnerList);
+        dataAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+
+        spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+
+                    boolean firstCall = true;
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView,
+                                               View view, int pos, long id) {
+                        if (firstCall) {
+                            firstCall = false;
+                            return;
+                        }
+                        loadDirectory(roots[pos].getPath());
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(FILES, files);
-        outState.putParcelable(CURRENT_FILE, recyclerViewAdapter.getFiles());
+        outState.putParcelable(CURRENT_DIR, currentDir);
     }
 
     @Override
@@ -265,7 +333,7 @@ public class FileExplorerActivity extends AppCompatActivity
                             new FileAction.Callback() {
                                 @Override
                                 public void done() {
-                                    loadFiles();
+                                    loadDirectory(currentDir.getPath());
                                 }
                             });
                 }
@@ -290,22 +358,35 @@ public class FileExplorerActivity extends AppCompatActivity
     public void onBackPressed() {
         if (recyclerViewAdapter.isModeActive()) {
             recyclerViewAdapter.cancelMode();
-        } else if (recyclerViewAdapter != null && files != null
-                && !recyclerViewAdapter.getFiles().getPath().equals(files.getPath())) {
-            recyclerViewAdapter.setFiles(files);
-            recyclerViewAdapter.notifyDataSetChanged();
-            this.onDataChanged();
+        } else if (recyclerViewAdapter != null
+                && !isCurrentFileARoot()) {
+            String path = currentDir.getPath();
+            int index = path.lastIndexOf("/");
+            String parentPath = path.substring(0, index);
+
+            loadDirectory(parentPath);
         } else {
             super.onBackPressed();
         }
+    }
+
+    private boolean isCurrentFileARoot() {
+        if (currentDir != null) {
+            for (int i = 0; i < roots.length; i++) {
+                if (currentDir.getPath().equals(roots[i].getPath())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if (loader != null) {
-            loader.onDestroy();
+        if (filesProvider != null) {
+            filesProvider.onDestroy();
         }
     }
 
@@ -321,22 +402,23 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onSwipeFinish(int dir) {
-        if (recyclerViewAdapter != null && files != null
-                && !recyclerViewAdapter.getFiles().getPath().equals(files.getPath())) {
-            recyclerViewAdapter.setFiles(files);
-            recyclerViewAdapter.notifyDataSetChanged();
-            this.onDataChanged();
-        }
         getWindow().setReturnTransition(new TransitionSet()
                 .setOrdering(TransitionSet.ORDERING_TOGETHER)
                 .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
                 .addTransition(new Fade())
                 .setInterpolator(new AccelerateDecelerateInterpolator()));
-        onBackPressed();
+        this.finish();
     }
 
     @Override
     public void onSelectorModeEnter() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+        }
+        Spinner spinner = (Spinner) findViewById(R.id.toolbar_spinner);
+        spinner.setVisibility(View.GONE);
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
         toolbar.setActivated(true);
@@ -374,7 +456,7 @@ public class FileExplorerActivity extends AppCompatActivity
                     new FileAction.Callback() {
                         @Override
                         public void done() {
-                            loadFiles();
+                            loadDirectory(currentDir.getPath());
                         }
                     });
             resetToolbar();
@@ -430,18 +512,33 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onDataChanged() {
-        TextView emptyState = (TextView) findViewById(R.id.empty_state);
-        emptyState.setVisibility(
-                recyclerViewAdapter.getFiles().getChildren().size() == 0 ?
-                        View.VISIBLE : View.GONE);
+        final TextView emptyState = (TextView) findViewById(R.id.empty_state);
+        emptyState.animate()
+                .alpha(currentDir.getChildren().size() == 0 ? 1.0f : 0.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        emptyState.setVisibility(
+                                currentDir.getChildren().size() == 0 ?
+                                        View.VISIBLE : View.GONE);
+                    }
+                })
+                .setDuration(100)
+                .start();
 
-        ActionBar actionBar = getSupportActionBar();
+        /*ActionBar actionBar = getSupportActionBar();
         if (actionBar != null && recyclerViewAdapter.getMode() != RecyclerViewAdapter.PICK_TARGET_MODE) {
-            actionBar.setTitle(recyclerViewAdapter.getFiles().getPath());
-        }
+            actionBar.setTitle(currentDir.getPath());
+        }*/
     }
 
     public void resetToolbar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
         toolbar.setActivated(false);
@@ -464,6 +561,10 @@ public class FileExplorerActivity extends AppCompatActivity
                 for (int i = 0; i < menu.size(); i++) {
                     menu.getItem(i).setVisible(false);
                 }
+
+                Spinner spinner = (Spinner) findViewById(R.id.toolbar_spinner);
+                spinner.setVisibility(View.VISIBLE);
+                spinner.requestLayout();
             }
         }, 300);
     }
@@ -576,7 +677,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
         private static boolean copyFile(String path, String destination) {
             //create output directory if it doesn't exist
-            File dir = new File(destination);
+            File dir = new File(destination, new File(path).getName());
             if (!dir.exists()) {
                 dir.mkdirs();
             }

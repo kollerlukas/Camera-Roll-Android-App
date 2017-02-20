@@ -2,17 +2,22 @@ package us.koller.cameraroll.adapter.fileExplorer;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.File;
+
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.ViewHolder.FileHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.ui.FileExplorerActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
@@ -43,7 +48,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     private Callback callback;
 
-    public RecyclerViewAdapter(Callback callback) {
+    private FileExplorerActivity.OnDirectoryChangeCallback directoryChangeCallback;
+
+    public RecyclerViewAdapter(
+            FileExplorerActivity.OnDirectoryChangeCallback directoryChangeCallback,
+            Callback callback) {
+        this.directoryChangeCallback = directoryChangeCallback;
         this.callback = callback;
     }
 
@@ -82,37 +92,42 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     String path = file.getPath().substring(0, index);
 
                     //load Album
-                    final Album album = new Album().setPath(path);
-                    AlbumItem albumItem = AlbumItem.getInstance(holder.itemView.getContext(), file.getPath());
-                    if (albumItem != null) {
-                        album.getAlbumItems()
-                                .add(albumItem);
+                    final Album album;
+                    AlbumItem albumItem = null;
+                    if (!Environment.isExternalStorageRemovable(new File(file.getPath()))) {
+                        album = MediaProvider.loadAlbum(path);
+                        for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                            if (album.getAlbumItems().get(i).getPath().equals(file.getPath())) {
+                                albumItem = album.getAlbumItems().get(i);
+                                break;
+                            }
+                        }
+                    } else {
+                        album = new Album().setPath(path);
+                        albumItem = AlbumItem.getInstance(holder.itemView.getContext(), file.getPath());
+                        if (albumItem != null) {
+                            album.getAlbumItems().add(albumItem);
+                        }
                     }
 
-                    //create intent
-                    Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class)
-                            .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
-                            .putExtra(ItemActivity.ALBUM, album)
-                            .putExtra(ItemActivity.VIEW_ONLY, true)
-                            .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
-                            .putExtra(ItemActivity.FINISH_AFTER, false);
+                    if (album != null && albumItem != null) {
+                        //create intent
+                        Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class)
+                                .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
+                                .putExtra(ItemActivity.ALBUM, album)
+                                .putExtra(ItemActivity.ALBUM_PATH, album.getPath())
+                                .putExtra(ItemActivity.VIEW_ONLY, true)
+                                .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
+                                .putExtra(ItemActivity.FINISH_AFTER, false);
 
-                    try {
                         holder.itemView.getContext().startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        e.printStackTrace();
                     }
                 } else {
                     //to keep the ripple animation
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            RecyclerViewAdapter.this.setFiles(file);
-                            RecyclerViewAdapter.this.notifyDataSetChanged();
-
-                            if (callback != null) {
-                                callback.onDataChanged();
-                            }
+                            directoryChangeCallback.changeDir(file.getPath());
                         }
                     }, 300);
                 }
@@ -212,6 +227,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return files.getChildren().size();
+        if (files != null) {
+            return files.getChildren().size();
+        }
+        return 0;
     }
 }

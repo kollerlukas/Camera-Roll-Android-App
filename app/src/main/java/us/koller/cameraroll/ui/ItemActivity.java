@@ -20,6 +20,7 @@ import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.print.PrintHelper;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -56,7 +57,7 @@ import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.MediaLoader.MediaLoader;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.MediaType;
@@ -67,6 +68,7 @@ public class ItemActivity extends AppCompatActivity {
 
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
     public static final String ALBUM = "ALBUM";
+    public static final String ALBUM_PATH = "ALBUM_PATH";
     public static final String ITEM_POSITION = "ITEM_POSITION";
     public static final String VIEW_ONLY = "VIEW_ONLY";
     public static final String FINISH_AFTER = "FINISH_AFTER";
@@ -161,7 +163,7 @@ public class ItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
 
-        MediaLoader.checkPermission(this);
+        MediaProvider.checkPermission(this);
 
         view_only = getIntent().getBooleanExtra(VIEW_ONLY, false);
 
@@ -171,8 +173,20 @@ public class ItemActivity extends AppCompatActivity {
             getWindow().getSharedElementEnterTransition().addListener(transitionListener);
         }
 
+        if (!view_only) {
+            String path = "";
+            if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
+                path = savedInstanceState.getString(ALBUM_PATH);
+            } else {
+                path = getIntent().getStringExtra(ALBUM_PATH);
+            }
+            album = MediaProvider.loadAlbum(path);
+        } else {
+            album = getIntent().getExtras().getParcelable(ALBUM);
+        }
+
         if (savedInstanceState != null) {
-            album = savedInstanceState.getParcelable(ALBUM);
+            //album = savedInstanceState.getParcelable(ALBUM);
             albumItem = savedInstanceState.getParcelable(ALBUM_ITEM);
             if (albumItem != null && albumItem instanceof Photo) {
                 Photo photo = (Photo) albumItem;
@@ -184,10 +198,12 @@ public class ItemActivity extends AppCompatActivity {
                 showInfoDialog();
             }
         } else {
-            album = getIntent().getExtras().getParcelable(AlbumActivity.ALBUM);
+            //album = getIntent().getExtras().getParcelable(AlbumActivity.ALBUM);
             int position = getIntent().getIntExtra(ITEM_POSITION, 0);
-            albumItem = album.getAlbumItems().get(position);
-            albumItem.isSharedElement = true;
+            if (album != null) {
+                albumItem = album.getAlbumItems().get(position);
+                albumItem.isSharedElement = true;
+            }
         }
 
         if (album == null || albumItem == null) {
@@ -196,7 +212,6 @@ public class ItemActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -229,27 +244,27 @@ public class ItemActivity extends AppCompatActivity {
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                         toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                         toolbar.getPaddingBottom());
 
-                ViewGroup.MarginLayoutParams toolbarParams
+                /*ViewGroup.MarginLayoutParams toolbarParams
                         = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
                 toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
                 toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                toolbar.setLayoutParams(toolbarParams);
+                toolbar.setLayoutParams(toolbarParams);*/
 
-                bottomBar.setPadding(bottomBar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                         bottomBar.getPaddingTop(),
-                        bottomBar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                        bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                         bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                ViewGroup.MarginLayoutParams bottomBarParams
+                /*ViewGroup.MarginLayoutParams bottomBarParams
                         = (ViewGroup.MarginLayoutParams) ((View) bottomBar.getParent()).getLayoutParams();
                 bottomBarParams.leftMargin += insets.getSystemWindowInsetLeft();
                 bottomBarParams.rightMargin += insets.getSystemWindowInsetRight();
-                ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);
+                ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);*/
 
                 // clear this listener so insets aren't re-applied
                 rootView.setOnApplyWindowInsetsListener(null);
@@ -293,6 +308,9 @@ public class ItemActivity extends AppCompatActivity {
                 break;
             case R.id.share:
                 sharePhoto();
+                break;
+            case R.id.print:
+                printPhoto();
                 break;
             case R.id.edit:
                 editPhoto();
@@ -348,10 +366,23 @@ public class ItemActivity extends AppCompatActivity {
         }
     }
 
-    public void editPhoto() {
-        if (albumItem instanceof Video) {
+    public void printPhoto() {
+        if (!(albumItem instanceof Photo)) {
+            Toast.makeText(this, "Editing of " + albumItem.TYPE + " not supported", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        PrintHelper photoPrinter = new PrintHelper(this);
+        photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+        Bitmap bitmap = BitmapFactory.decodeFile(albumItem.getPath());
+        photoPrinter.printBitmap(albumItem.getPath(), bitmap);
+    }
+
+    public void editPhoto() {
+        /*if (albumItem instanceof Video) {
+            Toast.makeText(this, "Editing of Videos not supported", Toast.LENGTH_SHORT).show();
+            return;
+        }*/
 
         Uri uri = albumItem.getUri(this);
 
@@ -362,7 +393,7 @@ public class ItemActivity extends AppCompatActivity {
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App found to edit your Photo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No App found to edit your " + albumItem.TYPE, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -380,7 +411,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void deletePhoto() {
-        if (!MediaLoader.checkPermission(this)) {
+        if (!MediaProvider.checkPermission(this)) {
             return;
         }
 
@@ -392,7 +423,8 @@ public class ItemActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, AlbumActivity.class);
         intent.setAction(AlbumActivity.DELETE_ALBUMITEM);
-        intent.putExtra(AlbumActivity.ALBUM, album);
+        //intent.putExtra(AlbumActivity.ALBUM, album);
+        intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
         intent.putExtra(ALBUM_ITEM, albumItem);
         intent.putExtra(HIDDEN_ALBUMITEM, album.isHidden());
         intent.putExtra(VIEW_ONLY, view_only);
@@ -505,7 +537,7 @@ public class ItemActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
+                        /*if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
                             new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
                                     .setTitle(R.string.missing_permission_title)
                                     .setMessage(R.string.missing_delete_permission)
@@ -513,7 +545,9 @@ public class ItemActivity extends AppCompatActivity {
                                     .create().show();
                         } else {
                             showDeleteDialog();
-                        }
+                        }*/
+
+                        showDeleteDialog();
                     }
                 }, 400);
                 break;
@@ -581,7 +615,7 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
-            case MediaLoader.PERMISSION_REQUEST_CODE: {
+            case MediaProvider.PERMISSION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission granted
@@ -593,7 +627,7 @@ public class ItemActivity extends AppCompatActivity {
                     snackbar.setAction(R.string.retry, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            MediaLoader.checkPermission(ItemActivity.this);
+                            MediaProvider.checkPermission(ItemActivity.this);
                         }
                     });
                     Util.showSnackbar(snackbar);
@@ -612,7 +646,7 @@ public class ItemActivity extends AppCompatActivity {
                 outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
             }
         }
-        outState.putParcelable(ALBUM, album);
+        //outState.putParcelable(ALBUM, album);
         outState.putParcelable(ALBUM_ITEM, albumItem);
         outState.putBoolean(WAS_SYSTEM_UI_HIDDEN, !systemUiVisible);
         outState.putBoolean(INFO_DIALOG_SHOWN, infoDialog != null);

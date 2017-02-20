@@ -39,6 +39,11 @@ public class File_POJO
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return getPath();
+    }
+
     public String getPath() {
         return path;
     }

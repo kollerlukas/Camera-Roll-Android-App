@@ -53,18 +53,20 @@ public class SortUtil {
         return sortables;
     }
 
-    private static ArrayList<? extends Sortable> sortByDate(final Activity context, ArrayList<? extends Sortable> sortables) {
+    public static ArrayList<? extends Sortable> sortByDate(final Activity context, ArrayList<? extends Sortable> sortables) {
         // Sorting
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                return Long.valueOf(s2.getDate(context)).compareTo(s1.getDate(context));
+                Long l1 = s1.getDate(context);
+                Long l2 = s2.getDate(context);
+                return l2.compareTo(l1);
             }
         });
         return sortables;
     }
 
-    private static ArrayList<? extends Sortable> sortByName(ArrayList<? extends Sortable> sortables) {
+    public static ArrayList<? extends Sortable> sortByName(ArrayList<? extends Sortable> sortables) {
         // Sorting
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override

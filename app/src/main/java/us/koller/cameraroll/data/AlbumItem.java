@@ -10,7 +10,9 @@ import android.support.v4.content.FileProvider;
 import java.io.File;
 
 import us.koller.cameraroll.util.MediaType;
+import us.koller.cameraroll.util.RemovableStorageUtil;
 import us.koller.cameraroll.util.SortUtil;
+import us.koller.cameraroll.util.Util;
 
 public abstract class AlbumItem
         implements Parcelable, SortUtil.Sortable {
@@ -26,6 +28,8 @@ public abstract class AlbumItem
     public boolean contentUri = false;
     public boolean isSharedElement = false;
     public boolean hasFadedIn = false;
+
+    public String TYPE = "AlbumItem";
 
     //factory method
     public static AlbumItem getInstance(Context context, String path) {
@@ -84,15 +88,16 @@ public abstract class AlbumItem
     }
 
     public Uri getUri(Context context) {
-        Uri uri;
         if (!contentUri) {
             try {
                 File file = new File(getPath());
-                uri = FileProvider.getUriForFile(context,
+                return FileProvider.getUriForFile(context,
                         context.getApplicationContext().getPackageName() + ".provider", file);
-                return uri;
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
+
+                //file is probably on removable storage
+                return RemovableStorageUtil.getContentUriFromFilePath(context, getPath());
             }
         }
         return Uri.parse(getPath());
@@ -149,4 +154,10 @@ public abstract class AlbumItem
             return new AlbumItem[i];
         }
     };
+
+    public static AlbumItem getErrorItem() {
+        AlbumItem albumItem = new Photo();
+        albumItem.setPath("ERROR").setName("ERROR");
+        return albumItem;
+    }
 }

@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import java.io.File;
 import java.util.ArrayList;
 
-import us.koller.cameraroll.data.MediaLoader.MediaLoader;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.util.SortUtil;
 
 public class Album
@@ -41,10 +41,12 @@ public class Album
         } else {
             File dir = new File(getPath());
             File[] files = dir.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].getName().equals(MediaLoader.FILE_TYPE_NO_MEDIA)) {
-                    hidden = HIDDEN;
-                    return true;
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    if (files[i].getName().equals(MediaProvider.FILE_TYPE_NO_MEDIA)) {
+                        hidden = HIDDEN;
+                        return true;
+                    }
                 }
             }
         }
@@ -58,7 +60,8 @@ public class Album
 
     @Override
     public String getName() {
-        return new File(path).getName();
+        String name = new File(getPath()).getName();
+        return name != null ? name : "ERROR";
     }
 
     @Override

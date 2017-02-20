@@ -1,9 +1,7 @@
 package us.koller.cameraroll.adapter.main.ViewHolder;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +13,7 @@ import com.bumptech.glide.request.target.Target;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.ColorFade;
 
@@ -28,6 +27,12 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
 
     public void setAlbum(Album album) {
         this.album = album;
+
+        if (album == null) {
+            //Error album
+            album = MediaProvider.getErrorAlbum();
+        }
+
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
         String count = album.getAlbumItems().size()
                 + (album.getAlbumItems().size() > 1 ?

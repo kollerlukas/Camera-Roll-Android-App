@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.MediaLoader.MediaLoader;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.Util;
 
@@ -50,11 +50,11 @@ public class MainActivity extends AppCompatActivity {
 
     private Snackbar snackbar;
 
-    private MediaLoader mediaLoader;
+    private MediaProvider mediaProvider;
 
     private boolean hiddenFolders = false;
-    private boolean pick_photos;
 
+    private boolean pick_photos;
     private boolean allowMultiple;
 
     @Override
@@ -68,12 +68,21 @@ public class MainActivity extends AppCompatActivity {
         hiddenFolders = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
                 .getBoolean(HIDDEN_FOLDERS, false);
 
-        //loading media
-        if (savedInstanceState != null && savedInstanceState.containsKey(ALBUMS)) {
+        //load media
+        albums = MediaProvider.getAlbums();
+        if (albums == null) {
+            albums = new ArrayList<>();
+        }
+
+        if (savedInstanceState == null) {
+            refreshPhotos();
+        }
+
+        /*if (savedInstanceState != null && savedInstanceState.containsKey(ALBUMS)) {
             albums = savedInstanceState.getParcelableArrayList(ALBUMS);
         } else {
             albums = new ArrayList<>();
-        }
+        }*/
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -178,11 +187,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupTaskDescription();
-
-        //load media
-        if (savedInstanceState == null) {
-            refreshPhotos();
-        }
     }
 
     @Override
@@ -217,12 +221,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshPhotos() {
+        if (mediaProvider != null) {
+            mediaProvider.onDestroy();
+            mediaProvider = null;
+        }
+
         snackbar = Snackbar.make(findViewById(R.id.root_view),
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
         Util.showSnackbar(snackbar);
 
-        final MediaLoader.LoaderCallback callback
-                = new MediaLoader.LoaderCallback() {
+        final MediaProvider.Callback callback
+                = new MediaProvider.Callback() {
             @Override
             public void onMediaLoaded(final ArrayList<Album> albums) {
                 if (albums != null) {
@@ -235,8 +244,8 @@ public class MainActivity extends AppCompatActivity {
 
                             snackbar.dismiss();
 
-                            mediaLoader.onDestroy();
-                            mediaLoader = null;
+                            mediaProvider.onDestroy();
+                            mediaProvider = null;
                         }
                     });
                 }
@@ -251,8 +260,8 @@ public class MainActivity extends AppCompatActivity {
                 snackbar.setAction(getString(R.string.retry), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (mediaLoader != null) {
-                            mediaLoader.onDestroy();
+                        if (mediaProvider != null) {
+                            mediaProvider.onDestroy();
                         }
                         refreshPhotos();
                         snackbar.dismiss();
@@ -260,10 +269,10 @@ public class MainActivity extends AppCompatActivity {
                 });
                 Util.showSnackbar(snackbar);
 
-                if (mediaLoader != null) {
-                    mediaLoader.onDestroy();
+                if (mediaProvider != null) {
+                    mediaProvider.onDestroy();
                 }
-                mediaLoader = null;
+                mediaProvider = null;
             }
 
             @Override
@@ -272,8 +281,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        mediaLoader = new MediaLoader();
-        mediaLoader.loadAlbums(MainActivity.this, hiddenFolders, callback);
+        mediaProvider = new MediaProvider();
+        mediaProvider.loadAlbums(MainActivity.this, hiddenFolders, callback);
     }
 
     @Override
@@ -322,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
-            case MediaLoader.PERMISSION_REQUEST_CODE: {
+            case MediaProvider.PERMISSION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission granted
@@ -361,14 +370,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(ALBUMS, albums);
+        //not able to save albums in Bundle, --> TransactionTooLargeException
+        //outState.putParcelableArrayList(ALBUMS, albums);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaLoader != null) {
-            mediaLoader.onDestroy();
+        if (mediaProvider != null) {
+            mediaProvider.onDestroy();
         }
     }
 }

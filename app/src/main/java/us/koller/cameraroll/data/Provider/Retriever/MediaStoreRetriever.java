@@ -1,4 +1,4 @@
-package us.koller.cameraroll.data.MediaLoader.Loader;
+package us.koller.cameraroll.data.Provider.Retriever;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -9,26 +9,26 @@ import android.support.v4.content.CursorLoader;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.MediaLoader.MediaLoader;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
 //loading media through MediaStore
 //advantage: speed, disadvantage: might be missing some items
-public class MediaStoreLoader implements MediaLoader.Loader {
+public class MediaStoreRetriever implements Retriever {
 
     private static final String[] projection = new String[]{
             MediaStore.Files.FileColumns.DATA,
             MediaStore.Files.FileColumns.PARENT};
 
+
     @Override
-    public void loadAlbums(final Activity context, boolean hiddenFolders, final MediaLoader.LoaderCallback callback) {
+    public void loadAlbums(final Activity context, boolean hiddenFolders, final MediaProvider.Callback callback) {
 
         final long startTime = System.currentTimeMillis();
 
@@ -59,7 +59,7 @@ public class MediaStoreLoader implements MediaLoader.Loader {
 
         //search hiddenFolders
         if (hiddenFolders) {
-            ArrayList<Album> hiddenAlbums = loadHiddenFolders(context);
+            ArrayList<Album> hiddenAlbums = checkHiddenFolders(context);
             albums.addAll(hiddenAlbums);
         }
 
@@ -98,14 +98,20 @@ public class MediaStoreLoader implements MediaLoader.Loader {
                 cursor.close();
 
                 //done loading media with content resolver
-                SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
+                //SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
+                SortUtil.sortByName(albums);
                 callback.onMediaLoaded(albums);
-                Log.d("MediaStoreLoader", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
+                Log.d("MediaStoreRetriever", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
             }
         });
     }
 
-    private ArrayList<Album> loadHiddenFolders(final Activity context) {
+    @Override
+    public void onDestroy() {
+
+    }
+
+    private ArrayList<Album> checkHiddenFolders(final Activity context) {
 
         ArrayList<Album> hiddenAlbums = new ArrayList<>();
 
@@ -117,7 +123,7 @@ public class MediaStoreLoader implements MediaLoader.Loader {
         String selection = nonMediaCondition + " AND "
                 + MediaStore.Files.FileColumns.TITLE + " LIKE ?";
 
-        String[] params = new String[]{"%" + MediaLoader.FILE_TYPE_NO_MEDIA + "%"};
+        String[] params = new String[]{"%" + MediaProvider.FILE_TYPE_NO_MEDIA + "%"};
 
         // make query for non media files with file title contain ".nomedia" as
         // text on External Media URI
@@ -138,22 +144,20 @@ public class MediaStoreLoader implements MediaLoader.Loader {
             do {
                 String path = cursor.getString(pathColumn);
 
-                path = path.replace(MediaLoader.FILE_TYPE_NO_MEDIA, "");
-                File folder = new File(path);
-                final Album album = new Album().setPath(folder.getPath());
-                //album.isHidden() = true;
+                path = path.replace(MediaProvider.FILE_TYPE_NO_MEDIA, "");
+                File dir = new File(path);
+                final Album album = new Album().setPath(path);
 
-                folder.listFiles(new FileFilter() {
-                    @Override
-                    public boolean accept(File file) {
-                        if (MediaType.isMedia(context, file.getPath())) {
-                            AlbumItem albumItem = AlbumItem.getInstance(context, file.getPath());
+                File[] files = dir.listFiles();
+
+                for (int i = 0; i < files.length; i++) {
+                    if (MediaType.isMedia(context, files[i].getPath())) {
+                        AlbumItem albumItem = AlbumItem.getInstance(context, files[i].getPath());
+                        if (albumItem != null) {
                             album.getAlbumItems().add(albumItem);
-                            return true;
                         }
-                        return false;
                     }
-                });
+                }
 
                 if (album.getAlbumItems().size() > 0) {
                     hiddenAlbums.add(album);
@@ -163,10 +167,5 @@ public class MediaStoreLoader implements MediaLoader.Loader {
         cursor.close();
 
         return hiddenAlbums;
-    }
-
-    @Override
-    public void onDestroy() {
-
     }
 }

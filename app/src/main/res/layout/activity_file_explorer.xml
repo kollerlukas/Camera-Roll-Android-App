@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/root_view"
+        android:id="@+id/swipeBackView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <include layout="@layout/recycler_view_layout"/>
+    <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/root_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/dark_bg">
+
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"/>
+
+        <android.support.v7.widget.Toolbar
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stateListAnimator="@animator/toolbar_raise"
+                android:transitionName="@string/toolbar_transition_name">
+
+            <Spinner
+                    android:id="@+id/toolbar_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"/>
+        </android.support.v7.widget.Toolbar>
+    </FrameLayout>
 
     <TextView
             android:id="@+id/empty_state"
@@ -13,5 +40,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/no_files"
-            android:textSize="24sp"/>
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-monospace"/>
 </us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout>

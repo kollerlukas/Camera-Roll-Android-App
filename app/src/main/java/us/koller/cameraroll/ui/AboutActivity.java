@@ -14,7 +14,6 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +27,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.MediaLoader.MediaLoader;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 
 public class AboutActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener {
@@ -162,7 +161,7 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
                     @Override
                     public void run() {
                         if (!consumed) {
-                            MediaLoader.toggleMode(AboutActivity.this);
+                            MediaProvider.toggleMode(AboutActivity.this);
                             consumed = true;
                         }
                     }

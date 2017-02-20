@@ -1,4 +1,4 @@
-package us.koller.cameraroll.data.MediaLoader;
+package us.koller.cameraroll.data.Provider;
 
 import android.Manifest;
 import android.app.Activity;
@@ -12,38 +12,31 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.MediaLoader.Loader.MediaStoreLoader;
-import us.koller.cameraroll.data.MediaLoader.Loader.StorageLoader;
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Provider.Retriever.MediaStoreRetriever;
+import us.koller.cameraroll.data.Provider.Retriever.StorageRetriever;
 import us.koller.cameraroll.ui.MainActivity;
 
-public class MediaLoader {
+public class MediaProvider extends Provider {
 
-    public interface Loader {
-        void loadAlbums(final Activity context, final boolean hiddenFolders, final LoaderCallback callback);
-        void onDestroy();
-    }
+    private static ArrayList<Album> albums;
 
-    public interface LoaderCallback {
+    public interface Callback {
         void onMediaLoaded(ArrayList<Album> albums);
+
         void timeout();
 
         void needPermission();
     }
 
-    public interface Callback {
-        void callback(ArrayList<Album> albums);
-    }
-
-    public static final int MODE_STORAGE = 1;
-    public static final int MODE_MEDIASTORE = 2;
+    private static final int MODE_STORAGE = 1;
+    private static final int MODE_MEDIASTORE = 2;
     private static final String MODE_KEY = "MODE_KEY";
 
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
 
-    private Loader loader;
-
-    public MediaLoader() {
+    public MediaProvider() {
 
     }
 
@@ -62,9 +55,9 @@ public class MediaLoader {
 
     public void loadAlbums(Activity context,
                            boolean hiddenFolders,
-                           LoaderCallback callback) {
+                           final Callback callback) {
 
-        if (!MediaLoader.checkPermission(context)) {
+        if (!MediaProvider.checkPermission(context)) {
             callback.needPermission();
             return;
         }
@@ -73,22 +66,65 @@ public class MediaLoader {
 
         switch (mode) {
             case MODE_STORAGE:
-                loader = new StorageLoader();
+                retriever = new StorageRetriever();
                 break;
             case MODE_MEDIASTORE:
-                loader = new MediaStoreLoader();
+                retriever = new MediaStoreRetriever();
                 break;
         }
 
-        if (loader != null) {
-            loader.loadAlbums(context, hiddenFolders, callback);
+        if (retriever != null) {
+            retriever.loadAlbums(context, hiddenFolders,
+                    new Callback() {
+
+                        @Override
+                        public void onMediaLoaded(ArrayList<Album> albums) {
+                            callback.onMediaLoaded(albums);
+                            setAlbums(albums);
+                        }
+
+                        @Override
+                        public void timeout() {
+                            callback.timeout();
+                        }
+
+                        @Override
+                        public void needPermission() {
+                            callback.needPermission();
+                        }
+                    });
         } else {
             callback.onMediaLoaded(null);
         }
     }
 
-    public void onDestroy() {
-        loader.onDestroy();
+    private static void setAlbums(ArrayList<Album> albums) {
+        MediaProvider.albums = albums;
+    }
+
+    public static ArrayList<Album> getAlbums() {
+        return albums;
+    }
+
+    public static Album loadAlbum(String path) {
+        if (albums == null) {
+            return getErrorAlbum();
+        }
+
+        for (int i = 0; i < albums.size(); i++) {
+            if (albums.get(i).getPath().equals(path)) {
+                return albums.get(i);
+            }
+        }
+
+        return getErrorAlbum();
+    }
+
+    public static Album getErrorAlbum() {
+        //Error album
+        Album album = new Album().setPath("ERROR");
+        album.getAlbumItems().add(AlbumItem.getErrorItem());
+        return album;
     }
 
     public static void toggleMode(Context context) {

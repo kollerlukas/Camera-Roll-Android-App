@@ -6,7 +6,7 @@ import android.os.Parcelable;
 public class Video extends AlbumItem implements Parcelable {
 
     Video() {
-
+        TYPE = "Video";
     }
 
     Video(Parcel parcel) {

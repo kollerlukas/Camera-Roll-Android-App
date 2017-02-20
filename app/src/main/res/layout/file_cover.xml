@@ -22,5 +22,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
+            android:fontFamily="sans-serif-monospace"
             android:textSize="20sp"/>
 </LinearLayout>

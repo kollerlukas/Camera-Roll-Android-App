@@ -45,8 +45,11 @@ public class IntentReceiver extends AppCompatActivity {
             return;
         }
 
-        Album album = new Album();
-        AlbumItem albumItem = AlbumItem.getInstance(this, uri.toString());
+        String path = uri.toString();
+        int index = path.lastIndexOf("/");
+
+        Album album = new Album().setPath(path.substring(0, index));
+        AlbumItem albumItem = AlbumItem.getInstance(this, path);
         if (albumItem == null || albumItem instanceof Video) {
             Toast.makeText(this, getString(R.string.error), Toast.LENGTH_SHORT).show();
             this.finish();

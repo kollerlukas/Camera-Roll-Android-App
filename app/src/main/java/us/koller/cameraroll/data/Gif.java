@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class Gif extends AlbumItem implements Parcelable {
     Gif() {
-
+        TYPE = "Gif";
     }
 
     Gif(Parcel parcel) {

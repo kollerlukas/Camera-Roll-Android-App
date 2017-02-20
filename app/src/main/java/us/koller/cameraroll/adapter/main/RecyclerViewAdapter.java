@@ -47,7 +47,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(holder.itemView.getContext(), AlbumActivity.class);
-                intent.putExtra(AlbumActivity.ALBUM, album);
+
+                //intent.putExtra(AlbumActivity.ALBUM, album);
+                intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
+
                 if (pick_photos) {
                     intent.setAction(MainActivity.PICK_PHOTOS);
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,
@@ -55,8 +58,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 } else {
                     intent.setAction(AlbumActivity.VIEW_ALBUM);
                 }
+
                 ActivityOptionsCompat options;
                 Activity context = (Activity) holder.itemView.getContext();
+
                 if (!pick_photos) {
                     options = ActivityOptionsCompat.makeSceneTransitionAnimation(context);
                     holder.itemView.getContext().startActivity(intent, options.toBundle());

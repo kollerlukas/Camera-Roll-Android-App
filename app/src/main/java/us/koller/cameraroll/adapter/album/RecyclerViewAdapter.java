@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
 
@@ -133,7 +132,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                         || albumItem instanceof Video) && !albumItem.error) {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
-                    intent.putExtra(ItemActivity.ALBUM, album);
+                    //intent.putExtra(ItemActivity.ALBUM, album);
+                    intent.putExtra(ItemActivity.ALBUM_PATH, album.getPath());
                     intent.putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
 
                     ActivityOptionsCompat options =

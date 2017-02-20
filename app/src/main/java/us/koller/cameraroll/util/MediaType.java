@@ -7,9 +7,9 @@ import android.webkit.MimeTypeMap;
 public class MediaType {
 
     public static boolean isMedia(Context context, String path) {
-        return isImage(context, path) ||
-                isVideo(context, path) ||
-                isGif(context, path);
+        return checkImageExtension(path) ||
+                checkGifExtension(path) ||
+                checkVideoExtension(path);
     }
 
     public static String getMimeType(Context context, String path) {
@@ -17,6 +17,10 @@ public class MediaType {
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
         if (mimeType == null) {
             mimeType = context.getContentResolver().getType(Uri.parse(path));
+        }
+        if (mimeType == null) {
+            mimeType = checkImageExtension(path) || checkGifExtension(path) ? "image/*" :
+                    checkVideoExtension(path) ? "video/*" : "error";
         }
         return mimeType;
     }

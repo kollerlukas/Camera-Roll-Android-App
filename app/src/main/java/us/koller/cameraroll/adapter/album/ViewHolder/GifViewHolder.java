@@ -13,8 +13,6 @@ import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.util.SizedColorDrawable;
-import us.koller.cameraroll.util.Util;
 
 public class GifViewHolder extends AlbumItemHolder {
 
@@ -35,7 +33,6 @@ public class GifViewHolder extends AlbumItemHolder {
                 .asGif()
                 .skipMemoryCache(true)
                 .thumbnail(0.1f)
-                //.placeholder(new SizedColorDrawable(ContextCompat.getColor(context, R.color.white_translucent2), imageDimens))
                 .listener(new RequestListener<String, GifDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model,
