@@ -11,6 +11,7 @@ import java.io.File;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.util.MediaType;
 
 public class FileHolder extends RecyclerView.ViewHolder {
@@ -25,7 +26,9 @@ public class FileHolder extends RecyclerView.ViewHolder {
         this.file = file;
 
         ImageView folderIndicator = (ImageView) itemView.findViewById(R.id.folder_indicator);
-        if (!file.isMedia) {
+        if (file instanceof StorageRoot) {
+            folderIndicator.setImageResource(R.drawable.ic_sd_storage_white_24dp);
+        } else if (!file.isMedia) {
             folderIndicator.setImageResource(R.drawable.ic_folder_white_24dp);
         } else if (MediaType.isVideo(folderIndicator.getContext(), file.getPath())) {
             folderIndicator.setImageResource(R.drawable.ic_videocam_white_24dp);

@@ -99,4 +99,5 @@
     <string name="video_indicator">Video Indicator</string>
     <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
     <string name="print">Print</string>
+    <string name="storage">Storage</string>
 </resources>

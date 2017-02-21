@@ -31,9 +31,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,12 +40,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.FilesProvider;
+import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.ColorFade;
@@ -58,13 +55,15 @@ public class FileExplorerActivity extends AppCompatActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
 
     public interface OnDirectoryChangeCallback {
-        public void changeDir(String path);
+        void changeDir(String path);
     }
 
+    public static final String ROOTS = "ROOTS";
     public static final String CURRENT_DIR = "CURRENT_DIR";
     public static final String SELECTED_ITEMS = "SELECTED_ITEMS";
+    public static final String STORAGE_ROOTS = "Storage Roots";
 
-    private File_POJO[] roots;
+    private File_POJO roots;
 
     private File_POJO currentDir;
 
@@ -103,7 +102,6 @@ public class FileExplorerActivity extends AppCompatActivity
         if (actionBar != null) {
             actionBar.setTitle(getString(R.string.file_explorer));
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(false);
         }
 
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.swipeBackView);
@@ -177,25 +175,40 @@ public class FileExplorerActivity extends AppCompatActivity
 
         //load files
         if (savedInstanceState != null
-                && savedInstanceState.containsKey(CURRENT_DIR)) {
+                && savedInstanceState.containsKey(CURRENT_DIR)
+                && savedInstanceState.containsKey(ROOTS)) {
+            roots = savedInstanceState.getParcelable(ROOTS);
             currentDir = savedInstanceState.getParcelable(CURRENT_DIR);
+
+            recyclerViewAdapter.setFiles(currentDir);
+            recyclerViewAdapter.notifyDataSetChanged();
             onDataChanged();
+
+            /*if(savedInstanceState.containsKey(SELECTED_ITEMS)) {
+                File_POJO[] selectedItems
+                        = (File_POJO[]) savedInstanceState.getParcelableArray(SELECTED_ITEMS);
+                if(selectedItems != null) {
+                    recyclerViewAdapter.enterSelectorMode(selectedItems);
+                }
+            }*/
         } else {
-            loadFiles();
+            loadRoots();
         }
     }
 
-    public void loadFiles() {
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
-                getString(R.string.loading), Snackbar.LENGTH_INDEFINITE);
-        Util.showSnackbar(snackbar);
+    public void loadRoots() {
+        StorageRoot[] storageRoots = FilesProvider.getRoots(this);
+        roots = new StorageRoot(STORAGE_ROOTS);
+        for (int i = 0; i < storageRoots.length; i++) {
+            roots.addChild(storageRoots[i]);
+        }
 
-        filesProvider = new FilesProvider();
-
-        roots = filesProvider.getRoots();
-        setupSpinner();
-
-        loadDirectory(roots[0].getPath());
+        FileExplorerActivity.this.currentDir = roots;
+        if (recyclerViewAdapter != null) {
+            recyclerViewAdapter.setFiles(currentDir);
+            recyclerViewAdapter.notifyDataSetChanged();
+            onDataChanged();
+        }
     }
 
     public void loadDirectory(final String path) {
@@ -263,43 +276,18 @@ public class FileExplorerActivity extends AppCompatActivity
         filesProvider.loadDir(this, path, callback);
     }
 
-    public void setupSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.toolbar_spinner);
-        ArrayList<String> spinnerList = new ArrayList<>();
-        for (int i = 0; i < roots.length; i++) {
-            spinnerList.add(roots[i].getPath());
-        }
-        ArrayAdapter<String> dataAdapter
-                = new ArrayAdapter<>(this, R.layout.simple_spinner_item, spinnerList);
-        dataAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
-
-        spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-
-                    boolean firstCall = true;
-
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView,
-                                               View view, int pos, long id) {
-                        if (firstCall) {
-                            firstCall = false;
-                            return;
-                        }
-                        loadDirectory(roots[pos].getPath());
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
-                    }
-                });
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(CURRENT_DIR, currentDir);
+        outState.putParcelable(ROOTS, roots);
+        if (currentDir != null) {
+            outState.putParcelable(CURRENT_DIR, currentDir);
+        }
+
+        File_POJO[] selectedItems = recyclerViewAdapter.getSelectedItems();
+        if (selectedItems.length > 0) {
+            outState.putParcelableArray(SELECTED_ITEMS, selectedItems);
+        }
     }
 
     @Override
@@ -318,24 +306,32 @@ public class FileExplorerActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (recyclerViewAdapter.isModeActive()
-                        || recyclerViewAdapter.getMode() == RecyclerViewAdapter.PICK_TARGET_MODE) {
+                        || recyclerViewAdapter.getMode()
+                        == RecyclerViewAdapter.PICK_TARGET_MODE) {
+                    FileAction.action = FileAction.EMPTY;
                     recyclerViewAdapter.cancelMode();
                 } else {
                     onBackPressed();
                 }
                 break;
             case R.id.paste:
-                recyclerViewAdapter.cancelMode();
-                if (FileAction.action == FileAction.MOVE
-                        | FileAction.action == FileAction.COPY) {
-                    fileAction.execute(this,
-                            recyclerViewAdapter.getFiles(),
-                            new FileAction.Callback() {
-                                @Override
-                                public void done() {
-                                    loadDirectory(currentDir.getPath());
-                                }
-                            });
+                if (!currentDir.getPath().equals(STORAGE_ROOTS)) {
+                    recyclerViewAdapter.cancelMode();
+                    if (FileAction.action == FileAction.MOVE
+                            | FileAction.action == FileAction.COPY) {
+                        fileAction.execute(this,
+                                recyclerViewAdapter.getFiles(),
+                                new FileAction.Callback() {
+                                    @Override
+                                    public void done() {
+                                        loadDirectory(currentDir.getPath());
+                                    }
+                                });
+                    }
+                } else {
+                    Toast.makeText(this, "You can't "
+                            + FileAction.getModeString(this)
+                            + " files here!", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.move:
@@ -358,13 +354,16 @@ public class FileExplorerActivity extends AppCompatActivity
     public void onBackPressed() {
         if (recyclerViewAdapter.isModeActive()) {
             recyclerViewAdapter.cancelMode();
-        } else if (recyclerViewAdapter != null
-                && !isCurrentFileARoot()) {
-            String path = currentDir.getPath();
-            int index = path.lastIndexOf("/");
-            String parentPath = path.substring(0, index);
+        } else if (currentDir != null && !currentDir.getPath().equals(STORAGE_ROOTS)) {
+            if (!isCurrentFileARoot()) {
+                String path = currentDir.getPath();
+                int index = path.lastIndexOf("/");
+                String parentPath = path.substring(0, index);
 
-            loadDirectory(parentPath);
+                loadDirectory(parentPath);
+            } else {
+                loadRoots();
+            }
         } else {
             super.onBackPressed();
         }
@@ -372,8 +371,12 @@ public class FileExplorerActivity extends AppCompatActivity
 
     private boolean isCurrentFileARoot() {
         if (currentDir != null) {
-            for (int i = 0; i < roots.length; i++) {
-                if (currentDir.getPath().equals(roots[i].getPath())) {
+            if (currentDir.getPath().equals(STORAGE_ROOTS)) {
+                return true;
+            }
+
+            for (int i = 0; i < roots.getChildren().size(); i++) {
+                if (currentDir.getPath().equals(roots.getChildren().get(i).getPath())) {
                     return true;
                 }
             }
@@ -412,12 +415,8 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onSelectorModeEnter() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(true);
-        }
-        Spinner spinner = (Spinner) findViewById(R.id.toolbar_spinner);
-        spinner.setVisibility(View.GONE);
+        fileAction = null;
+        FileAction.action = FileAction.EMPTY;
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
@@ -436,7 +435,6 @@ public class FileExplorerActivity extends AppCompatActivity
             public void run() {
                 toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
                         .create(FileExplorerActivity.this, R.drawable.cancel_to_back_vector_animateable));
-                toolbar.setTitleTextColor(ContextCompat.getColor(FileExplorerActivity.this, R.color.grey_900_translucent));
 
                 //make menu items visible
                 for (int i = 0; i < menu.size(); i++) {
@@ -452,6 +450,7 @@ public class FileExplorerActivity extends AppCompatActivity
     public void onSelectorModeExit(File_POJO[] selected_items) {
         fileAction = new FileAction(selected_items);
         if (FileAction.action == FileAction.DELETE) {
+            resetToolbar();
             fileAction.execute(this, null,
                     new FileAction.Callback() {
                         @Override
@@ -459,7 +458,6 @@ public class FileExplorerActivity extends AppCompatActivity
                             loadDirectory(currentDir.getPath());
                         }
                     });
-            resetToolbar();
         } else if (FileAction.action == FileAction.MOVE
                 | FileAction.action == FileAction.COPY) {
             recyclerViewAdapter.pickTarget();
@@ -470,20 +468,38 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onItemSelected(int count) {
-        String title = String.valueOf(count) + (count > 1 ?
-                getString(R.string.items) : getString(R.string.item));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(title);
+        if (count != 0) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            final String title = String.valueOf(count) + (count > 1 ?
+                    getString(R.string.items) : getString(R.string.item));
+
+            int color = ContextCompat.getColor(this, R.color.grey_900_translucent);
+            ColorFade.fadeToolbarTitleColor(toolbar, color,
+                    new ColorFade.ToolbarTitleFadeCallback() {
+                        @Override
+                        public void setTitle(Toolbar toolbar) {
+                            toolbar.setTitle(title);
+                        }
+                    }, true);
+        }
     }
 
     @Override
     public void onPickTargetModeEnter() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (fileAction != null) {
-            int count = fileAction.getFiles().length;
-            toolbar.setTitle(FileAction.getModeString(this) + " "
-                    + String.valueOf(count)
-                    + (count > 1 ? getString(R.string.items) : getString(R.string.item)));
+            final int count = fileAction.getFiles().length;
+
+            int color = ContextCompat.getColor(this, R.color.grey_900_translucent);
+            ColorFade.fadeToolbarTitleColor(toolbar, color,
+                    new ColorFade.ToolbarTitleFadeCallback() {
+                        @Override
+                        public void setTitle(Toolbar toolbar) {
+                            toolbar.setTitle(FileAction.getModeString(FileExplorerActivity.this) + " "
+                                    + String.valueOf(count)
+                                    + (count > 1 ? getString(R.string.items) : getString(R.string.item)));
+                        }
+                    }, true);
         }
 
         new Handler().postDelayed(new Runnable() {
@@ -527,25 +543,37 @@ public class FileExplorerActivity extends AppCompatActivity
                 .setDuration(100)
                 .start();
 
-        /*ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null && recyclerViewAdapter.getMode() != RecyclerViewAdapter.PICK_TARGET_MODE) {
-            actionBar.setTitle(currentDir.getPath());
-        }*/
+        if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
+            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+            int color = ContextCompat.getColor(FileExplorerActivity.this, R.color.white);
+            ColorFade.fadeToolbarTitleColor(toolbar, color,
+                    new ColorFade.ToolbarTitleFadeCallback() {
+                        @Override
+                        public void setTitle(Toolbar toolbar) {
+                            toolbar.setTitle(currentDir.getPath());
+                        }
+                    }, true);
+        }
     }
 
     public void resetToolbar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-        }
-
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
+
+        int color = ContextCompat.getColor(FileExplorerActivity.this, R.color.white);
+        ColorFade.fadeToolbarTitleColor(toolbar, color,
+                new ColorFade.ToolbarTitleFadeCallback() {
+                    @Override
+                    public void setTitle(Toolbar toolbar) {
+                        toolbar.setTitle(currentDir.getPath());
+                    }
+                }, false);
+
         toolbar.setActivated(false);
         ColorFade.fadeBackgroundColor(toolbar,
                 ContextCompat.getColor(this, R.color.colorAccent),
                 ContextCompat.getColor(this, R.color.black_translucent2));
-        toolbar.setTitle(recyclerViewAdapter.getFiles().getPath());
 
         ((Animatable) toolbar.getNavigationIcon()).start();
         new Handler().postDelayed(new Runnable() {
@@ -553,7 +581,6 @@ public class FileExplorerActivity extends AppCompatActivity
             public void run() {
                 toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
                         .create(FileExplorerActivity.this, R.drawable.back_to_cancel_animateable));
-                toolbar.setTitleTextColor(ContextCompat.getColor(FileExplorerActivity.this, R.color.white));
 
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
 
@@ -561,10 +588,6 @@ public class FileExplorerActivity extends AppCompatActivity
                 for (int i = 0; i < menu.size(); i++) {
                     menu.getItem(i).setVisible(false);
                 }
-
-                Spinner spinner = (Spinner) findViewById(R.id.toolbar_spinner);
-                spinner.setVisibility(View.VISIBLE);
-                spinner.requestLayout();
             }
         }, 300);
     }
@@ -628,7 +651,8 @@ public class FileExplorerActivity extends AppCompatActivity
 
                 int success_count = 0;
                 for (int i = 0; i < files.length; i++) {
-                    boolean result = copyFile(files[i].getPath(), target.getPath());
+                    //boolean result = copyFile(files[i].getPath(), target.getPath());
+                    boolean result = copyFilesRecursively(files[i].getPath(), target.getPath(), true);
                     success_count += result ? 1 : 0;
                     if (result) {
                         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
@@ -675,46 +699,83 @@ public class FileExplorerActivity extends AppCompatActivity
             return file.renameTo(new File(destination, file.getName()));
         }
 
-        private static boolean copyFile(String path, String destination) {
-            //create output directory if it doesn't exist
-            File dir = new File(destination, new File(path).getName());
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
+        private static boolean copyFilesRecursively(String path, String destination, boolean result) {
+            File file = new File(path);
+            String destinationFileName
+                    = getCopyFileName(new File(destination, new File(path).getName()).getPath());
             try {
-                InputStream inputStream = new FileInputStream(path);
-                OutputStream outputStream = new FileOutputStream(
-                        new File(destination, new File(path).getName()));
-
-                byte[] buffer = new byte[1024];
-
-                int length;
-                //copy the file content in bytes
-                while ((length = inputStream.read(buffer)) > 0) {
-                    outputStream.write(buffer, 0, length);
-                }
-
-                inputStream.close();
-                outputStream.close();
-
-                // write the output file
-                outputStream.flush();
-                outputStream.close();
-
+                result = result && copyFile(path, destinationFileName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    copyFilesRecursively(files[i].getPath(),
+                            destination + "/" + new File(destinationFileName).getName() + "/", result);
+                }
+            }
+            return result;
+        }
+
+        private static boolean copyFile(String path, String destination) throws IOException {
+            //create output directory if it doesn't exist
+            File dir = new File(destination);
+            boolean result;
+            if (new File(path).isDirectory()) {
+                result = dir.mkdirs();
+            } else {
+                result = dir.createNewFile();
+            }
+
+            InputStream inputStream = new FileInputStream(path);
+            OutputStream outputStream = new FileOutputStream(dir);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            //copy the file content in bytes
+            while ((bytesRead = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            // write the output file
+            outputStream.flush();
+            outputStream.close();
+
+            inputStream.close();
+
+            Log.d("FileAction", dir.getPath() + " isDir?: " + dir.isDirectory());
+
             return true;
+        }
+
+        private static String getCopyFileName(String destinationPath) {
+            File dir = new File(destinationPath);
+            String copyName;
+            if (dir.exists()) {
+                copyName = dir.getPath();
+                if (copyName.contains(".")) {
+                    int index = copyName.lastIndexOf(".");
+                    copyName = copyName.substring(0, index) + " Copy"
+                            + copyName.substring(index, copyName.length());
+                } else {
+                    copyName = copyName + " Copy";
+                }
+            } else {
+                copyName = dir.getPath();
+            }
+            return copyName;
         }
 
         private static boolean deleteFile(String path) {
             File file = new File(path);
-            if (file.exists()) {
-                return file.delete();
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    deleteFile(files[i].getPath());
+                }
             }
-            return false;
+            return file.exists() && file.delete();
         }
 
         static String getModeString(Context context) {

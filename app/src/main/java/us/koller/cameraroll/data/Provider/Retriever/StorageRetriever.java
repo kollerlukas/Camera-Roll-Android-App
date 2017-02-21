@@ -12,6 +12,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.FilesProvider;
@@ -19,6 +20,8 @@ import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
 import us.koller.cameraroll.data.Provider.ItemLoader.FileLoader;
 import us.koller.cameraroll.data.Provider.ItemLoader.ItemLoader;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.StorageRoot;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 
 //loading media by searching through Storage
@@ -110,22 +113,24 @@ public class StorageRetriever implements Retriever {
         });
     }
 
-    public File_POJO[] loadRoots() {
+    public static StorageRoot[] loadRoots(Activity context) {
+        ArrayList<StorageRoot> temp = new ArrayList<>();
 
-        ArrayList<File_POJO> temp = new ArrayList<>();
-
-        temp.add(new File_POJO(Environment.getExternalStorageDirectory().getPath(), false));
+        StorageRoot externalStorage
+                = new StorageRoot(Environment.getExternalStorageDirectory().getPath());
+        externalStorage.setName(context.getString(R.string.storage));
+        temp.add(externalStorage);
 
         File[] removableStorageRoots = getRemovableStorageRoots();
         for (int i = 0; i < removableStorageRoots.length; i++) {
-            temp.add(new File_POJO(removableStorageRoots[i].getPath(), false));
+            temp.add(new StorageRoot(removableStorageRoots[i].getPath()));
         }
 
-        File_POJO[] roots = new File_POJO[temp.size()];
+        StorageRoot[] roots = new StorageRoot[temp.size()];
         return temp.toArray(roots);
     }
 
-    public void loadDir(Activity context, String dirPath,
+    public void loadDir(final Activity context, String dirPath,
                         final FilesProvider.Callback callback) {
 
         if (new File(dirPath).isFile()) {
@@ -142,7 +147,19 @@ public class StorageRetriever implements Retriever {
             public void done(AdaptableThread thread, ItemLoader.Result result,
                              ArrayList<File> filesToSearch) {
                 File_POJO files = result.files;
-                SortUtil.sortByName(files.getChildren());
+                boolean filesContainMedia = false;
+                for (int i = 0; i < files.getChildren().size(); i++) {
+                    if (MediaType.isMedia(context, files.getChildren().get(i).getPath())) {
+                        filesContainMedia = true;
+                        break;
+                    }
+                }
+
+                if (filesContainMedia) {
+                    SortUtil.sortByDate(context, files.getChildren());
+                } else {
+                    SortUtil.sortByName(files.getChildren());
+                }
                 callback.onDirLoaded(files);
                 thread.cancel();
                 threads = null;
@@ -226,8 +243,8 @@ public class StorageRetriever implements Retriever {
         return root.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                File[] files1 = file.listFiles();
-                return files1 != null && files1.length > 0;
+                File[] files = file.listFiles();
+                return files != null && files.length > 0;
             }
         });
     }
@@ -504,12 +521,14 @@ public class StorageRetriever implements Retriever {
             final ArrayList<File> filesToSearch = new ArrayList<>();
 
             File[] files = file.listFiles();
-            for (int i = 0; i < files.length; i++) {
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
 
-                itemLoader.onFile(context, files[i]);
+                    itemLoader.onFile(context, files[i]);
 
-                if (files[i].isDirectory()) {
-                    filesToSearch.add(files[i]);
+                    if (files[i].isDirectory()) {
+                        filesToSearch.add(files[i]);
+                    }
                 }
             }
 

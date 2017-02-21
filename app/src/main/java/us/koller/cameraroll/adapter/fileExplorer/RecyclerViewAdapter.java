@@ -1,22 +1,18 @@
 package us.koller.cameraroll.adapter.fileExplorer;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.File;
-
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.ViewHolder.FileHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.FileExplorerActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 
@@ -92,22 +88,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     String path = file.getPath().substring(0, index);
 
                     //load Album
-                    final Album album;
-                    AlbumItem albumItem = null;
-                    if (!Environment.isExternalStorageRemovable(new File(file.getPath()))) {
-                        album = MediaProvider.loadAlbum(path);
-                        for (int i = 0; i < album.getAlbumItems().size(); i++) {
-                            if (album.getAlbumItems().get(i).getPath().equals(file.getPath())) {
-                                albumItem = album.getAlbumItems().get(i);
-                                break;
-                            }
-                        }
-                    } else {
-                        album = new Album().setPath(path);
-                        albumItem = AlbumItem.getInstance(holder.itemView.getContext(), file.getPath());
-                        if (albumItem != null) {
-                            album.getAlbumItems().add(albumItem);
-                        }
+                    final Album album = new Album().setPath(path);
+                    AlbumItem albumItem = AlbumItem.getInstance(holder.itemView.getContext(), file.getPath());
+                    if (albumItem != null) {
+                        album.getAlbumItems().add(albumItem);
                     }
 
                     if (album != null && albumItem != null) {
@@ -152,12 +136,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     private void onItemSelect(File_POJO file) {
+        if (file instanceof StorageRoot) {
+            return;
+        }
+
         if (mode == NORMAL_MODE) {
-            mode = SELECTOR_MODE;
+            //no preselected Items
+            enterSelectorMode(new File_POJO[0]);
+            /*mode = SELECTOR_MODE;
             selected_items = new boolean[files.getChildren().size()];
             if (callback != null) {
                 callback.onSelectorModeEnter();
-            }
+            }*/
         }
 
         int position = files.getChildren().indexOf(file);
@@ -179,7 +169,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return mode;
     }
 
-    private int getSelectedCount() {
+    public int getSelectedCount() {
         int selected_items_count = 0;
         for (int i = 0; i < selected_items.length; i++) {
             selected_items_count += selected_items[i] ? 1 : 0;
@@ -198,14 +188,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         if (mode == SELECTOR_MODE) {
             mode = NORMAL_MODE;
             if (callback != null) {
-                File_POJO[] files = new File_POJO[getSelectedCount()];
-                int index = 0;
-                for (int i = 0; i < selected_items.length; i++) {
-                    if (selected_items[i]) {
-                        files[index] = this.files.getChildren().get(i);
-                        index++;
-                    }
-                }
+                File_POJO[] files = getSelectedItems();
                 callback.onSelectorModeExit(files);
             }
             selected_items = new boolean[files.getChildren().size()];
@@ -216,6 +199,35 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             }
         }
         notifyDataSetChanged();
+    }
+
+    public File_POJO[] getSelectedItems() {
+        File_POJO[] files = new File_POJO[getSelectedCount()];
+        int index = 0;
+        for (int i = 0; i < selected_items.length; i++) {
+            if (selected_items[i]) {
+                files[index] = this.files.getChildren().get(i);
+                index++;
+            }
+        }
+        return files;
+    }
+
+    public void enterSelectorMode(File_POJO[] selectedItems) {
+        mode = SELECTOR_MODE;
+        selected_items = new boolean[files.getChildren().size()];
+        //select items
+        for (int i = 0; i < selectedItems.length; i++) {
+            for (int k = 0; k < files.getChildren().size(); k++) {
+                if (selectedItems[i].getPath()
+                        .equals(files.getChildren().get(k).getPath())) {
+                    onItemSelect(files.getChildren().get(k));
+                }
+            }
+        }
+        if (callback != null) {
+            callback.onSelectorModeEnter();
+        }
     }
 
     public void pickTarget() {

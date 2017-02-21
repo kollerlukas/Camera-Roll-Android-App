@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/swipeBackView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -24,14 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:stateListAnimator="@animator/toolbar_raise"
-                android:transitionName="@string/toolbar_transition_name">
-
-            <Spinner
-                    android:id="@+id/toolbar_spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"/>
-        </android.support.v7.widget.Toolbar>
+                android:transitionName="@string/toolbar_transition_name"/>
     </FrameLayout>
 
     <TextView

@@ -2,16 +2,16 @@ package us.koller.cameraroll.util;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
-
-import us.koller.cameraroll.R;
 
 public class ColorFade {
 
@@ -20,7 +20,8 @@ public class ColorFade {
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                v.setBackgroundColor(getAnimatedColor(startColor, endColor, valueAnimator.getAnimatedFraction()));
+                v.setBackgroundColor(getAnimatedColor(startColor, endColor,
+                        valueAnimator.getAnimatedFraction()));
             }
         });
         animator.start();
@@ -46,7 +47,6 @@ public class ColorFade {
     }
 
     // imageView saturation fade
-
     public static void fadeSaturation(final ImageView imageView) {
         // see: https://github.com/nickbutcher/plaid/blob/master/app/src/main/java/io/plaidapp/ui/FeedAdapter.java
         imageView.setHasTransientState(true);
@@ -73,5 +73,72 @@ public class ColorFade {
             }
         });
         saturation.start();
+    }
+
+    public interface ToolbarTitleFadeCallback {
+        void setTitle(Toolbar toolbar);
+    }
+
+    private static boolean titleFadeRunning = false;
+
+    //fade Toolbar title text change
+    public static void fadeToolbarTitleColor(final Toolbar toolbar, final int color,
+                                             final ToolbarTitleFadeCallback callback, boolean fadeTitleOut) {
+
+        if (titleFadeRunning) {
+            return;
+        }
+
+        titleFadeRunning = true;
+
+        final int transparent = ContextCompat.getColor(toolbar.getContext(), android.R.color.transparent);
+
+        ValueAnimator fadeOut = null;
+        if (fadeTitleOut) {
+            fadeOut = getDefaultValueAnimator();
+            fadeOut.setDuration(150);
+            fadeOut.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    toolbar.setTitleTextColor(getAnimatedColor(color, transparent,
+                            valueAnimator.getAnimatedFraction()));
+                }
+            });
+            fadeOut.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    callback.setTitle(toolbar);
+                }
+            });
+        } else {
+            toolbar.setTitleTextColor(transparent);
+            callback.setTitle(toolbar);
+        }
+
+        ValueAnimator fadeIn = getDefaultValueAnimator();
+        fadeIn.setDuration(fadeTitleOut ? 150 : 300);
+        fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                toolbar.setTitleTextColor(getAnimatedColor(transparent, color,
+                        valueAnimator.getAnimatedFraction()));
+            }
+        });
+
+        AnimatorSet set = new AnimatorSet();
+        if (fadeOut != null) {
+            set.playSequentially(fadeOut, fadeIn);
+        } else {
+            set.playSequentially(fadeIn);
+        }
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                titleFadeRunning = false;
+            }
+        });
+        set.start();
     }
 }

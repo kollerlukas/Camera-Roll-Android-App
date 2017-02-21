@@ -537,7 +537,7 @@ public class ItemActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        /*if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
+                        if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
                             new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
                                     .setTitle(R.string.missing_permission_title)
                                     .setMessage(R.string.missing_delete_permission)
@@ -545,9 +545,9 @@ public class ItemActivity extends AppCompatActivity {
                                     .create().show();
                         } else {
                             showDeleteDialog();
-                        }*/
+                        }
 
-                        showDeleteDialog();
+                        //showDeleteDialog();
                     }
                 }, 400);
                 break;

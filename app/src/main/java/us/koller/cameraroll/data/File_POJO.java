@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.util.SortUtil;
@@ -36,7 +37,7 @@ public class File_POJO
     @Override
     public long getDate(Activity context) {
         //not needed
-        return 0;
+        return new File(getPath()).lastModified();
     }
 
     @Override
@@ -68,7 +69,7 @@ public class File_POJO
         parcel.writeTypedArray(children, 0);
     }
 
-    private File_POJO(Parcel parcel) {
+    public File_POJO(Parcel parcel) {
         path = parcel.readString();
         isMedia = Boolean.valueOf(parcel.readString());
         children = parcel.createTypedArrayList(CREATOR);
