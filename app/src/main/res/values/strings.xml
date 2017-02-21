@@ -58,6 +58,7 @@
     <string name="share">Share</string>
     <string name="share_photo">Share Photo</string>
     <string name="edit">Edit</string>
+    <string name="print">Print</string>
 
     <string name="delete">Delete</string>
     <string name="photo_deleted">Photo deleted</string>
@@ -91,6 +92,17 @@
     <string name="photo">Photo</string>
 
     <string name="no_files">no Files</string>
+    <string name="storage">Storage</string>
+
+    <string name="warning">Warning!</string>
+    <string name="file_explorer_warning_message">The File Explorer is an
+        <b>experimental</b>
+        feature.
+        <br/>
+        The developer does not take any responsibility for the loss of any data or files.
+        <br/>
+        <b>Use at Your own risk.</b>
+    </string>
 
     <!--ImageView ContentDescription-->
     <string name="image">Image</string>
@@ -98,6 +110,4 @@
 
     <string name="video_indicator">Video Indicator</string>
     <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
-    <string name="print">Print</string>
-    <string name="storage">Storage</string>
 </resources>
