@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,8 +37,8 @@ public class MediaProvider extends Provider {
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
 
-    public MediaProvider() {
-
+    public MediaProvider(Context context) {
+        super(context);
     }
 
     public static boolean checkPermission(Activity context) {
@@ -76,9 +77,15 @@ public class MediaProvider extends Provider {
         if (retriever != null) {
             retriever.loadAlbums(context, hiddenFolders,
                     new Callback() {
-
                         @Override
                         public void onMediaLoaded(ArrayList<Album> albums) {
+                            //remove excluded albums
+                            for (int i = albums.size() - 1; i >= 0; i--) {
+                                if (albums.get(i).excluded) {
+                                    albums.remove(i);
+                                }
+                            }
+
                             callback.onMediaLoaded(albums);
                             setAlbums(albums);
                         }

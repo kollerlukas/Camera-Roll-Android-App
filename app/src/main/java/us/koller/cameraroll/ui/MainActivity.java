@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        mediaProvider = new MediaProvider();
+        mediaProvider = new MediaProvider(this);
         mediaProvider.loadAlbums(MainActivity.this, hiddenFolders, callback);
     }
 

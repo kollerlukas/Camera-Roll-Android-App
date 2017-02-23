@@ -3,11 +3,13 @@ package us.koller.cameraroll.data;
 import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.util.SortUtil;
 
 public class Album
@@ -20,13 +22,20 @@ public class Album
     private String path;
 
     private int hidden = -1;
+    public boolean excluded;
 
     public Album() {
         albumItems = new ArrayList<>();
+
+        excluded = false;
     }
 
     public Album setPath(String path) {
         this.path = path;
+
+        excluded = Provider.isDirExcluded(getPath(),
+                Provider.getExcludedPaths());
+
         return this;
     }
 

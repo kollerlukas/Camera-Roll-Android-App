@@ -20,6 +20,7 @@ import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
 import us.koller.cameraroll.data.Provider.ItemLoader.FileLoader;
 import us.koller.cameraroll.data.Provider.ItemLoader.ItemLoader;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
@@ -203,11 +204,11 @@ public class StorageRetriever implements Retriever {
 
     private static File[] getDirectoriesToSearch() {
         //external Directory
-        File dir = Environment.getExternalStorageDirectory(); //new File("/storage/emulated/0");
+        File dir = Environment.getExternalStorageDirectory();
         File[] dirs = dir.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return !file.getPath().equals("/storage/emulated/0/Android");
+                return Provider.searchDir(file.getPath());
             }
         });
 

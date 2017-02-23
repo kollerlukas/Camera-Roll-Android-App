@@ -1,6 +1,18 @@
 package us.koller.cameraroll.data.Provider;
 
 import android.app.Activity;
+import android.content.Context;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.Retriever.Retriever;
@@ -19,7 +31,8 @@ public class FilesProvider extends Provider {
 
     private Retriever retriever;
 
-    public FilesProvider() {
+    public FilesProvider(Context context) {
+        super(context);
         retriever = new StorageRetriever();
     }
 
@@ -28,8 +41,25 @@ public class FilesProvider extends Provider {
         return StorageRetriever.loadRoots(context);
     }
 
-    public void loadDir(Activity context, String dirPath,
+    public void loadDir(final Activity context, String dirPath,
                         final FilesProvider.Callback callback) {
-        ((StorageRetriever) retriever).loadDir(context, dirPath, callback);
+
+        ((StorageRetriever) retriever).loadDir(context, dirPath,
+                new Callback() {
+                    @Override
+                    public void onDirLoaded(File_POJO dir) {
+                        callback.onDirLoaded(dir);
+                    }
+
+                    @Override
+                    public void timeout() {
+                        callback.timeout();
+                    }
+
+                    @Override
+                    public void needPermission() {
+                        callback.needPermission();
+                    }
+                });
     }
 }

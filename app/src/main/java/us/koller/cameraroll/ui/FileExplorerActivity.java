@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +47,7 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.FilesProvider;
+import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
@@ -92,14 +92,16 @@ public class FileExplorerActivity extends AppCompatActivity
                 .create(this, R.drawable.back_to_cancel_animateable));
         setSupportActionBar(toolbar);
 
-        //set Toolbar overflow icon color
+        /*//set Toolbar overflow icon color
         Drawable drawable = toolbar.getOverflowIcon();
         if (drawable != null) {
             drawable = DrawableCompat.wrap(drawable);
             DrawableCompat.setTint(drawable.mutate(),
                     ContextCompat.getColor(this, R.color.grey_900_translucent));
             toolbar.setOverflowIcon(drawable);
-        }
+        }*/
+        Util.colorToolbarOverflowMenuIcon(toolbar,
+                ContextCompat.getColor(this, R.color.white_translucent1));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -232,8 +234,6 @@ public class FileExplorerActivity extends AppCompatActivity
                 getString(R.string.loading), Snackbar.LENGTH_INDEFINITE);
         Util.showSnackbar(snackbar);
 
-        filesProvider = new FilesProvider();
-
         final FilesProvider.Callback callback = new FilesProvider.Callback() {
             @Override
             public void onDirLoaded(final File_POJO dir) {
@@ -288,6 +288,7 @@ public class FileExplorerActivity extends AppCompatActivity
             }
         };
 
+        filesProvider = new FilesProvider(this);
         filesProvider.loadDir(this, path, callback);
     }
 
@@ -310,10 +311,41 @@ public class FileExplorerActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.file_explorer, menu);
         this.menu = menu;
         //hide menu items; items are made visible, when a folder gets selected
-        for (int i = 0; i < menu.size(); i++) {
-            menu.getItem(i).setVisible(false);
-        }
+        manageMenuItems();
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void manageMenuItems() {
+        if (menu != null) {
+            for (int i = 0; i < menu.size(); i++) {
+                menu.getItem(i).setVisible(false);
+
+                int id = menu.getItem(i).getItemId();
+                if (id == R.id.paste) {
+                    Drawable icon = menu.getItem(i).getIcon().mutate();
+                    icon.setTint(ContextCompat.getColor(FileExplorerActivity.this,
+                            R.color.grey_900_translucent));
+                    menu.getItem(i).setIcon(icon);
+                } else if (id == R.id.exclude) {
+                    if (currentDir != null) {
+                        menu.getItem(i).setVisible(!isCurrentFileARoot());
+                        if (!Provider.searchDir(currentDir.getPath())) {
+                            menu.getItem(i).setChecked(true);
+                            menu.getItem(i).setEnabled(false);
+                        } else {
+                            menu.getItem(i).setChecked(!isCurrentFileARoot() && currentDir.excluded);
+                            menu.getItem(i).setEnabled(!isCurrentFileARoot()
+                                    && !Provider.isDirExcludedBecauseParentDirIsExcluded(
+                                    currentDir.getPath(), Provider.getExcludedPaths()));
+                        }
+                    } else {
+                        menu.getItem(i).setVisible(true);
+                        menu.getItem(i).setChecked(false);
+                        menu.getItem(i).setEnabled(false);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -327,6 +359,15 @@ public class FileExplorerActivity extends AppCompatActivity
                     recyclerViewAdapter.cancelMode();
                 } else {
                     onBackPressed();
+                }
+                break;
+            case R.id.exclude:
+                currentDir.excluded = !currentDir.excluded;
+                item.setChecked(currentDir.excluded);
+                if (currentDir.excluded) {
+                    FilesProvider.addExcludedPath(this, currentDir.getPath());
+                } else {
+                    FilesProvider.removeExcludedPath(this, currentDir.getPath());
                 }
                 break;
             case R.id.paste:
@@ -380,6 +421,7 @@ public class FileExplorerActivity extends AppCompatActivity
                 loadRoots();
             }
         } else {
+            setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
             super.onBackPressed();
         }
     }
@@ -402,6 +444,8 @@ public class FileExplorerActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        Provider.saveExcludedPaths(this);
 
         if (filesProvider != null) {
             filesProvider.onDestroy();
@@ -440,6 +484,9 @@ public class FileExplorerActivity extends AppCompatActivity
 
         Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
 
+        Util.colorToolbarOverflowMenuIcon(toolbar,
+                ContextCompat.getColor(FileExplorerActivity.this, R.color.grey_900_translucent));
+
         ColorFade.fadeBackgroundColor(toolbar,
                 ContextCompat.getColor(this, R.color.black_translucent2),
                 ContextCompat.getColor(this, R.color.colorAccent));
@@ -453,7 +500,10 @@ public class FileExplorerActivity extends AppCompatActivity
 
                 //make menu items visible
                 for (int i = 0; i < menu.size(); i++) {
-                    if (menu.getItem(i).getItemId() != R.id.paste) {
+                    int id = menu.getItem(i).getItemId();
+                    if (id == R.id.paste || id == R.id.exclude) {
+                        menu.getItem(i).setVisible(false);
+                    } else {
                         menu.getItem(i).setVisible(true);
                     }
                 }
@@ -522,14 +572,11 @@ public class FileExplorerActivity extends AppCompatActivity
             public void run() {
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {
-                    if (menu.getItem(i).getItemId() != R.id.paste) {
-                        menu.getItem(i).setVisible(false);
-                    } else {
+                    int id = menu.getItem(i).getItemId();
+                    if (id == R.id.paste) {
                         menu.getItem(i).setVisible(true);
-                        Drawable icon = menu.getItem(i).getIcon().mutate();
-                        icon.setTint(ContextCompat.getColor(FileExplorerActivity.this,
-                                R.color.grey_900_translucent));
-                        menu.getItem(i).setIcon(icon);
+                    } else {
+                        menu.getItem(i).setVisible(false);
                     }
                 }
             }
@@ -570,6 +617,23 @@ public class FileExplorerActivity extends AppCompatActivity
                         }
                     }, true);
         }
+
+        /*if (menu != null) {
+            for (int i = 0; i < menu.size(); i++) {
+                int id = menu.getItem(i).getItemId();
+                if (id == R.id.exclude) {
+                    menu.getItem(i).setVisible(!isCurrentFileARoot());
+                    if(!Provider.searchDir(currentDir.getPath())) {
+                        menu.getItem(i).setChecked(true);
+                        menu.getItem(i).setEnabled(false);
+                    } else {
+                        menu.getItem(i).setChecked(!isCurrentFileARoot() && currentDir.excluded);
+                        menu.getItem(i).setEnabled(!isCurrentFileARoot());
+                    }
+                }
+            }
+        }*/
+        manageMenuItems();
     }
 
     public void resetToolbar() {
@@ -599,9 +663,18 @@ public class FileExplorerActivity extends AppCompatActivity
 
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
 
+                Util.colorToolbarOverflowMenuIcon(toolbar,
+                        ContextCompat.getColor(FileExplorerActivity.this, R.color.white_translucent1));
+
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {
-                    menu.getItem(i).setVisible(false);
+                    //menu.getItem(i).setVisible(false);
+                    int id = menu.getItem(i).getItemId();
+                    if (id == R.id.exclude) {
+                        menu.getItem(i).setVisible(true);
+                    } else {
+                        menu.getItem(i).setVisible(false);
+                    }
                 }
             }
         }, 300);

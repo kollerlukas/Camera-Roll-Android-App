@@ -1,6 +1,7 @@
 package us.koller.cameraroll.data.Provider.ItemLoader;
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;

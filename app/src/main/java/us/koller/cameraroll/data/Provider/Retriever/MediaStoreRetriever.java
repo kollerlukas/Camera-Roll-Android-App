@@ -150,11 +150,13 @@ public class MediaStoreRetriever implements Retriever {
 
                 File[] files = dir.listFiles();
 
-                for (int i = 0; i < files.length; i++) {
-                    if (MediaType.isMedia(context, files[i].getPath())) {
-                        AlbumItem albumItem = AlbumItem.getInstance(context, files[i].getPath());
-                        if (albumItem != null) {
-                            album.getAlbumItems().add(albumItem);
+                if (files != null) {
+                    for (int i = 0; i < files.length; i++) {
+                        if (MediaType.isMedia(context, files[i].getPath())) {
+                            AlbumItem albumItem = AlbumItem.getInstance(context, files[i].getPath());
+                            if (albumItem != null) {
+                                album.getAlbumItems().add(albumItem);
+                            }
                         }
                     }
                 }

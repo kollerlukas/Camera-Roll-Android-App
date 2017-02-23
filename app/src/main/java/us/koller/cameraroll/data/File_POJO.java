@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import java.io.File;
 import java.util.ArrayList;
 
+import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.util.SortUtil;
 
 //simple POJO class
@@ -16,12 +17,16 @@ public class File_POJO
     private String path;
     private ArrayList<File_POJO> children;
     public boolean isMedia;
+    public boolean excluded;
 
     public File_POJO(String path, boolean isMedia) {
         this.path = path;
         this.isMedia = isMedia;
 
         children = new ArrayList<>();
+
+        excluded = Provider.isDirExcluded(getPath(),
+                Provider.getExcludedPaths());
     }
 
     public void addChild(File_POJO file) {
@@ -67,12 +72,14 @@ public class File_POJO
             children[k] = this.children.get(k);
         }
         parcel.writeTypedArray(children, 0);
+        parcel.writeString(String.valueOf(excluded));
     }
 
     public File_POJO(Parcel parcel) {
         path = parcel.readString();
         isMedia = Boolean.valueOf(parcel.readString());
         children = parcel.createTypedArrayList(CREATOR);
+        excluded = Boolean.valueOf(parcel.readString());
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

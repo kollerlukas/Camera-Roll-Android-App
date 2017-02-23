@@ -49,6 +49,7 @@ import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
@@ -106,7 +107,10 @@ public class AlbumActivity extends AppCompatActivity
 
     private Menu menu;
 
+    //to refresh MainActivity, when deleting of items is done
     private boolean refreshMainActivityAfterItemWasDeleted = false;
+    //to refresh MainActivity, when exclude-Flag changed
+    private boolean refreshMainActivityWhenClosed = false;
 
     private boolean pick_photos;
     private boolean allowMultiple;
@@ -358,6 +362,18 @@ public class AlbumActivity extends AppCompatActivity
                     startActivity(Intent.createChooser(intent, getString(R.string.share_photo)));
                 }
                 break;
+            case R.id.exclude:
+                Provider.loadExcludedPaths(this);
+                if (!album.excluded) {
+                    Provider.addExcludedPath(this, album.getPath());
+                    album.excluded = true;
+                } else {
+                    Provider.removeExcludedPath(this, album.getPath());
+                    album.excluded = false;
+                }
+                item.setChecked(album.excluded);
+                refreshMainActivityWhenClosed = !refreshMainActivityWhenClosed;
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -551,6 +567,8 @@ public class AlbumActivity extends AppCompatActivity
 
         Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
 
+        menu.findItem(R.id.exclude).setVisible(false);
+
         if (!pick_photos) {
             ColorFade.fadeBackgroundColor(toolbar,
                     ContextCompat.getColor(this, R.color.black_translucent2),
@@ -601,6 +619,8 @@ public class AlbumActivity extends AppCompatActivity
                 toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.white));
 
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+
+                menu.findItem(R.id.exclude).setVisible(true);
             }
         }, 300);
 
@@ -717,6 +737,10 @@ public class AlbumActivity extends AppCompatActivity
             snackbar = null;
             refreshMainActivityAfterItemWasDeleted = true;
         } else {
+            if (refreshMainActivityWhenClosed) {
+                Provider.saveExcludedPaths(this);
+                setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
+            }
             super.onBackPressed();
         }
     }

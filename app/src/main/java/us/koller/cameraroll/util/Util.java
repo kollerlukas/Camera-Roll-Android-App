@@ -8,12 +8,16 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -122,5 +126,15 @@ public class Util {
             }
         });
         return snackbar;
+    }
+
+    public static void colorToolbarOverflowMenuIcon(Toolbar toolbar, int color) {
+        //set Toolbar overflow icon color
+        Drawable drawable = toolbar.getOverflowIcon();
+        if (drawable != null) {
+            drawable = DrawableCompat.wrap(drawable);
+            DrawableCompat.setTint(drawable.mutate(), color);
+            toolbar.setOverflowIcon(drawable);
+        }
     }
 }
