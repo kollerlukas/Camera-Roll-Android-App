@@ -12,6 +12,10 @@ public class MediaType {
                 checkVideoExtension(path);
     }
 
+    public static boolean isMedia_MimeType(Context context, String path) {
+        return isImage(context, path) || isVideo(context, path);
+    }
+
     public static String getMimeType(Context context, String path) {
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(path);
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);

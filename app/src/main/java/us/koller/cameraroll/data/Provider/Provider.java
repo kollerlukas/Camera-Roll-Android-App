@@ -1,10 +1,8 @@
 package us.koller.cameraroll.data.Provider;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -12,13 +10,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import us.koller.cameraroll.data.Provider.Retriever.Retriever;
 
 public abstract class Provider {
 
     //prevent StorageRetriever from querying Android-Folder
-    private static final String[] pathsNotToSearch = {"/storage/emulated/0/Android"};
+    private static final String[] permanentlyExcludedPaths
+            = {Environment.getExternalStorageDirectory().getPath() + "/Android"}; // "/storage/emulated/0/Android"
+
+    // by default excluded folders:
+    // not expecting relevant media in alarms, music or ringtone folder
+    private static final String[] defaultExcludedPaths = {
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS).getPath(),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES).getPath()};
 
     Retriever retriever;
 
@@ -39,20 +46,41 @@ public abstract class Provider {
 
     private static ArrayList<String> excludedPaths;
 
+    public static boolean isPathPermanentlyExcluded(String path) {
+        boolean permanentlyExcluded = false;
+        for (int i = 0; i < Provider.permanentlyExcludedPaths.length; i++) {
+            if (path.contains(Provider.permanentlyExcludedPaths[i])) {
+                permanentlyExcluded = true;
+                break;
+            }
+        }
+        return permanentlyExcluded;
+    }
+
     public static boolean searchDir(String path) {
         boolean search = true;
-        for (int i = 0; i < Provider.pathsNotToSearch.length; i++) {
-            if (path.contains(Provider.pathsNotToSearch[i])) {
+        for (int i = 0; i < Provider.permanentlyExcludedPaths.length; i++) {
+            if (path.contains(Provider.permanentlyExcludedPaths[i])) {
                 search = false;
                 break;
             }
         }
+
+        if (search && excludedPaths != null) {
+            for (int i = 0; i < Provider.excludedPaths.size(); i++) {
+                if (path.contains(Provider.excludedPaths.get(i))) {
+                    search = false;
+                    break;
+                }
+            }
+        }
+
         return search;
     }
 
     public static boolean isDirExcluded(String path, ArrayList<String> excludedPaths) {
-        if (!searchDir(path)) {
-            return false;
+        if (isPathPermanentlyExcluded(path)) {
+            return true;
         }
 
         if (excludedPaths == null) {
@@ -69,7 +97,8 @@ public abstract class Provider {
         return excluded;
     }
 
-    public static boolean isDirExcludedBecauseParentDirIsExcluded(String path, ArrayList<String> excludedPaths) {
+    public static boolean isDirExcludedBecauseParentDirIsExcluded
+            (String path, ArrayList<String> excludedPaths) {
         if (!isDirExcluded(path, excludedPaths)) {
             return false;
         }
@@ -123,7 +152,8 @@ public abstract class Provider {
             }
             fis.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            // no file found
+            excludedPaths.addAll(Arrays.asList(defaultExcludedPaths));
         }
 
         return excludedPaths;
@@ -139,7 +169,7 @@ public abstract class Provider {
             FileOutputStream fos
                     = context.openFileOutput(EXCLUDED_PATHS_NAME, Context.MODE_PRIVATE);
             for (int i = 0; i < excludedPaths.size(); i++) {
-                fos.write(excludedPaths.get(i).getBytes());
+                fos.write((excludedPaths.get(i) + '\n').getBytes());
             }
             fos.close();
         } catch (IOException e) {

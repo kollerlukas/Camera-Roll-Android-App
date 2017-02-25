@@ -237,8 +237,12 @@ public class ItemActivity extends AppCompatActivity {
 
         bottomBar = findViewById(R.id.bottom_bar);
         ImageView delete_button = (ImageView) bottomBar.findViewById(R.id.delete_button);
-        delete_button.setImageDrawable(AnimatedVectorDrawableCompat
-                .create(this, R.drawable.ic_delete_vector_animateable));
+        if (!view_only) {
+            delete_button.setImageDrawable(AnimatedVectorDrawableCompat
+                    .create(this, R.drawable.ic_delete_vector_animateable));
+        } else {
+            ((View) delete_button.getParent()).setVisibility(View.GONE);
+        }
 
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
@@ -291,6 +295,9 @@ public class ItemActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.item, menu);
         this.menu = menu;
         menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
+        if (view_only) {
+            menu.findItem(R.id.delete).setVisible(false);
+        }
         return true;
     }
 
@@ -316,7 +323,7 @@ public class ItemActivity extends AppCompatActivity {
                 editPhoto();
                 break;
             case R.id.delete:
-                if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
+                /*if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
                     new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
                             .setTitle(R.string.missing_permission_title)
                             .setMessage(R.string.missing_delete_permission)
@@ -324,7 +331,8 @@ public class ItemActivity extends AppCompatActivity {
                             .create().show();
                 } else {
                     showDeleteDialog();
-                }
+                }*/
+                showDeleteDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -537,7 +545,7 @@ public class ItemActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
+                        /*if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
                             new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
                                     .setTitle(R.string.missing_permission_title)
                                     .setMessage(R.string.missing_delete_permission)
@@ -545,9 +553,9 @@ public class ItemActivity extends AppCompatActivity {
                                     .create().show();
                         } else {
                             showDeleteDialog();
-                        }
+                        }*/
 
-                        //showDeleteDialog();
+                        showDeleteDialog();
                     }
                 }, 400);
                 break;
@@ -658,7 +666,6 @@ public class ItemActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        showUI(false);
         if (view_only) {
             if (getIntent().getBooleanExtra(FINISH_AFTER, false)) {
                 this.finishAffinity();
@@ -666,6 +673,7 @@ public class ItemActivity extends AppCompatActivity {
                 this.finish();
             }
         } else {
+            showUI(false);
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             viewHolder.onSharedElement(new ItemActivity.Callback() {

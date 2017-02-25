@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.File;
 
@@ -15,7 +14,7 @@ import java.io.File;
 
 //heavily inspired by:
 //https://github.com/arpitkh96/AmazeFileManager/blob/master/src/main/java/com/amaze/filemanager/filesystem/MediaStoreHack.java
-public class RemovableStorageUtil {
+public class StorageUtil {
 
     //workaround to get content-Uri for items on removable storage
     public static Uri getContentUriFromFilePath(Context context, String path) {

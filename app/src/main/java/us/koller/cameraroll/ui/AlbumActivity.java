@@ -12,9 +12,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -39,7 +37,6 @@ import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +45,9 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.FileOperations.Delete;
+import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.Video;
@@ -55,7 +55,6 @@ import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.ColorFade;
 import us.koller.cameraroll.util.MediaType;
-import us.koller.cameraroll.util.RemovableStorageUtil;
 import us.koller.cameraroll.util.Util;
 
 public class AlbumActivity extends AppCompatActivity
@@ -492,40 +491,36 @@ public class AlbumActivity extends AppCompatActivity
     }
 
     public void deleteAlbumItems(final AlbumItem[] selected_items, final int[] indices) {
-        int successfully_deleted = 0;
-        for (int i = 0; i < selected_items.length; i++) {
-            boolean success;
-            File file = new File(selected_items[i].getPath());
-            if (Environment.isExternalStorageRemovable(file)) {
-                success = RemovableStorageUtil.delete(this, file);
-            } else if (!album.isHidden()) {
-                int result = getContentResolver()
-                        .delete(MediaStore.Files.getContentUri("external"),
-                                MediaStore.Files.FileColumns.DATA + "=?",
-                                new String[]{selected_items[i].getPath()});
-                success = result > 0;
-            } else {
-                success = file.delete();
-            }
-
-            if (!success) {
-                album.getAlbumItems().add(indices[i], selected_items[i]);
-                recyclerView.getAdapter().notifyItemInserted(indices[i]);
-            } else {
-                successfully_deleted++;
-
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                        Uri.parse(selected_items[i].getPath())));
-            }
-        }
-        if (refreshMainActivityAfterItemWasDeleted) {
-            setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
-            onBackPressed();
+        File_POJO[] filesToDelete = new File_POJO[selected_items.length];
+        for (int i = 0; i < filesToDelete.length; i++) {
+            filesToDelete[i] = new File_POJO(selected_items[i].getPath(), true);
         }
 
-        Toast.makeText(AlbumActivity.this, getString(R.string.successfully_deleted)
-                + successfully_deleted + " / "
-                + selected_items.length, Toast.LENGTH_SHORT).show();
+        new Delete(filesToDelete)
+                .execute(this, null,
+                        new FileOperation.Callback() {
+                            @Override
+                            public void done() {
+                                if (refreshMainActivityAfterItemWasDeleted) {
+                                    setResult(RESULT_OK,
+                                            new Intent(MainActivity.REFRESH_MEDIA));
+                                    onBackPressed();
+                                }
+                            }
+
+                            @Override
+                            public void failed(String path) {
+                                for (int i = 0; i < selected_items.length; i++) {
+                                    if (selected_items[i].getPath().equals(path)) {
+                                        album.getAlbumItems().add(indices[i],
+                                                selected_items[i]);
+                                        recyclerView.getAdapter()
+                                                .notifyItemInserted(indices[i]);
+                                        break;
+                                    }
+                                }
+                            }
+                        });
     }
 
     //needed to send multiple uris in intents

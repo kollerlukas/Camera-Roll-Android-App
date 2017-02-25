@@ -10,9 +10,8 @@ import android.support.v4.content.FileProvider;
 import java.io.File;
 
 import us.koller.cameraroll.util.MediaType;
-import us.koller.cameraroll.util.RemovableStorageUtil;
+import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.SortUtil;
-import us.koller.cameraroll.util.Util;
 
 public abstract class AlbumItem
         implements Parcelable, SortUtil.Sortable {
@@ -97,7 +96,8 @@ public abstract class AlbumItem
                 e.printStackTrace();
 
                 //file is probably on removable storage
-                return RemovableStorageUtil.getContentUriFromFilePath(context, getPath());
+                return StorageUtil
+                        .getContentUriFromFilePath(context, getPath());
             }
         }
         return Uri.parse(getPath());

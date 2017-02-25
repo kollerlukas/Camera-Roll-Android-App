@@ -143,11 +143,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         if (mode == NORMAL_MODE) {
             //no preselected Items
             enterSelectorMode(new File_POJO[0]);
-            /*mode = SELECTOR_MODE;
-            selected_items = new boolean[files.getChildren().size()];
-            if (callback != null) {
-                callback.onSelectorModeEnter();
-            }*/
         }
 
         int position = files.getChildren().indexOf(file);
@@ -169,7 +164,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return mode;
     }
 
-    public int getSelectedCount() {
+    private int getSelectedCount() {
         int selected_items_count = 0;
         for (int i = 0; i < selected_items.length; i++) {
             selected_items_count += selected_items[i] ? 1 : 0;

@@ -1,6 +1,7 @@
 package us.koller.cameraroll.data.Provider.Retriever;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
@@ -122,7 +123,7 @@ public class StorageRetriever implements Retriever {
         externalStorage.setName(context.getString(R.string.storage));
         temp.add(externalStorage);
 
-        File[] removableStorageRoots = getRemovableStorageRoots();
+        File[] removableStorageRoots = getRemovableStorageRoots(context);
         for (int i = 0; i < removableStorageRoots.length; i++) {
             temp.add(new StorageRoot(removableStorageRoots[i].getPath()));
         }
@@ -198,11 +199,27 @@ public class StorageRetriever implements Retriever {
         }
     }
 
-    private static File getStorageRoot() {
-        return new File("/storage");
+    private static File[] getRemovableStorageRoots(Context context) {
+        File[] roots = context.getExternalFilesDirs("external");
+        ArrayList<File> rootsArrayList = new ArrayList<>();
+
+        for (int i = 0; i < roots.length; i++) {
+            String path = roots[i].getPath();
+            int index = path.lastIndexOf("/Android/data/");
+            if (index > 0) {
+                path = path.substring(0, index);
+                if (!path.equals(Environment.getExternalStorageDirectory().getPath())) {
+                    rootsArrayList.add(new File(path));
+                }
+            }
+        }
+
+        roots = new File[rootsArrayList.size()];
+        rootsArrayList.toArray(roots);
+        return roots;
     }
 
-    private static File[] getDirectoriesToSearch() {
+    private static File[] getDirectoriesToSearch(Context context) {
         //external Directory
         File dir = Environment.getExternalStorageDirectory();
         File[] dirs = dir.listFiles(new FileFilter() {
@@ -212,11 +229,10 @@ public class StorageRetriever implements Retriever {
             }
         });
 
-
         //handle removable storage (e.g. SDCards)
         ArrayList<File> temp = new ArrayList<>();
         temp.addAll(Arrays.asList(dirs));
-        File[] removableStorageRoots = getRemovableStorageRoots();
+        File[] removableStorageRoots = getRemovableStorageRoots(context);
         for (int i = 0; i < removableStorageRoots.length; i++) {
             Log.d("StorageRetriever", "removableStorageRoot: " + removableStorageRoots[i].getPath());
             File root = removableStorageRoots[i];
@@ -237,21 +253,8 @@ public class StorageRetriever implements Retriever {
         return dirs;
     }
 
-    private static File[] getRemovableStorageRoots() {
-        //look for sd cards
-        File root = getStorageRoot();
-
-        return root.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                File[] files = file.listFiles();
-                return files != null && files.length > 0;
-            }
-        });
-    }
-
     private void searchStorage(final Activity context, final StorageSearchCallback callback) {
-        File[] dirs = getDirectoriesToSearch();
+        File[] dirs = getDirectoriesToSearch(context);
 
         threads = new ArrayList<>();
 
@@ -283,8 +286,8 @@ public class StorageRetriever implements Retriever {
                 final File[] files = threadDirs[i];
                 Thread thread = new Thread(context, files,
                         threadCallback, itemLoaderClass);
-                thread.start();
                 threads.add(thread);
+                thread.start();
             }
         } else {
             final ArrayList<File> queue = new ArrayList<>(Arrays.asList(dirs));

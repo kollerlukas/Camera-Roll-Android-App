@@ -2,13 +2,10 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -36,15 +33,12 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
+import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.FileOperations.Copy;
+import us.koller.cameraroll.data.FileOperations.Delete;
+import us.koller.cameraroll.data.FileOperations.Move;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.FilesProvider;
 import us.koller.cameraroll.data.Provider.Provider;
@@ -77,7 +71,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
     private Menu menu;
 
-    private FileAction fileAction;
+    private FileOperation fileOperation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -312,6 +306,12 @@ public class FileExplorerActivity extends AppCompatActivity
         this.menu = menu;
         //hide menu items; items are made visible, when a folder gets selected
         manageMenuItems();
+
+        Drawable icon = menu.findItem(R.id.paste).getIcon().mutate();
+        icon.setTint(ContextCompat.getColor(FileExplorerActivity.this,
+                R.color.grey_900_translucent));
+        menu.findItem(R.id.paste).setIcon(icon);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -321,15 +321,10 @@ public class FileExplorerActivity extends AppCompatActivity
                 menu.getItem(i).setVisible(false);
 
                 int id = menu.getItem(i).getItemId();
-                if (id == R.id.paste) {
-                    Drawable icon = menu.getItem(i).getIcon().mutate();
-                    icon.setTint(ContextCompat.getColor(FileExplorerActivity.this,
-                            R.color.grey_900_translucent));
-                    menu.getItem(i).setIcon(icon);
-                } else if (id == R.id.exclude) {
+                if (id == R.id.exclude) {
                     if (currentDir != null) {
                         menu.getItem(i).setVisible(!isCurrentFileARoot());
-                        if (!Provider.searchDir(currentDir.getPath())) {
+                        if (Provider.isPathPermanentlyExcluded(currentDir.getPath())) {
                             menu.getItem(i).setChecked(true);
                             menu.getItem(i).setEnabled(false);
                         } else {
@@ -355,7 +350,7 @@ public class FileExplorerActivity extends AppCompatActivity
                 if (recyclerViewAdapter.isModeActive()
                         || recyclerViewAdapter.getMode()
                         == RecyclerViewAdapter.PICK_TARGET_MODE) {
-                    FileAction.action = FileAction.EMPTY;
+                    FileOperation.operation = FileOperation.EMPTY;
                     recyclerViewAdapter.cancelMode();
                 } else {
                     onBackPressed();
@@ -363,6 +358,8 @@ public class FileExplorerActivity extends AppCompatActivity
                 break;
             case R.id.exclude:
                 currentDir.excluded = !currentDir.excluded;
+                Log.d("FileExplorerActivity", "onOptionsItemSelected: " + currentDir.getPath()
+                        + "; " + String.valueOf(currentDir.excluded));
                 item.setChecked(currentDir.excluded);
                 if (currentDir.excluded) {
                     FilesProvider.addExcludedPath(this, currentDir.getPath());
@@ -373,33 +370,37 @@ public class FileExplorerActivity extends AppCompatActivity
             case R.id.paste:
                 if (!currentDir.getPath().equals(STORAGE_ROOTS)) {
                     recyclerViewAdapter.cancelMode();
-                    if (FileAction.action == FileAction.MOVE
-                            | FileAction.action == FileAction.COPY) {
-                        fileAction.execute(this,
+                    if (fileOperation != null) {
+                        fileOperation.execute(this,
                                 recyclerViewAdapter.getFiles(),
-                                new FileAction.Callback() {
+                                new FileOperation.Callback() {
                                     @Override
                                     public void done() {
                                         loadDirectory(currentDir.getPath());
+                                    }
+
+                                    @Override
+                                    public void failed(String path) {
+
                                     }
                                 });
                     }
                 } else {
                     Toast.makeText(this, "You can't "
-                            + FileAction.getModeString(this)
+                            + FileOperation.getModeString(this)
                             + " files here!", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.move:
-                FileAction.action = FileAction.MOVE;
+                FileOperation.operation = FileOperation.MOVE;
                 recyclerViewAdapter.cancelMode();
                 break;
             case R.id.copy:
-                FileAction.action = FileAction.COPY;
+                FileOperation.operation = FileOperation.COPY;
                 recyclerViewAdapter.cancelMode();
                 break;
             case R.id.delete:
-                FileAction.action = FileAction.DELETE;
+                FileOperation.operation = FileOperation.DELETE;
                 recyclerViewAdapter.cancelMode();
                 break;
         }
@@ -474,8 +475,8 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onSelectorModeEnter() {
-        fileAction = null;
-        FileAction.action = FileAction.EMPTY;
+        fileOperation = null;
+        FileOperation.operation = FileOperation.EMPTY;
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
@@ -513,20 +514,34 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onSelectorModeExit(File_POJO[] selected_items) {
-        fileAction = new FileAction(selected_items);
-        if (FileAction.action == FileAction.DELETE) {
-            resetToolbar();
-            fileAction.execute(this, null,
-                    new FileAction.Callback() {
-                        @Override
-                        public void done() {
-                            loadDirectory(currentDir.getPath());
-                        }
-                    });
-        } else if (FileAction.action == FileAction.MOVE
-                | FileAction.action == FileAction.COPY) {
-            recyclerViewAdapter.pickTarget();
-        } else {
+        switch (FileOperation.operation) {
+            case FileOperation.DELETE:
+                resetToolbar();
+                fileOperation = new Delete(selected_items);
+                fileOperation.execute(this, null,
+                        new FileOperation.Callback() {
+                            @Override
+                            public void done() {
+                                loadDirectory(currentDir.getPath());
+                            }
+
+                            @Override
+                            public void failed(String path) {
+
+                            }
+                        });
+                break;
+            case FileOperation.COPY:
+                fileOperation = new Copy(selected_items);
+                recyclerViewAdapter.pickTarget();
+                break;
+            case FileOperation.MOVE:
+                fileOperation = new Move(selected_items);
+                recyclerViewAdapter.pickTarget();
+                break;
+        }
+
+        if (fileOperation == null) {
             resetToolbar();
         }
     }
@@ -552,15 +567,15 @@ public class FileExplorerActivity extends AppCompatActivity
     @Override
     public void onPickTargetModeEnter() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (fileAction != null) {
-            final int count = fileAction.getFiles().length;
+        if (fileOperation != null) {
+            final int count = fileOperation.getFiles().length;
 
             int color = ContextCompat.getColor(this, R.color.grey_900_translucent);
             ColorFade.fadeToolbarTitleColor(toolbar, color,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
-                            toolbar.setTitle(FileAction.getModeString(FileExplorerActivity.this) + " "
+                            toolbar.setTitle(FileOperation.getModeString(FileExplorerActivity.this) + " "
                                     + String.valueOf(count)
                                     + (count > 1 ? getString(R.string.items) : getString(R.string.item)));
                         }
@@ -618,22 +633,10 @@ public class FileExplorerActivity extends AppCompatActivity
                     }, true);
         }
 
-        /*if (menu != null) {
-            for (int i = 0; i < menu.size(); i++) {
-                int id = menu.getItem(i).getItemId();
-                if (id == R.id.exclude) {
-                    menu.getItem(i).setVisible(!isCurrentFileARoot());
-                    if(!Provider.searchDir(currentDir.getPath())) {
-                        menu.getItem(i).setChecked(true);
-                        menu.getItem(i).setEnabled(false);
-                    } else {
-                        menu.getItem(i).setChecked(!isCurrentFileARoot() && currentDir.excluded);
-                        menu.getItem(i).setEnabled(!isCurrentFileARoot());
-                    }
-                }
-            }
-        }*/
-        manageMenuItems();
+        if (recyclerViewAdapter.getMode()
+                == RecyclerViewAdapter.NORMAL_MODE) {
+            manageMenuItems();
+        }
     }
 
     public void resetToolbar() {
@@ -680,7 +683,7 @@ public class FileExplorerActivity extends AppCompatActivity
         }, 300);
     }
 
-    public static class FileAction {
+    /*public static class FileAction {
 
         public interface Callback {
             void done();
@@ -778,10 +781,10 @@ public class FileExplorerActivity extends AppCompatActivity
         }
 
         private static boolean moveFile(String path, String destination) {
-            /*boolean result = copyFile(path, destination);
+            *//*boolean result = copyFile(path, destination);
 
             //delete original file
-            result = result && deleteFile(path);*/
+            result = result && deleteFile(path);*//*
 
             File file = new File(path);
             return file.renameTo(new File(destination, file.getName()));
@@ -879,5 +882,5 @@ public class FileExplorerActivity extends AppCompatActivity
             }
             return "";
         }
-    }
+    }*/
 }
