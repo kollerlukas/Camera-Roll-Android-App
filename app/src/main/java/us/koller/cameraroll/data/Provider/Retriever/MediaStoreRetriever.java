@@ -101,7 +101,8 @@ public class MediaStoreRetriever implements Retriever {
                 //SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
                 SortUtil.sortByName(albums);
                 callback.onMediaLoaded(albums);
-                Log.d("MediaStoreRetriever", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
+                Log.d("MediaStoreRetriever", "onMediaLoaded(): "
+                        + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
             }
         });
     }

@@ -30,6 +30,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,7 +77,7 @@ public class ItemActivity extends AppCompatActivity {
     private static final String WAS_SYSTEM_UI_HIDDEN = "WAS_SYSTEM_UI_HIDDEN";
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
-    private static final String NO_DATA = "N/A";
+    private static final String NO_DATA = "Unknown";
 
     private boolean isReturning;
     private final SharedElementCallback sharedElementCallback = new SharedElementCallback() {
@@ -430,22 +431,15 @@ public class ItemActivity extends AppCompatActivity {
     public void showInfoDialog() {
         ExifInterface exif = null;
         try {
-            /*if (albumItem.contentUri && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (albumItem.contentUri && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 exif = new ExifInterface(getContentResolver()
                         .openInputStream(albumItem.getUri(this)));
             } else {
                 exif = new ExifInterface(albumItem.getPath());
-            }*/
-            exif = new ExifInterface(albumItem.getPath());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        /*if (exif == null) {
-            snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.error, Snackbar.LENGTH_LONG);
-            Util.showSnackbar(snackbar);
-            return;
-        }*/
 
         File file = new File(albumItem.getPath());
 
@@ -455,33 +449,45 @@ public class ItemActivity extends AppCompatActivity {
 
         boolean exifSupported = exif != null && MediaType.doesSupportExif(albumItem.getPath());
 
-        int[] imageDimens = null;
-        if (!exifSupported) {
-            imageDimens = albumItem instanceof Video ?
+        String height = NO_DATA, width = NO_DATA,
+                date = NO_DATA, focal_length = NO_DATA,
+                exposure = NO_DATA, model = NO_DATA,
+                aperture = NO_DATA, iso = NO_DATA;
+        if (exifSupported) {
+            if (exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
+                height = exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
+            }
+            if (exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) != null) {
+                width = exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
+            }
+            if (exif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
+                date = exif.getAttribute(ExifInterface.TAG_DATETIME);
+            }
+
+            focal_length = parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH));
+            exposure = parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
+            if (exif.getAttribute(ExifInterface.TAG_MAKE) != null) {
+                model = exif.getAttribute(ExifInterface.TAG_MAKE) + " "
+                        + exif.getAttribute(ExifInterface.TAG_MODEL);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (exif.getAttribute(ExifInterface.TAG_F_NUMBER) != null) {
+                    aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
+                }
+                if (exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) != null) {
+                    iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
+                }
+            }
+        } else {
+            int[] imageDimens = albumItem instanceof Video ?
                     Util.getVideoDimensions(albumItem.getPath()) :
                     Util.getImageDimensions(this, albumItem.getPath());
+
+            height = String.valueOf(imageDimens[1]);
+            width = String.valueOf(imageDimens[0]);
         }
 
-        String height = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH)
-                : String.valueOf(imageDimens[1]);
-        String width = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH)
-                : String.valueOf(imageDimens[0]);
-        String date = exifSupported ? exif.getAttribute(ExifInterface.TAG_DATETIME)
-                : NO_DATA;
-        String focal_length = exifSupported ?
-                parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH)) + " mm"
-                : NO_DATA;
-        String exposure = exifSupported ?
-                parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)) + " sec"
-                : NO_DATA;
-        String model = exifSupported ? exif.getAttribute(ExifInterface.TAG_MAKE)
-                + " " + exif.getAttribute(ExifInterface.TAG_MODEL)
-                : NO_DATA;
-        String aperture = NO_DATA, iso = NO_DATA;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && exifSupported) {
-            aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
-            iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
-        }
 
         String[] values = {name, path, size, width + " x " + height,
                 date, model, focal_length, exposure, aperture, iso};
@@ -713,21 +719,21 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public String parseExposureTime(String input) {
-        if (input == null) {
-            return null;
+        if (input == null || input.equals("null")) {
+            return NO_DATA;
         }
         float f = Float.valueOf(input);
         try {
             int i = Math.round(1 / f);
-            return String.valueOf(1 + "/" + i);
+            return String.valueOf(1 + "/" + i) + " sec";
         } catch (NumberFormatException e) {
             return input;
         }
     }
 
     public String parseFocalLength(String input) {
-        if (input == null) {
-            return null;
+        if (input == null || input.equals("null")) {
+            return NO_DATA;
         }
         String[] arr = input.split("/");
         if (arr.length != 2) {
@@ -735,7 +741,7 @@ public class ItemActivity extends AppCompatActivity {
         }
         try {
             double focalLength = Double.valueOf(arr[0]) / Double.valueOf(arr[1]);
-            return String.valueOf(focalLength);
+            return String.valueOf(focalLength) + " mm";
         } catch (NumberFormatException e) {
             return input;
         }

@@ -36,8 +36,11 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
@@ -701,7 +704,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onDataChanged() {
-        final TextView emptyState = (TextView) findViewById(R.id.empty_state);
+        final View emptyState = findViewById(R.id.empty_state_text);
         emptyState.animate()
                 .alpha(currentDir.getChildren().size() == 0 ? 1.0f : 0.0f)
                 .setListener(new AnimatorListenerAdapter() {

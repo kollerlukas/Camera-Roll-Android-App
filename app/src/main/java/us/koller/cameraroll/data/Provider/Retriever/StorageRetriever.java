@@ -104,10 +104,11 @@ public class StorageRetriever implements Retriever {
                                 callback.onMediaLoaded(albums);
                                 cancelTimeout();
                                 if (THREAD_COUNT == -1) {
-                                    Log.d("StorageRetriever", "onMediaLoaded(): " + String.valueOf(System.currentTimeMillis() - startTime));
+                                    Log.d("StorageRetriever", "onMediaLoaded(): "
+                                            + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
                                 } else {
                                     Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
-                                            + "): " + String.valueOf(System.currentTimeMillis() - startTime));
+                                            + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
                                 }
                             }
                         });
