@@ -75,8 +75,10 @@ public class Util {
 
         int[] dimensions = new int[2];
 
-        dimensions[0] = bitmap.getWidth() > 0 ? bitmap.getWidth() : 1;
-        dimensions[1] = bitmap.getHeight() > 0 ? bitmap.getHeight() : 1;
+        if (bitmap != null) {
+            dimensions[0] = bitmap.getWidth() > 0 ? bitmap.getWidth() : 1;
+            dimensions[1] = bitmap.getHeight() > 0 ? bitmap.getHeight() : 1;
+        }
         return dimensions;
 
     }

@@ -2,10 +2,7 @@ package us.koller.cameraroll.util;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Handler;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +17,6 @@ import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-
-import java.io.IOException;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
@@ -85,7 +80,7 @@ public class ItemViewUtil {
                 .asBitmap()
                 .override(imageDimens[0], imageDimens[1])
                 .skipMemoryCache(true)
-                .error(R.drawable.error_placeholder)
+                .error(R.drawable.error_placeholder_tinted)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -127,7 +122,7 @@ public class ItemViewUtil {
                 .asGif()
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .error(R.drawable.error_placeholder)
+                .error(R.drawable.error_placeholder_tinted)
                 .listener(new RequestListener<String, GifDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -169,7 +164,7 @@ public class ItemViewUtil {
                 .asBitmap()
                 .override(imageDimens[0], imageDimens[1])
                 .skipMemoryCache(true)
-                .error(R.drawable.error_placeholder)
+                .error(R.drawable.error_placeholder_tinted)
                 .into(imageView);
         imageView.setTransitionName(albumItem.getPath());
 

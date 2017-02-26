@@ -57,12 +57,16 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
         Glide.with(itemView.getContext())
                 .load(coverImage.getPath())
                 .asBitmap()
-                .error(R.drawable.error_placeholder)
+                .error(R.drawable.error_placeholder_tinted)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
                                                Target<Bitmap> target, boolean isFirstResource) {
                         coverImage.error = true;
+
+                        if (image instanceof ParallaxImageView) {
+                            ((ParallaxImageView) image).setParallaxTranslation();
+                        }
                         return false;
                     }
 

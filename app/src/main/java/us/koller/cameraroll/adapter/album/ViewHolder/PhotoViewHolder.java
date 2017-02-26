@@ -46,7 +46,7 @@ public class PhotoViewHolder extends AlbumItemHolder {
                         return false;
                     }
                 })
-                .error(R.drawable.error_placeholder)
+                .error(R.drawable.error_placeholder_tinted)
                 .into(imageView);
     }
 }

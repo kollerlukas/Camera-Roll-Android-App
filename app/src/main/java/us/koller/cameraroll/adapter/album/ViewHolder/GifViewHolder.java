@@ -1,8 +1,6 @@
 package us.koller.cameraroll.adapter.album.ViewHolder;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -51,7 +49,7 @@ public class GifViewHolder extends AlbumItemHolder {
                         return false;
                     }
                 })
-                .error(R.drawable.error_placeholder)
+                .error(R.drawable.error_placeholder_tinted)
                 .into(imageView);
     }
 }

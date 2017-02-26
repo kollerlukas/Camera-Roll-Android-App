@@ -327,12 +327,14 @@ public class AlbumActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.album, menu);
-        this.menu = menu;
+        if (!pick_photos) {
+            getMenuInflater().inflate(R.menu.album, menu);
+            this.menu = menu;
 
-        Drawable icon = menu.findItem(R.id.share).getIcon().mutate();
-        icon.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
-        menu.findItem(R.id.share).setIcon(icon);
+            Drawable icon = menu.findItem(R.id.share).getIcon().mutate();
+            icon.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            menu.findItem(R.id.share).setIcon(icon);
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -562,7 +564,9 @@ public class AlbumActivity extends AppCompatActivity
 
         Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
 
-        menu.findItem(R.id.exclude).setVisible(false);
+        if (menu != null) {
+            menu.findItem(R.id.exclude).setVisible(false);
+        }
 
         if (!pick_photos) {
             ColorFade.fadeBackgroundColor(toolbar,
