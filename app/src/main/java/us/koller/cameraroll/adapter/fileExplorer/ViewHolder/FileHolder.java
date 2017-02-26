@@ -27,9 +27,17 @@ public class FileHolder extends RecyclerView.ViewHolder {
 
         ImageView folderIndicator = (ImageView) itemView.findViewById(R.id.folder_indicator);
         if (file instanceof StorageRoot) {
-            folderIndicator.setImageResource(R.drawable.ic_sd_storage_white_24dp);
+            if (file.getName().equals(itemView.getContext().getString(R.string.storage))) {
+                folderIndicator.setImageResource(R.drawable.ic_smartphone_white_24dp);
+            } else {
+                folderIndicator.setImageResource(R.drawable.ic_sd_storage_white_24dp);
+            }
         } else if (!file.isMedia) {
-            folderIndicator.setImageResource(R.drawable.ic_folder_white_24dp);
+            if (new File(file.getPath()).isFile()) {
+                folderIndicator.setImageResource(R.drawable.ic_insert_drive_file_white_24dp);
+            } else {
+                folderIndicator.setImageResource(R.drawable.ic_folder_white_24dp);
+            }
         } else if (MediaType.isVideo(folderIndicator.getContext(), file.getPath())) {
             folderIndicator.setImageResource(R.drawable.ic_videocam_white_24dp);
         } else {

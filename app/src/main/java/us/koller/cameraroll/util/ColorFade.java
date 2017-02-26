@@ -79,17 +79,15 @@ public class ColorFade {
         void setTitle(Toolbar toolbar);
     }
 
-    private static boolean titleFadeRunning = false;
+    private static AnimatorSet toolbarTitleAnimSet;
 
     //fade Toolbar title text change
     public static void fadeToolbarTitleColor(final Toolbar toolbar, final int color,
                                              final ToolbarTitleFadeCallback callback, boolean fadeTitleOut) {
 
-        if (titleFadeRunning) {
-            return;
+        if (toolbarTitleAnimSet != null) {
+            toolbarTitleAnimSet.cancel();
         }
-
-        titleFadeRunning = true;
 
         final int transparent = ContextCompat.getColor(toolbar.getContext(), android.R.color.transparent);
 
@@ -126,19 +124,19 @@ public class ColorFade {
             }
         });
 
-        AnimatorSet set = new AnimatorSet();
+        toolbarTitleAnimSet = new AnimatorSet();
         if (fadeOut != null) {
-            set.playSequentially(fadeOut, fadeIn);
+            toolbarTitleAnimSet.playSequentially(fadeOut, fadeIn);
         } else {
-            set.playSequentially(fadeIn);
+            toolbarTitleAnimSet.playSequentially(fadeIn);
         }
-        set.addListener(new AnimatorListenerAdapter() {
+        toolbarTitleAnimSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                titleFadeRunning = false;
+                toolbarTitleAnimSet = null;
             }
         });
-        set.start();
+        toolbarTitleAnimSet.start();
     }
 }

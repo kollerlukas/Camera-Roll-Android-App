@@ -1,8 +1,6 @@
 package us.koller.cameraroll.data.FileOperations;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,14 +24,8 @@ public class Move extends FileOperation {
 
         int success_count = 0;
         for (int i = 0; i < files.length; i++) {
-            boolean result = moveFile(files[i].getPath(), target.getPath());
+            boolean result = moveFile(context, files[i].getPath(), target.getPath());
             success_count += result ? 1 : 0;
-            if (result) {
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                        Uri.parse(files[i].getPath())));
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                        Uri.parse(target.getPath())));
-            }
         }
 
         Toast.makeText(context, context.getString(R.string.successfully_moved)
@@ -47,8 +39,13 @@ public class Move extends FileOperation {
         operation = EMPTY;
     }
 
-    private static boolean moveFile(String path, String destination) {
+    private static boolean moveFile(Activity context, String path, String destination) {
         File file = new File(path);
-        return file.renameTo(new File(destination, file.getName()));
+        File newFile = new File(destination, file.getName());
+        boolean success = file.renameTo(newFile);
+
+        scanPaths(context, new String[]{path, newFile.getPath()});
+
+        return success;
     }
 }

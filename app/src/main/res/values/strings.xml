@@ -110,5 +110,9 @@
 
     <string name="video_indicator">Video Indicator</string>
     <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
+
     <string name="exclude">Exclude</string>
+    <string name="successfully_created_new_folder">Successfully created new Folder</string>
+    <string name="create">Create</string>
+    <string name="new_folder">New Folder</string>
 </resources>

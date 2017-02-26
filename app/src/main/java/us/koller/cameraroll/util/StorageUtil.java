@@ -7,8 +7,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
+import java.io.IOException;
 
 //workarounds to handle removable storage
 
@@ -45,13 +47,14 @@ public class StorageUtil {
     }
 
     //not working; need to fix
-    public static boolean delete(final Context context, final File file) {
+    public static boolean delete(final Context context, final File file) throws IOException {
         final String where = MediaStore.MediaColumns.DATA + "=?";
         final String[] selectionArgs = new String[]{
-                file.getAbsolutePath()
+                file.getCanonicalPath()
         };
         final ContentResolver contentResolver = context.getContentResolver();
         final Uri filesUri = MediaStore.Files.getContentUri("external");
+        Log.d("StorageUtil", "delete: " + filesUri);
 
         // Delete the entry from the media database. This will actually delete media files.
         contentResolver.delete(filesUri, where, selectionArgs);

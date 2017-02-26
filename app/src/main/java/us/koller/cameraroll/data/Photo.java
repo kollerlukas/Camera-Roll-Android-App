@@ -9,7 +9,7 @@ public class Photo extends AlbumItem implements Parcelable {
     private Serializable imageViewSavedState;
 
     Photo() {
-        TYPE = "Photo";
+
     }
 
     Photo(Parcel parcel) {
@@ -27,5 +27,10 @@ public class Photo extends AlbumItem implements Parcelable {
     @Override
     public String toString() {
         return "Photo: " + super.toString();
+    }
+
+    @Override
+    public String getType() {
+        return "Photo";
     }
 }

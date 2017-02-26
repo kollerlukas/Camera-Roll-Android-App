@@ -323,15 +323,6 @@ public class ItemActivity extends AppCompatActivity {
                 editPhoto();
                 break;
             case R.id.delete:
-                /*if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
-                    new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
-                            .setTitle(R.string.missing_permission_title)
-                            .setMessage(R.string.missing_delete_permission)
-                            .setPositiveButton(R.string.ok, null)
-                            .create().show();
-                } else {
-                    showDeleteDialog();
-                }*/
                 showDeleteDialog();
                 break;
         }
@@ -376,7 +367,8 @@ public class ItemActivity extends AppCompatActivity {
 
     public void printPhoto() {
         if (!(albumItem instanceof Photo)) {
-            Toast.makeText(this, "Editing of " + albumItem.TYPE + " not supported", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Printing of " + albumItem.getType()
+                    + "s not supported", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -387,11 +379,6 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void editPhoto() {
-        /*if (albumItem instanceof Video) {
-            Toast.makeText(this, "Editing of Videos not supported", Toast.LENGTH_SHORT).show();
-            return;
-        }*/
-
         Uri uri = albumItem.getUri(this);
 
         Intent intent = new Intent(Intent.ACTION_EDIT);
@@ -401,7 +388,8 @@ public class ItemActivity extends AppCompatActivity {
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App found to edit your " + albumItem.TYPE, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No App found to edit your "
+                    + albumItem.getType(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -442,21 +430,22 @@ public class ItemActivity extends AppCompatActivity {
     public void showInfoDialog() {
         ExifInterface exif = null;
         try {
-            if (albumItem.contentUri && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            /*if (albumItem.contentUri && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 exif = new ExifInterface(getContentResolver()
                         .openInputStream(albumItem.getUri(this)));
             } else {
                 exif = new ExifInterface(albumItem.getPath());
-            }
+            }*/
+            exif = new ExifInterface(albumItem.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (exif == null) {
+        /*if (exif == null) {
             snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.error, Snackbar.LENGTH_LONG);
             Util.showSnackbar(snackbar);
             return;
-        }
+        }*/
 
         File file = new File(albumItem.getPath());
 
@@ -464,7 +453,7 @@ public class ItemActivity extends AppCompatActivity {
         String path = file.getPath();
         String size = getFileSize(file);
 
-        boolean exifSupported = MediaType.doesSupportExif(albumItem.getPath());
+        boolean exifSupported = exif != null && MediaType.doesSupportExif(albumItem.getPath());
 
         int[] imageDimens = null;
         if (!exifSupported) {
@@ -473,12 +462,21 @@ public class ItemActivity extends AppCompatActivity {
                     Util.getImageDimensions(this, albumItem.getPath());
         }
 
-        String height = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) : String.valueOf(imageDimens[1]);
-        String width = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) : String.valueOf(imageDimens[0]);
-        String date = exifSupported ? exif.getAttribute(ExifInterface.TAG_DATETIME) : NO_DATA;
-        String focal_length = exifSupported ? parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH)) + " mm" : NO_DATA;
-        String exposure = exifSupported ? parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)) + " sec" : NO_DATA;
-        String model = exifSupported ? exif.getAttribute(ExifInterface.TAG_MAKE) + " " + exif.getAttribute(ExifInterface.TAG_MODEL) : NO_DATA;
+        String height = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH)
+                : String.valueOf(imageDimens[1]);
+        String width = exifSupported ? exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH)
+                : String.valueOf(imageDimens[0]);
+        String date = exifSupported ? exif.getAttribute(ExifInterface.TAG_DATETIME)
+                : NO_DATA;
+        String focal_length = exifSupported ?
+                parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH)) + " mm"
+                : NO_DATA;
+        String exposure = exifSupported ?
+                parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME)) + " sec"
+                : NO_DATA;
+        String model = exifSupported ? exif.getAttribute(ExifInterface.TAG_MAKE)
+                + " " + exif.getAttribute(ExifInterface.TAG_MODEL)
+                : NO_DATA;
         String aperture = NO_DATA, iso = NO_DATA;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && exifSupported) {
             aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
@@ -545,16 +543,6 @@ public class ItemActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        /*if (view_only && getIntent().getFlags() != Intent.FLAG_GRANT_READ_URI_PERMISSION) {
-                            new AlertDialog.Builder(ItemActivity.this, R.style.Theme_CameraRoll_Dialog)
-                                    .setTitle(R.string.missing_permission_title)
-                                    .setMessage(R.string.missing_delete_permission)
-                                    .setPositiveButton(R.string.ok, null)
-                                    .create().show();
-                        } else {
-                            showDeleteDialog();
-                        }*/
-
                         showDeleteDialog();
                     }
                 }, 400);
@@ -574,7 +562,8 @@ public class ItemActivity extends AppCompatActivity {
 
     private void showUI(boolean show) {
         float toolbar_translationY = show ? 0 : -(toolbar.getHeight());
-        float bottomBar_translationY = show ? 0 : ((View) bottomBar.getParent()).getHeight();
+        float bottomBar_translationY = show ? 0
+                : ((View) bottomBar.getParent()).getHeight();
         toolbar.animate()
                 .translationY(toolbar_translationY)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
@@ -621,17 +610,20 @@ public class ItemActivity extends AppCompatActivity {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull
+            String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case MediaProvider.PERMISSION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0]
+                        == PackageManager.PERMISSION_GRANTED) {
                     //permission granted
                     this.finish();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Snackbar snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
+                    Snackbar snackbar
+                            = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
                     snackbar.setAction(R.string.retry, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -646,7 +638,8 @@ public class ItemActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        View view = viewPager.findViewWithTag(albumItem.getPath()).findViewById(R.id.subsampling);
+        View view = viewPager.findViewWithTag(albumItem.getPath())
+                .findViewById(R.id.subsampling);
         if (view instanceof SubsamplingScaleImageView) {
             SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
             ImageViewState state = imageView.getState();
@@ -694,7 +687,8 @@ public class ItemActivity extends AppCompatActivity {
     public void setResultAndFinish() {
         isReturning = true;
         Intent data = new Intent();
-        data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION, viewPager.getCurrentItem());
+        data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION,
+                viewPager.getCurrentItem());
         setResult(RESULT_OK, data);
         finishAfterTransition();
     }

@@ -1,16 +1,18 @@
 package us.koller.cameraroll.data.FileOperations;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
 
 public class Delete extends FileOperation {
@@ -28,11 +30,6 @@ public class Delete extends FileOperation {
             boolean result = deleteFile(context, files[i].getPath());
             if (result) {
                 success_count++;
-                /*context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                        Uri.parse(files[i].getPath())));*/
-
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
-                        Uri.parse(files[i].getPath())));
             } else {
                 if (callback != null) {
                     callback.failed(files[i].getPath());
@@ -51,9 +48,31 @@ public class Delete extends FileOperation {
         operation = EMPTY;
     }
 
-    private static boolean deleteFile(Activity context, String path) {
-        boolean success = false;
-        if (!path.startsWith("content")) {
+    private static boolean deleteFile(final Activity context, String path) {
+        boolean success;
+        if (Environment.isExternalStorageRemovable(new File(path))) {
+            //not working
+            try {
+                success = StorageUtil.delete(context, new File(path));
+            } catch (IOException e) {
+                success = false;
+                e.printStackTrace();
+            }
+        } else if (MediaType.isMedia_MimeType(context, path)) {
+            ContentResolver resolver = context.getContentResolver();
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DATA, path);
+            resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            String where = MediaStore.MediaColumns.DATA + "=?";
+            String[] selectionArgs = new String[]{path};
+
+            int rows = resolver.delete(MediaStore.Files.getContentUri("external"),
+                    where, selectionArgs);
+
+            success = rows > 0;
+        } else {
             File file = new File(path);
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
@@ -61,11 +80,7 @@ public class Delete extends FileOperation {
                     deleteFile(context, files[i].getPath());
                 }
             }
-            if (Environment.isExternalStorageRemovable(file)) {
-                success = StorageUtil.delete(context, file);
-            } else {
-                success = file.exists() && file.delete();
-            }
+            success = file.exists() && file.delete();
         }
         return success;
     }

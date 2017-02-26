@@ -2,12 +2,14 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
@@ -23,22 +25,27 @@ import android.transition.Slide;
 import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
-import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.FileOperations.Copy;
 import us.koller.cameraroll.data.FileOperations.Delete;
+import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.FileOperations.Move;
+import us.koller.cameraroll.data.FileOperations.NewDirectory;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.FilesProvider;
 import us.koller.cameraroll.data.Provider.Provider;
@@ -124,6 +131,15 @@ public class FileExplorerActivity extends AppCompatActivity
         recyclerViewAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(recyclerViewAdapter);
 
+        //setup fab
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_create_new_folder_white_24dp);
+        Drawable d = fab.getDrawable();
+        d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+        fab.setImageDrawable(d);
+        fab.setScaleX(0.0f);
+        fab.setScaleY(0.0f);
+
         //setting window insets manually
         rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
@@ -143,6 +159,12 @@ public class FileExplorerActivity extends AppCompatActivity
                         recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
                         recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                         recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+
+                ViewGroup.MarginLayoutParams fabParams
+                        = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+                fabParams.rightMargin += insets.getSystemWindowInsetRight();
+                fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
+                fab.setLayoutParams(fabParams);
 
                 // clear this listener so insets aren't re-applied
                 rootView.setOnApplyWindowInsetsListener(null);
@@ -192,19 +214,20 @@ public class FileExplorerActivity extends AppCompatActivity
             }*/
         } else {
             loadRoots();
-        }
 
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.warning)
-                .setMessage(Html.fromHtml(getString(R.string.file_explorer_warning_message)))
-                .setPositiveButton(R.string.ok, null)
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                })
-                .show();
+            //show warning dialog
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.warning)
+                    .setMessage(Html.fromHtml(getString(R.string.file_explorer_warning_message)))
+                    .setPositiveButton(R.string.ok, null)
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    })
+                    .show();
+        }
     }
 
     public void loadRoots() {
@@ -407,6 +430,76 @@ public class FileExplorerActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void fabClicked(View v) {
+        animateFab(false);
+
+        View dialogLayout = LayoutInflater.from(this).inflate(R.layout.new_folder_dialog,
+                (ViewGroup) findViewById(R.id.root_view), false);
+
+        final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
+
+        new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
+                .setTitle(R.string.new_folder)
+                .setView(dialogLayout)
+                .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String filename = editText.getText().toString();
+                        File_POJO newFolder = new File_POJO(currentDir.getPath()
+                                + "/" + filename, false);
+                        new NewDirectory(new File_POJO[]{newFolder})
+                                .execute(FileExplorerActivity.this,
+                                        null,
+                                        new FileOperation.Callback() {
+                                            @Override
+                                            public void done() {
+                                                loadDirectory(currentDir.getPath());
+                                            }
+
+                                            @Override
+                                            public void failed(String path) {
+
+                                            }
+                                        });
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), null)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        animateFab(true);
+                    }
+                })
+                .create().show();
+    }
+
+    public void animateFab(final boolean show) {
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        if ((fab.getScaleX() == 1.0f && show)
+                || (fab.getScaleX() == 0.0f && !show)) {
+            return;
+        }
+
+        if (show) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fabClicked(view);
+                }
+            });
+        } else {
+            fab.setOnClickListener(null);
+        }
+
+        fab.animate()
+                .scaleX(show ? 1.0f : 0.0f)
+                .scaleY(show ? 1.0f : 0.0f)
+                .alpha(show ? 1.0f : 0.0f)
+                .setDuration(250)
+                .start();
+    }
+
     @Override
     public void onBackPressed() {
         if (recyclerViewAdapter.isModeActive()) {
@@ -582,6 +675,8 @@ public class FileExplorerActivity extends AppCompatActivity
                     }, true);
         }
 
+        animateFab(true);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -600,6 +695,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onPickTargetModeExit() {
+        animateFab(false);
         resetToolbar();
     }
 
@@ -630,7 +726,7 @@ public class FileExplorerActivity extends AppCompatActivity
                         public void setTitle(Toolbar toolbar) {
                             toolbar.setTitle(currentDir.getPath());
                         }
-                    }, true);
+                    }, false);
         }
 
         if (recyclerViewAdapter.getMode()
@@ -642,15 +738,6 @@ public class FileExplorerActivity extends AppCompatActivity
     public void resetToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
-
-        int color = ContextCompat.getColor(FileExplorerActivity.this, R.color.white);
-        ColorFade.fadeToolbarTitleColor(toolbar, color,
-                new ColorFade.ToolbarTitleFadeCallback() {
-                    @Override
-                    public void setTitle(Toolbar toolbar) {
-                        toolbar.setTitle(currentDir.getPath());
-                    }
-                }, false);
 
         toolbar.setActivated(false);
         ColorFade.fadeBackgroundColor(toolbar,
@@ -669,6 +756,15 @@ public class FileExplorerActivity extends AppCompatActivity
                 Util.colorToolbarOverflowMenuIcon(toolbar,
                         ContextCompat.getColor(FileExplorerActivity.this, R.color.white_translucent1));
 
+                int color = ContextCompat.getColor(FileExplorerActivity.this, R.color.white);
+                ColorFade.fadeToolbarTitleColor(toolbar, color,
+                        new ColorFade.ToolbarTitleFadeCallback() {
+                            @Override
+                            public void setTitle(Toolbar toolbar) {
+                                toolbar.setTitle(currentDir.getPath());
+                            }
+                        }, false);
+
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {
                     //menu.getItem(i).setVisible(false);
@@ -682,205 +778,4 @@ public class FileExplorerActivity extends AppCompatActivity
             }
         }, 300);
     }
-
-    /*public static class FileAction {
-
-        public interface Callback {
-            void done();
-        }
-
-        static final int EMPTY = 0;
-        static final int MOVE = 1;
-        static final int COPY = 2;
-        static final int DELETE = 3;
-
-        static int action = EMPTY;
-
-        private File_POJO[] files;
-
-        FileAction(File_POJO[] files) {
-            this.files = files;
-        }
-
-        File_POJO[] getFiles() {
-            return files;
-        }
-
-        void execute(final Activity context, final File_POJO target, final Callback callback) {
-
-            if ((FileAction.action == FileAction.EMPTY)
-                    || (target == null && action == FileAction.MOVE)
-                    || (target == null && action == FileAction.COPY)) {
-                return;
-            }
-
-            if (FileAction.action == FileAction.MOVE) {
-                if (target == null) {
-                    return;
-                }
-
-                int success_count = 0;
-                for (int i = 0; i < files.length; i++) {
-                    boolean result = moveFile(files[i].getPath(), target.getPath());
-                    success_count += result ? 1 : 0;
-                    if (result) {
-                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                                Uri.parse(files[i].getPath())));
-                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                                Uri.parse(target.getPath())));
-                    }
-                }
-
-                Toast.makeText(context, context.getString(R.string.successfully_moved)
-                        + String.valueOf(success_count) + "/"
-                        + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
-
-            } else if (FileAction.action == FileAction.COPY) {
-                if (target == null) {
-                    return;
-                }
-
-                int success_count = 0;
-                for (int i = 0; i < files.length; i++) {
-                    //boolean result = copyFile(files[i].getPath(), target.getPath());
-                    boolean result = copyFilesRecursively(files[i].getPath(), target.getPath(), true);
-                    success_count += result ? 1 : 0;
-                    if (result) {
-                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                                Uri.parse(files[i].getPath())));
-                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                                Uri.parse(target.getPath())));
-                    }
-                }
-
-                Toast.makeText(context, context.getString(R.string.successfully_copied)
-                        + String.valueOf(success_count) + "/"
-                        + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
-
-            } else if (FileAction.action == FileAction.DELETE) {
-
-                int success_count = 0;
-                for (int i = 0; i < files.length; i++) {
-                    boolean result = deleteFile(files[i].getPath());
-                    success_count += result ? 1 : 0;
-                    if (result) {
-                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                                Uri.parse(files[i].getPath())));
-                    }
-                }
-
-                Toast.makeText(context, context.getString(R.string.successfully_deleted)
-                        + String.valueOf(success_count) + "/"
-                        + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
-            }
-            FileAction.action = FileAction.EMPTY;
-
-            if (callback != null) {
-                callback.done();
-            }
-        }
-
-        private static boolean moveFile(String path, String destination) {
-            *//*boolean result = copyFile(path, destination);
-
-            //delete original file
-            result = result && deleteFile(path);*//*
-
-            File file = new File(path);
-            return file.renameTo(new File(destination, file.getName()));
-        }
-
-        private static boolean copyFilesRecursively(String path, String destination, boolean result) {
-            File file = new File(path);
-            String destinationFileName
-                    = getCopyFileName(new File(destination, new File(path).getName()).getPath());
-            try {
-                result = result && copyFile(path, destinationFileName);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    copyFilesRecursively(files[i].getPath(),
-                            destination + "/" + new File(destinationFileName).getName() + "/", result);
-                }
-            }
-            return result;
-        }
-
-        private static boolean copyFile(String path, String destination) throws IOException {
-            //create output directory if it doesn't exist
-            File dir = new File(destination);
-            boolean result;
-            if (new File(path).isDirectory()) {
-                result = dir.mkdirs();
-            } else {
-                result = dir.createNewFile();
-            }
-
-            InputStream inputStream = new FileInputStream(path);
-            OutputStream outputStream = new FileOutputStream(dir);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            //copy the file content in bytes
-            while ((bytesRead = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-            // write the output file
-            outputStream.flush();
-            outputStream.close();
-
-            inputStream.close();
-
-            Log.d("FileAction", dir.getPath() + " isDir?: " + dir.isDirectory());
-
-            return true;
-        }
-
-        private static String getCopyFileName(String destinationPath) {
-            File dir = new File(destinationPath);
-            String copyName;
-            if (dir.exists()) {
-                copyName = dir.getPath();
-                if (copyName.contains(".")) {
-                    int index = copyName.lastIndexOf(".");
-                    copyName = copyName.substring(0, index) + " Copy"
-                            + copyName.substring(index, copyName.length());
-                } else {
-                    copyName = copyName + " Copy";
-                }
-            } else {
-                copyName = dir.getPath();
-            }
-            return copyName;
-        }
-
-        private static boolean deleteFile(String path) {
-            File file = new File(path);
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    deleteFile(files[i].getPath());
-                }
-            }
-            return file.exists() && file.delete();
-        }
-
-        static String getModeString(Context context) {
-            switch (action) {
-                case EMPTY:
-                    return "empty";
-                case MOVE:
-                    return context.getString(R.string.move);
-                case COPY:
-                    return context.getString(R.string.copy);
-                case DELETE:
-                    return context.getString(R.string.delete);
-            }
-            return "";
-        }
-    }*/
 }

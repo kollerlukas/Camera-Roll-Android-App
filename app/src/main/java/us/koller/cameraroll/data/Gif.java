@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class Gif extends AlbumItem implements Parcelable {
     Gif() {
-        TYPE = "Gif";
+
     }
 
     Gif(Parcel parcel) {
@@ -15,5 +15,10 @@ public class Gif extends AlbumItem implements Parcelable {
     @Override
     public String toString() {
         return "Gif: " + super.toString();
+    }
+
+    @Override
+    public String getType() {
+        return "Gif";
     }
 }

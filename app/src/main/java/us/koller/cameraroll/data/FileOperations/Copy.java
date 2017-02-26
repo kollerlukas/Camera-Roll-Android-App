@@ -1,9 +1,6 @@
 package us.koller.cameraroll.data.FileOperations;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,14 +29,8 @@ public class Copy extends FileOperation {
 
         int success_count = 0;
         for (int i = 0; i < files.length; i++) {
-            boolean result = copyFilesRecursively(files[i].getPath(), target.getPath(), true);
+            boolean result = copyFilesRecursively(context, files[i].getPath(), target.getPath(), true);
             success_count += result ? 1 : 0;
-            if (result) {
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                        Uri.parse(files[i].getPath())));
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                        Uri.parse(target.getPath())));
-            }
         }
 
         Toast.makeText(context, context.getString(R.string.successfully_copied)
@@ -53,12 +44,15 @@ public class Copy extends FileOperation {
         operation = EMPTY;
     }
 
-    private static boolean copyFilesRecursively(String path, String destination, boolean result) {
+    private static boolean copyFilesRecursively(Activity context, String path,
+                                                String destination, boolean result) {
         File file = new File(path);
         String destinationFileName
                 = getCopyFileName(new File(destination, new File(path).getName()).getPath());
         try {
             result = result && copyFile(path, destinationFileName);
+
+            scanPaths(context, new String[]{path, destinationFileName});
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,7 +60,7 @@ public class Copy extends FileOperation {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
-                copyFilesRecursively(files[i].getPath(),
+                copyFilesRecursively(context, files[i].getPath(),
                         destination + "/" + new File(destinationFileName).getName() + "/", result);
             }
         }
@@ -97,8 +91,6 @@ public class Copy extends FileOperation {
         outputStream.close();
 
         inputStream.close();
-
-        Log.d("FileAction", dir.getPath() + " isDir?: " + dir.isDirectory());
 
         return true;
     }

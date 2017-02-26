@@ -28,8 +28,6 @@ public abstract class AlbumItem
     public boolean isSharedElement = false;
     public boolean hasFadedIn = false;
 
-    public String TYPE = "AlbumItem";
-
     //factory method
     public static AlbumItem getInstance(Context context, String path) {
         if (path == null) {
@@ -160,4 +158,6 @@ public abstract class AlbumItem
         albumItem.setPath("ERROR").setName("ERROR");
         return albumItem;
     }
+
+    public abstract String getType();
 }

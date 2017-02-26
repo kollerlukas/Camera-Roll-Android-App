@@ -1,8 +1,8 @@
 package us.koller.cameraroll.data.Provider;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import us.koller.cameraroll.data.Provider.Retriever.Retriever;
+import us.koller.cameraroll.data.Provider.Retriever.StorageRetriever;
+import us.koller.cameraroll.data.StorageRoot;
 
 public abstract class Provider {
 
@@ -39,6 +41,16 @@ public abstract class Provider {
         if (retriever != null) {
             retriever.onDestroy();
         }
+    }
+
+    public static String getStorageRoot(Activity context, String path) {
+        StorageRoot[] roots = StorageRetriever.loadRoots(context);
+        for (int i = 0; i < roots.length; i++) {
+            if (path.contains(roots[i].getPath())) {
+                return roots[i].getPath();
+            }
+        }
+        return Environment.getExternalStorageDirectory().getPath();
     }
 
     //handle excluded paths

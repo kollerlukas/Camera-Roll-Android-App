@@ -6,7 +6,7 @@ import android.os.Parcelable;
 public class Video extends AlbumItem implements Parcelable {
 
     Video() {
-        TYPE = "Video";
+
     }
 
     Video(Parcel parcel) {
@@ -16,5 +16,10 @@ public class Video extends AlbumItem implements Parcelable {
     @Override
     public String toString() {
         return "Video: " + super.toString();
+    }
+
+    @Override
+    public String getType() {
+        return "Video";
     }
 }
