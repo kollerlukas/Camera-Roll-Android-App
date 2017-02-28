@@ -30,7 +30,7 @@ public class PhotoViewHolder extends ViewHolder {
         if (albumItem.isSharedElement) {
             view.setVisibility(View.INVISIBLE);
         } else {
-            transitionView.setVisibility(View.INVISIBLE);
+            //transitionView.setVisibility(View.INVISIBLE);
             bindImageView(view, transitionView);
         }
         return v;
