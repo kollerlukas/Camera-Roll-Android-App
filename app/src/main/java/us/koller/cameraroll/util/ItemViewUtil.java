@@ -2,7 +2,9 @@ package us.koller.cameraroll.util;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,15 +67,20 @@ public class ItemViewUtil {
                 Util.getVideoDimensions(albumItem.getPath()) :
                 Util.getImageDimensions(imageView.getContext(), albumItem.getPath());
 
-        int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
-        float scale = ((float) screenWidth) / (float) imageDimens[0];
-        scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-        imageDimens[0] =
-                (int) (imageDimens[0] * scale * 0.5f) > 0
-                        ? (int) (imageDimens[0] * scale * 0.5f) : 1;
-        imageDimens[1] =
-                (int) (imageDimens[1] * scale * 0.5f) > 0
-                        ? (int) (imageDimens[1] * scale * 0.5f) : 1;
+        if (imageView.getContext() instanceof Activity) {
+            int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
+            float scale = ((float) screenWidth) / (float) imageDimens[0];
+            scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
+            imageDimens[0] =
+                    (int) (imageDimens[0] * scale * 0.5f) > 0
+                            ? (int) (imageDimens[0] * scale * 0.5f) : 1;
+            imageDimens[1] =
+                    (int) (imageDimens[1] * scale * 0.5f) > 0
+                            ? (int) (imageDimens[1] * scale * 0.5f) : 1;
+        } else {
+            imageDimens[0] = imageDimens[0] / 2;
+            imageDimens[1] = imageDimens[1] / 2;
+        }
 
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
@@ -93,7 +100,7 @@ public class ItemViewUtil {
                     public boolean onResourceReady(Bitmap resource, String model,
                                                    Target<Bitmap> target, boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
-                        if (albumItem.isSharedElement) {
+                        if (albumItem.isSharedElement && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
                             ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
                         }
@@ -102,14 +109,17 @@ public class ItemViewUtil {
                 })
                 .into(imageView);
 
-        //Handle timeout
-        imageView.setTransitionName(albumItem.getPath());
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
-            }
-        }, 200);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //Handle timeout
+            imageView.setTransitionName(albumItem.getPath());
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                public void run() {
+                    ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
+                }
+            }, 200);
+        }
 
         return imageView;
     }
@@ -141,7 +151,9 @@ public class ItemViewUtil {
                     }
                 })
                 .into(imageView);
-        imageView.setTransitionName(albumItem.getPath());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setTransitionName(albumItem.getPath());
+        }
         return imageView;
     }
 
@@ -166,7 +178,10 @@ public class ItemViewUtil {
                 .skipMemoryCache(true)
                 .error(R.drawable.error_placeholder_tinted)
                 .into(imageView);
-        imageView.setTransitionName(albumItem.getPath());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setTransitionName(albumItem.getPath());
+        }
 
         ImageView playButton = new ImageView(imageView.getContext());
         playButton.setTag(VIDEO_PLAY_BUTTON_TAG);

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId "us.koller.cameraroll"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 25
         versionCode 11
         versionName "v1.1.1 Beta"

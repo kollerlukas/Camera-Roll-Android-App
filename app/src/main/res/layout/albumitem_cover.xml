@@ -9,8 +9,8 @@
             android:id="@+id/image"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:foreground="@animator/albumitem_foreground"
             android:contentDescription="@string/photo"
+            android:foreground="@animator/albumitem_foreground"
             android:scaleType="centerCrop"/>
 
     <ImageView

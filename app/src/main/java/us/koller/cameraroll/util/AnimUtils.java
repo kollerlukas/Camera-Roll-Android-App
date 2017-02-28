@@ -1,29 +1,24 @@
 package us.koller.cameraroll.util;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.ColorMatrix;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Property;
-import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 // see: https://github.com/nickbutcher/plaid/blob/master/app/src/main/java/io/plaidapp/util/AnimUtils.java
 
-public class AnimUtils {
+class AnimUtils {
 
     private AnimUtils() {
     }
 
     private static Interpolator fastOutSlowIn;
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static Interpolator getFastOutSlowInInterpolator(Context context) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    static Interpolator getFastOutSlowInInterpolator(Context context) {
         if (fastOutSlowIn == null) {
             fastOutSlowIn = AnimationUtils.loadInterpolator(context,
                     android.R.interpolator.fast_out_slow_in);
@@ -61,11 +56,11 @@ public class AnimUtils {
      * An extension to {@link ColorMatrix} which caches the saturation value for animation
      * purposes.
      */
-    public static class ObservableColorMatrix extends ColorMatrix {
+    static class ObservableColorMatrix extends ColorMatrix {
 
         private float saturation = 1f;
 
-        public ObservableColorMatrix() {
+        ObservableColorMatrix() {
             super();
         }
 
@@ -79,7 +74,7 @@ public class AnimUtils {
             super.setSaturation(saturation);
         }
 
-        public static final Property<ObservableColorMatrix, Float> SATURATION
+        static final Property<ObservableColorMatrix, Float> SATURATION
                 = new FloatProperty<ObservableColorMatrix>("saturation") {
 
             @Override

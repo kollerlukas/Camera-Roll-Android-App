@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 
 import java.io.File;
@@ -39,7 +40,16 @@ public abstract class FileOperation {
         return files;
     }
 
-    public abstract void execute(final Activity context, final File_POJO target, final Callback callback);
+    public void execute(final Activity context, final File_POJO target, final Callback callback) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                executeAsync(context, target, callback);
+            }
+        });
+    }
+
+    abstract void executeAsync(final Activity context, final File_POJO target, final Callback callback);
 
     public static String getModeString(Context context) {
         switch (operation) {

@@ -2,17 +2,19 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -92,18 +94,22 @@ public class FileExplorerActivity extends AppCompatActivity
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
-        toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                .create(this, R.drawable.back_to_cancel_animateable));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                    .create(this, R.drawable.back_to_cancel_animateable));
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+            Drawable navIcon = toolbar.getNavigationIcon();
+            if (navIcon != null) {
+                navIcon = DrawableCompat.wrap(navIcon);
+                DrawableCompat.setTint(navIcon.mutate(),
+                        ContextCompat.getColor(this, R.color.white_translucent1));
+                toolbar.setNavigationIcon(navIcon);
+            }
+        }
         setSupportActionBar(toolbar);
 
-        /*//set Toolbar overflow icon color
-        Drawable drawable = toolbar.getOverflowIcon();
-        if (drawable != null) {
-            drawable = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTint(drawable.mutate(),
-                    ContextCompat.getColor(this, R.color.grey_900_translucent));
-            toolbar.setOverflowIcon(drawable);
-        }*/
         Util.colorToolbarOverflowMenuIcon(toolbar,
                 ContextCompat.getColor(this, R.color.white_translucent1));
 
@@ -138,42 +144,48 @@ public class FileExplorerActivity extends AppCompatActivity
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_create_new_folder_white_24dp);
         Drawable d = fab.getDrawable();
-        d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+        //d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+        d = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d.mutate(),
+                ContextCompat.getColor(this, R.color.grey_900_translucent));
         fab.setImageDrawable(d);
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
 
         //setting window insets manually
-        rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
-                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
-                        toolbar.getPaddingBottom());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
+                @Override
+                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingBottom());
 
-                ViewGroup.MarginLayoutParams toolbarParams
-                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                toolbar.setLayoutParams(toolbarParams);
+                    ViewGroup.MarginLayoutParams toolbarParams
+                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                    toolbar.setLayoutParams(toolbarParams);
 
-                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                        recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
-                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                            recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
+                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                ViewGroup.MarginLayoutParams fabParams
-                        = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                fabParams.rightMargin += insets.getSystemWindowInsetRight();
-                fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
-                fab.setLayoutParams(fabParams);
+                    ViewGroup.MarginLayoutParams fabParams
+                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+                    fabParams.rightMargin += insets.getSystemWindowInsetRight();
+                    fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
+                    fab.setLayoutParams(fabParams);
 
-                // clear this listener so insets aren't re-applied
-                rootView.setOnApplyWindowInsetsListener(null);
-                return insets.consumeSystemWindowInsets();
-            }
-        });
+                    // clear this listener so insets aren't re-applied
+                    rootView.setOnApplyWindowInsetsListener(null);
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+        }
 
         //setting recyclerView top padding, so recyclerView starts below the toolbar
         toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -334,8 +346,10 @@ public class FileExplorerActivity extends AppCompatActivity
         manageMenuItems();
 
         Drawable icon = menu.findItem(R.id.paste).getIcon().mutate();
-        icon.setTint(ContextCompat.getColor(FileExplorerActivity.this,
-                R.color.grey_900_translucent));
+        //icon.setTint(ContextCompat.getColor(FileExplorerActivity.this, R.color.grey_900_translucent));
+        icon = DrawableCompat.wrap(icon);
+        DrawableCompat.setTint(icon.mutate(),
+                ContextCompat.getColor(this, R.color.grey_900_translucent));
         menu.findItem(R.id.paste).setIcon(icon);
 
         return super.onCreateOptionsMenu(menu);
@@ -561,11 +575,13 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onSwipeFinish(int dir) {
-        getWindow().setReturnTransition(new TransitionSet()
-                .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
-                .addTransition(new Fade())
-                .setInterpolator(new AccelerateDecelerateInterpolator()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setReturnTransition(new TransitionSet()
+                    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                    .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
+                    .addTransition(new Fade())
+                    .setInterpolator(new AccelerateDecelerateInterpolator()));
+        }
         this.finish();
     }
 
@@ -588,12 +604,26 @@ public class FileExplorerActivity extends AppCompatActivity
                 ContextCompat.getColor(this, R.color.black_translucent2),
                 ContextCompat.getColor(this, R.color.colorAccent));
 
-        ((Animatable) toolbar.getNavigationIcon()).start();
+        Drawable navIcon = toolbar.getNavigationIcon();
+        if (navIcon instanceof Animatable) {
+            ((Animatable) navIcon).start();
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                        .create(FileExplorerActivity.this, R.drawable.cancel_to_back_vector_animateable));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                            .create(FileExplorerActivity.this, R.drawable.cancel_to_back_vector_animateable));
+                } else {
+                    toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
+                    Drawable navIcon = toolbar.getNavigationIcon();
+                    if (navIcon != null) {
+                        navIcon = DrawableCompat.wrap(navIcon);
+                        DrawableCompat.setTint(navIcon.mutate(),
+                                ContextCompat.getColor(FileExplorerActivity.this, R.color.grey_900_translucent));
+                        toolbar.setNavigationIcon(navIcon);
+                    }
+                }
 
                 //make menu items visible
                 for (int i = 0; i < menu.size(); i++) {
@@ -605,7 +635,7 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 }
             }
-        }, 300);
+        }, navIcon instanceof Animatable ? 300 : 0);
     }
 
     @Override
@@ -747,12 +777,26 @@ public class FileExplorerActivity extends AppCompatActivity
                 ContextCompat.getColor(this, R.color.colorAccent),
                 ContextCompat.getColor(this, R.color.black_translucent2));
 
-        ((Animatable) toolbar.getNavigationIcon()).start();
+        Drawable navIcon = toolbar.getNavigationIcon();
+        if (navIcon instanceof Animatable) {
+            ((Animatable) navIcon).start();
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                        .create(FileExplorerActivity.this, R.drawable.back_to_cancel_animateable));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                            .create(FileExplorerActivity.this, R.drawable.back_to_cancel_animateable));
+                } else {
+                    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+                    Drawable navIcon = toolbar.getNavigationIcon();
+                    if (navIcon != null) {
+                        navIcon = DrawableCompat.wrap(navIcon);
+                        DrawableCompat.setTint(navIcon.mutate(),
+                                ContextCompat.getColor(FileExplorerActivity.this, R.color.white_translucent1));
+                        toolbar.setNavigationIcon(navIcon);
+                    }
+                }
 
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
 
@@ -779,6 +823,6 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 }
             }
-        }, 300);
+        }, navIcon instanceof Animatable ? 300 : 0);
     }
 }

@@ -4,21 +4,19 @@
         android:id="@+id/root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black">
-    <!--android:fitsSystemWindows="@bool/belowLollipop"-->
+        android:background="@color/dark_bg">
 
-    <!--Using HackyViewPager to prevent crashes with PhotoView-->
-    <us.koller.cameraroll.ui.widget.HackyViewPager
-            android:id="@+id/view_pager"
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:clipToPadding="false"/>
 
     <android.support.v7.widget.Toolbar
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/dark_to_transparent_gradient"/>
-
-    <include layout="@layout/photo_view_button_bar"/>
+            android:stateListAnimator="@animator/toolbar_raise"
+            android:transitionName="@string/toolbar_transition_name"/>
 </FrameLayout>

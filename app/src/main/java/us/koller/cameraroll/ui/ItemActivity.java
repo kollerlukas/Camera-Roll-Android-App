@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ShareCompat;
@@ -36,6 +38,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -47,6 +50,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -58,12 +62,14 @@ import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.util.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
 import us.koller.cameraroll.util.Util;
+import us.koller.cameraroll.util.ZoomOutPageTransformer;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -82,6 +88,7 @@ public class ItemActivity extends AppCompatActivity {
     private boolean isReturning;
     private final SharedElementCallback sharedElementCallback = new SharedElementCallback() {
         @Override
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             if (isReturning) {
                 ViewGroup v = (ViewGroup) viewPager.findViewWithTag(albumItem.getPath());
@@ -168,7 +175,7 @@ public class ItemActivity extends AppCompatActivity {
 
         view_only = getIntent().getBooleanExtra(VIEW_ONLY, false);
 
-        if (!view_only) {
+        if (!view_only && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             postponeEnterTransition();
             setEnterSharedElementCallback(sharedElementCallback);
             getWindow().getSharedElementEnterTransition().addListener(transitionListener);
@@ -225,34 +232,52 @@ public class ItemActivity extends AppCompatActivity {
         viewPager.setAdapter(new ViewPagerAdapter(album));
         viewPager.setCurrentItem(album.getAlbumItems().indexOf(albumItem), false);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            private final int color = ContextCompat.getColor(ItemActivity.this, R.color.white);
+
             @Override
             public void onPageSelected(int position) {
-                albumItem = album.getAlbumItems().get(position);
+                /*albumItem = album.getAlbumItems().get(position);
                 if (actionBar != null) {
                     actionBar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
-                }
+                }*/
+                albumItem = album.getAlbumItems().get(position);
+                ColorFade.fadeToolbarTitleColor(toolbar, color,
+                        new ColorFade.ToolbarTitleFadeCallback() {
+                            @Override
+                            public void setTitle(Toolbar toolbar) {
+                                toolbar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
+                            }
+                        }, true);
 
                 menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
             }
         });
 
+        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+
         bottomBar = findViewById(R.id.bottom_bar);
         ImageView delete_button = (ImageView) bottomBar.findViewById(R.id.delete_button);
         if (!view_only) {
-            delete_button.setImageDrawable(AnimatedVectorDrawableCompat
-                    .create(this, R.drawable.ic_delete_vector_animateable));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                delete_button.setImageDrawable(AnimatedVectorDrawableCompat
+                        .create(this, R.drawable.ic_delete_vector_animateable));
+            } else {
+                delete_button.setImageResource(R.drawable.ic_delete_white_24dp);
+            }
         } else {
             ((View) delete_button.getParent()).setVisibility(View.GONE);
         }
 
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
-        rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                        toolbar.getPaddingBottom());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @Override
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
+                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            toolbar.getPaddingBottom());
 
                 /*ViewGroup.MarginLayoutParams toolbarParams
                         = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
@@ -260,10 +285,10 @@ public class ItemActivity extends AppCompatActivity {
                 toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
                 toolbar.setLayoutParams(toolbarParams);*/
 
-                bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                        bottomBar.getPaddingTop(),
-                        bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                        bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                    bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                            bottomBar.getPaddingTop(),
+                            bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
                 /*ViewGroup.MarginLayoutParams bottomBarParams
                         = (ViewGroup.MarginLayoutParams) ((View) bottomBar.getParent()).getLayoutParams();
@@ -271,11 +296,40 @@ public class ItemActivity extends AppCompatActivity {
                 bottomBarParams.rightMargin += insets.getSystemWindowInsetRight();
                 ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);*/
 
-                // clear this listener so insets aren't re-applied
-                rootView.setOnApplyWindowInsetsListener(null);
-                return insets.consumeSystemWindowInsets();
-            }
-        });
+                    // clear this listener so insets aren't re-applied
+                    rootView.setOnApplyWindowInsetsListener(null);
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+        } else {
+            rootView.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    //hacky way of getting window insets on pre-Lollipop
+                                    int[] screenSize = Util.getScreenSize(ItemActivity.this);
+
+                                    int[] windowInsets = new int[]{
+                                            screenSize[0] - rootView.getLeft(),
+                                            screenSize[1] - rootView.getTop(),
+                                            screenSize[2] - rootView.getRight(),
+                                            rootView.getBottom() - screenSize[3]};
+
+                                    toolbar.setPadding(toolbar.getPaddingStart() + windowInsets[0],
+                                            toolbar.getPaddingTop() + windowInsets[1],
+                                            toolbar.getPaddingEnd() + windowInsets[2],
+                                            toolbar.getPaddingBottom());
+
+                                    bottomBar.setPadding(bottomBar.getPaddingStart() + windowInsets[0],
+                                            bottomBar.getPaddingTop(),
+                                            bottomBar.getPaddingEnd() + windowInsets[2],
+                                            bottomBar.getPaddingBottom() + windowInsets[3]);
+
+                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                }
+                            });
+        }
 
         //needed to achieve transparent navBar
         getWindow().getDecorView().setSystemUiVisibility(
@@ -283,9 +337,11 @@ public class ItemActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
-        setupTaskDescription();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setupTaskDescription();
+        }
 
-        if (view_only) {
+        if (view_only || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             albumItem.isSharedElement = false;
         }
     }
@@ -431,9 +487,11 @@ public class ItemActivity extends AppCompatActivity {
     public void showInfoDialog() {
         ExifInterface exif = null;
         try {
-            if (albumItem.contentUri && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Uri uri = albumItem.getUri(this);
+                Log.d("ItemActivity", "showInfoDialog: " + uri);
                 exif = new ExifInterface(getContentResolver()
-                        .openInputStream(albumItem.getUri(this)));
+                        .openInputStream(uri));
             } else {
                 exif = new ExifInterface(albumItem.getPath());
             }
@@ -447,7 +505,10 @@ public class ItemActivity extends AppCompatActivity {
         String path = file.getPath();
         String size = getFileSize(file);
 
-        boolean exifSupported = exif != null && MediaType.doesSupportExif(albumItem.getPath());
+        boolean exifSupported = exif != null;
+        if (!albumItem.contentUri) {
+            exifSupported = exifSupported && MediaType.doesSupportExif(albumItem.getPath());
+        }
 
         String height = NO_DATA, width = NO_DATA,
                 date = NO_DATA, focal_length = NO_DATA,
@@ -545,13 +606,18 @@ public class ItemActivity extends AppCompatActivity {
                 break;
             case R.id.delete_button:
                 ImageView delete_button = (ImageView) v;
-                ((Animatable) delete_button.getDrawable()).start();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        showDeleteDialog();
-                    }
-                }, 400);
+                Drawable d = delete_button.getDrawable();
+                if (d instanceof Animatable) {
+                    ((Animatable) d).start();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showDeleteDialog();
+                        }
+                    }, 400);
+                } else {
+                    showDeleteDialog();
+                }
                 break;
         }
     }
@@ -606,6 +672,7 @@ public class ItemActivity extends AppCompatActivity {
         showUI(show);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
@@ -696,7 +763,11 @@ public class ItemActivity extends AppCompatActivity {
         data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION,
                 viewPager.getCurrentItem());
         setResult(RESULT_OK, data);
-        finishAfterTransition();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAfterTransition();
+        } else {
+            finish();
+        }
     }
 
     public String getFileSize(File file) {

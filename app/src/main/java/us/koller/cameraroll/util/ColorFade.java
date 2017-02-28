@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -64,7 +65,9 @@ public class ColorFade {
             }
         });
         saturation.setDuration(2000L);
-        saturation.setInterpolator(AnimUtils.getFastOutSlowInInterpolator(imageView.getContext()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            saturation.setInterpolator(AnimUtils.getFastOutSlowInInterpolator(imageView.getContext()));
+        }
         saturation.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

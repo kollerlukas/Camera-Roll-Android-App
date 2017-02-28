@@ -11,15 +11,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,8 +48,8 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.FileOperations.Delete;
+import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
@@ -71,6 +74,7 @@ public class AlbumActivity extends AppCompatActivity
 
     private final SharedElementCallback mCallback = new SharedElementCallback() {
         @Override
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             if (sharedElementReturnPosition != -1) {
                 String newTransitionName = album.getAlbumItems().get(sharedElementReturnPosition).getPath();
@@ -126,16 +130,18 @@ public class AlbumActivity extends AppCompatActivity
         MediaProvider.checkPermission(this);
 
         setExitSharedElementCallback(mCallback);
-        getWindow().setEnterTransition(new TransitionSet()
-                .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                .addTransition(new Slide(Gravity.BOTTOM))
-                .addTransition(new Fade())
-                .setInterpolator(new AccelerateDecelerateInterpolator()));
-        getWindow().setReturnTransition(new TransitionSet()
-                .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                .addTransition(new Slide(Gravity.BOTTOM))
-                .addTransition(new Fade())
-                .setInterpolator(new AccelerateDecelerateInterpolator()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setEnterTransition(new TransitionSet()
+                    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                    .addTransition(new Slide(Gravity.BOTTOM))
+                    .addTransition(new Fade())
+                    .setInterpolator(new AccelerateDecelerateInterpolator()));
+            getWindow().setReturnTransition(new TransitionSet()
+                    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                    .addTransition(new Slide(Gravity.BOTTOM))
+                    .addTransition(new Fade())
+                    .setInterpolator(new AccelerateDecelerateInterpolator()));
+        }
 
         /*if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM)) {
             album = savedInstanceState.getParcelable(ALBUM);
@@ -164,10 +170,29 @@ public class AlbumActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
         if (!pick_photos) {
-            toolbar.setNavigationIcon(AnimatedVectorDrawableCompat.create(this, R.drawable.back_to_cancel_animateable));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.setNavigationIcon(AnimatedVectorDrawableCompat.create(this,
+                        R.drawable.back_to_cancel_animateable));
+            } else {
+                toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+                Drawable navIcon = toolbar.getNavigationIcon();
+                if (navIcon != null) {
+                    navIcon = DrawableCompat.wrap(navIcon);
+                    DrawableCompat.setTint(navIcon.mutate(),
+                            ContextCompat.getColor(this, R.color.white_translucent1));
+                    toolbar.setNavigationIcon(navIcon);
+                }
+            }
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
-            toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            //toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            Drawable navIcon = toolbar.getNavigationIcon();
+            if (navIcon != null) {
+                navIcon = DrawableCompat.wrap(navIcon);
+                DrawableCompat.setTint(navIcon.mutate(),
+                        ContextCompat.getColor(this, R.color.grey_900_translucent));
+                toolbar.setNavigationIcon(navIcon);
+            }
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
@@ -216,45 +241,61 @@ public class AlbumActivity extends AppCompatActivity
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (!pick_photos) {
-            fab.setImageDrawable(AnimatedVectorDrawableCompat.create(this, R.drawable.ic_delete_vector_animateable));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                fab.setImageDrawable(AnimatedVectorDrawableCompat
+                        .create(this, R.drawable.ic_delete_vector_animateable));
+            } else {
+                fab.setImageResource(R.drawable.ic_delete_white_24dp);
+            }
         } else {
             fab.setImageResource(R.drawable.ic_send_white_24dp);
         }
         Drawable d = fab.getDrawable();
-        d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+        //AnimatedVectorDrawableCompat.mutate():
+        // java.lang.IllegalStateException: Mutate() is not supported for older platform
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+        } else {
+            d = DrawableCompat.wrap(d);
+            DrawableCompat.setTint(d.mutate(),
+                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+        }
         fab.setImageDrawable(d);
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
 
-        rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart(),
-                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd(),
-                        toolbar.getPaddingBottom());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @Override
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
+                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+                    toolbar.setPadding(toolbar.getPaddingStart(),
+                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            toolbar.getPaddingEnd(),
+                            toolbar.getPaddingBottom());
 
-                ViewGroup.MarginLayoutParams toolbarParams
-                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                toolbar.setLayoutParams(toolbarParams);
+                    ViewGroup.MarginLayoutParams toolbarParams
+                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                    toolbar.setLayoutParams(toolbarParams);
 
-                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                        recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
-                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                            recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
+                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                ViewGroup.MarginLayoutParams fabParams
-                        = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                fabParams.rightMargin += insets.getSystemWindowInsetRight();
-                fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
-                fab.setLayoutParams(fabParams);
+                    ViewGroup.MarginLayoutParams fabParams
+                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+                    fabParams.rightMargin += insets.getSystemWindowInsetRight();
+                    fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
+                    fab.setLayoutParams(fabParams);
 
-                rootView.setOnApplyWindowInsetsListener(null);
-                return insets.consumeSystemWindowInsets();
-            }
-        });
+                    rootView.setOnApplyWindowInsetsListener(null);
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+        }
 
         toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -271,7 +312,9 @@ public class AlbumActivity extends AppCompatActivity
             }
         });
 
-        setupTaskDescription();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setupTaskDescription();
+        }
 
         onNewIntent(getIntent());
     }
@@ -295,6 +338,7 @@ public class AlbumActivity extends AppCompatActivity
     }
 
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onActivityReenter(int requestCode, Intent data) {
         super.onActivityReenter(requestCode, data);
         Bundle tmpReenterState = new Bundle(data.getExtras());
@@ -332,7 +376,10 @@ public class AlbumActivity extends AppCompatActivity
             this.menu = menu;
 
             Drawable icon = menu.findItem(R.id.share).getIcon().mutate();
-            icon.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            //icon.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            icon = DrawableCompat.wrap(icon);
+            DrawableCompat.setTint(icon.mutate(),
+                    ContextCompat.getColor(this, R.color.grey_900_translucent));
             menu.findItem(R.id.share).setIcon(icon);
         }
 
@@ -573,15 +620,30 @@ public class AlbumActivity extends AppCompatActivity
                     ContextCompat.getColor(this, R.color.black_translucent2),
                     ContextCompat.getColor(this, R.color.colorAccent));
 
-            ((Animatable) toolbar.getNavigationIcon()).start();
+            Drawable navIcon = toolbar.getNavigationIcon();
+            if (navIcon instanceof Animatable) {
+                ((Animatable) navIcon).start();
+            }
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(AlbumActivity.this, R.drawable.cancel_to_back_vector_animateable));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                                .create(AlbumActivity.this, R.drawable.cancel_to_back_vector_animateable));
+                    } else {
+                        toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
+                        Drawable navIcon = toolbar.getNavigationIcon();
+                        if (navIcon != null) {
+                            navIcon = DrawableCompat.wrap(navIcon);
+                            DrawableCompat.setTint(navIcon.mutate(),
+                                    ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
+                            toolbar.setNavigationIcon(navIcon);
+                        }
+                    }
+
                     toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
                 }
-            }, 300);
+            }, navIcon instanceof Animatable ? 300 : 0);
         } else {
             toolbar.setBackgroundColor(ContextCompat
                     .getColor(this, R.color.colorAccent));
@@ -609,19 +671,34 @@ public class AlbumActivity extends AppCompatActivity
                 ContextCompat.getColor(this, R.color.black_translucent2));
         toolbar.setTitle(album.getName());
 
-        ((Animatable) toolbar.getNavigationIcon()).start();
+        Drawable navIcon = toolbar.getNavigationIcon();
+        if (navIcon instanceof Animatable) {
+            ((Animatable) navIcon).start();
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                        .create(AlbumActivity.this, R.drawable.back_to_cancel_animateable));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
+                            .create(AlbumActivity.this, R.drawable.back_to_cancel_animateable));
+                } else {
+                    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+                    Drawable navIcon = toolbar.getNavigationIcon();
+                    if (navIcon != null) {
+                        navIcon = DrawableCompat.wrap(navIcon);
+                        DrawableCompat.setTint(navIcon.mutate(),
+                                ContextCompat.getColor(AlbumActivity.this, R.color.white));
+                        toolbar.setNavigationIcon(navIcon);
+                    }
+                }
+
                 toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.white));
 
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
 
                 menu.findItem(R.id.exclude).setVisible(true);
             }
-        }, 300);
+        }, navIcon instanceof Animatable ? 300 : 0);
 
         animateFab(false, false);
         menu.findItem(R.id.share).setVisible(false);
@@ -751,6 +828,7 @@ public class AlbumActivity extends AppCompatActivity
                 recyclerView.getLayoutManager().onSaveInstanceState());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
         Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
@@ -775,11 +853,13 @@ public class AlbumActivity extends AppCompatActivity
         if (((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
             ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
         }
-        getWindow().setReturnTransition(new TransitionSet()
-                .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
-                .addTransition(new Fade())
-                .setInterpolator(new AccelerateDecelerateInterpolator()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setReturnTransition(new TransitionSet()
+                    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                    .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
+                    .addTransition(new Fade())
+                    .setInterpolator(new AccelerateDecelerateInterpolator()));
+        }
         onBackPressed();
     }
 }

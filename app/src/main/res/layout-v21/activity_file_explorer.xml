@@ -4,8 +4,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/swipeBackView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="@bool/belowLollipop">
+        android:layout_height="match_parent">
 
     <FrameLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -24,7 +23,9 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:stateListAnimator="@animator/toolbar_raise"
+                android:transitionName="@string/toolbar_transition_name"/>
     </FrameLayout>
 
     <TextView

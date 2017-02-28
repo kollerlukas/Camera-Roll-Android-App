@@ -3,6 +3,7 @@ package us.koller.cameraroll.data.FileOperations;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.Toast;
@@ -22,8 +23,8 @@ public class Delete extends FileOperation {
     }
 
     @Override
-    public void execute(Activity context, File_POJO target, Callback callback) {
-        File_POJO[] files = getFiles();
+    void executeAsync(final Activity context, File_POJO target, final Callback callback) {
+        final File_POJO[] files = getFiles();
 
         int success_count = 0;
         for (int i = 0; i < files.length; i++) {
@@ -37,20 +38,27 @@ public class Delete extends FileOperation {
             }
         }
 
-        Toast.makeText(context, context.getString(R.string.successfully_deleted)
-                + String.valueOf(success_count) + "/"
-                + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
+        final int finalSuccess_count = success_count;
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, context.getString(R.string.successfully_deleted)
+                        + String.valueOf(finalSuccess_count) + "/"
+                        + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
 
-        if (callback != null) {
-            callback.done();
-        }
+                if (callback != null) {
+                    callback.done();
+                }
+            }
+        });
 
         operation = EMPTY;
     }
 
     private static boolean deleteFile(final Activity context, String path) {
         boolean success;
-        if (Environment.isExternalStorageRemovable(new File(path))) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && Environment.isExternalStorageRemovable(new File(path))) {
             //not working
             try {
                 success = StorageUtil.delete(context, new File(path));

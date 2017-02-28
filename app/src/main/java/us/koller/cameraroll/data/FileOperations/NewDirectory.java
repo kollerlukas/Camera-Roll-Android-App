@@ -15,8 +15,8 @@ public class NewDirectory extends FileOperation {
     }
 
     @Override
-    public void execute(Activity context, File_POJO target, Callback callback) {
-        File_POJO[] files = getFiles();
+    void executeAsync(final Activity context, File_POJO target, final Callback callback) {
+        final File_POJO[] files = getFiles();
         if (files.length > 0) {
             File_POJO file = files[0];
             boolean result = createNewFolder(file.getPath());
@@ -26,13 +26,23 @@ public class NewDirectory extends FileOperation {
                 }
             }
 
-            Toast.makeText(context, context.getString(R.string.successfully_created_new_folder),
-                    Toast.LENGTH_SHORT).show();
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, context.getString(R.string.successfully_created_new_folder),
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
-        if (callback != null) {
-            callback.done();
-        }
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (callback != null) {
+                    callback.done();
+                }
+            }
+        });
 
         operation = EMPTY;
     }

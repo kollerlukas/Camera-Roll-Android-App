@@ -6,8 +6,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
@@ -98,7 +100,14 @@ public class MainActivity extends AppCompatActivity {
             toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.grey_900_translucent));
             toolbar.setActivated(true);
             toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
-            toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            //toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            Drawable navIcon = toolbar.getNavigationIcon();
+            if (navIcon != null) {
+                navIcon = DrawableCompat.wrap(navIcon);
+                DrawableCompat.setTint(navIcon.mutate(),
+                        ContextCompat.getColor(this, R.color.grey_900_translucent));
+                toolbar.setNavigationIcon(navIcon);
+            }
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -106,14 +115,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            //set Toolbar overflow icon color
-            Drawable drawable = toolbar.getOverflowIcon();
-            if (drawable != null) {
-                drawable = DrawableCompat.wrap(drawable);
-                DrawableCompat.setTint(drawable.mutate(),
-                        ContextCompat.getColor(this, R.color.grey_900_translucent));
-                toolbar.setOverflowIcon(drawable);
-            }
+            Util.colorToolbarOverflowMenuIcon(toolbar,
+                    ContextCompat.getColor(this, R.color.grey_900_translucent));
 
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
@@ -144,31 +147,34 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //setting window insets manually
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
-        rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
-                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
-                        toolbar.getPaddingBottom());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @Override
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
+                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingBottom());
 
-                ViewGroup.MarginLayoutParams toolbarParams
-                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                toolbar.setLayoutParams(toolbarParams);
+                    ViewGroup.MarginLayoutParams toolbarParams
+                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                    toolbar.setLayoutParams(toolbarParams);
 
-                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                        recyclerView.getPaddingTop() + (pick_photos ? 0 : +insets.getSystemWindowInsetTop()),
-                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                            recyclerView.getPaddingTop() + (pick_photos ? 0 : +insets.getSystemWindowInsetTop()),
+                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                // clear this listener so insets aren't re-applied
-                rootView.setOnApplyWindowInsetsListener(null);
-                return insets.consumeSystemWindowInsets();
-            }
-        });
+                    // clear this listener so insets aren't re-applied
+                    rootView.setOnApplyWindowInsetsListener(null);
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+        }
 
         //setting recyclerView top padding, so recyclerView starts below the toolbar
         toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -186,7 +192,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        setupTaskDescription();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setupTaskDescription();
+        }
     }
 
     @Override
@@ -320,6 +328,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
         Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),

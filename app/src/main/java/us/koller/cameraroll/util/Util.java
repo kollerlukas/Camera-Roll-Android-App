@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -21,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -138,5 +140,28 @@ public class Util {
             DrawableCompat.setTint(drawable.mutate(), color);
             toolbar.setOverflowIcon(drawable);
         }
+    }
+
+    private static Drawable selectorOverlay;
+
+    public static Drawable getAlbumItemSelectorOverlay(Context context) {
+        if (selectorOverlay == null) {
+            selectorOverlay = ContextCompat.getDrawable(context,
+                    R.drawable.albumitem_selected_indicator);
+            selectorOverlay = DrawableCompat.wrap(selectorOverlay);
+            DrawableCompat.setTint(selectorOverlay,
+                    ContextCompat.getColor(context,
+                            R.color.colorAccent_translucent));
+        }
+        return selectorOverlay;
+    }
+
+    //int[left, top, right, bottom]
+    public static int[] getScreenSize(Activity context) {
+        Rect displayRect = new Rect();
+        context.getWindow().getDecorView().getWindowVisibleDisplayFrame(displayRect);
+        return new int[]{
+                displayRect.left, displayRect.top,
+                displayRect.right, displayRect.bottom};
     }
 }

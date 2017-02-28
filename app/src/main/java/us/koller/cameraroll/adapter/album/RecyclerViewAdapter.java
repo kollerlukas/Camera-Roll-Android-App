@@ -1,7 +1,5 @@
 package us.koller.cameraroll.adapter.album;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -26,6 +24,7 @@ import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
+import us.koller.cameraroll.util.Util;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
@@ -104,20 +103,28 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
         ((AlbumItemHolder) holder).setAlbumItem(albumItem);
 
-        holder.itemView.findViewById(R.id.image)
-                .setSelected(selected_items[album.getAlbumItems().indexOf(albumItem)]);
-        //fade selected indicator
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            boolean selected = selected_items[album.getAlbumItems()
-                    .indexOf(((AlbumItemHolder) holder).albumItem)];
+        boolean selected = selected_items[album.getAlbumItems()
+                .indexOf(((AlbumItemHolder) holder).albumItem)];
 
-            Drawable foreground = holder.itemView.findViewById(R.id.image).getForeground();
+        final View imageView = holder.itemView.findViewById(R.id.image);
 
-            ObjectAnimator
-                    .ofPropertyValuesHolder(foreground,
-                            PropertyValuesHolder.ofInt("alpha",
-                                    selected ? 0 : 255,
-                                    selected ? 255 : 0)).start();
+        final Drawable selectorOverlay = Util.getAlbumItemSelectorOverlay(imageView.getContext());
+        if (selected) {
+            imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    imageView.getOverlay().clear();
+                    selectorOverlay.setBounds(0, 0, imageView.getWidth(), imageView.getHeight());
+                    imageView.getOverlay().add(selectorOverlay);
+                }
+            });
+        } else {
+            imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    imageView.getOverlay().clear();
+                }
+            });
         }
 
         holder.itemView.setTag(albumItem.getPath());
@@ -202,20 +209,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         selected_items[album.getAlbumItems().indexOf(holder.albumItem)]
                 = !selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
         notifyItemChanged(album.getAlbumItems().indexOf(holder.albumItem));
-        /*holder.itemView.findViewById(R.id.image)
-                .setSelected(selected_items[album.getAlbumItems().indexOf(holder.albumItem)]);*/
-
-        /*//fade selected indicator
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            boolean selected = selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
-            Drawable foreground = holder.itemView.findViewById(R.id.image).getForeground();
-
-            ObjectAnimator
-                    .ofPropertyValuesHolder(foreground,
-                            PropertyValuesHolder.ofInt("alpha",
-                                    selected ? 0 : 255,
-                                    selected ? 255 : 0)).start();
-        }*/
 
         callback.onItemSelected(getSelectedItemCount());
         checkForNoSelectedItems();

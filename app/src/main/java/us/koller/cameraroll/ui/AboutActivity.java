@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -37,8 +38,10 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        getWindow().setEnterTransition(new Slide(Gravity.TOP));
-        getWindow().setReturnTransition(new Slide(Gravity.TOP));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setEnterTransition(new Slide(Gravity.TOP));
+            getWindow().setReturnTransition(new Slide(Gravity.TOP));
+        }
 
         SwipeBackCoordinatorLayout swipeBackView
                 = (SwipeBackCoordinatorLayout) findViewById(R.id.swipeBackView);
@@ -78,36 +81,39 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
         aboutText.setText(Html.fromHtml(getString(R.string.about_text)));
         aboutText.setMovementMethod(new LinkMovementMethod());
 
-        final View rootView = findViewById(R.id.root_view);
-        rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
-                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
-                        toolbar.getPaddingBottom());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            final View rootView = findViewById(R.id.root_view);
+            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
+                @Override
+                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingBottom());
 
-                aboutText.setPadding(aboutText.getPaddingStart(),
-                        aboutText.getPaddingTop(),
-                        aboutText.getPaddingEnd(),
-                        aboutText.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                    aboutText.setPadding(aboutText.getPaddingStart(),
+                            aboutText.getPaddingTop(),
+                            aboutText.getPaddingEnd(),
+                            aboutText.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                View viewGroup = findViewById(R.id.swipeBackView);
-                ViewGroup.MarginLayoutParams viewGroupParams
-                        = (ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams();
-                viewGroupParams.leftMargin += insets.getSystemWindowInsetLeft();
-                viewGroupParams.rightMargin += insets.getSystemWindowInsetRight();
-                viewGroup.setLayoutParams(viewGroupParams);
+                    View viewGroup = findViewById(R.id.swipeBackView);
+                    ViewGroup.MarginLayoutParams viewGroupParams
+                            = (ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams();
+                    viewGroupParams.leftMargin += insets.getSystemWindowInsetLeft();
+                    viewGroupParams.rightMargin += insets.getSystemWindowInsetRight();
+                    viewGroup.setLayoutParams(viewGroupParams);
 
-                // clear this listener so insets aren't re-applied
-                rootView.setOnApplyWindowInsetsListener(null);
-                return insets.consumeSystemWindowInsets();
+                    // clear this listener so insets aren't re-applied
+                    rootView.setOnApplyWindowInsetsListener(null);
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+
+            //set status bar icon color
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
-        });
-
-        //set status bar icon color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
 
         for (int i = 0; i < toolbar.getChildCount(); i++) {
@@ -187,9 +193,11 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
         handler = null;
         runnable = null;
 
-        getWindow().setReturnTransition(new TransitionSet()
-                .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
-                .setInterpolator(new AccelerateDecelerateInterpolator()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setReturnTransition(new TransitionSet()
+                    .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))
+                    .setInterpolator(new AccelerateDecelerateInterpolator()));
+        }
         onBackPressed();
     }
 }

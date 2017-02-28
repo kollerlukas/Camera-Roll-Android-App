@@ -1,6 +1,0 @@
-<resources>
-    <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
-        <!--<item name="android:navigationBarColor">@color/black_translucent2</item>-->
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
-</resources>

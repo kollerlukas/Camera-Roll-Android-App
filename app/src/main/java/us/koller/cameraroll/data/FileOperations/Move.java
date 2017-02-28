@@ -15,12 +15,12 @@ public class Move extends FileOperation {
     }
 
     @Override
-    public void execute(Activity context, File_POJO target, Callback callback) {
+    void executeAsync(final Activity context, File_POJO target, final Callback callback) {
         if (target == null) {
             return;
         }
 
-        File_POJO[] files = getFiles();
+        final File_POJO[] files = getFiles();
 
         int success_count = 0;
         for (int i = 0; i < files.length; i++) {
@@ -28,13 +28,19 @@ public class Move extends FileOperation {
             success_count += result ? 1 : 0;
         }
 
-        Toast.makeText(context, context.getString(R.string.successfully_moved)
-                + String.valueOf(success_count) + "/"
-                + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
+        final int finalSuccess_count = success_count;
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, context.getString(R.string.successfully_moved)
+                        + String.valueOf(finalSuccess_count) + "/"
+                        + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
 
-        if (callback != null) {
-            callback.done();
-        }
+                if (callback != null) {
+                    callback.done();
+                }
+            }
+        });
 
         operation = EMPTY;
     }
