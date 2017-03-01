@@ -1,8 +1,5 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -40,7 +37,7 @@ public class VideoViewHolder extends ViewHolder {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlbumActivity.videoOnClick((Activity) view.getContext(), albumItem);
+                AlbumActivity.videoOnClick(view.getContext(), albumItem);
             }
         });
         playButton.setAlpha(0.0f);

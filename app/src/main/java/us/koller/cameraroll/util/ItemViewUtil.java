@@ -165,11 +165,16 @@ public class ItemViewUtil {
                 Util.getVideoDimensions(albumItem.getPath()) :
                 Util.getImageDimensions(imageView.getContext(), albumItem.getPath());
 
-        int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
-        float scale = ((float) screenWidth) / (float) imageDimens[0];
-        scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-        imageDimens[0] = (int) (imageDimens[0] * scale);
-        imageDimens[1] = (int) (imageDimens[1] * scale);
+        if (imageView.getContext() instanceof Activity) {
+            int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
+            float scale = ((float) screenWidth) / (float) imageDimens[0];
+            scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
+            imageDimens[0] = (int) (imageDimens[0] * scale);
+            imageDimens[1] = (int) (imageDimens[1] * scale);
+        } else {
+            imageDimens[0] = imageDimens[0] / 2;
+            imageDimens[1] = imageDimens[1] / 2;
+        }
 
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())

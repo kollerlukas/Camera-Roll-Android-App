@@ -185,6 +185,47 @@ public class FileExplorerActivity extends AppCompatActivity
                     return insets.consumeSystemWindowInsets();
                 }
             });
+        } else {
+            rootView.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    // hacky way of getting window insets on pre-Lollipop
+                                    // somewhat works...
+                                    int[] screenSize = Util.getScreenSize(FileExplorerActivity.this);
+
+                                    int[] windowInsets = new int[]{
+                                            Math.abs(screenSize[0] - rootView.getLeft()),
+                                            Math.abs(screenSize[1] - rootView.getTop()),
+                                            Math.abs(screenSize[2] - rootView.getRight()),
+                                            Math.abs(screenSize[3] - rootView.getBottom())};
+
+                                    toolbar.setPadding(toolbar.getPaddingStart(),
+                                            toolbar.getPaddingTop() + windowInsets[1],
+                                            toolbar.getPaddingEnd(),
+                                            toolbar.getPaddingBottom());
+
+                                    ViewGroup.MarginLayoutParams toolbarParams
+                                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                                    toolbarParams.leftMargin += windowInsets[0];
+                                    toolbarParams.rightMargin += windowInsets[2];
+                                    toolbar.setLayoutParams(toolbarParams);
+
+                                    recyclerView.setPadding(recyclerView.getPaddingStart() + windowInsets[0],
+                                            recyclerView.getPaddingTop() + windowInsets[1],
+                                            recyclerView.getPaddingEnd() + windowInsets[2],
+                                            recyclerView.getPaddingBottom() + windowInsets[3]);
+
+                                    ViewGroup.MarginLayoutParams fabParams
+                                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+                                    fabParams.rightMargin += windowInsets[2];
+                                    fabParams.bottomMargin += windowInsets[3];
+                                    fab.setLayoutParams(fabParams);
+
+                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                }
+                            });
         }
 
         //setting recyclerView top padding, so recyclerView starts below the toolbar

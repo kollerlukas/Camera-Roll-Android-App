@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
@@ -147,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //setting window insets manually
+        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
@@ -174,6 +176,43 @@ public class MainActivity extends AppCompatActivity {
                     return insets.consumeSystemWindowInsets();
                 }
             });
+        } else {
+            rootView.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    // hacky way of getting window insets on pre-Lollipop
+                                    // somewhat works...
+                                    int[] screenSize = Util.getScreenSize(MainActivity.this);
+
+                                    int[] windowInsets = new int[]{
+                                            Math.abs(screenSize[0] - rootView.getLeft()),
+                                            Math.abs(screenSize[1] - rootView.getTop()),
+                                            Math.abs(screenSize[2] - rootView.getRight()),
+                                            Math.abs(screenSize[3] - rootView.getBottom())};
+
+                                    Log.d("MainActivity", "windowInsets: " + Arrays.toString(windowInsets));
+
+                                    toolbar.setPadding(toolbar.getPaddingStart(),
+                                            toolbar.getPaddingTop() + windowInsets[1],
+                                            toolbar.getPaddingEnd(),
+                                            toolbar.getPaddingBottom());
+
+                                    ViewGroup.MarginLayoutParams toolbarParams
+                                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                                    toolbarParams.leftMargin += windowInsets[0];
+                                    toolbarParams.rightMargin += windowInsets[2];
+                                    toolbar.setLayoutParams(toolbarParams);
+
+                                    recyclerView.setPadding(recyclerView.getPaddingStart() + windowInsets[0],
+                                            recyclerView.getPaddingTop() + windowInsets[1],
+                                            recyclerView.getPaddingEnd() + windowInsets[2],
+                                            recyclerView.getPaddingBottom() + windowInsets[3]);
+
+                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                }
+                            });
         }
 
         //setting recyclerView top padding, so recyclerView starts below the toolbar

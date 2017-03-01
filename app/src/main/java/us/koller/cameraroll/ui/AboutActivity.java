@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.bumptech.glide.Glide;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
+import us.koller.cameraroll.util.Util;
 
 public class AboutActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener {
 
@@ -81,8 +83,8 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
         aboutText.setText(Html.fromHtml(getString(R.string.about_text)));
         aboutText.setMovementMethod(new LinkMovementMethod());
 
+        final View rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            final View rootView = findViewById(R.id.root_view);
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
                 @Override
@@ -114,6 +116,42 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
+        } else {
+            rootView.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    // hacky way of getting window insets on pre-Lollipop
+                                    // somewhat works...
+                                    int[] screenSize = Util.getScreenSize(AboutActivity.this);
+
+                                    int[] windowInsets = new int[]{
+                                            Math.abs(screenSize[0] - rootView.getLeft()),
+                                            Math.abs(screenSize[1] - rootView.getTop()),
+                                            Math.abs(screenSize[2] - rootView.getRight()),
+                                            Math.abs(screenSize[3] - rootView.getBottom())};
+
+                                    toolbar.setPadding(toolbar.getPaddingStart(),
+                                            toolbar.getPaddingTop() + windowInsets[1],
+                                            toolbar.getPaddingEnd(),
+                                            toolbar.getPaddingBottom());
+
+                                    aboutText.setPadding(aboutText.getPaddingStart(),
+                                            aboutText.getPaddingTop(),
+                                            aboutText.getPaddingEnd(),
+                                            aboutText.getPaddingBottom() + windowInsets[3]);
+
+                                    View viewGroup = findViewById(R.id.swipeBackView);
+                                    ViewGroup.MarginLayoutParams viewGroupParams
+                                            = (ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams();
+                                    viewGroupParams.leftMargin += windowInsets[0];
+                                    viewGroupParams.rightMargin += windowInsets[2];
+                                    viewGroup.setLayoutParams(viewGroupParams);
+
+                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                }
+                            });
         }
 
         for (int i = 0; i < toolbar.getChildCount(); i++) {

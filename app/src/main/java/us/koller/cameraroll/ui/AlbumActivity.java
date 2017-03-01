@@ -1,9 +1,9 @@
 package us.koller.cameraroll.ui;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -295,6 +295,48 @@ public class AlbumActivity extends AppCompatActivity
                     return insets.consumeSystemWindowInsets();
                 }
             });
+        } else {
+            rootView.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    // hacky way of getting window insets on pre-Lollipop
+                                    // somewhat works...
+                                    int[] screenSize = Util.getScreenSize(AlbumActivity.this);
+
+                                    int[] windowInsets = new int[]{
+                                            Math.abs(screenSize[0] - rootView.getLeft()),
+                                            Math.abs(screenSize[1] - rootView.getTop()),
+                                            Math.abs(screenSize[2] - rootView.getRight()),
+                                            Math.abs(screenSize[3] - rootView.getBottom())};
+
+                                    toolbar.setPadding(toolbar.getPaddingStart(),
+                                            toolbar.getPaddingTop() + windowInsets[1],
+                                            toolbar.getPaddingEnd(),
+                                            toolbar.getPaddingBottom());
+
+                                    ViewGroup.MarginLayoutParams toolbarParams
+                                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                                    toolbarParams.leftMargin += windowInsets[0];
+                                    toolbarParams.rightMargin += windowInsets[2];
+                                    toolbar.setLayoutParams(toolbarParams);
+
+                                    recyclerView.setPadding(recyclerView.getPaddingStart() + windowInsets[0],
+                                            recyclerView.getPaddingTop() + windowInsets[1],
+                                            recyclerView.getPaddingEnd() + windowInsets[2],
+                                            recyclerView.getPaddingBottom() + windowInsets[3]);
+                                    recyclerView.scrollToPosition(0);
+
+                                    ViewGroup.MarginLayoutParams fabParams
+                                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+                                    fabParams.rightMargin += windowInsets[2];
+                                    fabParams.bottomMargin += windowInsets[3];
+                                    fab.setLayoutParams(fabParams);
+
+                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                }
+                            });
         }
 
         toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -729,7 +771,7 @@ public class AlbumActivity extends AppCompatActivity
         }
     }
 
-    public static void videoOnClick(Activity context, AlbumItem albumItem) {
+    public static void videoOnClick(Context context, AlbumItem albumItem) {
         if (!(albumItem instanceof Video)) {
             return;
         }

@@ -311,10 +311,10 @@ public class ItemActivity extends AppCompatActivity {
                                     int[] screenSize = Util.getScreenSize(ItemActivity.this);
 
                                     int[] windowInsets = new int[]{
-                                            screenSize[0] - rootView.getLeft(),
-                                            screenSize[1] - rootView.getTop(),
-                                            screenSize[2] - rootView.getRight(),
-                                            rootView.getBottom() - screenSize[3]};
+                                            Math.abs(screenSize[0] - rootView.getLeft()),
+                                            Math.abs(screenSize[1] - rootView.getTop()),
+                                            Math.abs(screenSize[2] - rootView.getRight()),
+                                            Math.abs(screenSize[3] - rootView.getBottom())};
 
                                     toolbar.setPadding(toolbar.getPaddingStart() + windowInsets[0],
                                             toolbar.getPaddingTop() + windowInsets[1],
