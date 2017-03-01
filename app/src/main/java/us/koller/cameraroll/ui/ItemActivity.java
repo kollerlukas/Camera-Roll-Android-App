@@ -49,6 +49,7 @@ import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -431,8 +432,13 @@ public class ItemActivity extends AppCompatActivity {
 
         PrintHelper photoPrinter = new PrintHelper(this);
         photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
-        Bitmap bitmap = BitmapFactory.decodeFile(albumItem.getPath());
-        photoPrinter.printBitmap(albumItem.getPath(), bitmap);
+        try {
+            photoPrinter.printBitmap(albumItem.getPath(),
+                    albumItem.getUri(this));
+        } catch (FileNotFoundException e) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     public void editPhoto() {
