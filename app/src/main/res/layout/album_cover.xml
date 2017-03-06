@@ -17,32 +17,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@color/black_translucent1">
+            android:background="@drawable/transparent_to_dark_gradient">
 
         <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_margin="16dp">
 
             <TextView
                     android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textColor="@color/white"
-                    android:fontFamily="sans-serif-medium"/>
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="5dp"/>
 
             <TextView
                     android:id="@+id/count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="16sp"
-                    android:fontFamily="sans-serif-monospace"
-                    android:layout_marginStart="16dp"/>
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-monospace"/>
+            <!--android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"-->
         </LinearLayout>
 
         <ImageView

@@ -34,15 +34,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
-import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
@@ -97,7 +91,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                    .create(this, R.drawable.back_to_cancel_animateable));
+                    .create(this, R.drawable.back_to_cancel_animatable));
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
             Drawable navIcon = toolbar.getNavigationIcon();
@@ -654,7 +648,7 @@ public class FileExplorerActivity extends AppCompatActivity
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(FileExplorerActivity.this, R.drawable.cancel_to_back_vector_animateable));
+                            .create(FileExplorerActivity.this, R.drawable.cancel_to_back_vector_animatable));
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();
@@ -827,7 +821,7 @@ public class FileExplorerActivity extends AppCompatActivity
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(FileExplorerActivity.this, R.drawable.back_to_cancel_animateable));
+                            .create(FileExplorerActivity.this, R.drawable.back_to_cancel_animatable));
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();

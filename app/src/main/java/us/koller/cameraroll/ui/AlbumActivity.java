@@ -172,7 +172,7 @@ public class AlbumActivity extends AppCompatActivity
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 toolbar.setNavigationIcon(AnimatedVectorDrawableCompat.create(this,
-                        R.drawable.back_to_cancel_animateable));
+                        R.drawable.back_to_cancel_animatable));
             } else {
                 toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                 Drawable navIcon = toolbar.getNavigationIcon();
@@ -243,7 +243,7 @@ public class AlbumActivity extends AppCompatActivity
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 fab.setImageDrawable(AnimatedVectorDrawableCompat
-                        .create(this, R.drawable.ic_delete_vector_animateable));
+                        .create(this, R.drawable.ic_delete_vector_animatable));
             } else {
                 fab.setImageResource(R.drawable.ic_delete_white_24dp);
             }
@@ -671,7 +671,7 @@ public class AlbumActivity extends AppCompatActivity
                 public void run() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                                .create(AlbumActivity.this, R.drawable.cancel_to_back_vector_animateable));
+                                .create(AlbumActivity.this, R.drawable.cancel_to_back_vector_animatable));
                     } else {
                         toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
                         Drawable navIcon = toolbar.getNavigationIcon();
@@ -722,7 +722,7 @@ public class AlbumActivity extends AppCompatActivity
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(AlbumActivity.this, R.drawable.back_to_cancel_animateable));
+                            .create(AlbumActivity.this, R.drawable.back_to_cancel_animatable));
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();

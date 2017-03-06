@@ -4,8 +4,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import us.koller.cameraroll.R;
@@ -23,7 +21,7 @@ public class GifViewHolder extends ViewHolder {
 
     @Override
     public View getView(ViewGroup container) {
-        ViewGroup v = super.inflateView(container);
+        ViewGroup v = super.inflatePhotoView(container);
         v.removeView(v.findViewById(R.id.subsampling));
         View view = v.findViewById(R.id.image);
         if (albumItem.isSharedElement) {

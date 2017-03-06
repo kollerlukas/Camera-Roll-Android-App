@@ -51,7 +51,6 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -140,7 +139,7 @@ public class ItemActivity extends AppCompatActivity {
                 } else if (viewHolder instanceof GifViewHolder) {
                     ((GifViewHolder) viewHolder).reloadGif();
                 } else if (viewHolder instanceof VideoViewHolder) {
-                    ((VideoViewHolder) viewHolder).bindView();
+                    ((VideoViewHolder) viewHolder).swapView(false);
                 }
             }
 
@@ -237,10 +236,15 @@ public class ItemActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                /*albumItem = album.getAlbumItems().get(position);
-                if (actionBar != null) {
-                    actionBar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
-                }*/
+                //if previous viewHolder was VideoViewHolder
+                //pause Video
+                ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
+                        .findViewHolderByTag(albumItem.getPath());
+                if (viewHolder instanceof VideoViewHolder) {
+                    ((VideoViewHolder) viewHolder).pauseVideo();
+                }
+
+                //set new AlbumItem
                 albumItem = album.getAlbumItems().get(position);
                 ColorFade.fadeToolbarTitleColor(toolbar, color,
                         new ColorFade.ToolbarTitleFadeCallback() {
@@ -251,6 +255,16 @@ public class ItemActivity extends AppCompatActivity {
                         }, true);
 
                 menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
+                menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
+
+                if (albumItem instanceof Video) {
+                    //hide bottom bar
+                    bottomBar.setVisibility(View.GONE);
+                    //show ui
+                    showSystemUI(true);
+                } else {
+                    bottomBar.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -261,12 +275,18 @@ public class ItemActivity extends AppCompatActivity {
         if (!view_only) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 delete_button.setImageDrawable(AnimatedVectorDrawableCompat
-                        .create(this, R.drawable.ic_delete_vector_animateable));
+                        .create(this, R.drawable.ic_delete_vector_animatable));
             } else {
                 delete_button.setImageResource(R.drawable.ic_delete_white_24dp);
             }
         } else {
             ((View) delete_button.getParent()).setVisibility(View.GONE);
+        }
+        if (albumItem instanceof Video) {
+            //hide bottom bar
+            bottomBar.setVisibility(View.GONE);
+        } else {
+            bottomBar.setVisibility(View.VISIBLE);
         }
 
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
@@ -280,22 +300,28 @@ public class ItemActivity extends AppCompatActivity {
                             toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             toolbar.getPaddingBottom());
 
-                /*ViewGroup.MarginLayoutParams toolbarParams
-                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                toolbar.setLayoutParams(toolbarParams);*/
+                    /*ViewGroup.MarginLayoutParams toolbarParams
+                         = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                    toolbar.setLayoutParams(toolbarParams);*/
 
                     bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             bottomBar.getPaddingTop(),
                             bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                /*ViewGroup.MarginLayoutParams bottomBarParams
-                        = (ViewGroup.MarginLayoutParams) ((View) bottomBar.getParent()).getLayoutParams();
-                bottomBarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                bottomBarParams.rightMargin += insets.getSystemWindowInsetRight();
-                ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);*/
+                    /*ViewGroup.MarginLayoutParams bottomBarParams
+                            = (ViewGroup.MarginLayoutParams) ((View) bottomBar.getParent()).getLayoutParams();
+                    bottomBarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                    bottomBarParams.rightMargin += insets.getSystemWindowInsetRight();
+                    ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);*/
+
+                    VideoViewHolder.onBottomInset(
+                            new int[]{insets.getSystemWindowInsetLeft(),
+                                    insets.getSystemWindowInsetTop(),
+                                    insets.getSystemWindowInsetRight(),
+                                    insets.getSystemWindowInsetBottom()});
 
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
@@ -327,6 +353,8 @@ public class ItemActivity extends AppCompatActivity {
                                             bottomBar.getPaddingEnd() + windowInsets[2],
                                             bottomBar.getPaddingBottom() + windowInsets[3]);
 
+                                    VideoViewHolder.onBottomInset(windowInsets);
+
                                     rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 }
                             });
@@ -352,7 +380,10 @@ public class ItemActivity extends AppCompatActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.item, menu);
         this.menu = menu;
-        menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
+        if (albumItem != null) {
+            menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
+            menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
+        }
         if (view_only) {
             menu.findItem(R.id.delete).setVisible(false);
         }
@@ -385,6 +416,19 @@ public class ItemActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //if current viewHolder is instance VideoViewHolder
+        //pause Video
+        ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
+                .findViewHolderByTag(albumItem.getPath());
+        if (viewHolder instanceof VideoViewHolder) {
+            ((VideoViewHolder) viewHolder).pauseVideo();
+        }
     }
 
     public void setPhotoAs() {
@@ -628,14 +672,16 @@ public class ItemActivity extends AppCompatActivity {
         }
     }
 
-    public void imageOnClick() {
+    public boolean imageOnClick() {
         systemUiVisible = !systemUiVisible;
         showSystemUI(systemUiVisible);
+        return systemUiVisible;
     }
 
-    public void imageOnClick(boolean show) {
+    public boolean imageOnClick(boolean show) {
         systemUiVisible = show;
         showSystemUI(systemUiVisible);
+        return systemUiVisible;
     }
 
     private void showUI(boolean show) {
@@ -717,14 +763,20 @@ public class ItemActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        View view = viewPager.findViewWithTag(albumItem.getPath())
-                .findViewById(R.id.subsampling);
-        if (view instanceof SubsamplingScaleImageView) {
-            SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
-            ImageViewState state = imageView.getState();
-            if (state != null) {
-                outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
+        if (albumItem instanceof Photo) {
+            View view = viewPager.findViewWithTag(albumItem.getPath())
+                    .findViewById(R.id.subsampling);
+            if (view instanceof SubsamplingScaleImageView) {
+                SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
+                ImageViewState state = imageView.getState();
+                if (state != null) {
+                    outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
+                }
             }
+        } else if (albumItem instanceof Video) {
+            ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
+                    .findViewHolderByTag(albumItem.getPath());
+            ((VideoViewHolder) viewHolder).savePlayedTime();
         }
         //outState.putParcelable(ALBUM, album);
         outState.putParcelable(ALBUM_ITEM, albumItem);

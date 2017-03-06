@@ -2,6 +2,7 @@ package us.koller.cameraroll.adapter.main.ViewHolder;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
                 + (album.getAlbumItems().size() > 1 ?
                 itemView.getContext().getString(R.string.items) :
                 itemView.getContext().getString(R.string.item));
-        ((TextView) itemView.findViewById(R.id.count)).setText(count);
+        ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
         itemView.findViewById(R.id.hidden_folder_indicator)
                 .setVisibility(album.isHidden() ? View.VISIBLE : View.INVISIBLE);

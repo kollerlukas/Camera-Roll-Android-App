@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -29,9 +28,14 @@ import us.koller.cameraroll.ui.ItemActivity;
 
 public class ItemViewUtil {
 
-    public static ViewGroup inflateView(ViewGroup container) {
+    public static ViewGroup inflatePhotoView(ViewGroup container) {
         return (ViewGroup) LayoutInflater.from(container.getContext())
                 .inflate(R.layout.photo_view, container, false);
+    }
+
+    public static ViewGroup inflateVideoView(ViewGroup container) {
+        return (ViewGroup) LayoutInflater.from(container.getContext())
+                .inflate(R.layout.video_view, container, false);
     }
 
     public static View bindSubsamplingImageView(SubsamplingScaleImageView imageView,
@@ -155,52 +159,5 @@ public class ItemViewUtil {
             imageView.setTransitionName(albumItem.getPath());
         }
         return imageView;
-    }
-
-    public static final String VIDEO_PLAY_BUTTON_TAG = "VIDEO_PLAY_BUTTON_TAG";
-
-    public static ViewGroup bindImageViewForVideo(final ImageView imageView,
-                                                  final AlbumItem albumItem) {
-        int[] imageDimens = albumItem instanceof Video ?
-                Util.getVideoDimensions(albumItem.getPath()) :
-                Util.getImageDimensions(imageView.getContext(), albumItem.getPath());
-
-        if (imageView.getContext() instanceof Activity) {
-            int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
-            float scale = ((float) screenWidth) / (float) imageDimens[0];
-            scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-            imageDimens[0] = (int) (imageDimens[0] * scale);
-            imageDimens[1] = (int) (imageDimens[1] * scale);
-        } else {
-            imageDimens[0] = imageDimens[0] / 2;
-            imageDimens[1] = imageDimens[1] / 2;
-        }
-
-        Glide.with(imageView.getContext())
-                .load(albumItem.getPath())
-                .asBitmap()
-                .override(imageDimens[0], imageDimens[1])
-                .skipMemoryCache(true)
-                .error(R.drawable.error_placeholder_tinted)
-                .into(imageView);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setTransitionName(albumItem.getPath());
-        }
-
-        ImageView playButton = new ImageView(imageView.getContext());
-        playButton.setTag(VIDEO_PLAY_BUTTON_TAG);
-        playButton.setImageResource(R.drawable.ic_play_circle_filled_white_24dp);
-        playButton.setAlpha(0.54f);
-        RelativeLayout.LayoutParams params
-                = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        playButton.setLayoutParams(params);
-
-        ViewGroup v = (ViewGroup) imageView.getParent();
-        v.addView(playButton);
-        return v;
     }
 }

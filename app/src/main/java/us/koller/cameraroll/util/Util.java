@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -72,23 +73,29 @@ public class Util {
     public static int[] getVideoDimensions(String path) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
-        retriever.setDataSource(path);
-        Bitmap bitmap = retriever.getFrameAtTime();
+        try {
+            retriever.setDataSource(path);
+            Bitmap bitmap = retriever.getFrameAtTime();
 
-        int[] dimensions = new int[2];
+            int[] dimensions = new int[2];
 
-        if (bitmap != null) {
-            dimensions[0] = bitmap.getWidth() > 0 ? bitmap.getWidth() : 1;
-            dimensions[1] = bitmap.getHeight() > 0 ? bitmap.getHeight() : 1;
+            if (bitmap != null) {
+                dimensions[0] = bitmap.getWidth() > 0 ? bitmap.getWidth() : 1;
+                dimensions[1] = bitmap.getHeight() > 0 ? bitmap.getHeight() : 1;
+            }
+            return dimensions;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return dimensions;
 
+        return new int[]{1, 1};
     }
 
     public static void setDarkStatusBarIcons(final View v) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             v.post(new Runnable() {
                 @Override
+                @RequiresApi(api = Build.VERSION_CODES.M)
                 public void run() {
                     v.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                 }

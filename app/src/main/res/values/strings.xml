@@ -31,6 +31,12 @@
                 TouchListener that can be attached to any RecyclerView and handles multi selection for you.<br/>
                 <a href=\"https://github.com/MFlisar/DragSelectRecyclerView/blob/master/LICENSE\">LICENSE</a>
             <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/brianwernick/ExoMedia\">ExoMedia</a></b><br/>
+                An Android ExoPlayer wrapper to simplify Audio and Video implementations.<br/>
+                <a href=\"https://github.com/MFlisar/brianwernick/ExoMedia/blob/master/LICENSE\">LICENSE</a>
+            <br>
         ]]>
     </string>
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>

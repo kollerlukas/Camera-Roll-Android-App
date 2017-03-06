@@ -22,19 +22,27 @@ public abstract class ViewHolder {
         return position;
     }
 
-    ViewGroup inflateView(ViewGroup container) {
-        ViewGroup v = ItemViewUtil.inflateView(container);
+    ViewGroup inflatePhotoView(ViewGroup container) {
+        ViewGroup v = ItemViewUtil.inflatePhotoView(container);
         v.setTag(albumItem.getPath());
         this.itemView = v;
         return v;
     }
 
-    void imageOnClick(View view) {
+    ViewGroup inflateVideoView(ViewGroup container) {
+        ViewGroup v = ItemViewUtil.inflateVideoView(container);
+        v.setTag(albumItem.getPath());
+        this.itemView = v;
+        return v;
+    }
+
+    boolean imageOnClick(View view) {
         try {
-            ((ItemActivity) view.getContext()).imageOnClick();
+            return ((ItemActivity) view.getContext()).imageOnClick();
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     void imageOnClick(View view, boolean show) {

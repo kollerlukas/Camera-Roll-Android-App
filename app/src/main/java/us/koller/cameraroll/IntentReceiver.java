@@ -21,23 +21,19 @@ public class IntentReceiver extends AppCompatActivity {
 
         switch (getIntent().getAction()) {
             case Intent.ACTION_VIEW:
-                viewPhoto(getIntent());
-                this.finish();
-                break;
-            case "com.android.camera.action.REVIEW":
-                viewPhoto(getIntent());
+                view(getIntent());
                 this.finish();
                 break;
             case Intent.ACTION_PICK:
-                pickPhoto(getIntent());
+                pick(getIntent());
                 break;
             case Intent.ACTION_GET_CONTENT:
-                pickPhoto(getIntent());
+                pick(getIntent());
                 break;
         }
     }
 
-    public void viewPhoto(Intent intent) {
+    public void view(Intent intent) {
         Uri uri = intent.getData();
         if (uri == null) {
             Toast.makeText(this, getString(R.string.error) + ": Uri = null", Toast.LENGTH_SHORT).show();
@@ -50,7 +46,7 @@ public class IntentReceiver extends AppCompatActivity {
 
         Album album = new Album().setPath(path.substring(0, index));
         AlbumItem albumItem = AlbumItem.getInstance(this, path);
-        if (albumItem == null || albumItem instanceof Video) {
+        if (albumItem == null) {
             Toast.makeText(this, getString(R.string.error), Toast.LENGTH_SHORT).show();
             this.finish();
             return;
@@ -68,7 +64,7 @@ public class IntentReceiver extends AppCompatActivity {
         startActivity(view_photo);
     }
 
-    public void pickPhoto(Intent intent) {
+    public void pick(Intent intent) {
         setIntent(new Intent("ACTIVITY_ALREADY_LAUNCHED"));
 
         Intent pick_photos = new Intent(this, MainActivity.class)

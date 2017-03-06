@@ -22,15 +22,19 @@ public class PhotoViewHolder extends ViewHolder {
 
     @Override
     public View getView(ViewGroup container) {
-        ViewGroup v = super.inflateView(container);
+        ViewGroup v = super.inflatePhotoView(container);
         final View view = v.findViewById(R.id.subsampling);
         final View transitionView = itemView.findViewById(R.id.image);
 
+        //hide transitionView, when config was changed
+        if (albumItem instanceof Photo
+                && ((Photo) albumItem).getImageViewSavedState() != null) {
+            transitionView.setVisibility(View.INVISIBLE);
+        }
         ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
         if (albumItem.isSharedElement) {
             view.setVisibility(View.INVISIBLE);
         } else {
-            //transitionView.setVisibility(View.INVISIBLE);
             bindImageView(view, transitionView);
         }
         return v;
