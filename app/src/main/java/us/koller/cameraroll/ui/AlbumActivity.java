@@ -149,7 +149,7 @@ public class AlbumActivity extends AppCompatActivity
             album = getIntent().getExtras().getParcelable(ALBUM);
         }*/
 
-        String path = "";
+        String path;
         if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
             path = savedInstanceState.getString(ALBUM_PATH);
         } else {
@@ -172,7 +172,7 @@ public class AlbumActivity extends AppCompatActivity
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 toolbar.setNavigationIcon(AnimatedVectorDrawableCompat.create(this,
-                        R.drawable.back_to_cancel_animatable));
+                        R.drawable.back_to_cancel_avd));
             } else {
                 toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                 Drawable navIcon = toolbar.getNavigationIcon();
@@ -242,8 +242,9 @@ public class AlbumActivity extends AppCompatActivity
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                fab.setImageDrawable(AnimatedVectorDrawableCompat
-                        .create(this, R.drawable.ic_delete_vector_animatable));
+                Drawable d = ContextCompat.getDrawable(this,
+                        R.drawable.ic_delete_avd);
+                fab.setImageDrawable(d);
             } else {
                 fab.setImageResource(R.drawable.ic_delete_white_24dp);
             }
@@ -251,8 +252,6 @@ public class AlbumActivity extends AppCompatActivity
             fab.setImageResource(R.drawable.ic_send_white_24dp);
         }
         Drawable d = fab.getDrawable();
-        //AnimatedVectorDrawableCompat.mutate():
-        // java.lang.IllegalStateException: Mutate() is not supported for older platform
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
         } else {
@@ -671,7 +670,7 @@ public class AlbumActivity extends AppCompatActivity
                 public void run() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                                .create(AlbumActivity.this, R.drawable.cancel_to_back_vector_animatable));
+                                .create(AlbumActivity.this, R.drawable.cancel_to_back_avd));
                     } else {
                         toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
                         Drawable navIcon = toolbar.getNavigationIcon();
@@ -722,7 +721,7 @@ public class AlbumActivity extends AppCompatActivity
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(AlbumActivity.this, R.drawable.back_to_cancel_animatable));
+                            .create(AlbumActivity.this, R.drawable.back_to_cancel_avd));
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();

@@ -91,7 +91,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                    .create(this, R.drawable.back_to_cancel_animatable));
+                    .create(this, R.drawable.back_to_cancel_avd));
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
             Drawable navIcon = toolbar.getNavigationIcon();
@@ -648,7 +648,7 @@ public class FileExplorerActivity extends AppCompatActivity
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(FileExplorerActivity.this, R.drawable.cancel_to_back_vector_animatable));
+                            .create(FileExplorerActivity.this, R.drawable.cancel_to_back_avd));
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();
@@ -821,7 +821,7 @@ public class FileExplorerActivity extends AppCompatActivity
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(FileExplorerActivity.this, R.drawable.back_to_cancel_animatable));
+                            .create(FileExplorerActivity.this, R.drawable.back_to_cancel_avd));
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();

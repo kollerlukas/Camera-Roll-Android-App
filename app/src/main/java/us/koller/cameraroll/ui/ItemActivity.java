@@ -18,7 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
@@ -182,7 +181,7 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         if (!view_only) {
-            String path = "";
+            String path;
             if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
                 path = savedInstanceState.getString(ALBUM_PATH);
             } else {
@@ -274,8 +273,8 @@ public class ItemActivity extends AppCompatActivity {
         ImageView delete_button = (ImageView) bottomBar.findViewById(R.id.delete_button);
         if (!view_only) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                delete_button.setImageDrawable(AnimatedVectorDrawableCompat
-                        .create(this, R.drawable.ic_delete_vector_animatable));
+                Drawable d = ContextCompat.getDrawable(this, R.drawable.ic_delete_avd);
+                delete_button.setImageDrawable(d);
             } else {
                 delete_button.setImageResource(R.drawable.ic_delete_white_24dp);
             }
@@ -876,7 +875,7 @@ public class ItemActivity extends AppCompatActivity {
         }
     }
 
-    public static class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
+    private static class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         private static String[] types = {"Filename: ", "Filepath: ", "Size: ",
                 "Dimensions: ", "Date: ", "Camera model: ", "Focal length: ",
                 "Exposure: ", "Aperture: ", "ISO: "};

@@ -6,10 +6,11 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.devbrackets.android.exomedia.ui.widget.VideoControlsMobile;
 
@@ -35,22 +36,56 @@ public class CustomVideoControls extends VideoControlsMobile {
     }
 
     @Override
+    protected int getLayoutResource() {
+        return R.layout.video_controls;
+    }
+
+    @Override
+    protected void retrieveViews() {
+        // replacing root View with regular RelativeLayout
+        // because windowInsets are handle differently
+        ViewGroup newRoot = (ViewGroup) findViewById(R.id.root);
+        ViewGroup videoControls = (ViewGroup) LayoutInflater.from(getContext())
+                .inflate(super.getLayoutResource(), newRoot, false);
+
+        for (int i = videoControls.getChildCount() - 1; i >= 0; i--) {
+            View v = videoControls.getChildAt(i);
+            videoControls.removeView(v);
+            newRoot.addView(v);
+        }
+
+        //calling super
+        super.retrieveViews();
+
+        //customize VideoControls
+        controlsContainer.setBackground(
+                ContextCompat.getDrawable(getContext(),
+                        R.drawable.transparent_to_dark_gradient));
+        currentTime.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
+        endTime.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
+    }
+
+    @Override
     public void updatePlayPauseImage(boolean isPlaying) {
         //animating play pause change
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             super.updatePlayPauseImage(isPlaying);
         } else {
             Drawable d = playPauseButton.getDrawable();
-            if (d instanceof Animatable && ((Animatable) d).isRunning()) {
+            if (d instanceof Animatable
+                    && ((Animatable) d).isRunning()) {
                 ((Animatable) d).stop();
             }
+
             if (isPlaying) {
-                playPauseButton.setImageDrawable(AnimatedVectorDrawableCompat
-                        .create(getContext(), R.drawable.play_to_pause_animatable));
+                d = ContextCompat.getDrawable(getContext(),
+                        R.drawable.play_to_pause_avd);
             } else {
-                playPauseButton.setImageDrawable(AnimatedVectorDrawableCompat
-                        .create(getContext(), R.drawable.pause_to_play_animatable));
+                d = ContextCompat.getDrawable(getContext(),
+                        R.drawable.pause_to_play_avd);
             }
+            playPauseButton.setImageDrawable(d);
+
             d = playPauseButton.getDrawable();
             if (d instanceof Animatable) {
                 ((Animatable) d).start();
@@ -58,30 +93,16 @@ public class CustomVideoControls extends VideoControlsMobile {
         }
     }
 
-    @Override
-    protected void retrieveViews() {
-        super.retrieveViews();
-        //customize VideoControls
-        controlsContainer.setBackground(
-                ContextCompat.getDrawable(getContext(),
-                        R.drawable.transparent_to_dark_gradient));
-        currentTime.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
-        endTime.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
-        //set animated-vector
-        updatePlayPauseImage(false);
-    }
-
     public void animateVisibility(boolean toVisible) {
         super.animateVisibility(toVisible);
     }
 
     public void setBottomInsets(int[] bottomInsets) {
-        View videoControlsContainer = findViewById(R.id.exomedia_controls_interactive_container);
-        if (videoControlsContainer != null) {
-            videoControlsContainer.setPadding(getPaddingLeft() + bottomInsets[0],
-                    videoControlsContainer.getPaddingTop()/* + bottomInsets[1]*/,
-                    videoControlsContainer.getPaddingRight() + bottomInsets[2],
-                    videoControlsContainer.getPaddingBottom() + bottomInsets[3]);
+        if (controlsContainer != null) {
+            controlsContainer.setPadding(getPaddingLeft() + bottomInsets[0],
+                    controlsContainer.getPaddingTop()/* + bottomInsets[1]*/,
+                    controlsContainer.getPaddingRight() + bottomInsets[2],
+                    controlsContainer.getPaddingBottom() + bottomInsets[3]);
         }
     }
 }

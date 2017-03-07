@@ -83,7 +83,9 @@ public class VideoViewHolder extends ViewHolder
     public void pauseVideo() {
         final EMVideoView emVideoView =
                 (EMVideoView) itemView.findViewById(R.id.video_view);
-        emVideoView.pause();
+        if (emVideoView != null && emVideoView.isPlaying()) {
+            emVideoView.pause();
+        }
     }
 
     public void swapView(boolean isReturning) {
@@ -122,7 +124,7 @@ public class VideoViewHolder extends ViewHolder
         }
     }
 
-    public void hideVideoControls(boolean hide, final ItemActivity.Callback callback) {
+    private void hideVideoControls(boolean hide, final ItemActivity.Callback callback) {
         final EMVideoView emVideoView =
                 (EMVideoView) itemView.findViewById(R.id.video_view);
         final View videoControls = emVideoView.getVideoControls();
