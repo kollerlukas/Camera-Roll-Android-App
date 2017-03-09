@@ -1,5 +1,6 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,11 +33,12 @@ public class PhotoViewHolder extends ViewHolder {
             transitionView.setVisibility(View.INVISIBLE);
         }
         ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
-        if (albumItem.isSharedElement) {
+        /*if (albumItem.isSharedElement) {
             view.setVisibility(View.INVISIBLE);
         } else {
             bindImageView(view, transitionView);
-        }
+        }*/
+        view.setVisibility(View.INVISIBLE);
         return v;
     }
 
@@ -52,14 +54,15 @@ public class PhotoViewHolder extends ViewHolder {
         }
     }
 
-    private void bindImageView(View view, View transitionView) {
+    private void bindImageView(View view, final View transitionView) {
         if (albumItem.error) {
             transitionView.setVisibility(View.VISIBLE);
             ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
             return;
         }
 
-        final SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
+        final SubsamplingScaleImageView imageView
+                = (SubsamplingScaleImageView) view;
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),
@@ -78,28 +81,40 @@ public class PhotoViewHolder extends ViewHolder {
         });
 
         ItemViewUtil.bindSubsamplingImageView(
-                imageView, (Photo) albumItem, transitionView);
+                imageView,
+                (Photo) albumItem,
+                new SubsamplingScaleImageView.DefaultOnImageEventListener() {
+                    @Override
+                    public void onImageLoaded() {
+                        super.onImageLoaded();
+                        transitionView.setVisibility(View.INVISIBLE);
+                    }
+                });
     }
 
     private void scaleDown(final ItemActivity.Callback callback) {
+        Log.d("PhotoViewHolder", "scaleDown()");
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) itemView.findViewById(R.id.subsampling);
         if (imageView != null) {
             try {
                 imageView.animateScale(0.0f)
                         .withDuration(300)
-                        .withOnAnimationEventListener(new SubsamplingScaleImageView.DefaultOnAnimationEventListener() {
-                            @Override
-                            public void onComplete() {
-                                super.onComplete();
-                                swapView(true);
-                                callback.callback();
-                            }
-                        })
+                        .withOnAnimationEventListener(
+                                new SubsamplingScaleImageView.DefaultOnAnimationEventListener() {
+                                    @Override
+                                    public void onComplete() {
+                                        super.onComplete();
+                                        swapView(true);
+                                        callback.callback();
+                                        //imageView.recycle();
+                                    }
+                                })
                         .start();
             } catch (NullPointerException e) {
                 swapView(true);
                 callback.callback();
+                //imageView.recycle();
             }
         }
     }
@@ -116,6 +131,7 @@ public class PhotoViewHolder extends ViewHolder {
 
     @Override
     public void onDestroy() {
+        Log.d("PhotoViewHolder", "onDestroy() called");
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) itemView.findViewById(R.id.subsampling);
         if (imageView != null) {

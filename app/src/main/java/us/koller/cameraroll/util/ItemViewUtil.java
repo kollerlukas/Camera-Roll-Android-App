@@ -39,7 +39,8 @@ public class ItemViewUtil {
     }
 
     public static View bindSubsamplingImageView(SubsamplingScaleImageView imageView,
-                                                Photo photo, final View placeholderView) {
+                                                Photo photo,
+                                                SubsamplingScaleImageView.DefaultOnImageEventListener onImageEventListener) {
         ImageViewState imageViewState = null;
         if (photo.getImageViewSavedState() != null) {
             imageViewState = (ImageViewState) photo.getImageViewSavedState();
@@ -51,15 +52,8 @@ public class ItemViewUtil {
 
         imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
 
-        if (placeholderView != null) {
-            imageView.setOnImageEventListener(
-                    new SubsamplingScaleImageView.DefaultOnImageEventListener() {
-                        @Override
-                        public void onImageLoaded() {
-                            super.onImageLoaded();
-                            placeholderView.setVisibility(View.INVISIBLE);
-                        }
-                    });
+        if (onImageEventListener != null) {
+            imageView.setOnImageEventListener(onImageEventListener);
         }
         return imageView;
     }

@@ -24,11 +24,13 @@ public class GifViewHolder extends ViewHolder {
         ViewGroup v = super.inflatePhotoView(container);
         v.removeView(v.findViewById(R.id.subsampling));
         View view = v.findViewById(R.id.image);
-        if (albumItem.isSharedElement) {
+        /*if (albumItem.isSharedElement) {
             ItemViewUtil.bindTransitionView((ImageView) view, albumItem);
         } else {
             ItemViewUtil.bindGif(this, (ImageView) view, albumItem);
-        }
+        }*/
+
+        ItemViewUtil.bindTransitionView((ImageView) view, albumItem);
         return v;
     }
 
@@ -38,9 +40,9 @@ public class GifViewHolder extends ViewHolder {
     }
 
     public void setAttacher(ImageView imageView) {
-        if (attacher != null) {
+        /*if (attacher != null) {
             attacher.update();
-        } else {
+        } else {*/
             attacher = new PhotoViewAttacher(imageView);
             attacher.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
                 @Override
@@ -48,7 +50,7 @@ public class GifViewHolder extends ViewHolder {
                     imageOnClick(view);
                 }
             });
-        }
+        //}
     }
 
     @Override

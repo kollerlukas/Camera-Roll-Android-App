@@ -65,6 +65,31 @@ public class CustomVideoControls extends VideoControlsMobile {
         endTime.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
     }
 
+    public OnClickListener onClickListener;
+
+    public void addOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public void removeOnClickListener() {
+        onClickListener = null;
+    }
+
+    @Override
+    protected void registerListeners() {
+        super.registerListeners();
+
+        ViewGroup root = (ViewGroup) findViewById(R.id.root);
+        root.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onClickListener != null) {
+                    onClickListener.onClick(view);
+                }
+            }
+        });
+    }
+
     @Override
     public void updatePlayPauseImage(boolean isPlaying) {
         //animating play pause change

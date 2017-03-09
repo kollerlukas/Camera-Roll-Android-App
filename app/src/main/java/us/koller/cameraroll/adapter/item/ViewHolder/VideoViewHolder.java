@@ -1,5 +1,6 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,19 @@ public class VideoViewHolder extends ViewHolder
                 (EMVideoView) itemView.findViewById(R.id.video_view);
         final View transitionView = itemView.findViewById(R.id.image);
 
-        emVideoView.setControls(new CustomVideoControls(v.getContext()));
+        final CustomVideoControls customVideoControls
+                = new CustomVideoControls(itemView.getContext());
+        customVideoControls.addOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (view.getContext() instanceof ItemActivity) {
+                            boolean b = ((ItemActivity) view.getContext()).imageOnClick();
+                            customVideoControls.animateVisibility(b);
+                        }
+                    }
+                });
+        emVideoView.setControls(customVideoControls);
         emVideoView.setOnPreparedListener(this);
 
         emVideoView.setVideoURI(albumItem.getUri(itemView.getContext()));
@@ -71,12 +84,13 @@ public class VideoViewHolder extends ViewHolder
         handleVideoControlsBottomInset();
 
         ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
-        if (albumItem.isSharedElement) {
+        /*if (albumItem.isSharedElement) {
             //emVideoView.setVisibility(View.INVISIBLE);
             emVideoView.setAlpha(0.0f);
         } else {
             transitionView.setVisibility(View.INVISIBLE);
-        }
+        }*/
+        emVideoView.setAlpha(0.0f);
         return v;
     }
 

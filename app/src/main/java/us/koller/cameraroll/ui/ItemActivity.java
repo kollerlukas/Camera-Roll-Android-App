@@ -133,13 +133,15 @@ public class ItemActivity extends AppCompatActivity {
             }
 
             if (!isReturning) {
-                if (viewHolder instanceof PhotoViewHolder) {
+                /*if (viewHolder instanceof PhotoViewHolder) {
                     ((PhotoViewHolder) viewHolder).swapView(false);
                 } else if (viewHolder instanceof GifViewHolder) {
                     ((GifViewHolder) viewHolder).reloadGif();
                 } else if (viewHolder instanceof VideoViewHolder) {
                     ((VideoViewHolder) viewHolder).swapView(false);
-                }
+                }*/
+
+                onShowViewHolder(viewHolder);
             }
 
             if (transition != null) {
@@ -253,17 +255,10 @@ public class ItemActivity extends AppCompatActivity {
                             }
                         }, true);
 
-                menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
-                menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
+                viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
+                        .findViewHolderByTag(albumItem.getPath());
 
-                if (albumItem instanceof Video) {
-                    //hide bottom bar
-                    bottomBar.setVisibility(View.GONE);
-                    //show ui
-                    showSystemUI(true);
-                } else {
-                    bottomBar.setVisibility(View.VISIBLE);
-                }
+                onShowViewHolder(viewHolder);
             }
         });
 
@@ -281,12 +276,12 @@ public class ItemActivity extends AppCompatActivity {
         } else {
             ((View) delete_button.getParent()).setVisibility(View.GONE);
         }
-        if (albumItem instanceof Video) {
+        /*if (albumItem instanceof Video) {
             //hide bottom bar
             bottomBar.setVisibility(View.GONE);
         } else {
             bottomBar.setVisibility(View.VISIBLE);
-        }
+        }*/
 
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
@@ -379,10 +374,6 @@ public class ItemActivity extends AppCompatActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.item, menu);
         this.menu = menu;
-        if (albumItem != null) {
-            menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
-            menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
-        }
         if (view_only) {
             menu.findItem(R.id.delete).setVisible(false);
         }
@@ -427,6 +418,30 @@ public class ItemActivity extends AppCompatActivity {
                 .findViewHolderByTag(albumItem.getPath());
         if (viewHolder instanceof VideoViewHolder) {
             ((VideoViewHolder) viewHolder).pauseVideo();
+        }
+    }
+
+    public void onShowViewHolder(ViewHolder viewHolder) {
+        if (viewHolder instanceof PhotoViewHolder) {
+            ((PhotoViewHolder) viewHolder).swapView(false);
+        } else if (viewHolder instanceof GifViewHolder) {
+            ((GifViewHolder) viewHolder).reloadGif();
+        } else if (viewHolder instanceof VideoViewHolder) {
+            ((VideoViewHolder) viewHolder).swapView(false);
+        }
+
+        if (albumItem instanceof Video) {
+            //hide bottom bar
+            bottomBar.setVisibility(View.GONE);
+            //show ui
+            showSystemUI(true);
+        } else {
+            bottomBar.setVisibility(View.VISIBLE);
+        }
+
+        if (menu != null) {
+            menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
+            menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
         }
     }
 
