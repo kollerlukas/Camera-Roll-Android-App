@@ -72,6 +72,10 @@ import us.koller.cameraroll.util.ZoomOutPageTransformer;
 
 public class ItemActivity extends AppCompatActivity {
 
+    public interface ViewPagerOnInstantiateItemCallback {
+        public boolean onInstantiateItem(ViewHolder viewHolder);
+    }
+
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
     public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
@@ -109,14 +113,7 @@ public class ItemActivity extends AppCompatActivity {
             = new TransitionListenerAdapter() {
         @Override
         public void onTransitionStart(Transition transition) {
-            if (isReturning && albumItem instanceof Photo) {
-                ViewHolder viewHolder = ((ViewPagerAdapter)
-                        viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
-                if (viewHolder instanceof PhotoViewHolder) {
-                    ((PhotoViewHolder) viewHolder).swapView(isReturning);
-                }
-            }
-
+            //hide toolbar & statusbar
             float toolbar_translationY = -(toolbar.getHeight());
             float bottomBar_translationY = ((View) bottomBar.getParent()).getHeight();
             toolbar.setTranslationY(toolbar_translationY);
@@ -133,14 +130,6 @@ public class ItemActivity extends AppCompatActivity {
             }
 
             if (!isReturning) {
-                /*if (viewHolder instanceof PhotoViewHolder) {
-                    ((PhotoViewHolder) viewHolder).swapView(false);
-                } else if (viewHolder instanceof GifViewHolder) {
-                    ((GifViewHolder) viewHolder).reloadGif();
-                } else if (viewHolder instanceof VideoViewHolder) {
-                    ((VideoViewHolder) viewHolder).swapView(false);
-                }*/
-
                 onShowViewHolder(viewHolder);
             }
 
@@ -366,6 +355,23 @@ public class ItemActivity extends AppCompatActivity {
 
         if (view_only || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             albumItem.isSharedElement = false;
+        }
+
+        if (savedInstanceState != null) {
+            //config was changed
+            ((ViewPagerAdapter) viewPager.getAdapter())
+                    .addOnInstantiateItemCallback(
+                            new ViewPagerOnInstantiateItemCallback() {
+                                @Override
+                                public boolean onInstantiateItem(ViewHolder viewHolder) {
+                                    if (viewHolder.albumItem.getPath()
+                                            .equals(albumItem.getPath())) {
+                                        onShowViewHolder(viewHolder);
+                                        return false;
+                                    }
+                                    return true;
+                                }
+                            });
         }
     }
 
@@ -761,8 +767,7 @@ public class ItemActivity extends AppCompatActivity {
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Snackbar snackbar
-                            = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
+                    snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
                     snackbar.setAction(R.string.retry, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

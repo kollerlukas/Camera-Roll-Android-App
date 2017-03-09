@@ -93,7 +93,6 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     private void scaleDown(final ItemActivity.Callback callback) {
-        Log.d("PhotoViewHolder", "scaleDown()");
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) itemView.findViewById(R.id.subsampling);
         if (imageView != null) {

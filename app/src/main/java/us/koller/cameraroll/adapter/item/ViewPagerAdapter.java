@@ -14,6 +14,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.ui.ItemActivity;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
@@ -21,9 +22,16 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     private ArrayList<ViewHolder> viewHolders;
 
+    private ItemActivity.ViewPagerOnInstantiateItemCallback callback;
+
     public ViewPagerAdapter(Album album) {
         this.album = album;
         this.viewHolders = new ArrayList<>();
+    }
+
+    public void addOnInstantiateItemCallback(
+            ItemActivity.ViewPagerOnInstantiateItemCallback callback) {
+        this.callback = callback;
     }
 
     @Override
@@ -52,6 +60,14 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         View v = viewHolder.getView(container);
         container.addView(v);
+
+        if (callback != null) {
+            boolean b = callback.onInstantiateItem(viewHolder);
+            if (!b) {
+                callback = null;
+            }
+        }
+
         return v;
     }
 
