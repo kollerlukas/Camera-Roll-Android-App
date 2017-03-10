@@ -357,8 +357,9 @@ public class ItemActivity extends AppCompatActivity {
             albumItem.isSharedElement = false;
         }
 
-        if (savedInstanceState != null) {
+        if (view_only || savedInstanceState != null) {
             //config was changed
+            //skipping sharedElement transition
             ((ViewPagerAdapter) viewPager.getAdapter())
                     .addOnInstantiateItemCallback(
                             new ViewPagerOnInstantiateItemCallback() {
@@ -542,7 +543,8 @@ public class ItemActivity extends AppCompatActivity {
             return;
         }
 
-        this.finish();
+        ViewGroup view = (ViewGroup) findViewById(R.id.root_view);
+        view.removeView(viewPager);
 
         Intent intent = new Intent(this, AlbumActivity.class);
         intent.setAction(AlbumActivity.DELETE_ALBUMITEM);
@@ -551,7 +553,14 @@ public class ItemActivity extends AppCompatActivity {
         intent.putExtra(ALBUM_ITEM, albumItem);
         intent.putExtra(HIDDEN_ALBUMITEM, album.isHidden());
         intent.putExtra(VIEW_ONLY, view_only);
-        startActivity(intent);
+        if (view_only) {
+            startActivity(intent);
+        } else {
+            Log.d("ItemActivity", "setResult()");
+            setResult(RESULT_OK, intent);
+        }
+
+        this.finish();
     }
 
     public void showInfoDialog() {

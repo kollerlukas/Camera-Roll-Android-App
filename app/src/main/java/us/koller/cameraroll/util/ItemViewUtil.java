@@ -100,23 +100,28 @@ public class ItemViewUtil {
                                                    boolean isFirstResource) {
                         if (albumItem.isSharedElement && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
-                            ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
+                            ((ItemActivity) imageView.getContext())
+                                    .startPostponedEnterTransition();
                         }
                         return false;
                     }
                 })
                 .into(imageView);
 
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            //Handle timeout
             imageView.setTransitionName(albumItem.getPath());
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                public void run() {
-                    ((ItemActivity) imageView.getContext()).startPostponedEnterTransition();
-                }
-            }, 200);
+            //Handle timeout
+            if (albumItem.isSharedElement) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    public void run() {
+                        ((ItemActivity) imageView.getContext())
+                                .startPostponedEnterTransition();
+                    }
+                }, 500);
+            }
         }
 
         return imageView;

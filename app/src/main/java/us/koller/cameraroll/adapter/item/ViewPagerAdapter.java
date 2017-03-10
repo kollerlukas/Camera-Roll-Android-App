@@ -34,6 +34,10 @@ public class ViewPagerAdapter extends PagerAdapter {
         this.callback = callback;
     }
 
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
+
     @Override
     public int getCount() {
         return album.getAlbumItems().size();

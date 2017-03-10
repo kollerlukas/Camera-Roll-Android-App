@@ -61,7 +61,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                         for (int i = start; i <= end; i++) {
                             selected_items[i] = isSelected;
 
-                            RecyclerViewAdapter.this.callback.onItemSelected(getSelectedItemCount());
+                            RecyclerViewAdapter.this.callback
+                                    .onItemSelected(getSelectedItemCount());
                             checkForNoSelectedItems();
 
                             //update ViewHolder
@@ -86,7 +87,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.albumitem_cover, parent, false);
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.albumitem_cover, parent, false);
         switch (viewType) {
             case VIEW_TYPE_VIDEO:
                 return new VideoViewHolder(v);
@@ -108,13 +110,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
         final View imageView = holder.itemView.findViewById(R.id.image);
 
-        final Drawable selectorOverlay = Util.getAlbumItemSelectorOverlay(imageView.getContext());
+        final Drawable selectorOverlay = Util
+                .getAlbumItemSelectorOverlay(imageView.getContext());
         if (selected) {
             imageView.post(new Runnable() {
                 @Override
                 public void run() {
                     imageView.getOverlay().clear();
-                    selectorOverlay.setBounds(0, 0, imageView.getWidth(), imageView.getHeight());
+                    selectorOverlay.setBounds(0, 0,
+                            imageView.getWidth(),
+                            imageView.getHeight());
                     imageView.getOverlay().add(selectorOverlay);
                 }
             });
@@ -141,14 +146,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
                     //intent.putExtra(ItemActivity.ALBUM, album);
                     intent.putExtra(ItemActivity.ALBUM_PATH, album.getPath());
-                    intent.putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
+                    intent.putExtra(ItemActivity.ITEM_POSITION,
+                            album.getAlbumItems().indexOf(albumItem));
 
                     ActivityOptionsCompat options =
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     (Activity) holder.itemView.getContext(),
                                     holder.itemView.findViewById(R.id.image),
                                     albumItem.getPath());
-                    holder.itemView.getContext().startActivity(intent, options.toBundle());
+                    ((Activity) holder.itemView.getContext()).startActivityForResult(intent, 6, options.toBundle());
                 }
 
                 /*else if (albumItem instanceof Video){
