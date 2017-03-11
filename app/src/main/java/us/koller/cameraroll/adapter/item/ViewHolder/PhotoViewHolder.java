@@ -9,6 +9,8 @@ import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
@@ -32,7 +34,7 @@ public class PhotoViewHolder extends ViewHolder {
                 && ((Photo) albumItem).getImageViewSavedState() != null) {
             transitionView.setVisibility(View.INVISIBLE);
         }
-        ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
+        ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem, null);
         /*if (albumItem.isSharedElement) {
             view.setVisibility(View.INVISIBLE);
         } else {
@@ -57,7 +59,7 @@ public class PhotoViewHolder extends ViewHolder {
     private void bindImageView(View view, final View transitionView) {
         if (albumItem.error) {
             transitionView.setVisibility(View.VISIBLE);
-            ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
+            ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem, null);
             return;
         }
 

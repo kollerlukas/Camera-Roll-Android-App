@@ -30,7 +30,7 @@ public class GifViewHolder extends ViewHolder {
             ItemViewUtil.bindGif(this, (ImageView) view, albumItem);
         }*/
 
-        ItemViewUtil.bindTransitionView((ImageView) view, albumItem);
+        ItemViewUtil.bindTransitionView((ImageView) view, albumItem, null);
         return v;
     }
 

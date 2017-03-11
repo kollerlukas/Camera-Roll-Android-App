@@ -28,6 +28,10 @@ import us.koller.cameraroll.ui.ItemActivity;
 
 public class ItemViewUtil {
 
+    public interface Callback {
+        public void onImageReady();
+    }
+
     public static ViewGroup inflatePhotoView(ViewGroup container) {
         return (ViewGroup) LayoutInflater.from(container.getContext())
                 .inflate(R.layout.photo_view, container, false);
@@ -59,7 +63,8 @@ public class ItemViewUtil {
     }
 
     public static View bindTransitionView(final ImageView imageView,
-                                          final AlbumItem albumItem) {
+                                          final AlbumItem albumItem,
+                                          final ItemViewUtil.Callback callback) {
 
         int[] imageDimens = albumItem instanceof Video ?
                 Util.getVideoDimensions(albumItem.getPath()) :
@@ -78,6 +83,10 @@ public class ItemViewUtil {
         } else {
             imageDimens[0] = imageDimens[0] / 2;
             imageDimens[1] = imageDimens[1] / 2;
+        }
+
+        if (imageDimens[0] == 1 || imageDimens[1] == 1) {
+            return imageView;
         }
 
         Glide.with(imageView.getContext())
@@ -102,6 +111,10 @@ public class ItemViewUtil {
                             albumItem.isSharedElement = false;
                             ((ItemActivity) imageView.getContext())
                                     .startPostponedEnterTransition();
+                        }
+
+                        if (callback != null) {
+                            callback.onImageReady();
                         }
                         return false;
                     }

@@ -83,7 +83,7 @@ public class VideoViewHolder extends ViewHolder
         hideVideoControls(true, null);
         handleVideoControlsBottomInset();
 
-        ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
+        ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem, null);
         /*if (albumItem.isSharedElement) {
             //emVideoView.setVisibility(View.INVISIBLE);
             emVideoView.setAlpha(0.0f);
