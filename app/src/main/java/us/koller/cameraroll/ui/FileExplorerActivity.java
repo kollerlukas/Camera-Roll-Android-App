@@ -2,8 +2,11 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -244,6 +247,10 @@ public class FileExplorerActivity extends AppCompatActivity
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setupTaskDescription();
+        }
+
         //load files
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(CURRENT_DIR)
@@ -357,6 +364,15 @@ public class FileExplorerActivity extends AppCompatActivity
 
         filesProvider = new FilesProvider(this);
         filesProvider.loadDir(this, path, callback);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setupTaskDescription() {
+        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
+        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
+                overviewIcon,
+                ContextCompat.getColor(this, R.color.colorPrimary)));
+        overviewIcon.recycle();
     }
 
     @Override

@@ -1,6 +1,9 @@
 package us.koller.cameraroll.ui;
 
+import android.app.ActivityManager;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
@@ -59,7 +62,7 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
 
         ImageView headerImage = (ImageView) findViewById(R.id.header_image);
         Glide.with(this)
-                .load("http://koller.us/Lukas/camera_roll/logo_guidelines.png")
+                .load("http://koller.us/Lukas/camera_roll/new_logo.png")
                 .into(headerImage);
 
         TextView version = (TextView) findViewById(R.id.version);
@@ -137,10 +140,10 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
                                             toolbar.getPaddingEnd(),
                                             toolbar.getPaddingBottom());
 
-                                    aboutText.setPadding(aboutText.getPaddingStart(),
+                                    /*aboutText.setPadding(aboutText.getPaddingStart(),
                                             aboutText.getPaddingTop(),
                                             aboutText.getPaddingEnd(),
-                                            aboutText.getPaddingBottom() + windowInsets[3]);
+                                            aboutText.getPaddingBottom() + windowInsets[3]);*/
 
                                     View viewGroup = findViewById(R.id.swipeBackView);
                                     ViewGroup.MarginLayoutParams viewGroupParams
@@ -162,6 +165,10 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
             }
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setupTaskDescription();
+        }
+
         setSystemUiFlags();
     }
 
@@ -171,6 +178,15 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setupTaskDescription() {
+        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
+        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
+                overviewIcon,
+                ContextCompat.getColor(this, R.color.colorPrimary)));
+        overviewIcon.recycle();
     }
 
     @Override

@@ -70,6 +70,9 @@ public abstract class Provider {
     }
 
     public static boolean searchDir(String path) {
+        if (path == null) {
+            return false;
+        }
         boolean search = true;
         for (int i = 0; i < Provider.permanentlyExcludedPaths.length; i++) {
             if (path.contains(Provider.permanentlyExcludedPaths[i])) {

@@ -338,7 +338,8 @@ public class ItemActivity extends AppCompatActivity {
 
                                     VideoViewHolder.onBottomInset(windowInsets);
 
-                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    rootView.getViewTreeObserver()
+                                            .removeOnGlobalLayoutListener(this);
                                 }
                             });
         }
@@ -353,11 +354,10 @@ public class ItemActivity extends AppCompatActivity {
             setupTaskDescription();
         }
 
-        if (view_only || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (view_only
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+                || savedInstanceState != null) {
             albumItem.isSharedElement = false;
-        }
-
-        if (view_only || savedInstanceState != null) {
             //config was changed
             //skipping sharedElement transition
             ((ViewPagerAdapter) viewPager.getAdapter())
@@ -374,6 +374,10 @@ public class ItemActivity extends AppCompatActivity {
                                 }
                             });
         }
+
+        /*if (view_only || savedInstanceState != null) {
+
+        }*/
     }
 
     @Override
@@ -755,11 +759,11 @@ public class ItemActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                icon,
-                ContextCompat.getColor(this, R.color.colorAccent)));
-        icon.recycle();
+                overviewIcon,
+                ContextCompat.getColor(this, R.color.colorPrimary)));
+        overviewIcon.recycle();
     }
 
 

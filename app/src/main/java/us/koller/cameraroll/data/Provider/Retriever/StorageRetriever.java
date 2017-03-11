@@ -120,7 +120,8 @@ public class StorageRetriever implements Retriever {
         ArrayList<StorageRoot> temp = new ArrayList<>();
 
         StorageRoot externalStorage
-                = new StorageRoot(Environment.getExternalStorageDirectory().getPath());
+                = new StorageRoot(Environment
+                .getExternalStorageDirectory().getPath());
         externalStorage.setName(context.getString(R.string.storage));
         temp.add(externalStorage);
 
@@ -145,14 +146,17 @@ public class StorageRetriever implements Retriever {
 
         threads = new ArrayList<>();
 
-        AdaptableThread.Callback adaptableThreadCallback = new AdaptableThread.Callback() {
+        AdaptableThread.Callback adaptableThreadCallback
+                = new AdaptableThread.Callback() {
             @Override
             public void done(AdaptableThread thread, ItemLoader.Result result,
                              ArrayList<File> filesToSearch) {
                 File_POJO files = result.files;
                 boolean filesContainMedia = false;
                 for (int i = 0; i < files.getChildren().size(); i++) {
-                    if (MediaType.isMedia(context, files.getChildren().get(i).getPath())) {
+                    if (files.getChildren().get(i) != null &&
+                            MediaType.isMedia(context,
+                                    files.getChildren().get(i).getPath())) {
                         filesContainMedia = true;
                         break;
                     }
@@ -205,12 +209,15 @@ public class StorageRetriever implements Retriever {
         ArrayList<File> rootsArrayList = new ArrayList<>();
 
         for (int i = 0; i < roots.length; i++) {
-            String path = roots[i].getPath();
-            int index = path.lastIndexOf("/Android/data/");
-            if (index > 0) {
-                path = path.substring(0, index);
-                if (!path.equals(Environment.getExternalStorageDirectory().getPath())) {
-                    rootsArrayList.add(new File(path));
+            if (roots[i] != null) {
+                String path = roots[i].getPath();
+                int index = path.lastIndexOf("/Android/data/");
+                if (index > 0) {
+                    path = path.substring(0, index);
+                    if (!path.equals(Environment
+                            .getExternalStorageDirectory().getPath())) {
+                        rootsArrayList.add(new File(path));
+                    }
                 }
             }
         }
@@ -226,7 +233,8 @@ public class StorageRetriever implements Retriever {
         File[] dirs = dir.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return Provider.searchDir(file.getPath());
+                return file != null
+                        && Provider.searchDir(file.getPath());
             }
         });
 
@@ -235,7 +243,8 @@ public class StorageRetriever implements Retriever {
         temp.addAll(Arrays.asList(dirs));
         File[] removableStorageRoots = getRemovableStorageRoots(context);
         for (int i = 0; i < removableStorageRoots.length; i++) {
-            Log.d("StorageRetriever", "removableStorageRoot: " + removableStorageRoots[i].getPath());
+            Log.d("StorageRetriever", "removableStorageRoot: "
+                    + removableStorageRoots[i].getPath());
             File root = removableStorageRoots[i];
             File[] files = root.listFiles();
             if (files != null) {

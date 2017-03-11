@@ -880,10 +880,10 @@ public class AlbumActivity extends AppCompatActivity
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
                 overviewIcon,
-                ContextCompat.getColor(this, R.color.colorAccent)));
+                ContextCompat.getColor(this, R.color.colorPrimary)));
         overviewIcon.recycle();
     }
 
