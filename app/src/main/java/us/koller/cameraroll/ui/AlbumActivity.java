@@ -30,7 +30,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -670,6 +669,18 @@ public class AlbumActivity extends AppCompatActivity
                     ContextCompat.getColor(this, R.color.black_translucent2),
                     ContextCompat.getColor(this, R.color.colorAccent));
 
+            //show share menu item
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                MenuItem share = menu.findItem(R.id.share);
+                share.setIcon(R.drawable.overflow_to_share_avd);
+                menu.findItem(R.id.share).setVisible(true);
+                if (share.getIcon() instanceof Animatable) {
+                    ((Animatable) share.getIcon()).start();
+                }
+            } else {
+                menu.findItem(R.id.share).setVisible(true);
+            }
+
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon instanceof Animatable) {
                 ((Animatable) navIcon).start();
@@ -693,7 +704,7 @@ public class AlbumActivity extends AppCompatActivity
 
                     toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
                 }
-            }, navIcon instanceof Animatable ? 300 : 0);
+            }, navIcon instanceof Animatable ? 500 : 0);
         } else {
             toolbar.setBackgroundColor(ContextCompat
                     .getColor(this, R.color.colorAccent));
@@ -721,6 +732,19 @@ public class AlbumActivity extends AppCompatActivity
                 ContextCompat.getColor(this, R.color.black_translucent2));
         toolbar.setTitle(album.getName());
 
+        //hide share menu item
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            MenuItem share = menu.findItem(R.id.share);
+            share.setIcon(R.drawable.share_to_overflow_avd);
+            if (share.getIcon() instanceof Animatable) {
+                ((Animatable) share.getIcon()).start();
+            } else {
+                menu.findItem(R.id.share).setVisible(false);
+            }
+        } else {
+            menu.findItem(R.id.share).setVisible(false);
+        }
+
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
@@ -747,11 +771,12 @@ public class AlbumActivity extends AppCompatActivity
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
 
                 menu.findItem(R.id.exclude).setVisible(true);
+                menu.findItem(R.id.share).setVisible(false);
             }
-        }, navIcon instanceof Animatable ? 300 : 0);
+        }, navIcon instanceof Animatable ? 500 : 0);
 
         animateFab(false, false);
-        menu.findItem(R.id.share).setVisible(false);
+        //menu.findItem(R.id.share).setVisible(false);
     }
 
     @Override
@@ -765,17 +790,40 @@ public class AlbumActivity extends AppCompatActivity
         if (selectedItemCount > 0) {
             if (pick_photos) {
                 animateFab(true, false);
-            } else {
+            } /*else {
                 //show share menu item
-                menu.findItem(R.id.share).setVisible(true);
-            }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    MenuItem share = menu.findItem(R.id.share);
+                    share.setIcon(R.drawable.overflow_to_share_avd);
+                    menu.findItem(R.id.share).setVisible(true);
+                    if (share.getIcon() instanceof Animatable) {
+                        ((Animatable) share.getIcon()).start();
+                    }
+                } else {
+                    menu.findItem(R.id.share).setVisible(true);
+                }
+            }*/
         } else {
             if (pick_photos) {
                 animateFab(false, false);
-            } else {
+            } /*else {
                 //hide share menu item
-                menu.findItem(R.id.share).setVisible(false);
-            }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    MenuItem share = menu.findItem(R.id.share);
+                    share.setIcon(R.drawable.share_to_overflow_avd);
+                    if (share.getIcon() instanceof Animatable) {
+                        ((Animatable) share.getIcon()).start();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                menu.findItem(R.id.share).setVisible(false);
+                            }
+                        }, 500);
+                    }
+                } else {
+                    menu.findItem(R.id.share).setVisible(false);
+                }
+            }*/
         }
     }
 

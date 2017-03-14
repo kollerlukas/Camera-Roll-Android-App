@@ -18,11 +18,16 @@ public class NewDirectory extends FileOperation {
     void executeAsync(final Activity context, File_POJO target, final Callback callback) {
         final File_POJO[] files = getFiles();
         if (files.length > 0) {
-            File_POJO file = files[0];
+            final File_POJO file = files[0];
             boolean result = createNewFolder(file.getPath());
             if (!result) {
                 if (callback != null) {
-                    callback.failed(file.getPath());
+                    context.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.failed(file.getPath());
+                        }
+                    });
                 }
             }
 

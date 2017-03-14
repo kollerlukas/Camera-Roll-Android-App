@@ -33,7 +33,13 @@ public class Delete extends FileOperation {
                 success_count++;
             } else {
                 if (callback != null) {
-                    callback.failed(files[i].getPath());
+                    final int final_i = i;
+                    context.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.failed(files[final_i].getPath());
+                        }
+                    });
                 }
             }
         }

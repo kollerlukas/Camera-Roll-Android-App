@@ -7,12 +7,17 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
+
+import us.koller.cameraroll.R;
 
 public class ColorFade {
 
@@ -30,7 +35,7 @@ public class ColorFade {
 
     private static ValueAnimator getDefaultValueAnimator() {
         ValueAnimator animator = ValueAnimator.ofInt(0, 100);
-        animator.setDuration(300);
+        animator.setDuration(500);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         return animator;
     }
@@ -97,7 +102,7 @@ public class ColorFade {
         ValueAnimator fadeOut = null;
         if (fadeTitleOut) {
             fadeOut = getDefaultValueAnimator();
-            fadeOut.setDuration(150);
+            fadeOut.setDuration(250);
             fadeOut.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -118,7 +123,7 @@ public class ColorFade {
         }
 
         ValueAnimator fadeIn = getDefaultValueAnimator();
-        fadeIn.setDuration(fadeTitleOut ? 150 : 300);
+        fadeIn.setDuration(fadeTitleOut ? 250 : 500);
         fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -133,13 +138,40 @@ public class ColorFade {
         } else {
             toolbarTitleAnimSet.playSequentially(fadeIn);
         }
-        toolbarTitleAnimSet.addListener(new AnimatorListenerAdapter() {
+        toolbarTitleAnimSet.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        toolbarTitleAnimSet = null;
+                    }
+                });
+        toolbarTitleAnimSet.start();
+    }
+
+    public static void fadeIconColor(final Drawable d, final int startColor,
+                                     final int endColor) {
+        DrawableCompat.wrap(d);
+
+        ValueAnimator animator = getDefaultValueAnimator();
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int animatedColor = getAnimatedColor(startColor, endColor,
+                        valueAnimator.getAnimatedFraction());
+                DrawableCompat.setTint(d, animatedColor);
+
+            }
+        });
+        AnimatorSet set = new AnimatorSet();
+        set.play(animator);
+        set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                toolbarTitleAnimSet = null;
+                DrawableCompat.unwrap(d);
             }
         });
-        toolbarTitleAnimSet.start();
+        set.start();
     }
 }

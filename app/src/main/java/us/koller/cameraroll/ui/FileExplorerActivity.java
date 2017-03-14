@@ -686,7 +686,7 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 }
             }
-        }, navIcon instanceof Animatable ? 300 : 0);
+        }, navIcon instanceof Animatable ? 500 : 0);
     }
 
     @Override
@@ -874,6 +874,6 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 }
             }
-        }, navIcon instanceof Animatable ? 300 : 0);
+        }, navIcon instanceof Animatable ? 500 : 0);
     }
 }

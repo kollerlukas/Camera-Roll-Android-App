@@ -1,0 +1,142 @@
+<animated-vector
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:aapt="http://schemas.android.com/aapt">
+
+    <aapt:attr name="android:drawable">
+        <vector
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:width="24dp"
+                android:height="24dp"
+                android:viewportWidth="24"
+                android:viewportHeight="24"
+                android:alpha="0.54">
+            <path
+                    android:name="ball_1"
+                    android:pathData="M 15 6 C 15 7.10457 14.10457 8 13 8 C 11.895431 8 11 7.10457 11 6 C 11 4.895431 11.895431 4 13 4 C 14.10457 4 15 4.895431 15 6 Z"
+                    android:fillColor="@color/white"/>
+            <path
+                    android:name="ball_2"
+                    android:pathData="M 15 12 C 15 13.10457 14.10457 14 13 14 C 11.895431 15 10 13.10457 11 12 C 11 10.895431 11.895431 10 13 10 C 14.10457 10 15 10.895431 15 12 Z"
+                    android:fillColor="@color/white"/>
+            <path
+                    android:name="ball_3"
+                    android:pathData="M 15 18 C 15 19.10457 14.10457 20 13 20 C 11.895431 20 11 19.10457 11 18 C 11 16.895431 11.895431 16 13 16 C 14.10457 16 15 16.895431 15 18 Z"
+                    android:fillColor="@color/white"/>
+            <path
+                    android:name="connection"
+                    android:pathData="M 18 5 L 6 12 L 18 19"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="1.7"
+                    android:trimPathStart="0.5"
+                    android:trimPathEnd="0.5"
+                    android:strokeLineJoin="round"/>
+        </vector>
+    </aapt:attr>
+
+    <target android:name="ball_1">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                        android:name="ball_1"
+                        android:propertyName="pathData"
+                        android:duration="250"
+                        android:valueFrom="M 15 6 C 15 7.10457 14.10457 8 13 8 C 11.895431 8 11 7.10457 11 6 C 11 4.895431 11.895431 4 13 4 C 14.10457 4 15 4.895431 15 6 Z"
+                        android:valueTo="M 21 5  C 21 6.65685 19.65685 8 18 8 C 16.34315 8 15 6.65685 15 5 C 15 3.34315 16.34315 2 18 2 C 19.65685 2 21 3.34315 21 5 Z"
+                        android:valueType="pathType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+
+                <objectAnimator
+                        android:name="ball_1"
+                        android:propertyName="fillColor"
+                        android:duration="500"
+                        android:valueFrom="@color/white"
+                        android:valueTo="@color/grey_900"
+                        android:valueType="colorType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="ball_2">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                        android:name="ball_2"
+                        android:propertyName="pathData"
+                        android:duration="250"
+                        android:valueFrom="M 15 12 C 15 13.10457 14.10457 14 13 14 C 11.895431 15 10 13.10457 11 12 C 11 10.895431 11.895431 10 13 10 C 14.10457 10 15 10.895431 15 12 Z"
+                        android:valueTo="M 9 12  C 9 13.65685 7.65685 15 6 15 C 4.34315 15 3 13.65685 3 12 C 3 10.34315 4.34315 9 6 9 C 7.65685 9 9 10.34315 9 12 Z"
+                        android:valueType="pathType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+
+                <objectAnimator
+                        android:name="ball_2"
+                        android:propertyName="fillColor"
+                        android:duration="500"
+                        android:valueFrom="@color/white"
+                        android:valueTo="@color/grey_900"
+                        android:valueType="colorType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="ball_3">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                        android:name="ball_3"
+                        android:propertyName="pathData"
+                        android:duration="250"
+                        android:valueFrom="M 15 18 C 15 19.10457 14.10457 20 13 20 C 11.895431 20 11 19.10457 11 18 C 11 16.895431 11.895431 16 13 16 C 14.10457 16 15 16.895431 15 18 Z"
+                        android:valueTo="M 21 19  C 21 20.65685 19.65685 22 18 22 C 16.34315 22 15 20.65685 15 19 C 15 17.34315 16.34315 16 18 16 C 19.65685 16 21 17.34315 21 19 Z"
+                        android:valueType="pathType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+
+                <objectAnimator
+                        android:name="ball_3"
+                        android:propertyName="fillColor"
+                        android:duration="500"
+                        android:valueFrom="@color/white"
+                        android:valueTo="@color/grey_900"
+                        android:valueType="colorType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="connection">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                        android:name="connection"
+                        android:propertyName="trimPathStart"
+                        android:startOffset="250"
+                        android:duration="250"
+                        android:valueFrom="0.5"
+                        android:valueTo="0"
+                        android:valueType="floatType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+
+                <objectAnimator
+                        android:name="connection"
+                        android:propertyName="trimPathEnd"
+                        android:startOffset="250"
+                        android:duration="250"
+                        android:valueFrom="0.5"
+                        android:valueTo="1"
+                        android:valueType="floatType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+
+                <objectAnimator
+                        android:name="connection"
+                        android:propertyName="strokeColor"
+                        android:duration="500"
+                        android:valueFrom="@color/white"
+                        android:valueTo="@color/grey_900"
+                        android:valueType="colorType"
+                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>
