@@ -76,6 +76,8 @@ public class ItemActivity extends AppCompatActivity {
         public boolean onInstantiateItem(ViewHolder viewHolder);
     }
 
+    public static int FILEOPDIALOG_REQUEST = 1;
+
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
     public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
@@ -412,6 +414,17 @@ public class ItemActivity extends AppCompatActivity {
             case R.id.edit:
                 editPhoto();
                 break;
+            case R.id.copy:
+            case R.id.move:
+                Intent intent = new Intent(this, FileOperationDialogActivity.class);
+                intent.setAction(item.getItemId() == R.id.copy ?
+                        FileOperationDialogActivity.ACTION_COPY :
+                        FileOperationDialogActivity.ACTION_MOVE);
+                intent.putExtra(FileOperationDialogActivity.FILES,
+                        new String[]{albumItem.getPath()});
+
+                startActivityForResult(intent, FILEOPDIALOG_REQUEST);
+                break;
             case R.id.delete:
                 showDeleteDialog();
                 break;
@@ -433,13 +446,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void onShowViewHolder(ViewHolder viewHolder) {
-        if (viewHolder instanceof PhotoViewHolder) {
-            ((PhotoViewHolder) viewHolder).swapView(false);
-        } else if (viewHolder instanceof GifViewHolder) {
-            ((GifViewHolder) viewHolder).reloadGif();
-        } else if (viewHolder instanceof VideoViewHolder) {
-            ((VideoViewHolder) viewHolder).swapView(false);
-        }
+        viewHolder.onSharedElementEnter();
 
         if (albumItem instanceof Video) {
             //hide bottom bar
@@ -832,7 +839,7 @@ public class ItemActivity extends AppCompatActivity {
             showUI(false);
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
-            viewHolder.onSharedElement(new ItemActivity.Callback() {
+            viewHolder.onSharedElementExit(new ItemActivity.Callback() {
                 @Override
                 public void callback() {
                     setResultAndFinish();

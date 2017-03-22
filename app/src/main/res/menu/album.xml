@@ -6,7 +6,17 @@
           android:title="@string/share"
           android:icon="@drawable/ic_share_white_24dp"
           android:visible="false"
-          app:showAsAction="ifRoom"/>
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/copy"
+          android:title="@string/copy"
+          android:visible="false"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/move"
+          android:title="@string/move"
+          android:visible="false"
+          app:showAsAction="never"/>
 
     <item android:id="@+id/exclude"
           android:icon="@drawable/ic_eye_off_white_24dp"

@@ -65,7 +65,9 @@ public abstract class ViewHolder {
         return albumItem.getPath();
     }
 
-    public abstract void onSharedElement(ItemActivity.Callback callback);
+    //called when the viewHolder is shown after shared element transition
+    public abstract void onSharedElementEnter();
 
-
+    //called when shared element is about to start
+    public abstract void onSharedElementExit(ItemActivity.Callback callback);
 }

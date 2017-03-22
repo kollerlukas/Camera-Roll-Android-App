@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -93,8 +94,11 @@ public class FileExplorerActivity extends AppCompatActivity
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                    .create(this, R.drawable.back_to_cancel_avd));
+            AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                    ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.back_to_cancel_avd);
+            //mutating avd to reset it
+            drawable.mutate();
+            toolbar.setNavigationIcon(drawable);
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
             Drawable navIcon = toolbar.getNavigationIcon();
@@ -663,8 +667,11 @@ public class FileExplorerActivity extends AppCompatActivity
             @Override
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(FileExplorerActivity.this, R.drawable.cancel_to_back_avd));
+                    AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                            ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.cancel_to_back_avd);
+                    //mutating avd to reset it
+                    drawable.mutate();
+                    toolbar.setNavigationIcon(drawable);
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();
@@ -836,8 +843,11 @@ public class FileExplorerActivity extends AppCompatActivity
             @Override
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(FileExplorerActivity.this, R.drawable.back_to_cancel_avd));
+                    AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                            ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.back_to_cancel_avd);
+                    //mutating avd to reset it
+                    drawable.mutate();
+                    toolbar.setNavigationIcon(drawable);
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();

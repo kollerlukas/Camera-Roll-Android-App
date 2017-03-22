@@ -169,7 +169,12 @@ public class VideoViewHolder extends ViewHolder
     }
 
     @Override
-    public void onSharedElement(final ItemActivity.Callback callback) {
+    public void onSharedElementEnter() {
+        swapView(false);
+    }
+
+    @Override
+    public void onSharedElementExit(final ItemActivity.Callback callback) {
         hideVideoControls(true, new ItemActivity.Callback() {
             @Override
             public void callback() {

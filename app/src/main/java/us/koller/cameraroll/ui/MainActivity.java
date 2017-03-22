@@ -292,7 +292,9 @@ public class MainActivity extends AppCompatActivity {
 
                             snackbar.dismiss();
 
-                            mediaProvider.onDestroy();
+                            if (mediaProvider != null) {
+                                mediaProvider.onDestroy();
+                            }
                             mediaProvider = null;
                         }
                     });

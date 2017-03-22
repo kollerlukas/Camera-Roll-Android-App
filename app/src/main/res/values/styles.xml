@@ -27,6 +27,11 @@
 
     </style>
 
+    <style name="Theme.CameraRoll.Translucent.FileOperationDialogActivity"
+           parent="Theme.CameraRoll.Translucent">
+
+    </style>
+
 
     <style name="Theme.CameraRoll.Translucent.AlbumActivity" parent="Theme.CameraRoll.Translucent">
 

@@ -54,7 +54,12 @@ public class GifViewHolder extends ViewHolder {
     }
 
     @Override
-    public void onSharedElement(final ItemActivity.Callback callback) {
+    public void onSharedElementEnter() {
+        reloadGif();
+    }
+
+    @Override
+    public void onSharedElementExit(final ItemActivity.Callback callback) {
         if (attacher != null) {
             attacher.cleanup();
             attacher = null;

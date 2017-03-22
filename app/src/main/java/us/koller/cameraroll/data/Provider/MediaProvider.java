@@ -43,7 +43,8 @@ public class MediaProvider extends Provider {
 
     public static boolean checkPermission(Activity context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+            int permissionCheck = ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE);
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(context,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},

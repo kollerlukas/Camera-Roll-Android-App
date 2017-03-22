@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,7 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,6 +64,8 @@ import us.koller.cameraroll.util.Util;
 
 public class AlbumActivity extends AppCompatActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
+
+    public static int FILEOPDIALOG_REQUEST = 1;
 
     public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
@@ -171,8 +175,11 @@ public class AlbumActivity extends AppCompatActivity
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                toolbar.setNavigationIcon(AnimatedVectorDrawableCompat.create(this,
-                        R.drawable.back_to_cancel_avd));
+                AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                        ContextCompat.getDrawable(AlbumActivity.this, R.drawable.back_to_cancel_avd);
+                //mutating avd to reset it
+                drawable.mutate();
+                toolbar.setNavigationIcon(drawable);
             } else {
                 toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                 Drawable navIcon = toolbar.getNavigationIcon();
@@ -416,6 +423,7 @@ public class AlbumActivity extends AppCompatActivity
             getMenuInflater().inflate(R.menu.album, menu);
             this.menu = menu;
 
+            //set share icon tint
             Drawable icon = menu.findItem(R.id.share).getIcon().mutate();
             //icon.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
             icon = DrawableCompat.wrap(icon);
@@ -429,18 +437,18 @@ public class AlbumActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final AlbumItem[] selected_items =
+                ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.share:
                 //share multiple items
-                final AlbumItem[] selected_items =
-                        ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
-
                 ArrayList<Uri> uris = new ArrayList<>();
                 for (int i = 0; i < selected_items.length; i++) {
                     uris.add(selected_items[i].getUri(this));
                 }
 
-                Intent intent = new Intent();
+                intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE)
                         .setType(MediaType.getMimeType(this, selected_items[0].getPath()))
                         .putExtra(Intent.EXTRA_STREAM, uris);
@@ -450,6 +458,21 @@ public class AlbumActivity extends AppCompatActivity
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(Intent.createChooser(intent, getString(R.string.share_photo)));
                 }
+                break;
+            case R.id.copy:
+            case R.id.move:
+                String[] paths = new String[selected_items.length];
+                for (int i = 0; i < paths.length; i++) {
+                    paths[i] = selected_items[i].getPath();
+                }
+
+                intent = new Intent(this, FileOperationDialogActivity.class);
+                intent.setAction(item.getItemId() == R.id.copy ?
+                        FileOperationDialogActivity.ACTION_COPY :
+                        FileOperationDialogActivity.ACTION_MOVE);
+                intent.putExtra(FileOperationDialogActivity.FILES, paths);
+
+                startActivityForResult(intent, FILEOPDIALOG_REQUEST);
                 break;
             case R.id.exclude:
                 Provider.loadExcludedPaths(this);
@@ -662,6 +685,11 @@ public class AlbumActivity extends AppCompatActivity
 
         if (menu != null) {
             menu.findItem(R.id.exclude).setVisible(false);
+            //show share button
+            menu.findItem(R.id.share).setVisible(true);
+            //show copy & move button
+            menu.findItem(R.id.copy).setVisible(true);
+            menu.findItem(R.id.move).setVisible(true);
         }
 
         if (!pick_photos) {
@@ -669,17 +697,10 @@ public class AlbumActivity extends AppCompatActivity
                     ContextCompat.getColor(this, R.color.black_translucent2),
                     ContextCompat.getColor(this, R.color.colorAccent));
 
-            //show share menu item
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                MenuItem share = menu.findItem(R.id.share);
-                share.setIcon(R.drawable.overflow_to_share_avd);
-                menu.findItem(R.id.share).setVisible(true);
-                if (share.getIcon() instanceof Animatable) {
-                    ((Animatable) share.getIcon()).start();
-                }
-            } else {
-                menu.findItem(R.id.share).setVisible(true);
-            }
+            //fade overflow menu icon
+            ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
+                    ContextCompat.getColor(this, R.color.white_translucent1),
+                    ContextCompat.getColor(this, R.color.grey_900_translucent));
 
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon instanceof Animatable) {
@@ -689,8 +710,11 @@ public class AlbumActivity extends AppCompatActivity
                 @Override
                 public void run() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                                .create(AlbumActivity.this, R.drawable.cancel_to_back_avd));
+                        AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                                ContextCompat.getDrawable(AlbumActivity.this, R.drawable.cancel_to_back_avd);
+                        //mutating avd to reset it
+                        drawable.mutate();
+                        toolbar.setNavigationIcon(drawable);
                     } else {
                         toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
                         Drawable navIcon = toolbar.getNavigationIcon();
@@ -703,6 +727,12 @@ public class AlbumActivity extends AppCompatActivity
                     }
 
                     toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
+
+                    /*//show share button
+                    menu.findItem(R.id.share).setVisible(true);
+                    //show copy & move button
+                    menu.findItem(R.id.copy).setVisible(true);
+                    menu.findItem(R.id.move).setVisible(true);*/
                 }
             }, navIcon instanceof Animatable ? 500 : 0);
         } else {
@@ -727,34 +757,37 @@ public class AlbumActivity extends AppCompatActivity
         toolbar.setTitleTextColor(ContextCompat
                 .getColor(AlbumActivity.this, android.R.color.transparent));
         toolbar.setActivated(false);
+
         ColorFade.fadeBackgroundColor(toolbar,
                 ContextCompat.getColor(this, R.color.colorAccent),
                 ContextCompat.getColor(this, R.color.black_translucent2));
         toolbar.setTitle(album.getName());
 
-        //hide share menu item
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            MenuItem share = menu.findItem(R.id.share);
-            share.setIcon(R.drawable.share_to_overflow_avd);
-            if (share.getIcon() instanceof Animatable) {
-                ((Animatable) share.getIcon()).start();
-            } else {
-                menu.findItem(R.id.share).setVisible(false);
-            }
-        } else {
-            menu.findItem(R.id.share).setVisible(false);
-        }
+        //fade overflow menu icon
+        ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
+                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                ContextCompat.getColor(this, R.color.white_translucent1));
+
+        /*//hide share menu item
+        menu.findItem(R.id.share).setVisible(false);
+        //hide copy & move button
+        menu.findItem(R.id.copy).setVisible(false);
+        menu.findItem(R.id.move).setVisible(false);*/
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
         }
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    toolbar.setNavigationIcon(AnimatedVectorDrawableCompat
-                            .create(AlbumActivity.this, R.drawable.back_to_cancel_avd));
+                    AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                            ContextCompat.getDrawable(AlbumActivity.this, R.drawable.back_to_cancel_avd);
+                    //mutating avd to reset it
+                    drawable.mutate();
+                    toolbar.setNavigationIcon(drawable);
                 } else {
                     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
                     Drawable navIcon = toolbar.getNavigationIcon();
@@ -772,11 +805,12 @@ public class AlbumActivity extends AppCompatActivity
 
                 menu.findItem(R.id.exclude).setVisible(true);
                 menu.findItem(R.id.share).setVisible(false);
+                menu.findItem(R.id.copy).setVisible(false);
+                menu.findItem(R.id.move).setVisible(false);
             }
         }, navIcon instanceof Animatable ? 500 : 0);
 
         animateFab(false, false);
-        //menu.findItem(R.id.share).setVisible(false);
     }
 
     @Override
@@ -790,40 +824,11 @@ public class AlbumActivity extends AppCompatActivity
         if (selectedItemCount > 0) {
             if (pick_photos) {
                 animateFab(true, false);
-            } /*else {
-                //show share menu item
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    MenuItem share = menu.findItem(R.id.share);
-                    share.setIcon(R.drawable.overflow_to_share_avd);
-                    menu.findItem(R.id.share).setVisible(true);
-                    if (share.getIcon() instanceof Animatable) {
-                        ((Animatable) share.getIcon()).start();
-                    }
-                } else {
-                    menu.findItem(R.id.share).setVisible(true);
-                }
-            }*/
+            }
         } else {
             if (pick_photos) {
                 animateFab(false, false);
-            } /*else {
-                //hide share menu item
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    MenuItem share = menu.findItem(R.id.share);
-                    share.setIcon(R.drawable.share_to_overflow_avd);
-                    if (share.getIcon() instanceof Animatable) {
-                        ((Animatable) share.getIcon()).start();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                menu.findItem(R.id.share).setVisible(false);
-                            }
-                        }, 500);
-                    }
-                } else {
-                    menu.findItem(R.id.share).setVisible(false);
-                }
-            }*/
+            }
         }
     }
 
