@@ -121,5 +121,5 @@
     <string name="successfully_created_new_folder">Successfully created new Folder</string>
     <string name="create">Create</string>
     <string name="new_folder">New Folder</string>
-    <string name="to">to</string>
+    <string name="to">" to"</string>
 </resources>

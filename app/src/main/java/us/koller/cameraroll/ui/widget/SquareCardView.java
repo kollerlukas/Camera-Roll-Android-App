@@ -1,28 +1,20 @@
 package us.koller.cameraroll.ui.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
 
-public class SquareRelativeLayout extends RelativeLayout {
-
-    public SquareRelativeLayout(Context context) {
+public class SquareCardView extends CardView {
+    public SquareCardView(Context context) {
         super(context);
     }
 
-    public SquareRelativeLayout(Context context, AttributeSet attrs) {
+    public SquareCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SquareCardView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public SquareRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

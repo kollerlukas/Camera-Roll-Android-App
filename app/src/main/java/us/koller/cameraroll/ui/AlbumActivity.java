@@ -20,7 +20,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -31,7 +30,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -219,7 +217,7 @@ public class AlbumActivity extends AppCompatActivity
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new GridMarginDecoration(
-                (int) getResources().getDimension(R.dimen.grid_spacing)));
+                (int) getResources().getDimension(R.dimen.album_grid_spacing)));
         recyclerView.setAdapter(new RecyclerViewAdapter(this, recyclerView, album, pick_photos));
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {

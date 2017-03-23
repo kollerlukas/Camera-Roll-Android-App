@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import us.koller.cameraroll.data.FileOperations.Move;
 import us.koller.cameraroll.data.FileOperations.NewDirectory;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
@@ -43,6 +45,8 @@ public class FileOperationDialogActivity extends AppCompatActivity {
     private String action;
 
     private boolean creatingNewFolder = false;
+
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +69,65 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                     MediaType.isMedia(this, filePaths[i]));
         }
 
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(CREATE_NEW_FOLDER)
+                && savedInstanceState.getString(CREATE_NEW_FOLDER).equals("true")) {
+            creatingNewFolder = true;
+            createNewFolder(files);
+            return;
+        }
+
+        showFolderSelectorDialog(files);
+    }
+
+    private interface NewFolderCallback {
+        public void newFolderCreated(String path);
+
+        public void failed();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (creatingNewFolder) {
+            outState.putString(CREATE_NEW_FOLDER, "true");
+        }
+    }
+
+    public void onDialogDismiss() {
+        if (!(creatingNewFolder || isChangingConfigurations())) {
+            setResult(RESULT_CANCELED, null);
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+    }
+
+    public void showFolderSelectorDialog() {
+        Intent intent = getIntent();
+        if (intent == null) {
+            return;
+        }
+
+        String[] filePaths = intent.getStringArrayExtra(FILES);
+        final File_POJO[] files = new File_POJO[filePaths.length];
+        for (int i = 0; i < filePaths.length; i++) {
+            files[i] = new File_POJO(filePaths[i],
+                    MediaType.isMedia(this, filePaths[i]));
+        }
+
+        showFolderSelectorDialog(files);
+    }
+
+    public void showFolderSelectorDialog(final File_POJO[] files) {
         View v = LayoutInflater.from(this)
                 .inflate(R.layout.file_operation_dialog,
                         (ViewGroup) findViewById(R.id.root_view),
@@ -74,70 +137,67 @@ public class FileOperationDialogActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
+        recyclerView.addItemDecoration(new GridMarginDecoration(
+                (int) getResources().getDimension(R.dimen.album_grid_spacing_big)));
+
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerViewAdapter);
 
         String title = (action.equals(ACTION_COPY) ? getString(R.string.copy) : getString(R.string.move)) +
-                " " + filePaths.length + (filePaths.length > 1 ? getString(R.string.items) : getString(R.string.item)) + getString(R.string.to) + ":";
+                " " + files.length + (files.length > 1 ? getString(R.string.items) : getString(R.string.item)) + getString(R.string.to) + ":";
 
-        AlertDialog dialog =
-                new AlertDialog.Builder(this)
-                        .setTitle(title)
-                        .setView(v)
-                        .setPositiveButton(R.string.ok,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        String path = recyclerViewAdapter.getSelectedPath();
-                                        if (path != null) {
-                                            if (path.equals(CREATE_NEW_FOLDER)) {
-                                                creatingNewFolder = true;
-                                                createNewFolder(new NewFolderCallback() {
-                                                    @Override
-                                                    public void newFolderCreated(String path) {
-                                                        executeAction(files, path);
-                                                    }
-
-                                                    @Override
-                                                    public void failed() {
-                                                        setResult(RESULT_CANCELED, null);
-                                                        finish();
-                                                    }
-                                                });
-                                            } else {
-                                                executeAction(files, path);
-                                            }
-                                        }
-                                    }
-                                })
-                        .setNegativeButton(R.string.cancel, null)
-                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+        dialog = new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setView(v)
+                .setPositiveButton(R.string.ok,
+                        new DialogInterface.OnClickListener() {
                             @Override
-                            public void onDismiss(DialogInterface dialogInterface) {
-                                if (!creatingNewFolder) {
-                                    setResult(RESULT_CANCELED, null);
-                                    finish();
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String path = recyclerViewAdapter.getSelectedPath();
+                                if (path != null) {
+                                    if (path.equals(CREATE_NEW_FOLDER)) {
+                                        creatingNewFolder = true;
+                                        createNewFolder(files);
+                                    } else {
+                                        executeAction(files, path);
+                                    }
                                 }
                             }
                         })
-                        .create();
+                .setNegativeButton(R.string.cancel, null)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        onDialogDismiss();
+                    }
+                })
+                .create();
 
         dialog.show();
     }
 
-    private interface NewFolderCallback {
-        public void newFolderCreated(String path);
+    public void createNewFolder(final File_POJO[] files) {
+        createNewFolderDialog(new NewFolderCallback() {
+            @Override
+            public void newFolderCreated(String path) {
+                executeAction(files, path);
+            }
 
-        public void failed();
+            @Override
+            public void failed() {
+                setResult(RESULT_CANCELED, null);
+                finish();
+            }
+        });
     }
 
-    public void createNewFolder(final NewFolderCallback callback) {
+    public void createNewFolderDialog(final NewFolderCallback callback) {
         View dialogLayout = LayoutInflater.from(this).inflate(R.layout.new_folder_dialog,
                 (ViewGroup) findViewById(R.id.root_view), false);
 
         final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
 
-        new AlertDialog.Builder(this)
+        dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.new_folder)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -154,25 +214,33 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                                         new FileOperation.Callback() {
                                             @Override
                                             public void done() {
+                                                creatingNewFolder = false;
                                                 callback.newFolderCreated(newFolder.getPath());
                                             }
 
                                             @Override
                                             public void failed(String path) {
+                                                creatingNewFolder = false;
                                                 callback.failed();
                                             }
                                         });
                     }
                 })
-                .setNegativeButton(getString(R.string.cancel), null)
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        creatingNewFolder = false;
+                        //showFolderSelectorDialog();
+                    }
+                })
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
-                        setResult(RESULT_CANCELED, null);
-                        finish();
+                        onDialogDismiss();
                     }
                 })
-                .create().show();
+                .create();
+        dialog.show();
     }
 
     public void executeAction(File_POJO[] files, String target) {
@@ -221,7 +289,8 @@ public class FileOperationDialogActivity extends AppCompatActivity {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.file_op_view_holder, parent, false);
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.file_op_view_holder, parent, false);
             return new ViewHolder(v);
         }
 
@@ -233,9 +302,11 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                         .setText(album.getName());
 
                 if (album.getAlbumItems().size() > 0) {
+                    Glide.clear(holder.itemView.findViewById(R.id.image));
                     Glide.with(holder.itemView.getContext())
                             .load(album.getAlbumItems().get(0).getPath())
                             .asBitmap()
+                            //.centerCrop()
                             .error(R.drawable.error_placeholder_tinted)
                             .into((ImageView) holder.itemView.findViewById(R.id.image));
                 }
@@ -251,7 +322,7 @@ public class FileOperationDialogActivity extends AppCompatActivity {
             final Drawable selectorOverlay = Util
                     .getAlbumItemSelectorOverlay(holder.itemView.getContext());
 
-            final View view = holder.itemView;
+            final View view = holder.itemView.findViewById(R.id.image);
             if (selected_position == position) {
                 view.post(new Runnable() {
                     @Override
