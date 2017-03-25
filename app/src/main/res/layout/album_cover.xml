@@ -41,8 +41,6 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-monospace"
                 android:textSize="12sp" />
-            <!--android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"-->
         </LinearLayout>
 
         <ImageView

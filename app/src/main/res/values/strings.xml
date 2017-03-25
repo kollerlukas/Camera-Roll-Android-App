@@ -122,4 +122,5 @@
     <string name="create">Create</string>
     <string name="new_folder">New Folder</string>
     <string name="to">" to"</string>
+    <string name="excluded">Excluded</string>
 </resources>

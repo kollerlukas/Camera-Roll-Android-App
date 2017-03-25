@@ -13,10 +13,15 @@ import java.util.ArrayList;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolder;
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.MainActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
+
+    private static final int NORMAL_ALBUM_VIEW_TYPE = 0;
+    private static final int EXCLUDED_ALBUM_VIEW_TYPE = 1;
 
     private ArrayList<Album> albums;
 
@@ -32,8 +37,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        boolean albumExcluded = Provider.isDirExcluded(
+                albums.get(position).getPath(),
+                MediaProvider.getExcludedPaths());
+        return !albumExcluded ? NORMAL_ALBUM_VIEW_TYPE : EXCLUDED_ALBUM_VIEW_TYPE;
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_cover, parent, false);
+        int layoutRes = viewType == NORMAL_ALBUM_VIEW_TYPE ? R.layout.album_cover : R.layout.album_cover_excluded;
+        View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
         return new AlbumHolder(v);
     }
 

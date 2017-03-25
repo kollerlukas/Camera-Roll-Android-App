@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +17,7 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.ColorFade;
 
@@ -35,16 +38,23 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
         }
 
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
-        String count = album.getAlbumItems().size()
-                + (album.getAlbumItems().size() > 1 ?
-                itemView.getContext().getString(R.string.items) :
-                itemView.getContext().getString(R.string.item));
-        ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
-        itemView.findViewById(R.id.hidden_folder_indicator)
-                .setVisibility(album.isHidden() ? View.VISIBLE : View.INVISIBLE);
+        Provider.loadExcludedPaths(itemView.getContext());
+        if (!Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths())) {
+            //album not excluded
+            String count = album.getAlbumItems().size()
+                    + (album.getAlbumItems().size() > 1 ?
+                    itemView.getContext().getString(R.string.items) :
+                    itemView.getContext().getString(R.string.item));
+            ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
-        loadImage();
+            itemView.findViewById(R.id.hidden_folder_indicator)
+                    .setVisibility(album.isHidden() ? View.VISIBLE : View.INVISIBLE);
+
+            loadImage();
+        } else {
+            //album excluded
+        }
     }
 
     private void loadImage() {

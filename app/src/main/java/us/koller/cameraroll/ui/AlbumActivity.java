@@ -439,6 +439,8 @@ public class AlbumActivity extends AppCompatActivity
             DrawableCompat.setTint(icon.mutate(),
                     ContextCompat.getColor(this, R.color.grey_900_translucent));
             menu.findItem(R.id.share).setIcon(icon);
+
+            menu.findItem(R.id.exclude).setChecked(album.excluded);
         }
 
         return super.onCreateOptionsMenu(menu);

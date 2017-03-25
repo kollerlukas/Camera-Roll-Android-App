@@ -12,7 +12,8 @@
     <color name="ripple_color">#33000000</color>
     <color name="black_translucent1">#33000000</color>
     <color name="grey_900_translucent">#8A212121</color>
-    <color name="black_translucent2">#64000000</color>
     <color name="grey_900">#212121</color>
+    <color name="black_translucent2">#64000000</color>
+    <color name="black_translucent3">#96000000</color>
     <color name="black">#000000</color>
 </resources>

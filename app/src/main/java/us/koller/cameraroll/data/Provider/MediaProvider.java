@@ -56,7 +56,7 @@ public class MediaProvider extends Provider {
     }
 
     public void loadAlbums(Activity context,
-                           boolean hiddenFolders,
+                           final boolean hiddenFolders,
                            final Callback callback) {
 
         if (!MediaProvider.checkPermission(context)) {
@@ -80,10 +80,21 @@ public class MediaProvider extends Provider {
                     new Callback() {
                         @Override
                         public void onMediaLoaded(ArrayList<Album> albums) {
-                            //remove excluded albums
-                            for (int i = albums.size() - 1; i >= 0; i--) {
-                                if (albums.get(i).excluded) {
-                                    albums.remove(i);
+                            if (!hiddenFolders) {
+                                //remove excluded albums
+                                for (int i = albums.size() - 1; i >= 0; i--) {
+                                    if (albums.get(i).excluded) {
+                                        albums.remove(i);
+                                    }
+                                }
+                            } else {
+                                //remove indirectly excluded albums
+                                ArrayList<String> excludedPaths = MediaProvider.getExcludedPaths();
+                                for (int i = albums.size() - 1; i >= 0; i--) {
+                                    if (MediaProvider
+                                            .isDirExcludedBecauseParentDirIsExcluded(albums.get(i).getPath(), excludedPaths)) {
+                                        albums.remove(i);
+                                    }
                                 }
                             }
 
