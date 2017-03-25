@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/share"
-          android:title="@string/share"
-          android:icon="@drawable/ic_share_white_24dp"
-          android:visible="false"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/share"
+        android:visible="false"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/copy"
-          android:title="@string/copy"
-          android:visible="false"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/copy"
+        android:title="@string/copy"
+        android:visible="false"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/move"
-          android:title="@string/move"
-          android:visible="false"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/move"
+        android:title="@string/move"
+        android:visible="false"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/exclude"
-          android:icon="@drawable/ic_eye_off_white_24dp"
-          android:title="@string/exclude"
-          android:checkable="true"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/exclude"
+        android:checkable="true"
+        android:icon="@drawable/ic_eye_off_white_24dp"
+        android:title="@string/exclude"
+        app:showAsAction="never" />
 </menu>

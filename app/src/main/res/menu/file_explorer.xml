@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/exclude"
-          android:icon="@drawable/ic_eye_off_white_24dp"
-          android:title="@string/exclude"
-          android:checkable="true"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/exclude"
+        android:checkable="true"
+        android:icon="@drawable/ic_eye_off_white_24dp"
+        android:title="@string/exclude"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/paste"
-          android:icon="@drawable/ic_content_paste_white_24dp"
-          android:title="@string/paste"
-          android:visible="false"
-          app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/paste"
+        android:icon="@drawable/ic_content_paste_white_24dp"
+        android:title="@string/paste"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/move"
-          android:title="@string/move"/>
+    <item
+        android:id="@+id/move"
+        android:title="@string/move" />
 
-    <item android:id="@+id/copy"
-          android:title="@string/copy"/>
+    <item
+        android:id="@+id/copy"
+        android:title="@string/copy" />
 
-    <item android:id="@+id/delete"
-          android:title="@string/delete"/>
+    <item
+        android:id="@+id/delete"
+        android:title="@string/delete" />
 </menu>

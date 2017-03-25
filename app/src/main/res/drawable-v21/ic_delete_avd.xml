@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-                 xmlns:aapt="http://schemas.android.com/aapt">
+    xmlns:aapt="http://schemas.android.com/aapt">
 
     <aapt:attr name="android:drawable">
-        <vector android:width="24dp"
-                android:height="24dp"
-                android:viewportHeight="24"
-                android:viewportWidth="24">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24">
 
             <group>
-                <path android:name="cover"
-                      android:fillColor="@color/white"
-                      android:pathData="M 6 19C 6 20.1 6.9 21 8 21L 16 21C 17.1 21 18 20.1 18 19L 18 7L 6 7L 6 19Z"/>
+                <path
+                    android:name="cover"
+                    android:fillColor="@color/white"
+                    android:pathData="M 6 19C 6 20.1 6.9 21 8 21L 16 21C 17.1 21 18 20.1 18 19L 18 7L 6 7L 6 19Z" />
 
-                <path android:name="bucket"
-                      android:fillColor="@color/white"
-                      android:pathData="M 15.5 4L 19 4L 19 6L 5 6L 5 4L 8.5 4L 9.5 3L 14.5 3L 15.5 4Z"/>
+                <path
+                    android:name="bucket"
+                    android:fillColor="@color/white"
+                    android:pathData="M 15.5 4L 19 4L 19 6L 5 6L 5 4L 8.5 4L 9.5 3L 14.5 3L 15.5 4Z" />
             </group>
         </vector>
     </aapt:attr>
@@ -25,40 +28,40 @@
             <set android:ordering="sequentially">
 
                 <objectAnimator
-                        android:name="cover"
-                        android:propertyName="pathData"
-                        android:duration="100"
-                        android:valueFrom="M 15.5 4 L 19 4 L 19 6 L 5 6 L 5 4 L 8.5 4 L 9.5 3 L 14.5 3 L 15.5 4 Z"
-                        android:valueTo="M 15.5 2 L 19 2 L 19 4 L 5 4 L 5 2 L 8.5 2 L 9.5 1 L 14.5 1 L 15.5 2 Z"
-                        android:valueType="pathType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="cover"
+                    android:duration="100"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 15.5 4 L 19 4 L 19 6 L 5 6 L 5 4 L 8.5 4 L 9.5 3 L 14.5 3 L 15.5 4 Z"
+                    android:valueTo="M 15.5 2 L 19 2 L 19 4 L 5 4 L 5 2 L 8.5 2 L 9.5 1 L 14.5 1 L 15.5 2 Z"
+                    android:valueType="pathType" />
 
                 <objectAnimator
-                        android:name="cover"
-                        android:propertyName="pathData"
-                        android:duration="100"
-                        android:valueFrom="M 15.5 2 L 19 2 L 19 4 L 5 4 L 5 2 L 8.5 2 L 9.5 1 L 14.5 1 L 15.5 2 Z"
-                        android:valueTo="M 15.534 3.615 L 18.98 4.223 L 18.633 6.193 L 4.846 3.762 L 5.193 1.792 L 8.64 2.4 L 9.798 1.589 L 14.723 2.457 L 15.534 3.615 Z"
-                        android:valueType="pathType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="cover"
+                    android:duration="100"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 15.5 2 L 19 2 L 19 4 L 5 4 L 5 2 L 8.5 2 L 9.5 1 L 14.5 1 L 15.5 2 Z"
+                    android:valueTo="M 15.534 3.615 L 18.98 4.223 L 18.633 6.193 L 4.846 3.762 L 5.193 1.792 L 8.64 2.4 L 9.798 1.589 L 14.723 2.457 L 15.534 3.615 Z"
+                    android:valueType="pathType" />
 
                 <objectAnimator
-                        android:name="cover"
-                        android:propertyName="pathData"
-                        android:duration="100"
-                        android:valueFrom="M 15.534 3.615 L 18.98 4.223 L 18.633 6.193 L 4.846 3.762 L 5.193 1.792 L 8.64 2.4 L 9.798 1.589 L 14.723 2.457 L 15.534 3.615 Z"
-                        android:valueTo="M 15.443 3.697 L 18.93 3.392 L 19.104 5.384 L 5.157 6.604 L 4.983 4.612 L 8.47 4.307 L 9.379 3.224 L 14.36 2.788 L 15.443 3.697 Z"
-                        android:valueType="pathType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="cover"
+                    android:duration="100"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 15.534 3.615 L 18.98 4.223 L 18.633 6.193 L 4.846 3.762 L 5.193 1.792 L 8.64 2.4 L 9.798 1.589 L 14.723 2.457 L 15.534 3.615 Z"
+                    android:valueTo="M 15.443 3.697 L 18.93 3.392 L 19.104 5.384 L 5.157 6.604 L 4.983 4.612 L 8.47 4.307 L 9.379 3.224 L 14.36 2.788 L 15.443 3.697 Z"
+                    android:valueType="pathType" />
 
                 <objectAnimator
-                        android:name="cover"
-                        android:propertyName="pathData"
-                        android:duration="100"
-                        android:valueFrom="M 15.443 3.697 L 18.93 3.392 L 19.104 5.384 L 5.157 6.604 L 4.983 4.612 L 8.47 4.307 L 9.379 3.224 L 14.36 2.788 L 15.443 3.697 Z"
-                        android:valueTo="M 15.5 4 L 19 4 L 19 6 L 5 6 L 5 4 L 8.5 4 L 9.5 3 L 14.5 3 L 15.5 4 Z"
-                        android:valueType="pathType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="cover"
+                    android:duration="100"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 15.443 3.697 L 18.93 3.392 L 19.104 5.384 L 5.157 6.604 L 4.983 4.612 L 8.47 4.307 L 9.379 3.224 L 14.36 2.788 L 15.443 3.697 Z"
+                    android:valueTo="M 15.5 4 L 19 4 L 19 6 L 5 6 L 5 4 L 8.5 4 L 9.5 3 L 14.5 3 L 15.5 4 Z"
+                    android:valueType="pathType" />
             </set>
         </aapt:attr>
     </target>
@@ -67,13 +70,13 @@
         <aapt:attr name="android:animation">
             <set>
                 <objectAnimator
-                        android:name="bucket"
-                        android:propertyName="pathData"
-                        android:duration="400"
-                        android:valueFrom="M 6 19 C 6 20.1 6.9 21 8 21 L 16 21 C 17.1 21 18 20.1 18 19 L 18 7 L 6 7 L 6 19 Z"
-                        android:valueTo="M 6 19 C 6 20.1 6.9 21 8 21 L 16 21 C 17.1 21 18 20.1 18 19 L 18 7 L 6 7 L 6 19 Z"
-                        android:valueType="pathType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="bucket"
+                    android:duration="400"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 6 19 C 6 20.1 6.9 21 8 21 L 16 21 C 17.1 21 18 20.1 18 19 L 18 7 L 6 7 L 6 19 Z"
+                    android:valueTo="M 6 19 C 6 20.1 6.9 21 8 21 L 16 21 C 17.1 21 18 20.1 18 19 L 18 7 L 6 7 L 6 19 Z"
+                    android:valueType="pathType" />
             </set>
         </aapt:attr>
     </target>

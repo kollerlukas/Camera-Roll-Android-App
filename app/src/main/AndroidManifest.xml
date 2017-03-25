@@ -1,82 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="us.koller.cameraroll">
+    package="us.koller.cameraroll">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-            android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:label="@string/app_name"
-            android:supportsRtl="true"
-            android:theme="@style/Theme.CameraRoll">
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CameraRoll">
 
-        <activity android:name=".ui.MainActivity"
-                  android:theme="@style/Theme.CameraRoll.Main"
-                  android:launchMode="singleTop">
+        <activity
+            android:name=".ui.MainActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.Main">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.AlbumActivity"
-                  android:theme="@style/Theme.CameraRoll.Translucent.AlbumActivity"
-                  android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.AlbumActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.Translucent.AlbumActivity" />
 
-        <activity android:name=".ui.ItemActivity"
-                  android:theme="@style/Theme.CameraRoll.PhotoView"
-                  android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.ItemActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.PhotoView" />
 
-        <activity android:name=".ui.AboutActivity"
-                  android:theme="@style/Theme.CameraRoll.Translucent.AboutActivity"
-                  android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.AboutActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.Translucent.AboutActivity" />
 
-        <activity android:name=".ui.FileExplorerActivity"
-                  android:theme="@style/Theme.CameraRoll.Translucent.FileExplorerActivity"
-                  android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.FileExplorerActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.Translucent.FileExplorerActivity" />
 
-        <activity android:name=".ui.FileOperationDialogActivity"
-                  android:theme="@style/Theme.CameraRoll.Translucent.FileOperationDialogActivity"
-                  android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.FileOperationDialogActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.Translucent.FileOperationDialogActivity" />
 
         <activity android:name=".IntentReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="image/*"/>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="video/*"/>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="video/*" />
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="image/*"/>
+                <action android:name="android.intent.action.GET_CONTENT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.PICK"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="image/*"/>
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
 
         <provider
-                android:name="android.support.v4.content.FileProvider"
-                android:authorities="${applicationId}.provider"
-                android:grantUriPermissions="true"
-                android:exported="false">
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
-                    android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/provider_paths"/>
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
         </provider>
     </application>
 </manifest>

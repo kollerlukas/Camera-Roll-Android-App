@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<transitionSet
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:transitionOrdering="together"
-        android:duration="300">
-    <changeBounds/>
-    <changeImageTransform/>
-    <arcMotion/>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="300"
+    android:transitionOrdering="together">
+    <changeBounds />
+    <changeImageTransform />
+    <arcMotion />
 </transitionSet>

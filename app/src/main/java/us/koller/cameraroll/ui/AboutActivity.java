@@ -62,7 +62,7 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
 
         ImageView headerImage = (ImageView) findViewById(R.id.header_image);
         Glide.with(this)
-                .load("http://koller.us/Lukas/camera_roll/new_logo.png")
+                .load("http://koller.us/lukas/camera_roll/new_logo.png")
                 .into(headerImage);
 
         TextView version = (TextView) findViewById(R.id.version);

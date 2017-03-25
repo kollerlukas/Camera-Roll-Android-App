@@ -1,52 +1,50 @@
-<animated-vector
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:aapt="http://schemas.android.com/aapt">
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
     <aapt:attr name="android:drawable">
-        <vector
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:width="24dp"
-                android:height="24dp"
-                android:viewportWidth="24"
-                android:viewportHeight="24"
-                android:alpha="0.54">
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="24dp"
+            android:height="24dp"
+            android:alpha="0.54"
+            android:viewportHeight="24"
+            android:viewportWidth="24">
             <group
-                    android:name="group"
-                    android:pivotX="12"
-                    android:pivotY="12"
-                    android:rotation="180">
+                android:name="group"
+                android:pivotX="12"
+                android:pivotY="12"
+                android:rotation="180">
                 <path
-                        android:name="stem"
-                        android:pathData="M 11.41 12 L -2.59 12 Z"
-                        android:strokeColor="@color/grey_900"
-                        android:strokeWidth="2"
-                        android:trimPathStart="1"
-                        android:strokeMiterLimit="10"/>
+                    android:name="stem"
+                    android:pathData="M 11.41 12 L -2.59 12 Z"
+                    android:strokeColor="@color/grey_900"
+                    android:strokeMiterLimit="10"
+                    android:strokeWidth="2"
+                    android:trimPathStart="1" />
                 <path
-                        android:name="arrow_head_top"
-                        android:pathData="M 12.71 12.71 L 4.7 4.7 Z"
-                        android:strokeColor="@color/grey_900"
-                        android:strokeWidth="2"
-                        android:trimPathEnd="0.44"
-                        android:strokeMiterLimit="10"/>
+                    android:name="arrow_head_top"
+                    android:pathData="M 12.71 12.71 L 4.7 4.7 Z"
+                    android:strokeColor="@color/grey_900"
+                    android:strokeMiterLimit="10"
+                    android:strokeWidth="2"
+                    android:trimPathEnd="0.44" />
                 <path
-                        android:name="arrow_head_bottom"
-                        android:pathData="M 12.71 11.29 L 4.7 19.3 Z"
-                        android:strokeColor="@color/grey_900"
-                        android:strokeWidth="2"
-                        android:trimPathEnd="0.44"
-                        android:strokeMiterLimit="10"/>
+                    android:name="arrow_head_bottom"
+                    android:pathData="M 12.71 11.29 L 4.7 19.3 Z"
+                    android:strokeColor="@color/grey_900"
+                    android:strokeMiterLimit="10"
+                    android:strokeWidth="2"
+                    android:trimPathEnd="0.44" />
                 <path
-                        android:name="clear_top_right"
-                        android:pathData="M 12 12 L 18.3 5.7 Z"
-                        android:strokeColor="@color/grey_900"
-                        android:strokeWidth="2"
-                        android:strokeMiterLimit="10"/>
+                    android:name="clear_top_right"
+                    android:pathData="M 12 12 L 18.3 5.7 Z"
+                    android:strokeColor="@color/grey_900"
+                    android:strokeMiterLimit="10"
+                    android:strokeWidth="2" />
                 <path
-                        android:name="clear_bottom_right"
-                        android:pathData="M 12 12 L 18.3 18.3 Z"
-                        android:strokeColor="@color/grey_900"
-                        android:strokeWidth="2"
-                        android:strokeMiterLimit="10"/>
+                    android:name="clear_bottom_right"
+                    android:pathData="M 12 12 L 18.3 18.3 Z"
+                    android:strokeColor="@color/grey_900"
+                    android:strokeMiterLimit="10"
+                    android:strokeWidth="2" />
             </group>
         </vector>
     </aapt:attr>
@@ -55,23 +53,23 @@
         <aapt:attr name="android:animation">
             <set xmlns:android="http://schemas.android.com/apk/res/android">
                 <objectAnimator
-                        android:name="stem"
-                        android:propertyName="trimPathStart"
-                        android:startOffset="250"
-                        android:duration="250"
-                        android:valueFrom="1"
-                        android:valueTo="0"
-                        android:valueType="floatType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="stem"
+                    android:duration="250"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="trimPathStart"
+                    android:startOffset="250"
+                    android:valueFrom="1"
+                    android:valueTo="0"
+                    android:valueType="floatType" />
 
                 <objectAnimator
-                        android:name="stroke_color"
-                        android:propertyName="strokeColor"
-                        android:duration="300"
-                        android:valueFrom="@color/grey_900"
-                        android:valueTo="@color/white"
-                        android:valueType="colorType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="stroke_color"
+                    android:duration="300"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="strokeColor"
+                    android:valueFrom="@color/grey_900"
+                    android:valueTo="@color/white"
+                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -80,22 +78,22 @@
         <aapt:attr name="android:animation">
             <set xmlns:android="http://schemas.android.com/apk/res/android">
                 <objectAnimator
-                        android:name="clear_bottom_right"
-                        android:propertyName="trimPathStart"
-                        android:duration="250"
-                        android:valueFrom="0"
-                        android:valueTo="1"
-                        android:valueType="floatType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="clear_bottom_right"
+                    android:duration="250"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="trimPathStart"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
 
                 <objectAnimator
-                        android:name="stroke_color"
-                        android:propertyName="strokeColor"
-                        android:duration="300"
-                        android:valueFrom="@color/grey_900"
-                        android:valueTo="@color/white"
-                        android:valueType="colorType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="stroke_color"
+                    android:duration="300"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="strokeColor"
+                    android:valueFrom="@color/grey_900"
+                    android:valueTo="@color/white"
+                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -104,22 +102,22 @@
         <aapt:attr name="android:animation">
             <set xmlns:android="http://schemas.android.com/apk/res/android">
                 <objectAnimator
-                        android:name="clear_top_right"
-                        android:propertyName="trimPathStart"
-                        android:duration="250"
-                        android:valueFrom="0"
-                        android:valueTo="1"
-                        android:valueType="floatType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="clear_top_right"
+                    android:duration="250"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="trimPathStart"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
 
                 <objectAnimator
-                        android:name="stroke_color"
-                        android:propertyName="strokeColor"
-                        android:duration="300"
-                        android:valueFrom="@color/grey_900"
-                        android:valueTo="@color/white"
-                        android:valueType="colorType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="stroke_color"
+                    android:duration="300"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="strokeColor"
+                    android:valueFrom="@color/grey_900"
+                    android:valueTo="@color/white"
+                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -128,22 +126,22 @@
         <aapt:attr name="android:animation">
             <set xmlns:android="http://schemas.android.com/apk/res/android">
                 <objectAnimator
-                        android:name="arrow_head_top"
-                        android:propertyName="trimPathEnd"
-                        android:duration="500"
-                        android:valueFrom="0.44"
-                        android:valueTo="1"
-                        android:valueType="floatType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="arrow_head_top"
+                    android:duration="500"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="trimPathEnd"
+                    android:valueFrom="0.44"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
 
                 <objectAnimator
-                        android:name="stroke_color"
-                        android:propertyName="strokeColor"
-                        android:duration="300"
-                        android:valueFrom="@color/grey_900"
-                        android:valueTo="@color/white"
-                        android:valueType="colorType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="stroke_color"
+                    android:duration="300"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="strokeColor"
+                    android:valueFrom="@color/grey_900"
+                    android:valueTo="@color/white"
+                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -152,22 +150,22 @@
         <aapt:attr name="android:animation">
             <set xmlns:android="http://schemas.android.com/apk/res/android">
                 <objectAnimator
-                        android:name="arrow_head_bottom"
-                        android:propertyName="trimPathEnd"
-                        android:duration="500"
-                        android:valueFrom="0.44"
-                        android:valueTo="1"
-                        android:valueType="floatType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="arrow_head_bottom"
+                    android:duration="500"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="trimPathEnd"
+                    android:valueFrom="0.44"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
 
                 <objectAnimator
-                        android:name="stroke_color"
-                        android:propertyName="strokeColor"
-                        android:duration="300"
-                        android:valueFrom="@color/grey_900"
-                        android:valueTo="@color/white"
-                        android:valueType="colorType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="stroke_color"
+                    android:duration="300"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="strokeColor"
+                    android:valueFrom="@color/grey_900"
+                    android:valueTo="@color/white"
+                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -176,22 +174,22 @@
         <aapt:attr name="android:animation">
             <set xmlns:android="http://schemas.android.com/apk/res/android">
                 <objectAnimator
-                        android:name="group"
-                        android:propertyName="translateX"
-                        android:duration="500"
-                        android:valueFrom="0"
-                        android:valueTo="-7.3"
-                        android:valueType="floatType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="group"
+                    android:duration="500"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="translateX"
+                    android:valueFrom="0"
+                    android:valueTo="-7.3"
+                    android:valueType="floatType" />
 
                 <objectAnimator
-                        android:name="group"
-                        android:propertyName="rotation"
-                        android:duration="375"
-                        android:valueFrom="0"
-                        android:valueTo="180"
-                        android:valueType="floatType"
-                        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+                    android:name="group"
+                    android:duration="375"
+                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+                    android:propertyName="rotation"
+                    android:valueFrom="0"
+                    android:valueTo="180"
+                    android:valueType="floatType" />
             </set>
         </aapt:attr>
     </target>

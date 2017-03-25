@@ -1,49 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/swipeBackView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeBackView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <FrameLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/root_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/dark_bg">
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/root_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dark_bg">
 
         <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"/>
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false" />
 
-        <android.support.v7.widget.Toolbar
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:stateListAnimator="@animator/toolbar_raise"
-                android:transitionName="@string/toolbar_transition_name"/>
+        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stateListAnimator="@animator/toolbar_raise"
+            android:transitionName="@string/toolbar_transition_name" />
     </FrameLayout>
 
     <TextView
-            android:id="@+id/empty_state_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/no_files"
-            android:textSize="24sp"
-            android:fontFamily="sans-serif-monospace"/>
+        android:id="@+id/empty_state_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="sans-serif-monospace"
+        android:text="@string/no_files"
+        android:textSize="24sp" />
 
     <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            android:layout_gravity="end|bottom"
-            app:backgroundTint="@color/colorAccent"
-            app:elevation="6dp"
-            app:fabSize="normal"/>
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorAccent"
+        app:elevation="6dp"
+        app:fabSize="normal" />
 </us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout>

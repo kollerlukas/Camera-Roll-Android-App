@@ -104,9 +104,9 @@
     <string name="file_explorer_warning_message">The File Explorer is an
         <b>experimental</b>
         feature.
-        <br/>
+        <br />
         The developer does not take any responsibility for the loss of any data or files.
-        <br/>
+        <br />
         <b>Use at Your own risk.</b>
     </string>
 

@@ -1,69 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipeBackView"
+<us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeBackView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
-            android:id="@+id/scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
         <android.support.design.widget.CoordinatorLayout
-                android:id="@+id/root_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+            android:id="@+id/root_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <LinearLayout
-                        android:id="@+id/header"
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorAccent"
-                        android:padding="32dp">
+                    android:id="@+id/header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorAccent"
+                    android:orientation="vertical"
+                    android:padding="32dp">
 
                     <ImageView
-                            android:id="@+id/header_image"
-                            android:layout_width="150dp"
-                            android:layout_height="150dp"
-                            android:layout_gravity="center_horizontal"
-                            android:contentDescription="@string/image"
-                            android:padding="16dp"/>
+                        android:id="@+id/header_image"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="center_horizontal"
+                        android:contentDescription="@string/image"
+                        android:padding="16dp" />
 
                     <TextView
-                            android:id="@+id/version"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:fontFamily="sans-serif-monospace"
-                            android:textColor="@color/black_translucent2"
-                            android:textSize="20sp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginTop="8dp"/>
+                        android:id="@+id/version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif-monospace"
+                        android:textColor="@color/black_translucent2"
+                        android:textSize="20sp" />
                 </LinearLayout>
 
                 <TextView
-                        android:id="@+id/about_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-monospace"
-                        android:textSize="18sp"
-                        android:paddingTop="24dp"
-                        android:padding="16dp"
-                        android:background="@color/dark_bg"/>
+                    android:id="@+id/about_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/dark_bg"
+                    android:fontFamily="sans-serif-monospace"
+                    android:padding="16dp"
+                    android:paddingTop="24dp"
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </android.support.design.widget.CoordinatorLayout>
     </android.support.v4.widget.NestedScrollView>
 </us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout>

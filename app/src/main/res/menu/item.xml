@@ -1,42 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/set_as"
-          android:title="@string/set_as"
-          android:icon="@drawable/ic_wallpaper_white_24dp"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/set_as"
+        android:icon="@drawable/ic_wallpaper_white_24dp"
+        android:title="@string/set_as"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/info"
-          android:title="@string/info"
-          android:icon="@drawable/ic_info_white_24dp"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/info"
+        android:icon="@drawable/ic_info_white_24dp"
+        android:title="@string/info"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/share"
-          android:title="@string/share"
-          android:icon="@drawable/ic_share_white_24dp"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/share"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/print"
-          android:title="@string/print"
-          android:icon="@drawable/ic_print_white_24dp"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/print"
+        android:icon="@drawable/ic_print_white_24dp"
+        android:title="@string/print"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/edit"
-          android:title="@string/edit"
-          android:icon="@drawable/ic_mode_edit_white_24dp"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/edit"
+        android:icon="@drawable/ic_mode_edit_white_24dp"
+        android:title="@string/edit"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/copy"
-          android:title="@string/copy"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/copy"
+        android:title="@string/copy"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/move"
-          android:title="@string/move"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/move"
+        android:title="@string/move"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/delete"
-          android:title="@string/delete"
-          android:icon="@drawable/ic_delete_white_24dp"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="@string/delete"
+        app:showAsAction="never" />
 </menu>

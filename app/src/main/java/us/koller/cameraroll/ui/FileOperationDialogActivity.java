@@ -2,6 +2,7 @@ package us.koller.cameraroll.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 
@@ -297,12 +301,11 @@ public class FileOperationDialogActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             if (albums.size() > position) {
-                Album album = albums.get(position);
+                final Album album = albums.get(position);
                 ((TextView) holder.itemView.findViewById(R.id.album_title))
                         .setText(album.getName());
 
                 if (album.getAlbumItems().size() > 0) {
-                    Glide.clear(holder.itemView.findViewById(R.id.image));
                     Glide.with(holder.itemView.getContext())
                             .load(album.getAlbumItems().get(0).getPath())
                             .asBitmap()

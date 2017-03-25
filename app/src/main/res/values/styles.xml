@@ -22,13 +22,11 @@
 
     </style>
 
-    <style name="Theme.CameraRoll.Translucent.FileExplorerActivity"
-           parent="Theme.CameraRoll.Translucent">
+    <style name="Theme.CameraRoll.Translucent.FileExplorerActivity" parent="Theme.CameraRoll.Translucent">
 
     </style>
 
-    <style name="Theme.CameraRoll.Translucent.FileOperationDialogActivity"
-           parent="Theme.CameraRoll.Translucent">
+    <style name="Theme.CameraRoll.Translucent.FileOperationDialogActivity" parent="Theme.CameraRoll.Translucent">
 
     </style>
 
