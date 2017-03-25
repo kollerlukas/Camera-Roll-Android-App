@@ -194,6 +194,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return selector_mode && !pick_photos;
     }
 
+    public void restoreSelectedItems(int[] selectedItemsPos) {
+        selector_mode = true;
+
+        //notify AlbumActivity
+        callback.onSelectorModeEnter();
+
+        selected_items = new boolean[album.getAlbumItems().size()];
+        for (int i = 0; i < selectedItemsPos.length; i++) {
+            int pos = selectedItemsPos[i];
+            selected_items[pos] = true;
+            notifyItemChanged(pos);
+        }
+    }
+
+    public int[] getSelectedItemsPositions() {
+        if (!selector_mode && !pick_photos) {
+            return null;
+        }
+
+        int[] selectedItemsPos = new int[getSelectedItemCount()];
+        int index = 0;
+        for (int i = 0; i < selected_items.length; i++) {
+            if (selected_items[i]) {
+                selectedItemsPos[index] = i;
+                index++;
+            }
+        }
+
+        return selectedItemsPos;
+    }
+
     private void checkForNoSelectedItems() {
         if (getSelectedItemCount() == 0 && !pick_photos) {
             selector_mode = false;

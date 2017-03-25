@@ -50,6 +50,16 @@ public class Copy extends FileOperation {
         operation = EMPTY;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public int getType() {
+        return FileOperation.COPY;
+    }
+
     private static boolean copyFilesRecursively(Activity context, String path,
                                                 String destination, boolean result) {
         File file = new File(path);

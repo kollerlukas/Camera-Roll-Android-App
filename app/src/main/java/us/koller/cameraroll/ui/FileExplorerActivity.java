@@ -67,8 +67,10 @@ public class FileExplorerActivity extends AppCompatActivity
 
     public static final String ROOTS = "ROOTS";
     public static final String CURRENT_DIR = "CURRENT_DIR";
+    public static final String MODE = "MODE";
     public static final String SELECTED_ITEMS = "SELECTED_ITEMS";
     public static final String STORAGE_ROOTS = "Storage Roots";
+    public static final String FILE_OPERATION = "FILE_OPERATION";
 
     private File_POJO roots;
 
@@ -266,13 +268,33 @@ public class FileExplorerActivity extends AppCompatActivity
             recyclerViewAdapter.notifyDataSetChanged();
             onDataChanged();
 
-            /*if(savedInstanceState.containsKey(SELECTED_ITEMS)) {
-                File_POJO[] selectedItems
-                        = (File_POJO[]) savedInstanceState.getParcelableArray(SELECTED_ITEMS);
-                if(selectedItems != null) {
-                    recyclerViewAdapter.enterSelectorMode(selectedItems);
+            if (savedInstanceState.containsKey(MODE)) {
+                int mode = savedInstanceState.getInt(MODE);
+
+                if (mode == RecyclerViewAdapter.SELECTOR_MODE) {
+                    if (savedInstanceState.containsKey(SELECTED_ITEMS)) {
+                        File_POJO[] selectedItems
+                                = (File_POJO[]) savedInstanceState.getParcelableArray(SELECTED_ITEMS);
+                        if (selectedItems != null) {
+                            recyclerViewAdapter.enterSelectorMode(selectedItems);
+                        }
+                    }
+                } else if (mode == RecyclerViewAdapter.PICK_TARGET_MODE) {
+                    if (savedInstanceState.containsKey(FILE_OPERATION)) {
+                        onSelectorModeEnter();
+                        fileOperation = savedInstanceState.getParcelable(FILE_OPERATION);
+                        FileOperation.operation = fileOperation.getType();
+                        //need to call pick target after onSelectorModeEnter animation are done
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                recyclerViewAdapter.pickTarget();
+                            }
+                        }, 500);
+                    }
                 }
-            }*/
+            }
+
         } else {
             loadRoots();
 
@@ -387,9 +409,15 @@ public class FileExplorerActivity extends AppCompatActivity
             outState.putParcelable(CURRENT_DIR, currentDir);
         }
 
+        outState.putInt(MODE, recyclerViewAdapter.getMode());
+
         File_POJO[] selectedItems = recyclerViewAdapter.getSelectedItems();
         if (selectedItems.length > 0) {
             outState.putParcelableArray(SELECTED_ITEMS, selectedItems);
+        }
+
+        if (fileOperation != null) {
+            outState.putParcelable(FILE_OPERATION, fileOperation);
         }
     }
 

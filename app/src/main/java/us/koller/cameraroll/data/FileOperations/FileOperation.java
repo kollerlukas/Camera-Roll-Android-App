@@ -7,15 +7,21 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 
 import java.io.File;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Gif;
+import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.MediaType;
 
-public abstract class FileOperation {
+public abstract class FileOperation implements Parcelable {
 
     public interface Callback {
         void done();
@@ -27,6 +33,7 @@ public abstract class FileOperation {
     public static final int MOVE = 1;
     public static final int COPY = 2;
     public static final int DELETE = 3;
+    public static final int NEW_DIR = 4;
 
     public static int operation = EMPTY;
 
@@ -50,6 +57,36 @@ public abstract class FileOperation {
     }
 
     abstract void executeAsync(final Activity context, final File_POJO target, final Callback callback);
+
+    public abstract int getType();
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(getType());
+        parcel.writeParcelableArray(files, 0);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        @Override
+        public FileOperation createFromParcel(Parcel parcel) {
+            File_POJO[] files = (File_POJO[])
+                    parcel.readParcelableArray(File_POJO.class.getClassLoader());
+            switch (parcel.readInt()) {
+                case MOVE:
+                    return new Move(files);
+                case COPY:
+                    return new Copy(files);
+                default:
+                    return new Delete(files);
+            }
+        }
+
+        public AlbumItem[] newArray(int i) {
+            return new AlbumItem[i];
+        }
+    };
+
+
 
     public static String getModeString(Context context) {
         switch (operation) {

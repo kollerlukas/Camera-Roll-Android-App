@@ -61,6 +61,16 @@ public class Delete extends FileOperation {
         operation = EMPTY;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public int getType() {
+        return FileOperation.DELETE;
+    }
+
     private static boolean deleteFile(final Activity context, String path) {
         boolean success;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP

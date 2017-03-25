@@ -45,6 +45,16 @@ public class Move extends FileOperation {
         operation = EMPTY;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public int getType() {
+        return FileOperation.MOVE;
+    }
+
     private static boolean moveFile(Activity context, String path, String destination) {
         File file = new File(path);
         File newFile = new File(destination, file.getName());

@@ -71,6 +71,8 @@ public class AlbumActivity extends AppCompatActivity
     public static final String DELETE_ALBUMITEM = "DELETE_ALBUMITEM";
     public static final String EXTRA_CURRENT_ALBUM_POSITION = "EXTRA_CURRENT_ALBUM_POSITION";
     public static final String RECYCLER_VIEW_SCROLL_STATE = "RECYCLER_VIEW_SCROLL_STATE";
+    public static final String SELECTOR_MODE_ACTIVE = "SELECTOR_MODE_ACTIVE";
+    public static final String SELECTED_ITEMS_POSITIONS = "SELECTED_ITEMS_POSITIONS";
 
     private int sharedElementReturnPosition = -1;
 
@@ -363,6 +365,15 @@ public class AlbumActivity extends AppCompatActivity
         }
 
         onNewIntent(getIntent());
+
+        //restore Selector mode, when needed
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTOR_MODE_ACTIVE)) {
+            boolean restoreSelectorMode = Boolean.valueOf(savedInstanceState.getString(SELECTOR_MODE_ACTIVE));
+            if (restoreSelectorMode && savedInstanceState.containsKey(SELECTED_ITEMS_POSITIONS)) {
+                int[] selectedItemsPos = savedInstanceState.getIntArray(SELECTED_ITEMS_POSITIONS);
+                ((RecyclerViewAdapter) recyclerView.getAdapter()).restoreSelectedItems(selectedItemsPos);
+            }
+        }
     }
 
     @Override
@@ -927,6 +938,14 @@ public class AlbumActivity extends AppCompatActivity
         //outState.putParcelable(ALBUM, album);
         outState.putParcelable(RECYCLER_VIEW_SCROLL_STATE,
                 recyclerView.getLayoutManager().onSaveInstanceState());
+
+        RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
+        outState.putString(SELECTOR_MODE_ACTIVE,
+                String.valueOf(adapter.isSelectorModeActive() || pick_photos));
+        if (adapter.isSelectorModeActive() || pick_photos) {
+            int[] selectedItemsPos = adapter.getSelectedItemsPositions();
+            outState.putIntArray(SELECTED_ITEMS_POSITIONS, selectedItemsPos);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
