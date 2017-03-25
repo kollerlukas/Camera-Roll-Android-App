@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import java.io.File;
 
@@ -86,7 +87,8 @@ public abstract class AlbumItem
 
     public Uri getUri(Context context) {
         if (!contentUri) {
-            try {
+            //my file provider isn't working with Google Photos ?!
+            /*try {
                 File file = new File(getPath());
                 return FileProvider.getUriForFile(context,
                         context.getApplicationContext().getPackageName() + ".provider", file);
@@ -95,8 +97,11 @@ public abstract class AlbumItem
 
                 //file is probably on removable storage
                 return StorageUtil
-                        .getContentUriFromFilePath(context, getPath());
-            }
+                       .getContentUriFromFilePath(context, getPath());
+            }*/
+
+            return StorageUtil
+                    .getContentUriFromFilePath(context, getPath());
         }
         return Uri.parse(getPath());
     }

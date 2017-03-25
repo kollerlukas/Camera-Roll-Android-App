@@ -372,6 +372,7 @@ public class AlbumActivity extends AppCompatActivity
             if (restoreSelectorMode && savedInstanceState.containsKey(SELECTED_ITEMS_POSITIONS)) {
                 int[] selectedItemsPos = savedInstanceState.getIntArray(SELECTED_ITEMS_POSITIONS);
                 ((RecyclerViewAdapter) recyclerView.getAdapter()).restoreSelectedItems(selectedItemsPos);
+                onItemSelected(selectedItemsPos.length);
             }
         }
     }

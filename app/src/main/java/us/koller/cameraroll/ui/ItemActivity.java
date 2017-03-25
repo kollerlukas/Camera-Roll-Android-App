@@ -54,8 +54,6 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
-import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.VideoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
@@ -479,7 +477,7 @@ public class ItemActivity extends AppCompatActivity {
             startActivityForResult(Intent.createChooser(intent,
                     getString(R.string.set_as)), 13);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App found to edit your item", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No App found to set your photo", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -519,14 +517,16 @@ public class ItemActivity extends AppCompatActivity {
 
     public void editPhoto() {
         Uri uri = albumItem.getUri(this);
+        Log.d("ItemActivity", "editPhoto(): " + uri);
 
         Intent intent = new Intent(Intent.ACTION_EDIT);
         intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(Intent.createChooser(intent, getString(R.string.edit_space) + albumItem.getType()));
+        } else {
             Toast.makeText(this, "No App found to edit your "
                     + albumItem.getType(), Toast.LENGTH_SHORT).show();
         }

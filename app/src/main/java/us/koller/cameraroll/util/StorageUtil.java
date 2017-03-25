@@ -1,11 +1,9 @@
 package us.koller.cameraroll.util;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
