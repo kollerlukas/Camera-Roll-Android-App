@@ -52,6 +52,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
@@ -1023,33 +1026,25 @@ public class ItemActivity extends AppCompatActivity {
                 if (uri == null) {
                     return;
                 }
-                AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            InputStream image_stream
-                                    = itemView.getContext()
-                                    .getContentResolver()
-                                    .openInputStream(uri);
-                            Bitmap bitmap = BitmapFactory.decodeStream(image_stream);
-                            p = Palette.from(bitmap).generate();
-                            ((Activity) itemView.getContext())
-                                    .runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            setColors();
-                                        }
-                                    });
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                Glide.with(itemView.getContext())
+                        .load(uri)
+                        .asBitmap()
+                        .into(new SimpleTarget<Bitmap>(1000, 1000) {
+                            @Override
+                            public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
+                                // Do something with bitmap here.
+                                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                                    @Override
+                                    public void onGenerated(Palette palette) {
+                                        p = palette;
+                                        setColors();
+                                    }
+                                });
+                            }
+                        });
             }
 
             private void setColors() {
-                Log.d("ColorHolder", "setColors() called");
-
                 if (p == null) {
                     retrieveColors(uri);
                     return;
