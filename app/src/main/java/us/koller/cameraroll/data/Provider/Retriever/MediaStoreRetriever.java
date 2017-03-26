@@ -87,8 +87,11 @@ public class MediaStoreRetriever implements Retriever {
 
                             if (!foundBucket) {
                                 //no bucket found
-                                albums.add(new Album().setPath(Util.getParentPath(path)));
-                                albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
+                                String bucketPath = Util.getParentPath(path);
+                                if (bucketPath != null) {
+                                    albums.add(new Album().setPath(bucketPath));
+                                    albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
+                                }
                             }
                         }
 

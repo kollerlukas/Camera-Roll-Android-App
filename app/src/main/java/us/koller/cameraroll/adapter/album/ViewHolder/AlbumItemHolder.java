@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.util.ColorFade;
+import us.koller.cameraroll.util.animators.ColorFade;
 
 public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
 

@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
@@ -55,7 +54,7 @@ import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
-import us.koller.cameraroll.util.ColorFade;
+import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.Util;
 
 public class FileExplorerActivity extends AppCompatActivity

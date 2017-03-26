@@ -1,4 +1,4 @@
-package us.koller.cameraroll.util;
+package us.koller.cameraroll.util.animators;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -9,15 +9,12 @@ import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
-
-import us.koller.cameraroll.R;
 
 public class ColorFade {
 

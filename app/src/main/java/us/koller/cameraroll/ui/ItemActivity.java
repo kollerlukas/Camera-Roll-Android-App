@@ -1,16 +1,22 @@
 package us.koller.cameraroll.ui;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +33,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -50,6 +58,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -59,10 +68,11 @@ import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Video;
-import us.koller.cameraroll.util.ColorFade;
+import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
 import us.koller.cameraroll.util.Util;
@@ -653,7 +663,8 @@ public class ItemActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(new InfoRecyclerViewAdapter(values));
+        recyclerView.setAdapter(new InfoRecyclerViewAdapter(values,
+                albumItem instanceof Photo || albumItem instanceof Gif));
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -916,23 +927,45 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private static class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
+        private static final int INFO_VIEW_TYPE = 0;
+        private static final int COLOR_VIEW_TYPE = 1;
+
         private static String[] types = {"Filename: ", "Filepath: ", "Size: ",
                 "Dimensions: ", "Date: ", "Camera model: ", "Focal length: ",
                 "Exposure: ", "Aperture: ", "ISO: "};
         private String[] values;
 
-        InfoRecyclerViewAdapter(String[] values) {
+        private boolean showColors;
+
+        InfoRecyclerViewAdapter(String[] values, boolean showColors) {
             this.values = values;
+            this.showColors = showColors;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (getItemCount() > types.length) {
+                return position != 0 ? INFO_VIEW_TYPE : COLOR_VIEW_TYPE;
+            }
+            return INFO_VIEW_TYPE;
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.info_item, parent, false);
-            return new InfoHolder(v);
+            int layoutRes = viewType == INFO_VIEW_TYPE ? R.layout.info_item : R.layout.info_color;
+            View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
+            return viewType == INFO_VIEW_TYPE ? new InfoHolder(v) : new ColorHolder(v, values[1]);
         }
 
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+            if (showColors && position == 0) {
+                ((ColorHolder) holder).setColors();
+                return;
+            } else if (showColors) {
+                position--;
+            }
+
             TextView type = (TextView) holder.itemView.findViewById(R.id.type);
             type.setText(types[position]);
             TextView value = (TextView) holder.itemView.findViewById(R.id.value);
@@ -941,12 +974,138 @@ public class ItemActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return types.length;
+            return showColors ? types.length + 1 : types.length;
         }
 
         static class InfoHolder extends RecyclerView.ViewHolder {
             InfoHolder(View itemView) {
                 super(itemView);
+            }
+        }
+
+        static class ColorHolder extends RecyclerView.ViewHolder {
+
+            private Palette p;
+            private Uri uri;
+
+            private View.OnClickListener onClickListener
+                    = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String color = (String) view.getTag();
+                    if (color != null) {
+                        ClipboardManager clipboard = (ClipboardManager) view.getContext()
+                                .getSystemService(CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("label", color);
+                        clipboard.setPrimaryClip(clip);
+
+                        Toast.makeText(view.getContext(),
+                                R.string.copied_to_clipboard,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
+
+            ColorHolder(View itemView, String path) {
+                super(itemView);
+
+                AlbumItem albumItem
+                        = AlbumItem.getInstance(itemView.getContext(), path);
+
+                if (albumItem instanceof Photo || albumItem instanceof Gif) {
+                    uri = albumItem.getUri(itemView.getContext());
+                } else {
+                    itemView.setVisibility(View.GONE);
+                }
+            }
+
+            private void retrieveColors(final Uri uri) {
+                if (uri == null) {
+                    return;
+                }
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            InputStream image_stream
+                                    = itemView.getContext()
+                                    .getContentResolver()
+                                    .openInputStream(uri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(image_stream);
+                            p = Palette.from(bitmap).generate();
+                            ((Activity) itemView.getContext())
+                                    .runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setColors();
+                                        }
+                                    });
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            private void setColors() {
+                Log.d("ColorHolder", "setColors() called");
+
+                if (p == null) {
+                    retrieveColors(uri);
+                    return;
+                }
+
+                int defaultColor = ContextCompat.getColor(itemView.getContext(),
+                        R.color.white_translucent1);
+
+                /*Vibrant color*/
+                setColor((CardView) itemView.findViewById(R.id.vibrant_card),
+                        (TextView) itemView.findViewById(R.id.vibrant_text),
+                        p.getVibrantColor(defaultColor));
+
+                /*Vibrant Dark color*/
+                setColor((CardView) itemView.findViewById(R.id.vibrant_dark_card),
+                        (TextView) itemView.findViewById(R.id.vibrant_dark_text),
+                        p.getDarkVibrantColor(defaultColor));
+
+                /*Vibrant Light color*/
+                setColor((CardView) itemView.findViewById(R.id.vibrant_light_card),
+                        (TextView) itemView.findViewById(R.id.vibrant_light_text),
+                        p.getLightVibrantColor(defaultColor));
+
+                /*Muted color*/
+                setColor((CardView) itemView.findViewById(R.id.muted_card),
+                        (TextView) itemView.findViewById(R.id.muted_text),
+                        p.getMutedColor(defaultColor));
+
+                /*Muted Dark color*/
+                setColor((CardView) itemView.findViewById(R.id.muted_dark_card),
+                        (TextView) itemView.findViewById(R.id.muted_dark_text),
+                        p.getDarkMutedColor(defaultColor));
+
+                /*Muted Light color*/
+                setColor((CardView) itemView.findViewById(R.id.muted_light_card),
+                        (TextView) itemView.findViewById(R.id.muted_light_text),
+                        p.getLightMutedColor(defaultColor));
+            }
+
+            private void setColor(CardView card, TextView text, int color) {
+                card.setCardBackgroundColor(color);
+                text.setTextColor(getTextColor(text.getContext(), color));
+                String colorHex = String.format("#%06X", (0xFFFFFF & color));
+                text.setText(colorHex);
+
+                card.setTag(colorHex);
+                card.setOnClickListener(onClickListener);
+            }
+
+            private static int getTextColor(Context context, int backgroundColor) {
+                if ((Color.red(backgroundColor) +
+                        Color.green(backgroundColor) +
+                        Color.blue(backgroundColor)) / 3 < 100) {
+                    return ContextCompat.getColor(context, R.color.white_translucent1);
+                }
+                return ContextCompat.getColor(context, R.color.grey_900_translucent);
             }
         }
     }

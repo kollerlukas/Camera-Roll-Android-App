@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,7 +17,7 @@ import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
-import us.koller.cameraroll.util.ColorFade;
+import us.koller.cameraroll.util.animators.ColorFade;
 
 public class AlbumHolder extends RecyclerView.ViewHolder {
 

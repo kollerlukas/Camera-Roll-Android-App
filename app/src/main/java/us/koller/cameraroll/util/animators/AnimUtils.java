@@ -1,4 +1,4 @@
-package us.koller.cameraroll.util;
+package us.koller.cameraroll.util.animators;
 
 import android.content.Context;
 import android.graphics.ColorMatrix;
