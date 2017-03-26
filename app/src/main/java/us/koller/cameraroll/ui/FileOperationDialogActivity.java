@@ -2,14 +2,12 @@ package us.koller.cameraroll.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,8 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 
@@ -159,15 +156,17 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String path = recyclerViewAdapter.getSelectedPath();
                                 if (path != null) {
-                                    if (path.equals(CREATE_NEW_FOLDER)) {
-                                        creatingNewFolder = true;
-                                        createNewFolder(files);
-                                    } else {
-                                        executeAction(files, path);
-                                    }
+                                    executeAction(files, path);
                                 }
                             }
                         })
+                .setNeutralButton(getString(R.string.new_folder), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        creatingNewFolder = true;
+                        createNewFolder(files);
+                    }
+                })
                 .setNegativeButton(R.string.cancel, null)
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -201,7 +200,7 @@ public class FileOperationDialogActivity extends AppCompatActivity {
 
         final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
 
-        dialog = new AlertDialog.Builder(this)
+        dialog = new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
                 .setTitle(R.string.new_folder)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -233,14 +232,14 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                 .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        creatingNewFolder = false;
-                        //showFolderSelectorDialog();
+                        showFolderSelectorDialog();
                     }
                 })
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
                         onDialogDismiss();
+                        creatingNewFolder = false;
                     }
                 })
                 .create();
@@ -284,11 +283,7 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                 return null;
             }
 
-            if (albums.size() > selected_position) {
-                return albums.get(selected_position).getPath();
-            } else {
-                return CREATE_NEW_FOLDER;
-            }
+            return albums.get(selected_position).getPath();
         }
 
         @Override
@@ -300,25 +295,18 @@ public class FileOperationDialogActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-            if (albums.size() > position) {
-                final Album album = albums.get(position);
-                ((TextView) holder.itemView.findViewById(R.id.album_title))
-                        .setText(album.getName());
+            final Album album = albums.get(position);
+            ((TextView) holder.itemView.findViewById(R.id.album_title))
+                    .setText(album.getName());
 
-                if (album.getAlbumItems().size() > 0) {
-                    Glide.with(holder.itemView.getContext())
-                            .load(album.getAlbumItems().get(0).getPath())
-                            .asBitmap()
-                            //.centerCrop()
-                            .error(R.drawable.error_placeholder_tinted)
-                            .into((ImageView) holder.itemView.findViewById(R.id.image));
-                }
-            } else {
-                ((TextView) holder.itemView.findViewById(R.id.album_title))
-                        .setText(holder.itemView.getContext().getString(R.string.new_folder));
+            if (album.getAlbumItems().size() > 0) {
+                Log.d("FileOperationDialog", "onBindViewHolder: " + album.getAlbumItems().get(0).getPath());
 
                 Glide.with(holder.itemView.getContext())
-                        .load(R.drawable.new_folder_placeholder)
+                        .load(album.getAlbumItems().get(0).getPath())
+                        .skipMemoryCache(true)
+                        .thumbnail(0.1f)
+                        .error(R.drawable.error_placeholder_tinted)
                         .into((ImageView) holder.itemView.findViewById(R.id.image));
             }
 
@@ -360,7 +348,7 @@ public class FileOperationDialogActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return albums.size() + 1;
+            return albums.size();
         }
     }
 }
