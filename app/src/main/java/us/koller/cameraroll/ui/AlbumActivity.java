@@ -30,11 +30,9 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -65,7 +63,7 @@ import us.koller.cameraroll.util.Util;
 public class AlbumActivity extends AppCompatActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
 
-    public static int FILEOPDIALOG_REQUEST = 1;
+    public static int FILE_OP_DIALOG_REQUEST = 1;
 
     public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
@@ -486,7 +484,7 @@ public class AlbumActivity extends AppCompatActivity
                         FileOperationDialogActivity.ACTION_MOVE);
                 intent.putExtra(FileOperationDialogActivity.FILES, paths);
 
-                startActivityForResult(intent, FILEOPDIALOG_REQUEST);
+                startActivityForResult(intent, FILE_OP_DIALOG_REQUEST);
                 break;
             case R.id.exclude:
                 Provider.loadExcludedPaths(this);

@@ -1,6 +1,5 @@
 package us.koller.cameraroll.ui;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -14,9 +13,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
+import android.support.media.ExifInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,7 +59,6 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +81,7 @@ import us.koller.cameraroll.util.ZoomOutPageTransformer;
 public class ItemActivity extends AppCompatActivity {
 
     public interface ViewPagerOnInstantiateItemCallback {
-        public boolean onInstantiateItem(ViewHolder viewHolder);
+        boolean onInstantiateItem(ViewHolder viewHolder);
     }
 
     public static int FILEOPDIALOG_REQUEST = 1;
@@ -126,6 +123,7 @@ public class ItemActivity extends AppCompatActivity {
             = new TransitionListenerAdapter() {
         @Override
         public void onTransitionStart(Transition transition) {
+            Log.d("ItemActivity", "onTransitionStart()");
             //hide toolbar & statusbar
             float toolbar_translationY = -(toolbar.getHeight());
             float bottomBar_translationY = ((View) bottomBar.getParent()).getHeight();
@@ -136,6 +134,7 @@ public class ItemActivity extends AppCompatActivity {
 
         @Override
         public void onTransitionEnd(Transition transition) {
+            Log.d("ItemActivity", "onTransitionEnd()");
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             if (viewHolder == null) {

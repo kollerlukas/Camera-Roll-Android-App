@@ -232,14 +232,14 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                 .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        showFolderSelectorDialog();
+                        //showFolderSelectorDialog();
                     }
                 })
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
-                        onDialogDismiss();
                         creatingNewFolder = false;
+                        onDialogDismiss();
                     }
                 })
                 .create();
@@ -300,12 +300,8 @@ public class FileOperationDialogActivity extends AppCompatActivity {
                     .setText(album.getName());
 
             if (album.getAlbumItems().size() > 0) {
-                Log.d("FileOperationDialog", "onBindViewHolder: " + album.getAlbumItems().get(0).getPath());
-
                 Glide.with(holder.itemView.getContext())
                         .load(album.getAlbumItems().get(0).getPath())
-                        .skipMemoryCache(true)
-                        .thumbnail(0.1f)
                         .error(R.drawable.error_placeholder_tinted)
                         .into((ImageView) holder.itemView.findViewById(R.id.image));
             }
