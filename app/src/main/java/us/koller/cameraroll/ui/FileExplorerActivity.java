@@ -289,7 +289,7 @@ public class FileExplorerActivity extends AppCompatActivity
                             public void run() {
                                 recyclerViewAdapter.pickTarget();
                             }
-                        }, 500);
+                        }, (int) (500 * Util.getAnimatorSpeed(this)));
                     }
                 }
             }
@@ -720,7 +720,7 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 }
             }
-        }, navIcon instanceof Animatable ? 500 : 0);
+        }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
     }
 
     @Override
@@ -808,7 +808,7 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 }
             }
-        }, 300);
+        }, (int) (300 * Util.getAnimatorSpeed(this)));
     }
 
     @Override
@@ -911,6 +911,6 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                 }
             }
-        }, navIcon instanceof Animatable ? 500 : 0);
+        }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
     }
 }

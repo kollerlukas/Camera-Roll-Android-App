@@ -717,7 +717,7 @@ public class ItemActivity extends AppCompatActivity {
                         public void run() {
                             showDeleteDialog();
                         }
-                    }, 400);
+                    }, (int) (400 * Util.getAnimatorSpeed(this)));
                 } else {
                     showDeleteDialog();
                 }

@@ -740,13 +740,13 @@ public class AlbumActivity extends AppCompatActivity
 
                     toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
 
-                    /*//show share button
-                    menu.findItem(R.id.share).setVisible(true);
+                    //show share button
+                    //menu.findItem(R.id.share).setVisible(true);
                     //show copy & move button
-                    menu.findItem(R.id.copy).setVisible(true);
+                    /*menu.findItem(R.id.copy).setVisible(true);
                     menu.findItem(R.id.move).setVisible(true);*/
                 }
-            }, navIcon instanceof Animatable ? 500 : 0);
+            }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
         } else {
             toolbar.setBackgroundColor(ContextCompat
                     .getColor(this, R.color.colorAccent));
@@ -820,7 +820,7 @@ public class AlbumActivity extends AppCompatActivity
                 menu.findItem(R.id.copy).setVisible(false);
                 menu.findItem(R.id.move).setVisible(false);
             }
-        }, navIcon instanceof Animatable ? 500 : 0);
+        }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
 
         animateFab(false, false);
     }
@@ -871,7 +871,7 @@ public class AlbumActivity extends AppCompatActivity
                     setPhotosResult();
                 }
             }
-        }, 400);
+        }, (int) (400 * Util.getAnimatorSpeed(this)));
     }
 
     public void animateFab(final boolean show, boolean click) {
@@ -908,7 +908,7 @@ public class AlbumActivity extends AppCompatActivity
                         .setDuration(250)
                         .start();
             }
-        }, click ? 400 : 0);
+        }, click ? (int) (400 * Util.getAnimatorSpeed(this)) : 0);
     }
 
     private void setSystemUiFlags() {
