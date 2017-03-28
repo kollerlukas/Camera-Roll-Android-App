@@ -7,10 +7,12 @@
             android:alpha="0.54"
             android:viewportHeight="24"
             android:viewportWidth="24">
+
             <group
                 android:name="group"
                 android:pivotX="12"
                 android:pivotY="12">
+
                 <path
                     android:name="stem"
                     android:pathData="M 11.41 12 L -2.59 12 Z"
