@@ -251,8 +251,19 @@ public class FileOperationDialogActivity extends AppCompatActivity {
         } else {
             fileOperation = new Move(files);
         }
-        fileOperation.execute(FileOperationDialogActivity.this,
-                new File_POJO(target, false), null);
+        fileOperation.execute(this,
+                new File_POJO(target, false),
+                new FileOperation.Callback() {
+                    @Override
+                    public void done() {
+
+                    }
+
+                    @Override
+                    public void failed(String path) {
+
+                    }
+                });
     }
 
     private static class RecyclerViewAdapter extends RecyclerView.Adapter {

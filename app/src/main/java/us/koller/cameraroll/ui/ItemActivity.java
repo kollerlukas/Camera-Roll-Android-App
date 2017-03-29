@@ -591,9 +591,7 @@ public class ItemActivity extends AppCompatActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Uri uri = albumItem.getUri(this);
-                Log.d("ItemActivity", "showInfoDialog: " + uri);
-                exif = new ExifInterface(getContentResolver()
-                        .openInputStream(uri));
+                exif = new ExifInterface(getContentResolver().openInputStream(uri));
             } else {
                 exif = new ExifInterface(albumItem.getPath());
             }
@@ -682,7 +680,8 @@ public class ItemActivity extends AppCompatActivity {
             }
         });
 
-        infoDialog = new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
+        AlertDialog.Builder builder
+                = new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
                 .setTitle(getString(R.string.info))
                 .setView(rootView)
                 .setPositiveButton(R.string.done, null)
@@ -691,8 +690,20 @@ public class ItemActivity extends AppCompatActivity {
                     public void onDismiss(DialogInterface dialogInterface) {
                         infoDialog = null;
                     }
-                })
-                .create();
+                });
+        if (exifSupported) {
+            builder.setNeutralButton(R.string.edit_exif, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent =
+                            new Intent(ItemActivity.this,
+                                    ExifEditorActivity.class);
+                    intent.putExtra(ExifEditorActivity.ALBUM_ITEM, albumItem);
+                    startActivity(intent);
+                }
+            });
+        }
+        infoDialog = builder.create();
         infoDialog.show();
     }
 

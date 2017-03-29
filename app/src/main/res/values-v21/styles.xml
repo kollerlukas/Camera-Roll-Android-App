@@ -28,8 +28,14 @@
     </style>
 
     <style name="Theme.CameraRoll.Translucent.FileExplorerActivity"
-           parent="Theme.CameraRoll.Translucent">
+           parent="Theme.CameraRoll.Translucent"></style>
 
+    <style name="Theme.CameraRoll.Translucent.FileOperationDialogActivity" parent="Theme.CameraRoll.Translucent">
+
+    </style>
+
+    <style name="Theme.CameraRoll.ExifEditorActivity" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
 

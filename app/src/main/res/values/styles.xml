@@ -30,11 +30,13 @@
 
     </style>
 
+    <style name="Theme.CameraRoll.ExifEditorActivity" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
 
     <style name="Theme.CameraRoll.Translucent.AlbumActivity" parent="Theme.CameraRoll.Translucent">
 
     </style>
-
 
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
@@ -42,11 +44,9 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
-
     <style name="Theme.CameraRoll.Translucent.AboutActivity" parent="Theme.CameraRoll.Translucent">
 
     </style>
-
 
     <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>

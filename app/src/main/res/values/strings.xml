@@ -125,4 +125,8 @@
     <string name="excluded">Excluded</string>
     <string name="edit_space">"Edit "</string>
     <string name="copied_to_clipboard">Copied to Clipboard</string>
+    <string name="exif_editor">Exif Editor</string>
+    <string name="edit_exif">edit Exif</string>
+    <string name="save">Save</string>
+    <string name="changes_saved">Changes saved</string>
 </resources>

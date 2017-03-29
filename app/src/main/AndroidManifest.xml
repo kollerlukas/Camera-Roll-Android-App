@@ -49,6 +49,12 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.CameraRoll.Translucent.FileOperationDialogActivity" />
 
+        <activity
+            android:name=".ui.ExifEditorActivity"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/Theme.CameraRoll.ExifEditorActivity" />
+
         <activity android:name=".IntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

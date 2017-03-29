@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
+import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
@@ -103,15 +107,18 @@ public abstract class FileOperation implements Parcelable {
     }
 
     static void scanPaths(final Activity context, String[] paths) {
-        MediaScannerConnection.scanFile(context,
+        Log.d("FileOperation", "scanPaths(), paths = [" + Arrays.deepToString(paths) + "]");
+        MediaScannerConnection.scanFile(context.getApplicationContext(),
                 paths,
                 null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     @Override
                     public void onScanCompleted(String path, Uri uri) {
+                        Log.d("FileOperation", "onScanCompleted: " + path);
                         if (MediaType.isMedia_MimeType(context, path)) {
                             ContentResolver resolver = context.getContentResolver();
                             if (new File(path).exists()) {
+                                Log.d("FileOperation", "add File to media store: " + path);
                                 //add File to media store
                                 ContentValues values = new ContentValues();
                                 values.put(MediaStore.MediaColumns.DATA, path);
@@ -125,6 +132,7 @@ public abstract class FileOperation implements Parcelable {
                                     resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
                                 }
                             } else {
+                                Log.d("FileOperation", "remove File to media store: " + path);
                                 //remove file from media store
                                 String where = MediaStore.MediaColumns.DATA + "=?";
                                 String[] selectionArgs = new String[]{path};
