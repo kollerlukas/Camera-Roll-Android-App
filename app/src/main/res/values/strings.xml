@@ -33,9 +33,9 @@
             <br>
             <br/>
             <br>
-                <b><a href=\"https://github.com/brianwernick/ExoMedia\">ExoMedia</a></b><br/>
-                An Android ExoPlayer wrapper to simplify Audio and Video implementations.<br/>
-                <a href=\"https://github.com/MFlisar/brianwernick/ExoMedia/blob/master/LICENSE\">LICENSE</a>
+                <b><a href=\"https://github.com/google/ExoPlayer\">ExoPlayer</a></b><br/>
+                An extensible media player for Android.<br/>
+                <a href=\"https://github.com/google/ExoPlayer/blob/release-v2/LICENSE\">LICENSE</a>
             <br>
         ]]>
     </string>
@@ -129,4 +129,5 @@
     <string name="edit_exif">edit Exif</string>
     <string name="save">Save</string>
     <string name="changes_saved">Changes saved</string>
+    <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
 </resources>

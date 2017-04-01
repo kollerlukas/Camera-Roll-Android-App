@@ -238,14 +238,6 @@ public class ItemActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                //if previous viewHolder was VideoViewHolder
-                //pause Video
-                ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
-                        .findViewHolderByTag(albumItem.getPath());
-                if (viewHolder instanceof VideoViewHolder) {
-                    ((VideoViewHolder) viewHolder).pauseVideo();
-                }
-
                 //set new AlbumItem
                 albumItem = album.getAlbumItems().get(position);
                 ColorFade.fadeToolbarTitleColor(toolbar, color,
@@ -256,7 +248,7 @@ public class ItemActivity extends AppCompatActivity {
                             }
                         }, true);
 
-                viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
+                ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
                         .findViewHolderByTag(albumItem.getPath());
 
                 onShowViewHolder(viewHolder);
@@ -277,12 +269,6 @@ public class ItemActivity extends AppCompatActivity {
         } else {
             ((View) delete_button.getParent()).setVisibility(View.GONE);
         }
-        /*if (albumItem instanceof Video) {
-            //hide bottom bar
-            bottomBar.setVisibility(View.GONE);
-        } else {
-            bottomBar.setVisibility(View.VISIBLE);
-        }*/
 
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
@@ -311,12 +297,6 @@ public class ItemActivity extends AppCompatActivity {
                     bottomBarParams.leftMargin += insets.getSystemWindowInsetLeft();
                     bottomBarParams.rightMargin += insets.getSystemWindowInsetRight();
                     ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);*/
-
-                    VideoViewHolder.onBottomInset(
-                            new int[]{insets.getSystemWindowInsetLeft(),
-                                    insets.getSystemWindowInsetTop(),
-                                    insets.getSystemWindowInsetRight(),
-                                    insets.getSystemWindowInsetBottom()});
 
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
@@ -347,8 +327,6 @@ public class ItemActivity extends AppCompatActivity {
                                             bottomBar.getPaddingTop(),
                                             bottomBar.getPaddingEnd() + windowInsets[2],
                                             bottomBar.getPaddingBottom() + windowInsets[3]);
-
-                                    VideoViewHolder.onBottomInset(windowInsets);
 
                                     rootView.getViewTreeObserver()
                                             .removeOnGlobalLayoutListener(this);
@@ -442,30 +420,8 @@ public class ItemActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        //if current viewHolder is instance VideoViewHolder
-        //pause Video
-        ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
-                .findViewHolderByTag(albumItem.getPath());
-        if (viewHolder instanceof VideoViewHolder) {
-            ((VideoViewHolder) viewHolder).pauseVideo();
-        }
-    }
-
     public void onShowViewHolder(ViewHolder viewHolder) {
         viewHolder.onSharedElementEnter();
-
-        if (albumItem instanceof Video) {
-            //hide bottom bar
-            bottomBar.setVisibility(View.GONE);
-            //show ui
-            showSystemUI(true);
-        } else {
-            bottomBar.setVisibility(View.VISIBLE);
-        }
 
         if (menu != null) {
             menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
@@ -742,6 +698,22 @@ public class ItemActivity extends AppCompatActivity {
         return systemUiVisible;
     }
 
+    public static void videoOnClick(Context context, AlbumItem albumItem) {
+        if (!(albumItem instanceof Video)) {
+            return;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(albumItem.getUri(context), "video/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, "No App found to play your video", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
     public boolean imageOnClick(boolean show) {
         systemUiVisible = show;
         showSystemUI(systemUiVisible);
@@ -836,10 +808,6 @@ public class ItemActivity extends AppCompatActivity {
                     outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
                 }
             }
-        } else if (albumItem instanceof Video) {
-            ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
-                    .findViewHolderByTag(albumItem.getPath());
-            ((VideoViewHolder) viewHolder).savePlayedTime();
         }
         //outState.putParcelable(ALBUM, album);
         outState.putParcelable(ALBUM_ITEM, albumItem);
@@ -848,7 +816,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public interface Callback {
-        void callback();
+        void done();
     }
 
     @Override
@@ -865,7 +833,7 @@ public class ItemActivity extends AppCompatActivity {
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             viewHolder.onSharedElementExit(new ItemActivity.Callback() {
                 @Override
-                public void callback() {
+                public void done() {
                     setResultAndFinish();
                 }
             });

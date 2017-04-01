@@ -844,22 +844,6 @@ public class AlbumActivity extends AppCompatActivity
         }
     }
 
-    public static void videoOnClick(Context context, AlbumItem albumItem) {
-        if (!(albumItem instanceof Video)) {
-            return;
-        }
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(albumItem.getUri(context), "video/*");
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        try {
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, "No App found to play your video", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-
     public void fabClicked() {
         animateFab(false, true);
         new Handler().postDelayed(new Runnable() {

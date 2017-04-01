@@ -14,6 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraRoll">
 
+        <!--To make use of extra screen real-estate on phones, like LG G6, Samsung Galaxy S8, ...-->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
         <activity
             android:name=".ui.MainActivity"
             android:launchMode="singleTop"
@@ -33,6 +38,11 @@
             android:name=".ui.ItemActivity"
             android:launchMode="singleTop"
             android:theme="@style/Theme.CameraRoll.PhotoView" />
+
+        <activity
+            android:name=".ui.VideoPlayerActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.VideoPlayerActivity" />
 
         <activity
             android:name=".ui.AboutActivity"

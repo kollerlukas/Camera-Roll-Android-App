@@ -64,7 +64,7 @@ public class GifViewHolder extends ViewHolder {
             attacher.cleanup();
             attacher = null;
         }
-        callback.callback();
+        callback.done();
     }
 
     @Override

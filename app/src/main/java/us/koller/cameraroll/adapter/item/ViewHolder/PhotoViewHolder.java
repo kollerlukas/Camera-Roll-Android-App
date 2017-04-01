@@ -9,8 +9,6 @@ import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
@@ -107,14 +105,14 @@ public class PhotoViewHolder extends ViewHolder {
                                     public void onComplete() {
                                         super.onComplete();
                                         swapView(true);
-                                        callback.callback();
+                                        callback.done();
                                         //imageView.recycle();
                                     }
                                 })
                         .start();
             } catch (NullPointerException e) {
                 swapView(true);
-                callback.callback();
+                callback.done();
                 //imageView.recycle();
             }
         }
@@ -129,8 +127,8 @@ public class PhotoViewHolder extends ViewHolder {
     public void onSharedElementExit(final ItemActivity.Callback callback) {
         scaleDown(new ItemActivity.Callback() {
             @Override
-            public void callback() {
-                callback.callback();
+            public void done() {
+                callback.done();
             }
         });
     }

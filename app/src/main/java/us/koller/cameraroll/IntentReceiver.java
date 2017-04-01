@@ -12,6 +12,7 @@ import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.MainActivity;
+import us.koller.cameraroll.ui.VideoPlayerActivity;
 
 public class IntentReceiver extends AppCompatActivity {
 
@@ -53,15 +54,21 @@ public class IntentReceiver extends AppCompatActivity {
         }
         album.getAlbumItems().add(albumItem);
 
-        Intent view_photo = new Intent(this, ItemActivity.class)
-                .setData(uri)
-                .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
-                .putExtra(ItemActivity.VIEW_ONLY, true)
-                .putExtra(ItemActivity.ALBUM, album)
-                .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
-                .putExtra(ItemActivity.FINISH_AFTER, true)
-                .addFlags(intent.getFlags());
-        startActivity(view_photo);
+        if (albumItem instanceof Video) {
+            Intent view_video = new Intent(this, VideoPlayerActivity.class)
+                    .setData(uri);
+            startActivity(view_video);
+        } else {
+            Intent view_photo = new Intent(this, ItemActivity.class)
+                    .setData(uri)
+                    .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
+                    .putExtra(ItemActivity.VIEW_ONLY, true)
+                    .putExtra(ItemActivity.ALBUM, album)
+                    .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
+                    .putExtra(ItemActivity.FINISH_AFTER, true)
+                    .addFlags(intent.getFlags());
+            startActivity(view_photo);
+        }
     }
 
     public void pick(Intent intent) {
