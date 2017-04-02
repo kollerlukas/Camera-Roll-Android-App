@@ -52,7 +52,5 @@ dependencies {
 
     compile 'com.github.MFlisar:DragSelectRecyclerView:0.3'
 
-    /*compile 'com.devbrackets.android:exomedia:3.1.1'*/
-
     compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
 }

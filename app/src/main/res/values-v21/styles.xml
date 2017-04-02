@@ -13,39 +13,12 @@
         <item name="android:windowContentTransitions">true</item>
     </style>
 
-    <style name="Theme.CameraRoll.Translucent" parent="Theme.CameraRoll">
-        <item name="android:windowBackground">@color/black_translucent2</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
-
-
-    <style name="Theme.CameraRoll.Main" parent="Theme.CameraRoll">
-
-    </style>
-
-    <style name="Theme.CameraRoll.Translucent.FileExplorerActivity"
-           parent="Theme.CameraRoll.Translucent"></style>
-
-    <style name="Theme.CameraRoll.Translucent.FileOperationDialogActivity" parent="Theme.CameraRoll.Translucent">
-
-    </style>
-
-    <style name="Theme.CameraRoll.ExifEditorActivity" parent="Theme.CameraRoll">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-
     <style name="Theme.CameraRoll.Translucent.AlbumActivity" parent="Theme.CameraRoll.Translucent">
         <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition
         </item>
         <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
         </item>
     </style>
-
 
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
@@ -63,14 +36,5 @@
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
-
-    <style name="Theme.CameraRoll.Translucent.AboutActivity" parent="Theme.CameraRoll.Translucent">
-
-    </style>
-
-
-    <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorAccent">@color/colorAccent</item>
     </style>
 </resources>

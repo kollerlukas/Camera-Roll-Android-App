@@ -42,7 +42,8 @@
         <activity
             android:name=".ui.VideoPlayerActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.VideoPlayerActivity" />
+            android:theme="@style/Theme.CameraRoll.VideoPlayerActivity"
+            android:configChanges="screenSize|orientation" />
 
         <activity
             android:name=".ui.AboutActivity"

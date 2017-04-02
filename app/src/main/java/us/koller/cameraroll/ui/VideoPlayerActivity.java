@@ -1,6 +1,10 @@
 package us.koller.cameraroll.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -11,12 +15,13 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageButton;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -107,7 +112,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         showOrHideSystemUi(true);
 
         //init Play pause button
-        final View bottomControls = findViewById(R.id.controls);
         final ImageButton playPause = (ImageButton) findViewById(R.id.play_pause);
         playPause.setImageResource(R.drawable.pause_to_play_avd);
         playPause.setOnClickListener(new View.OnClickListener() {
@@ -126,33 +130,110 @@ public class VideoPlayerActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        setWindowInsets();
+
+        player.addListener(new ExoPlayer.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, Object o) {
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
+            }
+
+            @Override
+            public void onLoadingChanged(boolean b) {
+            }
+
+            @Override
+            public void onPlayerStateChanged(boolean b, int i) {
+                //update PlayPause-Button
+                if (player.getPlayWhenReady()) {
+                    playPause.setImageResource(R.drawable.play_to_pause_avd);
+                } else {
+                    playPause.setImageResource(R.drawable.pause_to_play_avd);
+                }
+
+                Drawable d = playPause.getDrawable();
+                if (d instanceof Animatable) {
+                    ((Animatable) d).start();
+                }
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException e) {
+            }
+
+            @Override
+            public void onPositionDiscontinuity() {
+            }
+        });
+
+        //hide & show Nav-/StatusBar together with controls
+        final PlaybackControlView playbackControlView = (PlaybackControlView)
+                findViewById(R.id.playback_control_view).getParent();
+        final View bottomBarControls = findViewById(R.id.controls);
+        playbackControlView.setVisibilityListener(
+                new PlaybackControlView.VisibilityListener() {
+                    @Override
+                    public void onVisibilityChange(final int i) {
+                        //animate Toolbar & controls
+                        if (i != View.VISIBLE) {
+                            //make view visible again, so the Animation is visible
+                            playbackControlView.setVisibility(View.VISIBLE);
+                        }
+
+                        float toolbar_translationY = i == View.VISIBLE ? 0
+                                : -(toolbar.getHeight());
+                        toolbar.animate()
+                                .translationY(toolbar_translationY)
+                                .setInterpolator(new AccelerateDecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        playbackControlView.setVisibility(i);
+                                    }
+                                })
+                                .start();
+
+                        float controls_translationY = i == View.VISIBLE ? 0
+                                : bottomBarControls.getHeight();
+                        bottomBarControls.animate()
+                                .translationY(controls_translationY)
+                                .setInterpolator(new AccelerateDecelerateInterpolator())
+                                .start();
+
+                        //show/hide Nav-/StatusBar
+                        showOrHideSystemUi(i == View.VISIBLE);
+                    }
+                });
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        setWindowInsets();
+    }
+
+    public void setWindowInsets() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final View bottomBarControls = findViewById(R.id.controls);
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            toolbar.getPaddingBottom());
 
-                    /*ViewGroup.MarginLayoutParams toolbarParams
-                         = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                    toolbar.setLayoutParams(toolbarParams);*/
+                    toolbar.setPadding(insets.getSystemWindowInsetLeft(),
+                            insets.getSystemWindowInsetTop(),
+                            insets.getSystemWindowInsetRight(), 0);
 
-                    bottomControls.setPadding(bottomControls.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            bottomControls.getPaddingTop(),
-                            bottomControls.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            bottomControls.getPaddingBottom() + insets.getSystemWindowInsetBottom());
-
-                    /*ViewGroup.MarginLayoutParams bottomControlsParams
-                            = (ViewGroup.MarginLayoutParams) bottomControls.getLayoutParams();
-                    bottomControlsParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    bottomControlsParams.rightMargin += insets.getSystemWindowInsetRight();
-                    bottomControls.setLayoutParams(bottomControlsParams);*/
+                    bottomBarControls.setPadding(insets.getSystemWindowInsetLeft(),
+                            0, insets.getSystemWindowInsetRight(),
+                            insets.getSystemWindowInsetBottom());
 
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
@@ -175,68 +256,17 @@ public class VideoPlayerActivity extends AppCompatActivity {
                                             Math.abs(screenSize[2] - rootView.getRight()),
                                             Math.abs(screenSize[3] - rootView.getBottom())};
 
-                                    toolbar.setPadding(toolbar.getPaddingStart() + windowInsets[0],
-                                            toolbar.getPaddingTop() + windowInsets[1],
-                                            toolbar.getPaddingEnd() + windowInsets[2],
-                                            toolbar.getPaddingBottom());
+                                    toolbar.setPadding(windowInsets[0], windowInsets[1],
+                                            windowInsets[2], 0);
 
-                                    bottomControls.setPadding(bottomControls.getPaddingStart() + windowInsets[0],
-                                            bottomControls.getPaddingTop(),
-                                            bottomControls.getPaddingEnd() + windowInsets[2],
-                                            bottomControls.getPaddingBottom() + windowInsets[3]);
+                                    bottomBarControls.setPadding(windowInsets[0], 0,
+                                            windowInsets[2], windowInsets[3]);
 
                                     rootView.getViewTreeObserver()
                                             .removeOnGlobalLayoutListener(this);
                                 }
                             });
         }
-
-        player.addListener(new ExoPlayer.EventListener() {
-            @Override
-            public void onTimelineChanged(Timeline timeline, Object o) {
-            }
-
-            @Override
-            public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
-            }
-
-            @Override
-            public void onLoadingChanged(boolean b) {
-            }
-
-            @Override
-            public void onPlayerStateChanged(boolean b, int i) {
-                Log.d("VideoPlayerActivity", "onPlayerStateChanged() called with: b = [" + b + "], i = [" + i + "]");
-                if (player.getPlayWhenReady()) {
-                    playPause.setImageResource(R.drawable.play_to_pause_avd);
-                } else {
-                    playPause.setImageResource(R.drawable.pause_to_play_avd);
-                }
-
-                Drawable d = playPause.getDrawable();
-                if (d instanceof Animatable) {
-                    ((Animatable) d).start();
-                }
-            }
-
-            @Override
-            public void onPlayerError(ExoPlaybackException e) {
-            }
-
-            @Override
-            public void onPositionDiscontinuity() {
-            }
-        });
-
-        PlaybackControlView playbackControlView = (PlaybackControlView)
-                findViewById(R.id.playback_control_view).getParent();
-        playbackControlView.setVisibilityListener(
-                new PlaybackControlView.VisibilityListener() {
-                    @Override
-                    public void onVisibilityChange(int i) {
-                        showOrHideSystemUi(i == View.VISIBLE);
-                    }
-                });
     }
 
     public void showOrHideSystemUi(boolean show) {

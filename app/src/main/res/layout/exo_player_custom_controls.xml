@@ -11,9 +11,11 @@
         android:background="@drawable/dark_to_transparent_gradient" />
 
     <LinearLayout
+        android:id="@+id/controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:padding="8dp"
         android:background="@drawable/transparent_to_dark_gradient"
         android:layout_gravity="bottom">
 
@@ -23,11 +25,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="8dp"
-            android:background="@android:color/transparent"
+            android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/play_pause" />
 
         <LinearLayout
-            android:id="@+id/controls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
