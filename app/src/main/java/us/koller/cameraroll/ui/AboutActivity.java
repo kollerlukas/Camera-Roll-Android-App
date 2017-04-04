@@ -36,7 +36,8 @@ import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.Util;
 
-public class AboutActivity extends AppCompatActivity implements SwipeBackCoordinatorLayout.OnSwipeListener {
+public class AboutActivity extends ThemeableActivity
+        implements SwipeBackCoordinatorLayout.OnSwipeListener {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -253,5 +254,19 @@ public class AboutActivity extends AppCompatActivity implements SwipeBackCoordin
                     .setInterpolator(new AccelerateDecelerateInterpolator()));
         }
         onBackPressed();
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == DARK) {
+            return R.style.Theme_CameraRoll_Translucent_About;
+        } else {
+            return R.style.Theme_CameraRoll_Translucent_Light_About;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+
     }
 }

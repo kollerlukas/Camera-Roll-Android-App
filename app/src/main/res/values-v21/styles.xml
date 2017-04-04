@@ -1,4 +1,5 @@
 <resources>
+    <!--Base Theme-->
     <style name="Theme.CameraRoll" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -13,13 +14,36 @@
         <item name="android:windowContentTransitions">true</item>
     </style>
 
-    <style name="Theme.CameraRoll.Translucent.AlbumActivity" parent="Theme.CameraRoll.Translucent">
+    <style name="Theme.CameraRoll.Light" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary_light</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_light</item>
+        <item name="colorAccent">@color/colorAccent_light</item>
+
+        <item name="android:windowTranslucentNavigation">@bool/show_nav_bar</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
+    <!--AlbumActivity Theme-->
+    <style name="Theme.CameraRoll.Translucent.Album" parent="Theme.CameraRoll.Translucent">
         <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition
         </item>
         <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
         </item>
     </style>
 
+    <style name="Theme.CameraRoll.Translucent.Light.Album" parent="Theme.CameraRoll.Light.Translucent">
+        <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition
+        </item>
+        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
+        </item>
+    </style>
+
+    <!--PhotoView Theme-->
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
 
@@ -32,7 +56,26 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="Theme.CameraRoll.VideoPlayerActivity" parent="Theme.CameraRoll">
+    <style name="Theme.CameraRoll.Light.PhotoView" parent="Theme.CameraRoll.Light">
+        <item name="android:windowBackground">@color/black</item>
+
+        <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition
+        </item>
+        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
+        </item>
+
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!--VideoPlayer Theme-->
+    <style name="Theme.CameraRoll.VideoPlayer" parent="Theme.CameraRoll">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.CameraRoll.Light.VideoPlayer" parent="Theme.CameraRoll.Light">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

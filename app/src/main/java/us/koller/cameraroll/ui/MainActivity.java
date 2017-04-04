@@ -38,8 +38,9 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.Util;
+import us.koller.cameraroll.util.animators.ColorFade;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ThemeableActivity {
 
     public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
@@ -93,15 +94,17 @@ public class MainActivity extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(!pick_photos ?
-                ContextCompat.getColor(this, R.color.black_translucent2) :
+                ContextCompat.getColor(this, toolbar_color_res) :
                 ContextCompat.getColor(this, R.color.colorAccent));
+        toolbar.setTitleTextColor(!pick_photos ?
+                ContextCompat.getColor(this, text_color_res) :
+                ContextCompat.getColor(this, R.color.grey_900_translucent));
 
         if (pick_photos) {
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) : getString(R.string.pick_photo));
             }
-            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.grey_900_translucent));
             toolbar.setActivated(true);
             toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
             //toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
@@ -431,6 +434,34 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (mediaProvider != null) {
             mediaProvider.onDestroy();
+        }
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == DARK) {
+            return R.style.Theme_CameraRoll_Main;
+        } else {
+            return R.style.Theme_CameraRoll_Light_Main;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+        if (pick_photos) {
+            return;
+        }
+
+        if (theme == ThemeableActivity.LIGHT) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setActivated(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,
+                        R.color.black_translucent1));
+            }
         }
     }
 }

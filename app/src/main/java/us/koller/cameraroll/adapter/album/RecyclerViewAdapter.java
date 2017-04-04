@@ -108,29 +108,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         boolean selected = selected_items[album.getAlbumItems()
                 .indexOf(((AlbumItemHolder) holder).albumItem)];
 
-        final View imageView = holder.itemView.findViewById(R.id.image);
-
-        final Drawable selectorOverlay = Util
-                .getAlbumItemSelectorOverlay(imageView.getContext());
-        if (selected) {
-            imageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    imageView.getOverlay().clear();
-                    selectorOverlay.setBounds(0, 0,
-                            imageView.getWidth(),
-                            imageView.getHeight());
-                    imageView.getOverlay().add(selectorOverlay);
-                }
-            });
-        } else {
-            imageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    imageView.getOverlay().clear();
-                }
-            });
-        }
+        ((AlbumItemHolder) holder).setSelected(selected);
 
         holder.itemView.setTag(albumItem.getPath());
 
@@ -154,22 +132,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                                     (Activity) holder.itemView.getContext(),
                                     holder.itemView.findViewById(R.id.image),
                                     albumItem.getPath());
-                    ((Activity) holder.itemView.getContext()).startActivityForResult(intent, 6, options.toBundle());
+                    ((Activity) holder.itemView.getContext())
+                            .startActivityForResult(intent, 6, options.toBundle());
                 }
-
-                /*else if (albumItem instanceof Video){
-                    AlbumActivity.videoOnClick((Activity) holder.itemView.getContext(), albumItem);
-                }*/
             }
         });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                /*if (((AlbumItemHolder) holder).albumItem.error) {
-                    return true;
-                }*/
-
                 if (!selector_mode) {
                     selector_mode = true;
                     selected_items = new boolean[album.getAlbumItems().size()];

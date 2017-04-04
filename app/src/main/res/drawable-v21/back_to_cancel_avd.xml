@@ -5,7 +5,6 @@
         <vector xmlns:android="http://schemas.android.com/apk/res/android"
             android:width="24dp"
             android:height="24dp"
-            android:alpha="0.54"
             android:viewportHeight="24"
             android:viewportWidth="24">
             <group
@@ -63,15 +62,6 @@
                     android:valueFrom="0"
                     android:valueTo="1"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/white"
-                    android:valueTo="@color/grey_900"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -89,15 +79,6 @@
                     android:valueFrom="1"
                     android:valueTo="0"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/white"
-                    android:valueTo="@color/grey_900"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -114,15 +95,6 @@
                     android:valueFrom="1"
                     android:valueTo="0"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/white"
-                    android:valueTo="@color/grey_900"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -139,15 +111,6 @@
                     android:valueFrom="1"
                     android:valueTo="0.44"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/white"
-                    android:valueTo="@color/grey_900"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -164,15 +127,6 @@
                     android:valueFrom="1"
                     android:valueTo="0.44"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/white"
-                    android:valueTo="@color/grey_900"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>

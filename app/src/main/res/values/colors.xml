@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--dark theme colors-->
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#69F0AE</color>
     <color name="colorAccent_translucent">#8A69F0AE</color>
+    <color name="dark_bg">#303030</color>
+
+    <!--light theme colors-->
+    <color name="colorPrimary_light">#F5F5F5</color>
+    <color name="colorPrimaryDark_light">#E0E0E0</color>
+    <color name="colorAccent_light">#69F0AE</color>
+    <color name="colorAccent_translucent_light">#8A69F0AE</color>
+    <color name="light_bg">#FAFAFA</color>
 
     <color name="white">#FFFFFF</color>
     <color name="white_translucent1">#8AFFFFFF</color>
     <color name="white_translucent2">#33FFFFFF</color>
-    <color name="dark_bg">#303030</color>
     <color name="ripple_color">#33000000</color>
     <color name="black_translucent1">#33000000</color>
     <color name="grey_900_translucent">#8A212121</color>

@@ -41,7 +41,7 @@ import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
 //simple Activity to edit the Exif-Data of images
-public class ExifEditorActivity extends AppCompatActivity {
+public class ExifEditorActivity extends ThemeableActivity {
 
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
     public static final String EDITED_ITEMS = "EDITED_ITEMS";
@@ -204,7 +204,7 @@ public class ExifEditorActivity extends AppCompatActivity {
         Drawable d = save.getIcon();
         DrawableCompat.wrap(d);
         DrawableCompat.setTint(d, ContextCompat
-                .getColor(this, R.color.white_translucent1));
+                .getColor(this, text_color_secondary_res));
         save.setIcon(d);
 
         save.setVisible(editedItems.size() > 0);
@@ -252,6 +252,30 @@ public class ExifEditorActivity extends AppCompatActivity {
                         });
             }
         });
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == DARK) {
+            return R.style.Theme_CameraRoll_ExifEditor;
+        } else {
+            return R.style.Theme_CameraRoll_Light_ExifEditor;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(text_color_res);
+
+        if (theme == ThemeableActivity.LIGHT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,
+                        R.color.black_translucent1));
+            }
+        }
     }
 
     public static class EditedItem implements Parcelable {

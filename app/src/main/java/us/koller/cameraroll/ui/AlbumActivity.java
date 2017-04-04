@@ -23,7 +23,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -38,7 +37,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +58,7 @@ import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
-public class AlbumActivity extends AppCompatActivity
+public class AlbumActivity extends ThemeableActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
 
     public static int FILE_OP_DIALOG_REQUEST = 1;
@@ -172,7 +170,6 @@ public class AlbumActivity extends AppCompatActivity
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
@@ -182,13 +179,13 @@ public class AlbumActivity extends AppCompatActivity
                 toolbar.setNavigationIcon(drawable);
             } else {
                 toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-                Drawable navIcon = toolbar.getNavigationIcon();
-                if (navIcon != null) {
-                    navIcon = DrawableCompat.wrap(navIcon);
-                    DrawableCompat.setTint(navIcon.mutate(),
-                            ContextCompat.getColor(this, R.color.white_translucent1));
-                    toolbar.setNavigationIcon(navIcon);
-                }
+            }
+            Drawable navIcon = toolbar.getNavigationIcon();
+            if (navIcon != null) {
+                navIcon = DrawableCompat.wrap(navIcon);
+                DrawableCompat.setTint(navIcon.mutate(),
+                        ContextCompat.getColor(this, text_color_secondary_res));
+                toolbar.setNavigationIcon(navIcon);
             }
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
@@ -449,12 +446,14 @@ public class AlbumActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final AlbumItem[] selected_items =
-                ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
+        final AlbumItem[] selected_items;
         Intent intent;
         switch (item.getItemId()) {
             case R.id.share:
                 //share multiple items
+                selected_items =
+                        ((RecyclerViewAdapter) recyclerView.getAdapter())
+                                .cancelSelectorMode();
                 ArrayList<Uri> uris = new ArrayList<>();
                 for (int i = 0; i < selected_items.length; i++) {
                     uris.add(selected_items[i].getUri(this));
@@ -473,6 +472,9 @@ public class AlbumActivity extends AppCompatActivity
                 break;
             case R.id.copy:
             case R.id.move:
+                selected_items =
+                        ((RecyclerViewAdapter) recyclerView.getAdapter())
+                                .cancelSelectorMode();
                 String[] paths = new String[selected_items.length];
                 for (int i = 0; i < paths.length; i++) {
                     paths[i] = selected_items[i].getPath();
@@ -706,50 +708,47 @@ public class AlbumActivity extends AppCompatActivity
 
         if (!pick_photos) {
             ColorFade.fadeBackgroundColor(toolbar,
-                    ContextCompat.getColor(this, R.color.black_translucent2),
-                    ContextCompat.getColor(this, R.color.colorAccent));
+                    ContextCompat.getColor(this, toolbar_color_res),
+                    ContextCompat.getColor(this, accent_color_res));
 
             //fade overflow menu icon
             ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
-                    ContextCompat.getColor(this, R.color.white_translucent1),
+                    ContextCompat.getColor(this, text_color_secondary_res),
                     ContextCompat.getColor(this, R.color.grey_900_translucent));
 
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon instanceof Animatable) {
                 ((Animatable) navIcon).start();
+                ColorFade.fadeIconColor(navIcon,
+                        ContextCompat.getColor(this, text_color_secondary_res),
+                        ContextCompat.getColor(this, R.color.grey_900_translucent));
             }
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    Drawable d;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
                                 ContextCompat.getDrawable(AlbumActivity.this, R.drawable.cancel_to_back_avd);
                         //mutating avd to reset it
                         drawable.mutate();
-                        toolbar.setNavigationIcon(drawable);
+                        d = drawable;
                     } else {
-                        toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
-                        Drawable navIcon = toolbar.getNavigationIcon();
-                        if (navIcon != null) {
-                            navIcon = DrawableCompat.wrap(navIcon);
-                            DrawableCompat.setTint(navIcon.mutate(),
-                                    ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
-                            toolbar.setNavigationIcon(navIcon);
-                        }
+                        d = ContextCompat.getDrawable(AlbumActivity.this, R.drawable.ic_arrow_back_white_24dp);
                     }
+                    d = DrawableCompat.wrap(d);
+                    DrawableCompat.setTint(d.mutate(),
+                            ContextCompat.getColor(AlbumActivity.this,
+                                    R.color.grey_900_translucent));
+                    toolbar.setNavigationIcon(d);
 
                     toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
 
-                    //show share button
-                    //menu.findItem(R.id.share).setVisible(true);
-                    //show copy & move button
-                    /*menu.findItem(R.id.copy).setVisible(true);
-                    menu.findItem(R.id.move).setVisible(true);*/
                 }
             }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
         } else {
             toolbar.setBackgroundColor(ContextCompat
-                    .getColor(this, R.color.colorAccent));
+                    .getColor(this, accent_color_res));
             toolbar.setTitleTextColor(ContextCompat
                     .getColor(AlbumActivity.this, R.color.grey_900_translucent));
         }
@@ -768,52 +767,52 @@ public class AlbumActivity extends AppCompatActivity
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat
                 .getColor(AlbumActivity.this, android.R.color.transparent));
-        toolbar.setActivated(false);
+
+        if (THEME != ThemeableActivity.LIGHT) {
+            toolbar.setActivated(false);
+        }
 
         ColorFade.fadeBackgroundColor(toolbar,
-                ContextCompat.getColor(this, R.color.colorAccent),
-                ContextCompat.getColor(this, R.color.black_translucent2));
+                ContextCompat.getColor(this, accent_color_res),
+                ContextCompat.getColor(this, toolbar_color_res));
         toolbar.setTitle(album.getName());
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
                 ContextCompat.getColor(this, R.color.grey_900_translucent),
-                ContextCompat.getColor(this, R.color.white_translucent1));
-
-        /*//hide share menu item
-        menu.findItem(R.id.share).setVisible(false);
-        //hide copy & move button
-        menu.findItem(R.id.copy).setVisible(false);
-        menu.findItem(R.id.move).setVisible(false);*/
+                ContextCompat.getColor(this, text_color_secondary_res));
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
+            ColorFade.fadeIconColor(navIcon,
+                    ContextCompat.getColor(this, R.color.grey_900_translucent),
+                    ContextCompat.getColor(this, text_color_secondary_res));
         }
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
                             ContextCompat.getDrawable(AlbumActivity.this, R.drawable.back_to_cancel_avd);
                     //mutating avd to reset it
                     drawable.mutate();
-                    toolbar.setNavigationIcon(drawable);
+                    d = drawable;
                 } else {
-                    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-                    Drawable navIcon = toolbar.getNavigationIcon();
-                    if (navIcon != null) {
-                        navIcon = DrawableCompat.wrap(navIcon);
-                        DrawableCompat.setTint(navIcon.mutate(),
-                                ContextCompat.getColor(AlbumActivity.this, R.color.white));
-                        toolbar.setNavigationIcon(navIcon);
-                    }
+                    d = ContextCompat.getDrawable(AlbumActivity.this, R.drawable.ic_arrow_back_white_24dp);
                 }
+                d = DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d.mutate(),
+                        ContextCompat.getColor(AlbumActivity.this,
+                                text_color_secondary_res));
+                toolbar.setNavigationIcon(d);
 
-                toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.white));
+                toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, text_color_res));
 
-                Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                if (THEME != ThemeableActivity.LIGHT) {
+                    Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                }
 
                 menu.findItem(R.id.exclude).setVisible(true);
                 menu.findItem(R.id.share).setVisible(false);
@@ -968,5 +967,36 @@ public class AlbumActivity extends AppCompatActivity
                     .setInterpolator(new AccelerateDecelerateInterpolator()));
         }
         onBackPressed();
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == DARK) {
+            return R.style.Theme_CameraRoll_Main;
+        } else {
+            return R.style.Theme_CameraRoll_Light_Main;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+        if (pick_photos) {
+            return;
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
+
+        if (theme == ThemeableActivity.LIGHT) {
+            toolbar.setActivated(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,
+                        R.color.black_translucent1));
+            }
+        }
     }
 }

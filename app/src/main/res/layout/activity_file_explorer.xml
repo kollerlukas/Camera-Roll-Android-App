@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:id="@+id/root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/dark_bg">
+        android:tag="@string/theme_bg_color">
+        <!--android:background="@color/dark_bg"-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -17,7 +18,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false" />
 
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

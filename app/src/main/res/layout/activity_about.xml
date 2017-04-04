@@ -52,11 +52,11 @@
                     android:id="@+id/about_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/dark_bg"
                     android:fontFamily="sans-serif-monospace"
                     android:padding="16dp"
                     android:paddingTop="24dp"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:tag="@string/theme_bg_color" />
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar

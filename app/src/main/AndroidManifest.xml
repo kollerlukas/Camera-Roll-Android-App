@@ -32,7 +32,7 @@
         <activity
             android:name=".ui.AlbumActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.AlbumActivity" />
+            android:theme="@style/Theme.CameraRoll.Translucent.Album" />
 
         <activity
             android:name=".ui.ItemActivity"
@@ -42,29 +42,29 @@
         <activity
             android:name=".ui.VideoPlayerActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.VideoPlayerActivity"
+            android:theme="@style/Theme.CameraRoll.VideoPlayer"
             android:configChanges="screenSize|orientation" />
 
         <activity
             android:name=".ui.AboutActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.AboutActivity" />
+            android:theme="@style/Theme.CameraRoll.Translucent.About" />
 
         <activity
             android:name=".ui.FileExplorerActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.FileExplorerActivity" />
+            android:theme="@style/Theme.CameraRoll.Translucent.FileExplorer" />
 
         <activity
             android:name=".ui.FileOperationDialogActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.FileOperationDialogActivity" />
+            android:theme="@style/Theme.CameraRoll.Translucent.FileOperationDialog" />
 
         <activity
             android:name=".ui.ExifEditorActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Theme.CameraRoll.ExifEditorActivity" />
+            android:theme="@style/Theme.CameraRoll.ExifEditor" />
 
         <activity android:name=".IntentReceiver">
             <intent-filter>

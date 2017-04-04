@@ -20,7 +20,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -57,7 +56,7 @@ import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.Util;
 
-public class FileExplorerActivity extends AppCompatActivity
+public class FileExplorerActivity extends ThemeableActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
 
     public interface OnDirectoryChangeCallback {
@@ -92,7 +91,8 @@ public class FileExplorerActivity extends AppCompatActivity
         currentDir = new File_POJO("", false);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucent2));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
@@ -102,18 +102,20 @@ public class FileExplorerActivity extends AppCompatActivity
             toolbar.setNavigationIcon(drawable);
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-            Drawable navIcon = toolbar.getNavigationIcon();
-            if (navIcon != null) {
-                navIcon = DrawableCompat.wrap(navIcon);
-                DrawableCompat.setTint(navIcon.mutate(),
-                        ContextCompat.getColor(this, R.color.white_translucent1));
-                toolbar.setNavigationIcon(navIcon);
-            }
+
         }
+        Drawable navIcon = toolbar.getNavigationIcon();
+        if (navIcon != null) {
+            navIcon = DrawableCompat.wrap(navIcon);
+            DrawableCompat.setTint(navIcon.mutate(),
+                    ContextCompat.getColor(this, text_color_secondary_res));
+            toolbar.setNavigationIcon(navIcon);
+        }
+
         setSupportActionBar(toolbar);
 
         Util.colorToolbarOverflowMenuIcon(toolbar,
-                ContextCompat.getColor(this, R.color.white_translucent1));
+                ContextCompat.getColor(this, text_color_secondary_res));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -298,7 +300,7 @@ public class FileExplorerActivity extends AppCompatActivity
             loadRoots();
 
             //show warning dialog
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this, getDialogThemeRes())
                     .setTitle(R.string.warning)
                     .setMessage(Html.fromHtml(getString(R.string.file_explorer_warning_message)))
                     .setPositiveButton(R.string.ok, null)
@@ -393,7 +395,8 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
+        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(),
+                R.mipmap.ic_launcher_round);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
                 overviewIcon,
                 ContextCompat.getColor(this, R.color.colorPrimary)));
@@ -537,7 +540,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
         final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
 
-        new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
+        new AlertDialog.Builder(this, getDialogThemeRes())
                 .setTitle(R.string.new_folder)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -652,7 +655,8 @@ public class FileExplorerActivity extends AppCompatActivity
 
     @Override
     public void onSwipeProcess(float percent) {
-        getWindow().getDecorView().setBackgroundColor(SwipeBackCoordinatorLayout.getBackgroundColor(percent));
+        getWindow().getDecorView().setBackgroundColor(
+                SwipeBackCoordinatorLayout.getBackgroundColor(percent));
     }
 
     @Override
@@ -673,42 +677,47 @@ public class FileExplorerActivity extends AppCompatActivity
         FileOperation.operation = FileOperation.EMPTY;
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
+        toolbar.setTitleTextColor(ContextCompat.getColor(this,
+                android.R.color.transparent));
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
         Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
 
-        Util.colorToolbarOverflowMenuIcon(toolbar,
-                ContextCompat.getColor(FileExplorerActivity.this, R.color.grey_900_translucent));
-
         ColorFade.fadeBackgroundColor(toolbar,
-                ContextCompat.getColor(this, R.color.black_translucent2),
-                ContextCompat.getColor(this, R.color.colorAccent));
+                ContextCompat.getColor(this, toolbar_color_res),
+                ContextCompat.getColor(this, accent_color_res));
+
+        //fade overflow menu icon
+        ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
+                ContextCompat.getColor(this, text_color_secondary_res),
+                ContextCompat.getColor(this, R.color.grey_900_translucent));
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
+            ColorFade.fadeIconColor(navIcon,
+                    ContextCompat.getColor(this, text_color_secondary_res),
+                    ContextCompat.getColor(this, R.color.grey_900_translucent));
         }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
                             ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.cancel_to_back_avd);
                     //mutating avd to reset it
                     drawable.mutate();
-                    toolbar.setNavigationIcon(drawable);
+                    d = drawable;
                 } else {
-                    toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
-                    Drawable navIcon = toolbar.getNavigationIcon();
-                    if (navIcon != null) {
-                        navIcon = DrawableCompat.wrap(navIcon);
-                        DrawableCompat.setTint(navIcon.mutate(),
-                                ContextCompat.getColor(FileExplorerActivity.this, R.color.grey_900_translucent));
-                        toolbar.setNavigationIcon(navIcon);
-                    }
+                    d = ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.ic_arrow_back_white_24dp);
                 }
+                d = DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d.mutate(),
+                        ContextCompat.getColor(FileExplorerActivity.this,
+                                R.color.grey_900_translucent));
+                toolbar.setNavigationIcon(d);
 
                 //make menu items visible
                 for (int i = 0; i < menu.size(); i++) {
@@ -837,7 +846,7 @@ public class FileExplorerActivity extends AppCompatActivity
         if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-            int color = ContextCompat.getColor(FileExplorerActivity.this, R.color.white);
+            int color = ContextCompat.getColor(FileExplorerActivity.this, text_color_res);
             ColorFade.fadeToolbarTitleColor(toolbar, color,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
@@ -855,43 +864,53 @@ public class FileExplorerActivity extends AppCompatActivity
 
     public void resetToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.transparent));
+        toolbar.setTitleTextColor(ContextCompat.getColor(this,
+                android.R.color.transparent));
 
-        toolbar.setActivated(false);
+        if (THEME != ThemeableActivity.LIGHT) {
+            toolbar.setActivated(false);
+        }
+
         ColorFade.fadeBackgroundColor(toolbar,
-                ContextCompat.getColor(this, R.color.colorAccent),
-                ContextCompat.getColor(this, R.color.black_translucent2));
+                ContextCompat.getColor(this, accent_color_res),
+                ContextCompat.getColor(this, toolbar_color_res));
+
+        //fade overflow menu icon
+        ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
+                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                ContextCompat.getColor(this, text_color_secondary_res));
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
+            ColorFade.fadeIconColor(navIcon,
+                    ContextCompat.getColor(this, R.color.grey_900_translucent),
+                    ContextCompat.getColor(this, text_color_secondary_res));
         }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
                             ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.back_to_cancel_avd);
                     //mutating avd to reset it
                     drawable.mutate();
-                    toolbar.setNavigationIcon(drawable);
+                    d = drawable;
                 } else {
-                    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-                    Drawable navIcon = toolbar.getNavigationIcon();
-                    if (navIcon != null) {
-                        navIcon = DrawableCompat.wrap(navIcon);
-                        DrawableCompat.setTint(navIcon.mutate(),
-                                ContextCompat.getColor(FileExplorerActivity.this, R.color.white_translucent1));
-                        toolbar.setNavigationIcon(navIcon);
-                    }
+                    d = ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                }
+                d = DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d.mutate(),
+                        ContextCompat.getColor(FileExplorerActivity.this,
+                                text_color_secondary_res));
+                toolbar.setNavigationIcon(d);
+
+                if (THEME != ThemeableActivity.LIGHT) {
+                    Util.setLightStatusBarIcons(findViewById(R.id.root_view));
                 }
 
-                Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-
-                Util.colorToolbarOverflowMenuIcon(toolbar,
-                        ContextCompat.getColor(FileExplorerActivity.this, R.color.white_translucent1));
-
-                int color = ContextCompat.getColor(FileExplorerActivity.this, R.color.white);
+                int color = ContextCompat.getColor(FileExplorerActivity.this, text_color_res);
                 ColorFade.fadeToolbarTitleColor(toolbar, color,
                         new ColorFade.ToolbarTitleFadeCallback() {
                             @Override
@@ -912,5 +931,28 @@ public class FileExplorerActivity extends AppCompatActivity
                 }
             }
         }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == ThemeableActivity.DARK) {
+            return R.style.Theme_CameraRoll_Translucent_FileExplorer;
+        } else {
+            return R.style.Theme_CameraRoll_Light_Translucent_FileExplorer;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+        if (theme == ThemeableActivity.LIGHT) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setActivated(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            } else {
+
+            }
+        }
     }
 }

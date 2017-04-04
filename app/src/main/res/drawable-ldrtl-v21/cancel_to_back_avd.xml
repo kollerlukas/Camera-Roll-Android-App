@@ -4,7 +4,6 @@
         <vector xmlns:android="http://schemas.android.com/apk/res/android"
             android:width="24dp"
             android:height="24dp"
-            android:alpha="0.54"
             android:viewportHeight="24"
             android:viewportWidth="24">
 
@@ -62,15 +61,6 @@
                     android:valueFrom="1"
                     android:valueTo="0"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/grey_900"
-                    android:valueTo="@color/white"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -86,15 +76,6 @@
                     android:valueFrom="0"
                     android:valueTo="1"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/grey_900"
-                    android:valueTo="@color/white"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -110,15 +91,6 @@
                     android:valueFrom="0"
                     android:valueTo="1"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/grey_900"
-                    android:valueTo="@color/white"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -134,15 +106,6 @@
                     android:valueFrom="0.44"
                     android:valueTo="1"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/grey_900"
-                    android:valueTo="@color/white"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -158,15 +121,6 @@
                     android:valueFrom="0.44"
                     android:valueTo="1"
                     android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="stroke_color"
-                    android:duration="300"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="strokeColor"
-                    android:valueFrom="@color/grey_900"
-                    android:valueTo="@color/white"
-                    android:valueType="colorType" />
             </set>
         </aapt:attr>
     </target>
@@ -181,15 +135,6 @@
                     android:propertyName="translateX"
                     android:valueFrom="0"
                     android:valueTo="7.3"
-                    android:valueType="floatType" />
-
-                <objectAnimator
-                    android:name="group"
-                    android:duration="375"
-                    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-                    android:propertyName="rotation"
-                    android:valueFrom="180"
-                    android:valueTo="0"
                     android:valueType="floatType" />
             </set>
         </aapt:attr>

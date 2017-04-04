@@ -11,7 +11,8 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/exif_editor" />
+        app:title="@string/exif_editor"
+        android:elevation="4dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

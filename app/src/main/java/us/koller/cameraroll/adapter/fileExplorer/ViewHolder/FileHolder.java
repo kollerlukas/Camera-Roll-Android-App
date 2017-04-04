@@ -13,6 +13,8 @@ import java.io.File;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.StorageRoot;
+import us.koller.cameraroll.ui.AlbumActivity;
+import us.koller.cameraroll.ui.ThemeableActivity;
 import us.koller.cameraroll.util.MediaType;
 
 public class FileHolder extends RecyclerView.ViewHolder {
@@ -55,17 +57,18 @@ public class FileHolder extends RecyclerView.ViewHolder {
                         selected ? R.color.colorAccent_translucent :
                                 android.R.color.transparent));
 
+        int color = ContextCompat.getColor(itemView.getContext(),
+                selected ? R.color.grey_900_translucent : ThemeableActivity.text_color_secondary_res);
+
         TextView textView = (TextView) itemView.findViewById(R.id.text);
-        textView.setTextColor(ContextCompat.getColor(itemView.getContext(),
-                selected ? R.color.grey_900_translucent : R.color.white_translucent1));
+        textView.setTextColor(color);
 
         ImageView folderIndicator = (ImageView) itemView.findViewById(R.id.folder_indicator);
         Drawable d = folderIndicator.getDrawable();
-        /*d.setTint(ContextCompat.getColor(itemView.getContext(),
-                selected ? R.color.grey_900_translucent : R.color.white));*/
+
         d = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(d.mutate(), ContextCompat.getColor(itemView.getContext(),
-                selected ? R.color.grey_900_translucent : R.color.white));
+        DrawableCompat.setTint(d.mutate(), color);
+
         folderIndicator.setImageDrawable(d);
     }
 }

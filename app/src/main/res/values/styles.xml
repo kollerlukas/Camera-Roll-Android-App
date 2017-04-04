@@ -1,5 +1,10 @@
 <resources>
 
+    <!--Tag for a view, which need a bg color set, according to the current theme-->
+    <string name="theme_bg_color" translatable="false">THEME_BG_COLOR</string>
+    <string name="theme_bg_color_translucent" translatable="false">THEME_BG_COLOR_TRANSLUCENT</string>
+
+    <!--Base Theme-->
     <style name="Theme.CameraRoll" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -9,6 +14,16 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <style name="Theme.CameraRoll.Light" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary_light</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_light</item>
+        <item name="colorAccent">@color/colorAccent_light</item>
+
+        <item name="android:windowTranslucentNavigation">@bool/show_nav_bar</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!--translucent Activity Base Theme-->
     <style name="Theme.CameraRoll.Translucent" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black_translucent2</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
@@ -18,43 +33,85 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-
-    <style name="Theme.CameraRoll.Main" parent="Theme.CameraRoll">
-
+    <style name="Theme.CameraRoll.Light.Translucent" parent="Theme.CameraRoll.Light">
+        <item name="android:windowBackground">@color/black_translucent2</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.CameraRoll.Translucent.FileExplorerActivity" parent="Theme.CameraRoll.Translucent">
+    <!--MainActivity Theme-->
+    <style name="Theme.CameraRoll.Main" parent="Theme.CameraRoll" />
 
-    </style>
+    <style name="Theme.CameraRoll.Light.Main" parent="Theme.CameraRoll.Light" />
 
-    <style name="Theme.CameraRoll.Translucent.FileOperationDialogActivity" parent="Theme.CameraRoll.Translucent">
+    <!--AlbumActivity Theme-->
+    <style name="Theme.CameraRoll.Translucent.Album" parent="Theme.CameraRoll.Translucent" />
 
-    </style>
+    <style name="Theme.CameraRoll.Translucent.Light.Album" parent="Theme.CameraRoll.Light.Translucent" />
 
-    <style name="Theme.CameraRoll.ExifEditorActivity" parent="Theme.CameraRoll">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="Theme.CameraRoll.Translucent.AlbumActivity" parent="Theme.CameraRoll.Translucent">
-
-    </style>
-
+    <!--PhotoView Theme-->
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
-
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
-    <style name="Theme.CameraRoll.VideoPlayerActivity" parent="Theme.CameraRoll">
+    <style name="Theme.CameraRoll.Light.PhotoView" parent="Theme.CameraRoll.Light">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+    <!--VideoPlayer Theme-->
+    <style name="Theme.CameraRoll.VideoPlayer" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
-    <style name="Theme.CameraRoll.Translucent.AboutActivity" parent="Theme.CameraRoll.Translucent">
-
+    <style name="Theme.CameraRoll.Light.VideoPlayer" parent="Theme.CameraRoll.Light">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
     </style>
 
+    <!--FileExplorer Theme-->
+    <style name="Theme.CameraRoll.Translucent.FileExplorer" parent="Theme.CameraRoll.Translucent" />
+
+    <style name="Theme.CameraRoll.Light.Translucent.FileExplorer" parent="Theme.CameraRoll.Light.Translucent" />
+
+    <!--FileOperationDialogActivity Theme-->
+    <style name="Theme.CameraRoll.Translucent.FileOperationDialog" parent="Theme.CameraRoll.Translucent" />
+
+    <style name="Theme.CameraRoll.Translucent.Light.FileOperationDialog" parent="Theme.CameraRoll.Light.Translucent" />
+
+    <!--ExifEditor Theme-->
+    <style name="Theme.CameraRoll.ExifEditor" parent="Theme.CameraRoll" />
+
+    <style name="Theme.CameraRoll.Light.ExifEditor" parent="Theme.CameraRoll.Light" />
+
+    <!--<style name="Theme.CameraRoll.ExifEditor" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>-->
+
+    <!--<style name="Theme.CameraRoll.Light.ExifEditor" parent="Theme.CameraRoll.Light">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>-->
+
+    <!--AboutActivity Theme-->
+    <style name="Theme.CameraRoll.Translucent.About" parent="Theme.CameraRoll.Translucent" />
+
+    <style name="Theme.CameraRoll.Translucent.Light.About" parent="Theme.CameraRoll.Light.Translucent" />
+
+    <!--Dialog Style-->
     <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="Theme.CameraRoll.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent_light</item>
     </style>
 </resources>

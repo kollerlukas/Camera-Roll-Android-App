@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.media.ExifInterface;
 import android.net.Uri;
@@ -25,12 +26,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.print.PrintHelper;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -63,7 +64,6 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.item.ViewHolder.VideoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
@@ -78,7 +78,7 @@ import us.koller.cameraroll.util.TransitionListenerAdapter;
 import us.koller.cameraroll.util.Util;
 import us.koller.cameraroll.util.ZoomOutPageTransformer;
 
-public class ItemActivity extends AppCompatActivity {
+public class ItemActivity extends ThemeableActivity {
 
     public interface ViewPagerOnInstantiateItemCallback {
         boolean onInstantiateItem(ViewHolder viewHolder);
@@ -501,7 +501,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     public void showDeleteDialog() {
-        new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
+        new AlertDialog.Builder(this, getDialogThemeRes())
                 .setTitle("Delete Photo?")
                 .setNegativeButton("No", null)
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -637,7 +637,7 @@ public class ItemActivity extends AppCompatActivity {
         });
 
         AlertDialog.Builder builder
-                = new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
+                = new AlertDialog.Builder(this, getDialogThemeRes())
                 .setTitle(getString(R.string.info))
                 .setView(rootView)
                 .setPositiveButton(R.string.done, null)
@@ -856,6 +856,31 @@ public class ItemActivity extends AppCompatActivity {
             finishAfterTransition();
         } else {
             finish();
+        }
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == DARK) {
+            return R.style.Theme_CameraRoll_PhotoView;
+        } else {
+            return R.style.Theme_CameraRoll_Light_PhotoView;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+        if (theme == LIGHT) {
+            int white = ContextCompat.getColor(this, R.color.white);
+
+            Drawable d = toolbar.getNavigationIcon();
+            DrawableCompat.wrap(d);
+            DrawableCompat.setTint(d.mutate(), white);
+            toolbar.setNavigationIcon(d);
+
+            toolbar.setTitleTextColor(white);
+
+            Util.colorToolbarOverflowMenuIcon(toolbar, white);
         }
     }
 

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,7 +32,7 @@ import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
-public class FileOperationDialogActivity extends AppCompatActivity {
+public class FileOperationDialogActivity extends ThemeableActivity {
 
     public static String ACTION_COPY = "ACTION_COPY";
     public static String ACTION_MOVE = "ACTION_MOVE";
@@ -145,7 +144,7 @@ public class FileOperationDialogActivity extends AppCompatActivity {
         String title = (action.equals(ACTION_COPY) ? getString(R.string.copy) : getString(R.string.move)) +
                 " " + files.length + (files.length > 1 ? getString(R.string.items) : getString(R.string.item)) + getString(R.string.to) + ":";
 
-        dialog = new AlertDialog.Builder(this)
+        dialog = new AlertDialog.Builder(this, getDialogThemeRes())
                 .setTitle(title)
                 .setView(v)
                 .setPositiveButton(R.string.ok,
@@ -198,7 +197,7 @@ public class FileOperationDialogActivity extends AppCompatActivity {
 
         final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
 
-        dialog = new AlertDialog.Builder(this, R.style.Theme_CameraRoll_Dialog)
+        dialog = new AlertDialog.Builder(this, getDialogThemeRes())
                 .setTitle(R.string.new_folder)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -264,6 +263,20 @@ public class FileOperationDialogActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == DARK) {
+            return R.style.Theme_CameraRoll_Translucent_FileOperationDialog;
+        } else {
+            return R.style.Theme_CameraRoll_Translucent_Light_FileOperationDialog;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+
     }
 
     private static class RecyclerViewAdapter extends RecyclerView.Adapter {

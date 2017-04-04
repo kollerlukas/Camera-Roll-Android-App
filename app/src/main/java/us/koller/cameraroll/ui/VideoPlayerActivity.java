@@ -2,7 +2,6 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Animatable;
@@ -12,13 +11,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -50,7 +49,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import us.koller.cameraroll.R;
 
-public class VideoPlayerActivity extends AppCompatActivity {
+public class VideoPlayerActivity extends ThemeableActivity {
 
     public static final String POSITION = "POSITION";
     public static final String PLAY_WHEN_READY = "PLAY_WHEN_READY";
@@ -210,6 +209,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 });
     }
 
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -320,6 +320,33 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         if (player != null) {
             player.release();
+        }
+    }
+
+    @Override
+    public int getThemeRes(int style) {
+        if (style == DARK) {
+            return R.style.Theme_CameraRoll_VideoPlayer;
+        } else {
+            return R.style.Theme_CameraRoll_Light_VideoPlayer;
+        }
+    }
+
+    @Override
+    public void onThemeApplied(int theme) {
+        if (theme == LIGHT) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+            int white = ContextCompat.getColor(this, R.color.white);
+
+            Drawable d = toolbar.getNavigationIcon();
+            DrawableCompat.wrap(d);
+            DrawableCompat.setTint(d.mutate(), white);
+            toolbar.setNavigationIcon(d);
+
+            toolbar.setTitleTextColor(white);
+
+            us.koller.cameraroll.util.Util.colorToolbarOverflowMenuIcon(toolbar, white);
         }
     }
 }

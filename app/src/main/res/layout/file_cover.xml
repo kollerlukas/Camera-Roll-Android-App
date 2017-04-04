@@ -3,18 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
-    android:clickable="true"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:paddingStart="16dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
     <ImageView
         android:id="@+id/folder_indicator"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:alpha="0.7"
-        android:foreground="?attr/selectableItemBackgroundBorderless" />
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:tint="?android:textColorPrimary" />
 
     <TextView
         android:id="@+id/text"
@@ -23,5 +24,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:fontFamily="sans-serif-monospace"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textColor="?android:textColorSecondary" />
 </LinearLayout>
