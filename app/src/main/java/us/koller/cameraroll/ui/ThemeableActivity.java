@@ -12,10 +12,11 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.Settings;
 
 public abstract class ThemeableActivity extends AppCompatActivity {
 
-    private static final int UNDEFINED = -1;
+    public static final int UNDEFINED = -1;
     public static final int DARK = 1;
     public static final int LIGHT = 2;
 
@@ -50,8 +51,19 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         onThemeApplied(THEME);
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (THEME == UNDEFINED) {
+            this.recreate();
+        }
+    }
+
     private static void readTheme(Context context) {
-        THEME = DARK;
+        Settings s = Settings.getInstance(context);
+        THEME = s.getTheme()
+                .equals(context.getString(R.string.DARK_THEME_VALUE)) ?
+                DARK : LIGHT;
     }
 
     public void setColors() {

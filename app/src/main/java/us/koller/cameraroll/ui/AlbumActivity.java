@@ -233,7 +233,7 @@ public class AlbumActivity extends ThemeableActivity
                     return;
                 }
 
-                float translationY = toolbar.getTranslationY() - dy;
+                float translationY = toolbar.getTranslationY() - dy * 0.5f;
                 if (-translationY > toolbar.getHeight()) {
                     translationY = -toolbar.getHeight();
                 } else if (translationY > 0) {
@@ -911,11 +911,11 @@ public class AlbumActivity extends ThemeableActivity
             snackbar = null;
             refreshMainActivityAfterItemWasDeleted = true;
         } else {
+            super.onBackPressed();
             if (refreshMainActivityWhenClosed) {
                 Provider.saveExcludedPaths(this);
                 setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
             }
-            super.onBackPressed();
         }
     }
 

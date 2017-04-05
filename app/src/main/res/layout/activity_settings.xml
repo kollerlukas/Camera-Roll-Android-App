@@ -11,10 +11,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/exif_editor" />
+        app:title="@string/settings" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
+        android:id="@+id/preference_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

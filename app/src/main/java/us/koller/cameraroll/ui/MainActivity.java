@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.animation.DecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,6 +136,7 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setAdapter(recyclerViewAdapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -143,12 +145,13 @@ public class MainActivity extends ThemeableActivity {
                 }
 
                 //hiding toolbar on scroll
-                float translationY = toolbar.getTranslationY() - dy;
+                float translationY = toolbar.getTranslationY() - dy * 0.5f;
                 if (-translationY > toolbar.getHeight()) {
                     translationY = -toolbar.getHeight();
                 } else if (translationY > 0) {
                     translationY = 0;
                 }
+
                 toolbar.setTranslationY(translationY);
             }
         });
@@ -364,6 +367,10 @@ public class MainActivity extends ThemeableActivity {
                 break;
             case R.id.file_explorer:
                 startActivity(new Intent(this, FileExplorerActivity.class),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+                break;
+            case R.id.settings:
+                startActivity(new Intent(this, SettingsActivity.class),
                         ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.about:

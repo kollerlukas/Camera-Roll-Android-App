@@ -2,7 +2,6 @@
 
     <!--Tag for a view, which need a bg color set, according to the current theme-->
     <string name="theme_bg_color" translatable="false">THEME_BG_COLOR</string>
-    <string name="theme_bg_color_translucent" translatable="false">THEME_BG_COLOR_TRANSLUCENT</string>
 
     <!--Base Theme-->
     <style name="Theme.CameraRoll" parent="Theme.AppCompat.NoActionBar">
@@ -89,17 +88,22 @@
     <style name="Theme.CameraRoll.Translucent.Light.FileOperationDialog" parent="Theme.CameraRoll.Light.Translucent" />
 
     <!--ExifEditor Theme-->
-    <style name="Theme.CameraRoll.ExifEditor" parent="Theme.CameraRoll" />
-
-    <style name="Theme.CameraRoll.Light.ExifEditor" parent="Theme.CameraRoll.Light" />
-
-    <!--<style name="Theme.CameraRoll.ExifEditor" parent="Theme.CameraRoll">
+    <style name="Theme.CameraRoll.Translucent.ExifEditor" parent="Theme.CameraRoll.Translucent">
         <item name="android:windowTranslucentStatus">true</item>
-    </style>-->
+    </style>
 
-    <!--<style name="Theme.CameraRoll.Light.ExifEditor" parent="Theme.CameraRoll.Light">
+    <style name="Theme.CameraRoll.Light.Translucent.ExifEditor" parent="Theme.CameraRoll.Light.Translucent">
         <item name="android:windowTranslucentStatus">true</item>
-    </style>-->
+    </style>
+
+    <!--SettingsActivity Theme-->
+    <style name="Theme.CameraRoll.Settings" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
 
     <!--AboutActivity Theme-->
     <style name="Theme.CameraRoll.Translucent.About" parent="Theme.CameraRoll.Translucent" />

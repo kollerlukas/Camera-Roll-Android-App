@@ -46,6 +46,11 @@
             android:configChanges="screenSize|orientation" />
 
         <activity
+            android:name=".ui.SettingsActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.Settings" />
+
+        <activity
             android:name=".ui.AboutActivity"
             android:launchMode="singleTop"
             android:theme="@style/Theme.CameraRoll.Translucent.About" />
@@ -64,7 +69,7 @@
             android:name=".ui.ExifEditorActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Theme.CameraRoll.ExifEditor" />
+            android:theme="@style/Theme.CameraRoll.Translucent.ExifEditor" />
 
         <activity android:name=".IntentReceiver">
             <intent-filter>

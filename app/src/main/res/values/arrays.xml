@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Theme preference-->
+    <string name="DARK_THEME_VALUE">DARK</string>
+    <string name="LIGHT_THEME_VALUE">LIGHT</string>
+
+    <string name="DARK_THEME_NAME">Dark</string>
+    <string name="LIGHT_THEME_NAME">Light</string>
+
+    <string-array name="theme_values">
+        <item>@string/DARK_THEME_VALUE</item>
+        <item>@string/LIGHT_THEME_VALUE</item>
+    </string-array>
+    <string-array name="theme_names">
+        <item>@string/DARK_THEME_NAME</item>
+        <item>@string/LIGHT_THEME_NAME</item>
+    </string-array>
+</resources>

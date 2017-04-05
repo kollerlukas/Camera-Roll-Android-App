@@ -1,8 +1,6 @@
 package us.koller.cameraroll.ui;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,13 +12,15 @@ import android.support.media.ExifInterface;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.transition.Slide;
+import android.transition.TransitionSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
@@ -257,25 +259,17 @@ public class ExifEditorActivity extends ThemeableActivity {
     @Override
     public int getThemeRes(int style) {
         if (style == DARK) {
-            return R.style.Theme_CameraRoll_ExifEditor;
+            return R.style.Theme_CameraRoll_Translucent_ExifEditor;
         } else {
-            return R.style.Theme_CameraRoll_Light_ExifEditor;
+            return R.style.Theme_CameraRoll_Light_Translucent_ExifEditor;
         }
     }
 
     @Override
     public void onThemeApplied(int theme) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(text_color_res);
-
-        if (theme == ThemeableActivity.LIGHT) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(ContextCompat.getColor(this,
-                        R.color.black_translucent1));
-            }
-        }
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
     }
 
     public static class EditedItem implements Parcelable {
