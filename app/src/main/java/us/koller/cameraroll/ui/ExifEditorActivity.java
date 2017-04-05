@@ -270,6 +270,15 @@ public class ExifEditorActivity extends ThemeableActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
         toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int statusBarColorRes = theme == DARK ? R.color.black : R.color.grey_300;
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, statusBarColorRes));
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        }
     }
 
     public static class EditedItem implements Parcelable {

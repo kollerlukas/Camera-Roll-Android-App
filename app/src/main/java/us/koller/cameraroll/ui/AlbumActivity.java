@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
@@ -987,6 +988,10 @@ public class AlbumActivity extends ThemeableActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
         toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setBackgroundTintList(ColorStateList
+                .valueOf(ContextCompat.getColor(this, accent_color_res)));
 
         if (theme == ThemeableActivity.LIGHT) {
             toolbar.setActivated(true);

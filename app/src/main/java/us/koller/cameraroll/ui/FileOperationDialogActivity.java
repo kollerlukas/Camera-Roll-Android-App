@@ -286,6 +286,32 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             public ViewHolder(View itemView) {
                 super(itemView);
             }
+
+            public void setSelected(boolean selected) {
+                final View imageView = itemView.findViewById(R.id.image);
+
+                final Drawable selectorOverlay = Util
+                        .getAlbumItemSelectorOverlay(imageView.getContext());
+                if (selected) {
+                    imageView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.getOverlay().clear();
+                            selectorOverlay.setBounds(0, 0,
+                                    imageView.getWidth(),
+                                    imageView.getHeight());
+                            imageView.getOverlay().add(selectorOverlay);
+                        }
+                    });
+                } else {
+                    imageView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.getOverlay().clear();
+                        }
+                    });
+                }
+            }
         }
 
         private ArrayList<Album> albums;
@@ -328,29 +354,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         .into((ImageView) holder.itemView.findViewById(R.id.image));
             }
 
-            final Drawable selectorOverlay = Util
-                    .getAlbumItemSelectorOverlay(holder.itemView.getContext());
-
-            final View view = holder.itemView.findViewById(R.id.image);
-            if (selected_position == position) {
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        view.getOverlay().clear();
-                        selectorOverlay.setBounds(0, 0,
-                                view.getWidth(),
-                                view.getHeight());
-                        view.getOverlay().add(selectorOverlay);
-                    }
-                });
-            } else {
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        view.getOverlay().clear();
-                    }
-                });
-            }
+            ((ViewHolder) holder).setSelected(position == selected_position);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

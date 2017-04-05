@@ -80,4 +80,22 @@
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
+
+    <!--ExifEditor Theme-->
+    <style name="Theme.CameraRoll.Translucent.ExifEditor" parent="Theme.CameraRoll.Translucent">
+        <item name="android:windowTranslucentStatus">false</item>
+    </style>
+
+    <style name="Theme.CameraRoll.Light.Translucent.ExifEditor" parent="Theme.CameraRoll.Light.Translucent">
+        <item name="android:windowTranslucentStatus">false</item>
+    </style>
+
+    <!--SettingsActivity Theme-->
+    <style name="Theme.CameraRoll.Settings" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentStatus">false</item>
+    </style>
+
+    <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
+        <item name="android:windowTranslucentStatus">false</item>
+    </style>
 </resources>

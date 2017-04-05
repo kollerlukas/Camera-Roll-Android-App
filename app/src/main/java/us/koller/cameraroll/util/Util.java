@@ -32,6 +32,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.ui.ThemeableActivity;
 
 public class Util {
     public static int getAlbumActivityGridColumnCount(Context context) {
@@ -157,11 +158,11 @@ public class Util {
         if (selectorOverlay == null) {
             selectorOverlay = ContextCompat.getDrawable(context,
                     R.drawable.albumitem_selected_indicator);
-            selectorOverlay = DrawableCompat.wrap(selectorOverlay);
-            DrawableCompat.setTint(selectorOverlay,
-                    ContextCompat.getColor(context,
-                            R.color.colorAccent_translucent));
         }
+        int tintColor = ContextCompat.getColor(context,
+                ThemeableActivity.accent_color_res);
+        selectorOverlay = DrawableCompat.wrap(selectorOverlay);
+        DrawableCompat.setTint(selectorOverlay, tintColor);
         return selectorOverlay;
     }
 

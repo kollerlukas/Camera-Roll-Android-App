@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
@@ -947,6 +948,10 @@ public class FileExplorerActivity extends ThemeableActivity
         if (theme == ThemeableActivity.LIGHT) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setActivated(true);
+
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setBackgroundTintList(ColorStateList
+                    .valueOf(ContextCompat.getColor(this, accent_color_res)));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
