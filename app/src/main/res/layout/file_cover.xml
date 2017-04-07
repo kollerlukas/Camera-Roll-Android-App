@@ -13,9 +13,7 @@
         android:id="@+id/folder_indicator"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:alpha="0.7"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:tint="?android:textColorPrimary" />
+        android:foreground="?attr/selectableItemBackgroundBorderless" />
 
     <TextView
         android:id="@+id/text"
@@ -24,6 +22,5 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:fontFamily="sans-serif-monospace"
-        android:textSize="20sp"
-        android:textColor="?android:textColorSecondary" />
+        android:textSize="20sp" />
 </LinearLayout>

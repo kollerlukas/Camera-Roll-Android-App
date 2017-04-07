@@ -1,8 +1,13 @@
 package us.koller.cameraroll.ui;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -49,6 +54,10 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         setViewBgColors();
 
         onThemeApplied(THEME);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setupTaskDescription();
+        }
     }
 
     @Override
@@ -136,6 +145,18 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         } else {
             return R.style.Theme_CameraRoll_Light_Dialog;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setupTaskDescription() {
+        int colorRes = THEME == DARK ? R.color.colorPrimary : R.color.colorPrimary_light;
+        int color = ContextCompat.getColor(this, colorRes);
+
+        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(),
+                R.mipmap.ic_launcher_round);
+        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
+                overviewIcon, color));
+        overviewIcon.recycle();
     }
 }
 

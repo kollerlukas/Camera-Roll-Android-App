@@ -1,5 +1,6 @@
 package us.koller.cameraroll.adapter.fileExplorer.ViewHolder;
 
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -58,17 +59,14 @@ public class FileHolder extends RecyclerView.ViewHolder {
                                 android.R.color.transparent));
 
         int color = ContextCompat.getColor(itemView.getContext(),
-                selected ? R.color.grey_900_translucent : ThemeableActivity.text_color_secondary_res);
+                selected ? R.color.grey_900_translucent :
+                        ThemeableActivity.text_color_secondary_res);
 
         TextView textView = (TextView) itemView.findViewById(R.id.text);
         textView.setTextColor(color);
 
-        ImageView folderIndicator = (ImageView) itemView.findViewById(R.id.folder_indicator);
-        Drawable d = folderIndicator.getDrawable();
-
-        d = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(d.mutate(), color);
-
-        folderIndicator.setImageDrawable(d);
+        ImageView folderIndicator = (ImageView)
+                itemView.findViewById(R.id.folder_indicator);
+        folderIndicator.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 }

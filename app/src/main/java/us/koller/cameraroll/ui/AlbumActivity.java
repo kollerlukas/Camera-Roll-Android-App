@@ -1,14 +1,9 @@
 package us.koller.cameraroll.ui;
 
-import android.app.ActivityManager;
-import android.content.ActivityNotFoundException;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -52,7 +47,6 @@ import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
-import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.animators.ColorFade;
@@ -145,12 +139,6 @@ public class AlbumActivity extends ThemeableActivity
                     .addTransition(new Fade())
                     .setInterpolator(new AccelerateDecelerateInterpolator()));
         }
-
-        /*if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM)) {
-            album = savedInstanceState.getParcelable(ALBUM);
-        } else {
-            album = getIntent().getExtras().getParcelable(ALBUM);
-        }*/
 
         String path;
         if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
@@ -357,10 +345,6 @@ public class AlbumActivity extends ThemeableActivity
                 return false;
             }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupTaskDescription();
-        }
 
         onNewIntent(getIntent());
 
@@ -933,15 +917,6 @@ public class AlbumActivity extends ThemeableActivity
             int[] selectedItemsPos = adapter.getSelectedItemsPositions();
             outState.putIntArray(SELECTED_ITEMS_POSITIONS, selectedItemsPos);
         }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon,
-                ContextCompat.getColor(this, R.color.colorPrimary)));
-        overviewIcon.recycle();
     }
 
     @Override

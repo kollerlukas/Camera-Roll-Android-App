@@ -9,6 +9,7 @@ import us.koller.cameraroll.R;
 public class Settings {
 
     private String theme;
+    private boolean storageRetriever;
 
     private static Settings instance;
 
@@ -26,6 +27,10 @@ public class Settings {
         theme = sharedPreferences.getString(
                 context.getString(R.string.pref_key_theme),
                 context.getString(R.string.DARK_THEME_VALUE));
+
+        storageRetriever = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_media_retriever),
+                false);
     }
 
     /*Getter & Setter*/
@@ -37,15 +42,30 @@ public class Settings {
         this.theme = theme;
     }
 
+    public boolean useStorageRetriever() {
+        return storageRetriever;
+    }
+
+    public void useStorageRetriever(boolean storageRetriever) {
+        this.storageRetriever = storageRetriever;
+    }
+
 
     public static class Utils {
         public static String getThemeName(Context context, String themeValue) {
-            String[] values = context.getResources().getStringArray(R.array.theme_values);
-            String[] names = context.getResources().getStringArray(R.array.theme_names);
+            int valuesRes = R.array.theme_values;
+            int namesRes = R.array.theme_names;
+            return getValueName(context, themeValue, valuesRes, namesRes);
+        }
+
+        private static String getValueName(Context context, String value,
+                                           int valuesRes, int namesRes) {
+            String[] values = context.getResources().getStringArray(valuesRes);
+            String[] names = context.getResources().getStringArray(namesRes);
 
             int index = -1;
             for (int i = 0; i < values.length; i++) {
-                if (values[i].equals(themeValue)) {
+                if (values[i].equals(value)) {
                     index = i;
                     break;
                 }

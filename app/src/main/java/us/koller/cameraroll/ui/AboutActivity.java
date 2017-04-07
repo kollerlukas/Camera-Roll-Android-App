@@ -1,18 +1,13 @@
 package us.koller.cameraroll.ui;
 
-import android.app.ActivityManager;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -141,11 +136,6 @@ public class AboutActivity extends ThemeableActivity
                                             toolbar.getPaddingEnd(),
                                             toolbar.getPaddingBottom());
 
-                                    /*aboutText.setPadding(aboutText.getPaddingStart(),
-                                            aboutText.getPaddingTop(),
-                                            aboutText.getPaddingEnd(),
-                                            aboutText.getPaddingBottom() + windowInsets[3]);*/
-
                                     View viewGroup = findViewById(R.id.swipeBackView);
                                     ViewGroup.MarginLayoutParams viewGroupParams
                                             = (ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams();
@@ -166,10 +156,6 @@ public class AboutActivity extends ThemeableActivity
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupTaskDescription();
-        }
-
         setSystemUiFlags();
     }
 
@@ -179,15 +165,6 @@ public class AboutActivity extends ThemeableActivity
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon,
-                ContextCompat.getColor(this, R.color.colorPrimary)));
-        overviewIcon.recycle();
     }
 
     @Override
@@ -206,48 +183,13 @@ public class AboutActivity extends ThemeableActivity
                 .canSwipeBackForThisView(findViewById(R.id.scroll_view), dir);
     }
 
-    private Handler handler;
-    private Runnable runnable;
-    private boolean consumed = false;
-
     @Override
     public void onSwipeProcess(float percent) {
         getWindow().getDecorView().setBackgroundColor(SwipeBackCoordinatorLayout.getBackgroundColor(percent));
-
-        //hidden ability to change the way media is loaded (either through MediaStore or custom Storage traversal)
-        if (percent == 1.0f) {
-            if (handler == null) {
-                handler = new Handler();
-                runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!consumed) {
-                            MediaProvider.toggleMode(AboutActivity.this);
-                            consumed = true;
-                        }
-                    }
-                };
-                handler.postDelayed(runnable, 5000);
-            }
-        } else {
-            if (handler != null && runnable != null) {
-                handler.removeCallbacks(runnable);
-                consumed = false;
-            }
-            handler = null;
-            runnable = null;
-        }
     }
 
     @Override
     public void onSwipeFinish(int dir) {
-        if (handler != null && runnable != null) {
-            handler.removeCallbacks(runnable);
-            consumed = false;
-        }
-        handler = null;
-        runnable = null;
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setReturnTransition(new TransitionSet()
                     .addTransition(new Slide(dir > 0 ? Gravity.TOP : Gravity.BOTTOM))

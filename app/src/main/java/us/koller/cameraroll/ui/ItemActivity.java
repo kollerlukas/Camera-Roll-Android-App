@@ -1,6 +1,5 @@
 package us.koller.cameraroll.ui;
 
-import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -9,10 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.media.ExifInterface;
 import android.net.Uri;
@@ -281,22 +278,10 @@ public class ItemActivity extends ThemeableActivity {
                             toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             toolbar.getPaddingBottom());
 
-                    /*ViewGroup.MarginLayoutParams toolbarParams
-                         = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                    toolbar.setLayoutParams(toolbarParams);*/
-
                     bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             bottomBar.getPaddingTop(),
                             bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
-
-                    /*ViewGroup.MarginLayoutParams bottomBarParams
-                            = (ViewGroup.MarginLayoutParams) ((View) bottomBar.getParent()).getLayoutParams();
-                    bottomBarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    bottomBarParams.rightMargin += insets.getSystemWindowInsetRight();
-                    ((View) bottomBar.getParent()).setLayoutParams(bottomBarParams);*/
 
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
@@ -340,10 +325,6 @@ public class ItemActivity extends ThemeableActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupTaskDescription();
-        }
-
         if (view_only
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
                 || savedInstanceState != null) {
@@ -364,10 +345,6 @@ public class ItemActivity extends ThemeableActivity {
                                 }
                             });
         }
-
-        /*if (view_only || savedInstanceState != null) {
-
-        }*/
     }
 
     @Override
@@ -759,16 +736,6 @@ public class ItemActivity extends ThemeableActivity {
 
         showUI(show);
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon,
-                ContextCompat.getColor(this, R.color.colorPrimary)));
-        overviewIcon.recycle();
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull

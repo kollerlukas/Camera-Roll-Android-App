@@ -1,10 +1,7 @@
 package us.koller.cameraroll.ui;
 
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,20 +12,16 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
-import android.view.animation.DecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +32,6 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.Util;
-import us.koller.cameraroll.util.animators.ColorFade;
 
 public class MainActivity extends ThemeableActivity {
 
@@ -85,12 +77,6 @@ public class MainActivity extends ThemeableActivity {
         if (savedInstanceState == null) {
             refreshPhotos();
         }
-
-        /*if (savedInstanceState != null && savedInstanceState.containsKey(ALBUMS)) {
-            albums = savedInstanceState.getParcelableArrayList(ALBUMS);
-        } else {
-            albums = new ArrayList<>();
-        }*/
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -238,10 +224,6 @@ public class MainActivity extends ThemeableActivity {
                 return false;
             }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupTaskDescription();
-        }
     }
 
     @Override
@@ -370,8 +352,7 @@ public class MainActivity extends ThemeableActivity {
                         ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.settings:
-                startActivity(new Intent(this, SettingsActivity.class),
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class),
@@ -379,15 +360,6 @@ public class MainActivity extends ThemeableActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon,
-                ContextCompat.getColor(this, R.color.colorPrimary)));
-        overviewIcon.recycle();
     }
 
     @Override

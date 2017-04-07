@@ -1,6 +1,5 @@
 package us.koller.cameraroll.ui;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
@@ -143,12 +143,12 @@ public class SettingsActivity extends ThemeableActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int statusBarColorRes = theme == DARK ? R.color.black : R.color.grey_300;
             getWindow().setStatusBarColor(ContextCompat.getColor(this, statusBarColorRes));
-
-
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        if (theme == LIGHT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            }
         }
 
         //so other activities are recreated
@@ -165,8 +165,10 @@ public class SettingsActivity extends ThemeableActivity {
 
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
+
             initThemePref(sharedPreferences);
 
+            initMediaRetrieverPref(sharedPreferences);
         }
 
         private void initThemePref(SharedPreferences sharedPreferences) {
@@ -182,6 +184,18 @@ public class SettingsActivity extends ThemeableActivity {
             themePref.setOnPreferenceChangeListener(this);
         }
 
+        private void initMediaRetrieverPref(SharedPreferences sharedPreferences) {
+            SwitchPreference mediaRetrieverPref = (SwitchPreference)
+                    findPreference(getString(R.string.pref_key_media_retriever));
+
+            boolean storageRetriever = sharedPreferences.getBoolean(
+                    getString(R.string.pref_key_media_retriever),
+                    false);
+
+            mediaRetrieverPref.setChecked(storageRetriever);
+
+            mediaRetrieverPref.setOnPreferenceChangeListener(this);
+        }
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
@@ -195,6 +209,8 @@ public class SettingsActivity extends ThemeableActivity {
                 //update Activities
                 ThemeableActivity.THEME = ThemeableActivity.UNDEFINED;
                 getActivity().recreate();
+            } else if (preference.getKey().equals(getString(R.string.pref_key_media_retriever))) {
+                settings.useStorageRetriever((boolean) o);
             }
             return true;
         }

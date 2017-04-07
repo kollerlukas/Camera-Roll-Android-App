@@ -7,7 +7,12 @@
             android:title="@string/theme"
             android:key="@string/pref_key_theme"
             android:entries="@array/theme_names"
-            android:entryValues="@array/theme_values"
-            android:defaultValue="DARK" />
+            android:entryValues="@array/theme_values" />
     </PreferenceCategory>
+
+    <SwitchPreference
+        android:title="@string/media_retriever"
+        android:key="@string/pref_key_media_retriever"
+        android:summary="@string/media_retriever_summary"
+        android:widgetLayout="@layout/mp_preference_switch" />
 </PreferenceScreen>

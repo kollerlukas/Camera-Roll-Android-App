@@ -7,8 +7,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -16,7 +14,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.Retriever.MediaStoreRetriever;
 import us.koller.cameraroll.data.Provider.Retriever.StorageRetriever;
-import us.koller.cameraroll.ui.MainActivity;
+import us.koller.cameraroll.data.Settings;
 
 public class MediaProvider extends Provider {
 
@@ -146,23 +144,8 @@ public class MediaProvider extends Provider {
         return album;
     }
 
-    public static void toggleMode(Context context) {
-        int mode = getMode(context);
-
-        int newMode = mode == MODE_STORAGE ? MODE_MEDIASTORE : MODE_STORAGE;
-
-        context.getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putInt(MODE_KEY, newMode)
-                .apply();
-
-        String s = newMode == MODE_STORAGE ? "MODE_STORAGE" : "MODE_MEDIASTORE";
-
-        Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
-    }
-
     private static int getMode(Context context) {
-        return context.getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE)
-                .getInt(MODE_KEY, MODE_MEDIASTORE);
+        return Settings.getInstance(context).useStorageRetriever() ?
+                MODE_STORAGE : MODE_MEDIASTORE;
     }
 }

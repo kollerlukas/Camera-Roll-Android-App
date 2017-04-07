@@ -17,10 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.transition.Slide;
-import android.transition.TransitionSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +34,6 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
@@ -147,12 +142,6 @@ public class ExifEditorActivity extends ThemeableActivity {
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
                             toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             toolbar.getPaddingBottom());
-
-                    /*ViewGroup.MarginLayoutParams toolbarParams
-                         = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                    toolbar.setLayoutParams(toolbarParams);*/
 
                     recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
@@ -276,8 +265,10 @@ public class ExifEditorActivity extends ThemeableActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, statusBarColorRes));
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        if (theme == LIGHT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            }
         }
     }
 

@@ -149,7 +149,6 @@ public class FileExplorerActivity extends ThemeableActivity
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_create_new_folder_white_24dp);
         Drawable d = fab.getDrawable();
-        //d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
         d = DrawableCompat.wrap(d);
         DrawableCompat.setTint(d.mutate(),
                 ContextCompat.getColor(this, R.color.grey_900_translucent));
@@ -254,10 +253,6 @@ public class FileExplorerActivity extends ThemeableActivity
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupTaskDescription();
-        }
 
         //load files
         if (savedInstanceState != null
@@ -392,16 +387,6 @@ public class FileExplorerActivity extends ThemeableActivity
 
         filesProvider = new FilesProvider(this);
         filesProvider.loadDir(this, path, callback);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setupTaskDescription() {
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(),
-                R.mipmap.ic_launcher_round);
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon,
-                ContextCompat.getColor(this, R.color.colorPrimary)));
-        overviewIcon.recycle();
     }
 
     @Override
@@ -945,18 +930,16 @@ public class FileExplorerActivity extends ThemeableActivity
 
     @Override
     public void onThemeApplied(int theme) {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setBackgroundTintList(ColorStateList
+                .valueOf(ContextCompat.getColor(this, accent_color_res)));
+
         if (theme == ThemeableActivity.LIGHT) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setActivated(true);
 
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setBackgroundTintList(ColorStateList
-                    .valueOf(ContextCompat.getColor(this, accent_color_res)));
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            } else {
-
             }
         }
     }

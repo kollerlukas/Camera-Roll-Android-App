@@ -58,6 +58,7 @@
     <string name="hidden_folders">Hidden Folders</string>
     <string name="file_explorer">File Explorer</string>
     <string name="about">About</string>
+    <string name="settings">Settings</string>
 
     <string name="set_as">Set as…</string>
     <string name="info">Info</string>
@@ -73,9 +74,13 @@
 
     <string name="move">Move</string>
     <string name="copy">Copy</string>
+    <string name="create">Create</string>
+    <string name="new_folder">New Folder</string>
     <string name="paste">Paste</string>
+    <string name="to">" to"</string>
     <string name="successfully_moved">"successfully moved "</string>
     <string name="successfully_copied">"successfully copied "</string>
+    <string name="successfully_created_new_folder">Successfully created new Folder</string>
 
     <string name="pick_photo">Pick Photo</string>
     <string name="pick_photos">Pick Photos</string>
@@ -100,6 +105,16 @@
     <string name="no_files">NO FILES</string>
     <string name="storage">Storage</string>
 
+    <string name="exclude">Exclude</string>
+    <string name="excluded">Excluded</string>
+
+    <string name="appearance">Appearance</string>
+    <string name="theme">Theme</string>
+
+    <string name="media_retriever">MediaRetriever</string>
+    <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api.
+        This might help if you are missing some pictures…</string>
+
     <string name="warning">Warning!</string>
     <string name="file_explorer_warning_message">The File Explorer is an
         <b>experimental</b>
@@ -110,6 +125,13 @@
         <b>Use at Your own risk.</b>
     </string>
 
+    <string name="edit_space">"Edit "</string>
+    <string name="copied_to_clipboard">Copied to Clipboard</string>
+    <string name="exif_editor">Exif Editor</string>
+    <string name="edit_exif">edit Exif</string>
+    <string name="save">Save</string>
+    <string name="changes_saved">Changes saved</string>
+
     <!--ImageView ContentDescription-->
     <string name="image">Image</string>
     <string name="indicator">Indicator</string>
@@ -117,21 +139,9 @@
     <string name="video_indicator">Video Indicator</string>
     <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
 
-    <string name="exclude">Exclude</string>
-    <string name="successfully_created_new_folder">Successfully created new Folder</string>
-    <string name="create">Create</string>
-    <string name="new_folder">New Folder</string>
-    <string name="to">" to"</string>
-    <string name="excluded">Excluded</string>
-    <string name="edit_space">"Edit "</string>
-    <string name="copied_to_clipboard">Copied to Clipboard</string>
-    <string name="exif_editor">Exif Editor</string>
-    <string name="edit_exif">edit Exif</string>
-    <string name="save">Save</string>
-    <string name="changes_saved">Changes saved</string>
     <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
-    <string name="appearance">Appearence</string>
-    <string name="theme">Theme</string>
+
+    <!--Preference Keys-->
     <string name="pref_key_theme">KEY_THEME</string>
-    <string name="settings">Settings</string>
+    <string name="pref_key_media_retriever">KEY_MEDIA_RETRIEVER</string>
 </resources>
