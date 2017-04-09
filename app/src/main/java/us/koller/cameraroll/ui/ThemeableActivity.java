@@ -139,7 +139,7 @@ public abstract class ThemeableActivity extends AppCompatActivity {
 
     public abstract void onThemeApplied(int theme);
 
-    public int getDialogThemeRes() {
+    public static int getDialogThemeRes() {
         if (THEME == DARK) {
             return R.style.Theme_CameraRoll_Dialog;
         } else {

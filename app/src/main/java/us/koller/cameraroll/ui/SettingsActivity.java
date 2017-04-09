@@ -3,15 +3,16 @@ package us.koller.cameraroll.ui;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v14.preference.SwitchPreference;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -24,6 +25,8 @@ import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.preferences.StylePreference;
+import us.koller.cameraroll.preferences.StylePreferenceDialogFragment;
 import us.koller.cameraroll.util.Util;
 
 public class SettingsActivity extends ThemeableActivity {
@@ -109,8 +112,7 @@ public class SettingsActivity extends ThemeableActivity {
         }
 
         SettingsFragment fragment = new SettingsFragment();
-        getFragmentManager()
-                .beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.preference_fragment_container, fragment)
                 .commit();
     }
@@ -155,12 +157,12 @@ public class SettingsActivity extends ThemeableActivity {
         ThemeableActivity.THEME = ThemeableActivity.UNDEFINED;
     }
 
-    public static class SettingsFragment extends PreferenceFragment
+
+    public static class SettingsFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceChangeListener {
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.preferences);
 
             SharedPreferences sharedPreferences =
@@ -169,6 +171,8 @@ public class SettingsActivity extends ThemeableActivity {
             initThemePref(sharedPreferences);
 
             initMediaRetrieverPref(sharedPreferences);
+
+            initStylePref(sharedPreferences);
         }
 
         private void initThemePref(SharedPreferences sharedPreferences) {
@@ -184,9 +188,22 @@ public class SettingsActivity extends ThemeableActivity {
             themePref.setOnPreferenceChangeListener(this);
         }
 
+        private void initStylePref(SharedPreferences sharedPreferences) {
+            StylePreference stylePref = (StylePreference)
+                    findPreference(getString(R.string.pref_key_style));
+
+            int style = sharedPreferences.getInt(
+                    getString(R.string.pref_key_style),
+                    getActivity().getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE));
+
+            String style_name = Settings.Utils.getStyleName(getActivity(), style);
+            stylePref.setSummary(style_name);
+            stylePref.setOnPreferenceChangeListener(this);
+        }
+
         private void initMediaRetrieverPref(SharedPreferences sharedPreferences) {
-            SwitchPreference mediaRetrieverPref = (SwitchPreference)
-                    findPreference(getString(R.string.pref_key_media_retriever));
+            SwitchPreference mediaRetrieverPref =
+                    (SwitchPreference) findPreference(getString(R.string.pref_key_media_retriever));
 
             boolean storageRetriever = sharedPreferences.getBoolean(
                     getString(R.string.pref_key_media_retriever),
@@ -195,6 +212,19 @@ public class SettingsActivity extends ThemeableActivity {
             mediaRetrieverPref.setChecked(storageRetriever);
 
             mediaRetrieverPref.setOnPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onDisplayPreferenceDialog(Preference preference) {
+            if (preference instanceof StylePreference) {
+                DialogFragment dialogFragment
+                        = StylePreferenceDialogFragment
+                        .newInstance(preference);
+                dialogFragment.setTargetFragment(this, 0);
+                dialogFragment.show(this.getFragmentManager(), "android.support.v7.preference.PreferenceFragment.DIALOG");
+                return;
+            }
+            super.onDisplayPreferenceDialog(preference);
         }
 
         @Override
@@ -209,6 +239,16 @@ public class SettingsActivity extends ThemeableActivity {
                 //update Activities
                 ThemeableActivity.THEME = ThemeableActivity.UNDEFINED;
                 getActivity().recreate();
+            } else if (preference.getKey().equals(getString(R.string.pref_key_style))) {
+                settings.setStyle((int) o);
+
+                String style_name = Settings.Utils.getStyleName(getActivity(), (int) o);
+                preference.setSummary(style_name);
+
+                //update Style column count
+                int columnCount = Settings.getDefaultStyleColumnCount(getActivity(), (int) o);
+                Settings.getInstance(getActivity()).setStyleColumnCount(columnCount);
+
             } else if (preference.getKey().equals(getString(R.string.pref_key_media_retriever))) {
                 settings.useStorageRetriever((boolean) o);
             }

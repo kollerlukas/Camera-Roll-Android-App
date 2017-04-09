@@ -12,7 +12,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,11 +25,14 @@ import android.view.WindowInsets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.Util;
 
@@ -94,7 +97,6 @@ public class MainActivity extends ThemeableActivity {
             }
             toolbar.setActivated(true);
             toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
-            //toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
@@ -115,10 +117,13 @@ public class MainActivity extends ThemeableActivity {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
+        Settings settings = Settings.getInstance(this);
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewAdapter = new RecyclerViewAdapter(pick_photos).setAlbums(albums);
+        int columnCount = settings.getStyleColumnCount(this);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
+        recyclerViewAdapter = new RecyclerViewAdapter(this, pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -247,6 +252,15 @@ public class MainActivity extends ThemeableActivity {
         getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE).edit()
                 .putBoolean(HIDDEN_FOLDERS, hiddenFolders).apply();
         super.onStop();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (recyclerView != null) {
+            int columnCount = Settings.getInstance(this).getStyleColumnCount(this);
+            ((GridLayoutManager) recyclerView.getLayoutManager()).setSpanCount(columnCount);
+        }
     }
 
     private void setSystemUiFlags() {

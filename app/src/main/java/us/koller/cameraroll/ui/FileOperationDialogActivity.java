@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,9 +80,9 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     }
 
     private interface NewFolderCallback {
-        public void newFolderCreated(String path);
+        void newFolderCreated(String path);
 
-        public void failed();
+        void failed();
     }
 
     @Override
@@ -287,7 +288,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                 super(itemView);
             }
 
-            public void setSelected(boolean selected) {
+            void setSelected(boolean selected) {
                 final View imageView = itemView.findViewById(R.id.image);
 
                 final Drawable selectorOverlay = Util

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Theme preference-->
-    <string name="DARK_THEME_VALUE">DARK</string>
-    <string name="LIGHT_THEME_VALUE">LIGHT</string>
+    <string name="DARK_THEME_VALUE" translatable="false">DARK</string>
+    <string name="LIGHT_THEME_VALUE" translatable="false">LIGHT</string>
 
-    <string name="DARK_THEME_NAME">Dark</string>
-    <string name="LIGHT_THEME_NAME">Light</string>
+    <string name="DARK_THEME_NAME" translatable="false">Dark</string>
+    <string name="LIGHT_THEME_NAME" translatable="false">Light</string>
 
     <string-array name="theme_values">
         <item>@string/DARK_THEME_VALUE</item>
@@ -14,5 +14,26 @@
     <string-array name="theme_names">
         <item>@string/DARK_THEME_NAME</item>
         <item>@string/LIGHT_THEME_NAME</item>
+    </string-array>
+
+    <!--Style preference-->
+    <integer name="STYLE_PARALLAX_VALUE">0</integer>
+    <integer name="STYLE_PARALLAX_EXCLUDED_VALUE">1</integer>
+    <integer name="STYLE_PARALLAX_COLUMN_COUNT">1</integer>
+
+    <integer name="STYLE_CARDS_VALUE">2</integer>
+    <integer name="STYLE_CARDS_EXCLUDED_VALUE">3</integer>
+    <integer name="STYLE_CARDS_COLUMN_COUNT">2</integer>
+
+    <string name="STYLE_PARALLAX_NAME" translatable="false">Parallax</string>
+    <string name="STYLE_CARDS_NAME" translatable="false">Cards</string>
+
+    <integer-array name="style_values">
+        <item>@integer/STYLE_PARALLAX_VALUE</item>
+        <item>@integer/STYLE_CARDS_VALUE</item>
+    </integer-array>
+    <string-array name="style_names">
+        <item>@string/STYLE_PARALLAX_NAME</item>
+        <item>@string/STYLE_CARDS_NAME</item>
     </string-array>
 </resources>

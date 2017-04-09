@@ -99,10 +99,12 @@
     <!--SettingsActivity Theme-->
     <style name="Theme.CameraRoll.Settings" parent="Theme.CameraRoll">
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <!--AboutActivity Theme-->
@@ -117,5 +119,11 @@
 
     <style name="Theme.CameraRoll.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent_light</item>
+    </style>
+
+    <!-- Style for a DialogPreference Entry -->
+    <style name="Theme.CameraRoll.DialogPreference">
+        <item name="positiveButtonText">@android:string/ok</item>
+        <item name="negativeButtonText">@android:string/cancel</item>
     </style>
 </resources>

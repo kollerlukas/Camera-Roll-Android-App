@@ -2,7 +2,6 @@ package us.koller.cameraroll.adapter.main.ViewHolder;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,11 +18,12 @@ import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.animators.ColorFade;
 
-public class AlbumHolder extends RecyclerView.ViewHolder {
+public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
-    private Album album;
+    Album album;
+    boolean excluded;
 
-    public AlbumHolder(View itemView) {
+    AlbumHolder(View itemView) {
         super(itemView);
     }
 
@@ -38,30 +38,11 @@ public class AlbumHolder extends RecyclerView.ViewHolder {
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
 
         Provider.loadExcludedPaths(itemView.getContext());
-        if (!Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths())) {
-            //album not excluded
-            String count = album.getAlbumItems().size()
-                    + (album.getAlbumItems().size() > 1 ?
-                    itemView.getContext().getString(R.string.items) :
-                    itemView.getContext().getString(R.string.item));
-            ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
-
-            itemView.findViewById(R.id.hidden_folder_indicator)
-                    .setVisibility(album.isHidden() ? View.VISIBLE : View.INVISIBLE);
-
-            loadImage();
-        } else {
-            //album excluded
-        }
+        excluded = !Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths());
     }
 
-    private void loadImage() {
+    void loadImage(final ImageView image) {
         final AlbumItem coverImage = album.getAlbumItems().get(0);
-
-        final ImageView image = (ImageView) itemView.findViewById(R.id.image);
-        if (image instanceof ParallaxImageView) {
-            ((ParallaxImageView) image).setParallaxTranslation();
-        }
 
         Glide.with(itemView.getContext())
                 .load(coverImage.getPath())

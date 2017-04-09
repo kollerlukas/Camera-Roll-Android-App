@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:tag="@string/theme_bg_color">
-        <!--android:background="@color/dark_bg"-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -31,7 +30,8 @@
         android:layout_gravity="center"
         android:fontFamily="sans-serif-monospace"
         android:text="@string/no_files"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:alpha="0" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

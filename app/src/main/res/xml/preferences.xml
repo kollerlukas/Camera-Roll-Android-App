@@ -8,6 +8,13 @@
             android:key="@string/pref_key_theme"
             android:entries="@array/theme_names"
             android:entryValues="@array/theme_values" />
+
+        <us.koller.cameraroll.preferences.StylePreference
+            android:title="@string/style"
+            android:key="@string/pref_key_style"
+            android:entries="@array/style_names"
+            android:entryValues="@array/style_values"
+            style="@style/Theme.CameraRoll.DialogPreference" />
     </PreferenceCategory>
 
     <SwitchPreference

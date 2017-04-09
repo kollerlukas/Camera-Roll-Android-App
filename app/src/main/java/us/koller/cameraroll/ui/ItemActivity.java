@@ -597,7 +597,7 @@ public class ItemActivity extends ThemeableActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new InfoRecyclerViewAdapter(values,
-                albumItem instanceof Photo || albumItem instanceof Gif));
+                (albumItem instanceof Photo || albumItem instanceof Gif) && !view_only));
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -624,7 +624,7 @@ public class ItemActivity extends ThemeableActivity {
                         infoDialog = null;
                     }
                 });
-        if (exifSupported) {
+        if (exifSupported && !view_only) {
             builder.setNeutralButton(R.string.edit_exif, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -1020,8 +1020,7 @@ public class ItemActivity extends ThemeableActivity {
                     return;
                 }
 
-                int defaultColor = ContextCompat.getColor(itemView.getContext(),
-                        R.color.white_translucent1);
+                int defaultColor = Color.argb(0, 0, 0, 0);
 
                 /*Vibrant color*/
                 setColor((CardView) itemView.findViewById(R.id.vibrant_card),
@@ -1055,6 +1054,15 @@ public class ItemActivity extends ThemeableActivity {
             }
 
             private void setColor(CardView card, TextView text, int color) {
+                if (Color.alpha(color) == 0) {
+                    //color not found
+                    int transparent = ContextCompat.getColor(card.getContext(),
+                            android.R.color.transparent);
+                    card.setCardBackgroundColor(transparent);
+                    text.setText("N/A");
+                    return;
+                }
+
                 card.setCardBackgroundColor(color);
                 text.setTextColor(getTextColor(text.getContext(), color));
                 String colorHex = String.format("#%06X", (0xFFFFFF & color));

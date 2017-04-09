@@ -37,9 +37,22 @@
                 An extensible media player for Android.<br/>
                 <a href=\"https://github.com/google/ExoPlayer/blob/release-v2/LICENSE\">LICENSE</a>
             <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/DavidPacioianu/InkPageIndicator\">InkPageIndicator</a></b><br/>
+                InkPageIndicator created by @nickbutcher for Plaid https://github.com/nickbutcher/plaid and backported by me for API 14+ (4.0+)<br/>
+                <a href=\"https://github.com/DavidPacioianu/InkPageIndicator/blob/master/LICENSE\">LICENSE</a>
+            <br>
         ]]>
     </string>
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
+
+    <!--Preference Keys-->
+    <string name="pref_key_theme" translatable="false">KEY_THEME</string>
+    <string name="pref_key_media_retriever" translatable="false">KEY_MEDIA_RETRIEVER</string>
+    <string name="pref_key_style" translatable="false">KEY_STYLE</string>
+    <string name="pref_key_style_column_count" translatable="false">KEY_STYLE_COLUMN_COUNT</string>
+    <string name="pref_key_column_count" translatable="false">KEY_COLUMN_COUNT</string>
 
     <!--translatable-->
     <string name="read_permission_denied">Camera Roll needs the permission access your Storage to
@@ -110,10 +123,11 @@
 
     <string name="appearance">Appearance</string>
     <string name="theme">Theme</string>
+    <string name="style">Style</string>
 
     <string name="media_retriever">MediaRetriever</string>
     <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api.
-        This might help if you are missing some pictures…</string>
+        This might help if you are missing some picture.</string>
 
     <string name="warning">Warning!</string>
     <string name="file_explorer_warning_message">The File Explorer is an
@@ -140,8 +154,4 @@
     <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
 
     <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
-
-    <!--Preference Keys-->
-    <string name="pref_key_theme">KEY_THEME</string>
-    <string name="pref_key_media_retriever">KEY_MEDIA_RETRIEVER</string>
 </resources>

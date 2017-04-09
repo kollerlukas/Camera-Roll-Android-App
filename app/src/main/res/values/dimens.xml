@@ -5,4 +5,5 @@
     <dimen name="touch_raise">6dp</dimen>
     <dimen name="parallax_image_view_offset">100dp</dimen>
     <dimen name="twenty_four_dp">24dp</dimen>
+    <dimen name="eight_dp">8dp</dimen>
 </resources>

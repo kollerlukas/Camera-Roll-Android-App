@@ -178,7 +178,6 @@ public class AlbumActivity extends ThemeableActivity
             }
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
-            //toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
@@ -417,7 +416,6 @@ public class AlbumActivity extends ThemeableActivity
 
             //set share icon tint
             Drawable icon = menu.findItem(R.id.share).getIcon().mutate();
-            //icon.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
             icon = DrawableCompat.wrap(icon);
             DrawableCompat.setTint(icon.mutate(),
                     ContextCompat.getColor(this, R.color.grey_900_translucent));

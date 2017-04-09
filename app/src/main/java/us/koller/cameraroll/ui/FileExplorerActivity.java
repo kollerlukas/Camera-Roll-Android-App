@@ -91,6 +91,19 @@ public class FileExplorerActivity extends ThemeableActivity
 
         currentDir = new File_POJO("", false);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setEnterTransition(new TransitionSet()
+                    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                    .addTransition(new Slide(Gravity.BOTTOM))
+                    .addTransition(new Fade())
+                    .setInterpolator(new AccelerateDecelerateInterpolator()));
+            getWindow().setReturnTransition(new TransitionSet()
+                    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                    .addTransition(new Slide(Gravity.BOTTOM))
+                    .addTransition(new Fade())
+                    .setInterpolator(new AccelerateDecelerateInterpolator()));
+        }
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
         toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
@@ -296,7 +309,7 @@ public class FileExplorerActivity extends ThemeableActivity
             loadRoots();
 
             //show warning dialog
-            new AlertDialog.Builder(this, getDialogThemeRes())
+            /*new AlertDialog.Builder(this, getDialogThemeRes())
                     .setTitle(R.string.warning)
                     .setMessage(Html.fromHtml(getString(R.string.file_explorer_warning_message)))
                     .setPositiveButton(R.string.ok, null)
@@ -306,7 +319,7 @@ public class FileExplorerActivity extends ThemeableActivity
                             finish();
                         }
                     })
-                    .show();
+                    .show();*/
         }
     }
 
@@ -417,7 +430,6 @@ public class FileExplorerActivity extends ThemeableActivity
         manageMenuItems();
 
         Drawable icon = menu.findItem(R.id.paste).getIcon().mutate();
-        //icon.setTint(ContextCompat.getColor(FileExplorerActivity.this, R.color.grey_900_translucent));
         icon = DrawableCompat.wrap(icon);
         DrawableCompat.setTint(icon.mutate(),
                 ContextCompat.getColor(this, R.color.grey_900_translucent));
@@ -469,8 +481,6 @@ public class FileExplorerActivity extends ThemeableActivity
                 break;
             case R.id.exclude:
                 currentDir.excluded = !currentDir.excluded;
-                Log.d("FileExplorerActivity", "onOptionsItemSelected: " + currentDir.getPath()
-                        + "; " + String.valueOf(currentDir.excluded));
                 item.setChecked(currentDir.excluded);
                 if (currentDir.excluded) {
                     FilesProvider.addExcludedPath(this, currentDir.getPath());
@@ -907,7 +917,6 @@ public class FileExplorerActivity extends ThemeableActivity
 
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {
-                    //menu.getItem(i).setVisible(false);
                     int id = menu.getItem(i).getItemId();
                     if (id == R.id.exclude) {
                         menu.getItem(i).setVisible(true);
