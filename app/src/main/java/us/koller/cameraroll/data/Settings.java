@@ -38,7 +38,7 @@ public class Settings {
 
         style = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_style),
-                context.getResources().getInteger(R.integer.STYLE_CARDS_VALUE));
+                context.getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE));
 
         styleColumnCount = getDefaultStyleColumnCount(context, style);
 

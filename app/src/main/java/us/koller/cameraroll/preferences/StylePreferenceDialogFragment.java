@@ -12,8 +12,11 @@ import android.support.v7.preference.Preference;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
+import com.bumptech.glide.Glide;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 
 import us.koller.cameraroll.R;
@@ -104,21 +107,34 @@ public class StylePreferenceDialogFragment
 
     public static class ViewPagerAdapter extends PagerAdapter {
 
-        private int[] layoutRess = {
-                R.layout.pref_dialog_style_parallax,
-                R.layout.pref_dialog_style_cards};
+        private static int[] nameRess = {
+                R.string.STYLE_PARALLAX_NAME,
+                R.string.STYLE_CARDS_NAME};
+
+        private static int[] imageRess = {
+                R.drawable.style_parallax,
+                R.drawable.style_cards};
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View view = LayoutInflater.from(container.getContext())
-                    .inflate(layoutRess[position], container, false);
+                    .inflate(R.layout.pref_dialog_style_item, container, false);
+
+            TextView textView = (TextView) view.findViewById(R.id.name);
+            textView.setText(nameRess[position]);
+
+            ImageView imageView = (ImageView) view.findViewById(R.id.image);
+            Glide.with(imageView.getContext())
+                    .load(imageRess[position])
+                    .into(imageView);
+
             container.addView(view);
             return view;
         }
 
         @Override
         public int getCount() {
-            return layoutRess.length;
+            return nameRess.length;
         }
 
         @Override
