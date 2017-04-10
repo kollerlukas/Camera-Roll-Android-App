@@ -1,5 +1,7 @@
 package us.koller.cameraroll.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -351,9 +353,8 @@ public class AlbumActivity extends ThemeableActivity
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTOR_MODE_ACTIVE)) {
             boolean restoreSelectorMode = Boolean.valueOf(savedInstanceState.getString(SELECTOR_MODE_ACTIVE));
             if (restoreSelectorMode && savedInstanceState.containsKey(SELECTED_ITEMS_POSITIONS)) {
-                int[] selectedItemsPos = savedInstanceState.getIntArray(SELECTED_ITEMS_POSITIONS);
+                final int[] selectedItemsPos = savedInstanceState.getIntArray(SELECTED_ITEMS_POSITIONS);
                 ((RecyclerViewAdapter) recyclerView.getAdapter()).restoreSelectedItems(selectedItemsPos);
-                onItemSelected(selectedItemsPos.length);
             }
         }
     }
@@ -421,7 +422,12 @@ public class AlbumActivity extends ThemeableActivity
                     ContextCompat.getColor(this, R.color.grey_900_translucent));
             menu.findItem(R.id.share).setIcon(icon);
 
-            menu.findItem(R.id.exclude).setChecked(album.excluded);
+            //setup exclude checkbox
+            boolean enabled = !Provider
+                    .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
+                            Provider.getExcludedPaths());
+            menu.findItem(R.id.exclude).setEnabled(enabled);
+            menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -673,8 +679,6 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     public void onSelectorModeEnter() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(ContextCompat
-                .getColor(AlbumActivity.this, android.R.color.transparent));
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
@@ -693,6 +697,10 @@ public class AlbumActivity extends ThemeableActivity
             ColorFade.fadeBackgroundColor(toolbar,
                     ContextCompat.getColor(this, toolbar_color_res),
                     ContextCompat.getColor(this, accent_color_res));
+
+            ColorFade.fadeToolbarTitleColor(toolbar,
+                    ContextCompat.getColor(this, R.color.grey_900_translucent),
+                    null, true);
 
             //fade overflow menu icon
             ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
@@ -725,8 +733,6 @@ public class AlbumActivity extends ThemeableActivity
                                     R.color.grey_900_translucent));
                     toolbar.setNavigationIcon(d);
 
-                    toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, R.color.grey_900_translucent));
-
                 }
             }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
         } else {
@@ -748,8 +754,6 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(ContextCompat
-                .getColor(AlbumActivity.this, android.R.color.transparent));
 
         if (THEME != ThemeableActivity.LIGHT) {
             toolbar.setActivated(false);
@@ -758,7 +762,15 @@ public class AlbumActivity extends ThemeableActivity
         ColorFade.fadeBackgroundColor(toolbar,
                 ContextCompat.getColor(this, accent_color_res),
                 ContextCompat.getColor(this, toolbar_color_res));
-        toolbar.setTitle(album.getName());
+
+        ColorFade.fadeToolbarTitleColor(toolbar,
+                ContextCompat.getColor(this, text_color_res),
+                new ColorFade.ToolbarTitleFadeCallback() {
+                    @Override
+                    public void setTitle(Toolbar toolbar) {
+                        toolbar.setTitle(album.getName());
+                    }
+                }, true);
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
@@ -791,8 +803,6 @@ public class AlbumActivity extends ThemeableActivity
                                 text_color_secondary_res));
                 toolbar.setNavigationIcon(d);
 
-                toolbar.setTitleTextColor(ContextCompat.getColor(AlbumActivity.this, text_color_res));
-
                 if (THEME != ThemeableActivity.LIGHT) {
                     Util.setLightStatusBarIcons(findViewById(R.id.root_view));
                 }
@@ -809,10 +819,19 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onItemSelected(int selectedItemCount) {
-        String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
+        final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
                 getString(R.string.items) : getString(R.string.item));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(title);
+        //toolbar.setTitle(title);
+
+        ColorFade.fadeToolbarTitleColor(toolbar,
+                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                new ColorFade.ToolbarTitleFadeCallback() {
+                    @Override
+                    public void setTitle(Toolbar toolbar) {
+                        toolbar.setTitle(title);
+                    }
+                }, true);
 
 
         if (selectedItemCount > 0) {
@@ -872,6 +891,18 @@ public class AlbumActivity extends ThemeableActivity
                         .scaleY(show ? 1.0f : 0.0f)
                         .alpha(show ? 1.0f : 0.0f)
                         .setDuration(250)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                if (show) {
+                                    Drawable drawable = fab.getDrawable();
+                                    if (drawable instanceof Animatable) {
+                                        ((Animatable) drawable).start();
+                                    }
+                                }
+                            }
+                        })
                         .start();
             }
         }, click ? (int) (400 * Util.getAnimatorSpeed(this)) : 0);

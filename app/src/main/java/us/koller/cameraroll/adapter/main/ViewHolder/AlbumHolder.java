@@ -38,7 +38,8 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
 
         Provider.loadExcludedPaths(itemView.getContext());
-        excluded = !Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths());
+        excluded = Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths())
+                || Provider.isDirExcludedBecauseParentDirIsExcluded(album.getPath(), Provider.getExcludedPaths());
     }
 
     void loadImage(final ImageView image) {

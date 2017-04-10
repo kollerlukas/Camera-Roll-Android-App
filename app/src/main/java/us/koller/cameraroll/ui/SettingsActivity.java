@@ -13,6 +13,8 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.preference.SwitchPreferenceCompat;
+import android.support.v7.preference.TwoStatePreference;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -118,6 +120,14 @@ public class SettingsActivity extends ThemeableActivity {
     }
 
     @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        //so other activities are recreated
+        ThemeableActivity.THEME = ThemeableActivity.UNDEFINED;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -152,9 +162,6 @@ public class SettingsActivity extends ThemeableActivity {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
             }
         }
-
-        //so other activities are recreated
-        ThemeableActivity.THEME = ThemeableActivity.UNDEFINED;
     }
 
 
@@ -170,9 +177,9 @@ public class SettingsActivity extends ThemeableActivity {
 
             initThemePref(sharedPreferences);
 
-            initMediaRetrieverPref(sharedPreferences);
-
             initStylePref(sharedPreferences);
+
+            initMediaRetrieverPref(sharedPreferences);
         }
 
         private void initThemePref(SharedPreferences sharedPreferences) {
@@ -202,15 +209,18 @@ public class SettingsActivity extends ThemeableActivity {
         }
 
         private void initMediaRetrieverPref(SharedPreferences sharedPreferences) {
-            SwitchPreference mediaRetrieverPref =
-                    (SwitchPreference) findPreference(getString(R.string.pref_key_media_retriever));
+            TwoStatePreference mediaRetrieverPref =
+                    (TwoStatePreference) findPreference(getString(R.string.pref_key_media_retriever));
 
             boolean storageRetriever = sharedPreferences.getBoolean(
                     getString(R.string.pref_key_media_retriever),
                     false);
 
+            Log.d("SettingsFragment", "storageRetriever: " + String.valueOf(storageRetriever));
+
             mediaRetrieverPref.setChecked(storageRetriever);
 
+            Log.d("SettingsFragment", "mediaRetrieverPref.isChecked(): " + String.valueOf(mediaRetrieverPref.isChecked()));
             mediaRetrieverPref.setOnPreferenceChangeListener(this);
         }
 
@@ -229,6 +239,7 @@ public class SettingsActivity extends ThemeableActivity {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
+            Log.d("SettingsFragment", "onPreferenceChange() called with: preference = [" + preference + "], o = [" + o + "]");
             Settings settings = Settings.getInstance(getActivity());
             if (preference.getKey().equals(getString(R.string.pref_key_theme))) {
                 settings.setTheme((String) o);

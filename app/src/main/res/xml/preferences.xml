@@ -20,6 +20,5 @@
     <SwitchPreference
         android:title="@string/media_retriever"
         android:key="@string/pref_key_media_retriever"
-        android:summary="@string/media_retriever_summary"
-        android:widgetLayout="@layout/mp_preference_switch" />
+        android:summary="@string/media_retriever_summary" />
 </PreferenceScreen>

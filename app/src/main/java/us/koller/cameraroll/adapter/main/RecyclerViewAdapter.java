@@ -44,9 +44,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        boolean albumExcluded = Provider.isDirExcluded(
-                albums.get(position).getPath(),
-                MediaProvider.getExcludedPaths());
+        boolean albumExcluded
+                = Provider.isDirExcluded(albums.get(position).getPath(), Provider.getExcludedPaths()) ||
+                Provider.isDirExcludedBecauseParentDirIsExcluded(albums.get(position).getPath(), Provider.getExcludedPaths());
         if (albumExcluded) {
             return viewType + 1;
         } else {

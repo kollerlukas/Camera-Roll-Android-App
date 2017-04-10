@@ -8,7 +8,7 @@ import android.util.Property;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 
-// see: https://github.com/nickbutcher/plaid/blob/master/app/src/main/java/io/plaidapp/util/AnimUtils.java
+// stolen from: https://github.com/nickbutcher/plaid/blob/master/app/src/main/java/io/plaidapp/util/AnimUtils.java
 
 class AnimUtils {
 

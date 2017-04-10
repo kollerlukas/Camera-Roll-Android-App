@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ColorFade {
 
@@ -24,8 +25,9 @@ public class ColorFade {
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                v.setBackgroundColor(getAnimatedColor(startColor, endColor,
-                        valueAnimator.getAnimatedFraction()));
+                int color = getAnimatedColor(startColor, endColor,
+                        valueAnimator.getAnimatedFraction());
+                v.setBackgroundColor(color);
             }
         });
         animator.start();
@@ -52,7 +54,7 @@ public class ColorFade {
 
     // imageView saturation fade
     public static void fadeSaturation(final ImageView imageView) {
-        // see: https://github.com/nickbutcher/plaid/blob/master/app/src/main/java/io/plaidapp/ui/FeedAdapter.java
+        // code from: https://github.com/nickbutcher/plaid/blob/master/app/src/main/java/io/plaidapp/ui/FeedAdapter.java
         imageView.setHasTransientState(true);
         final AnimUtils.ObservableColorMatrix matrix = new AnimUtils.ObservableColorMatrix();
         final ObjectAnimator saturation = ObjectAnimator.ofFloat(
@@ -97,22 +99,35 @@ public class ColorFade {
 
         final int transparent = ContextCompat.getColor(toolbar.getContext(), android.R.color.transparent);
 
-        ValueAnimator fadeOut = null;
+        TextView titleView = null;
         if (fadeTitleOut) {
+            for (int i = 0; i < toolbar.getChildCount(); i++) {
+                View v = toolbar.getChildAt(i);
+                if (v instanceof TextView) {
+                    titleView = (TextView) v;
+                    break;
+                }
+            }
+        }
+        final TextView finalTextView = titleView;
+
+        ValueAnimator fadeOut = null;
+        if (fadeTitleOut && finalTextView != null) {
             fadeOut = getDefaultValueAnimator();
             fadeOut.setDuration(250);
             fadeOut.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    toolbar.setTitleTextColor(getAnimatedColor(color, transparent,
-                            valueAnimator.getAnimatedFraction()));
+                    finalTextView.setAlpha(1 - valueAnimator.getAnimatedFraction());
                 }
             });
             fadeOut.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    callback.setTitle(toolbar);
+                    if (callback != null) {
+                        callback.setTitle(toolbar);
+                    }
                 }
             });
         } else {
@@ -122,6 +137,15 @@ public class ColorFade {
 
         ValueAnimator fadeIn = getDefaultValueAnimator();
         fadeIn.setDuration(fadeTitleOut ? 250 : 500);
+        if (finalTextView != null) {
+            fadeIn.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    finalTextView.setAlpha(1.0f);
+                }
+            });
+        }
         fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {

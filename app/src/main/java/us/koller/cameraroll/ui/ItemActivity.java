@@ -479,9 +479,9 @@ public class ItemActivity extends ThemeableActivity {
 
     public void showDeleteDialog() {
         new AlertDialog.Builder(this, getDialogThemeRes())
-                .setTitle("Delete Photo?")
-                .setNegativeButton("No", null)
-                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.delete) + " " + albumItem.getType() + "?")
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         deletePhoto();

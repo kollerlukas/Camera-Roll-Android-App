@@ -673,8 +673,6 @@ public class FileExplorerActivity extends ThemeableActivity
         FileOperation.operation = FileOperation.EMPTY;
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this,
-                android.R.color.transparent));
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
@@ -683,6 +681,10 @@ public class FileExplorerActivity extends ThemeableActivity
         ColorFade.fadeBackgroundColor(toolbar,
                 ContextCompat.getColor(this, toolbar_color_res),
                 ContextCompat.getColor(this, accent_color_res));
+
+        ColorFade.fadeToolbarTitleColor(toolbar,
+                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                null, true);
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
@@ -729,23 +731,38 @@ public class FileExplorerActivity extends ThemeableActivity
     }
 
     @Override
-    public void onSelectorModeExit(File_POJO[] selected_items) {
+    public void onSelectorModeExit(final File_POJO[] selected_items) {
         switch (FileOperation.operation) {
             case FileOperation.DELETE:
                 resetToolbar();
-                fileOperation = new Delete(selected_items);
-                fileOperation.execute(this, null,
-                        new FileOperation.Callback() {
-                            @Override
-                            public void done() {
-                                loadDirectory(currentDir.getPath());
-                            }
 
-                            @Override
-                            public void failed(String path) {
+                String title = getString(R.string.delete) + " "
+                        + String.valueOf(selected_items.length)
+                        + " " + (selected_items.length > 1 ?
+                        getString(R.string.files) : getString(R.string.file));
 
+                new AlertDialog.Builder(this, getDialogThemeRes())
+                        .setTitle(title)
+                        .setNegativeButton(getString(R.string.no), null)
+                        .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                fileOperation = new Delete(selected_items);
+                                fileOperation.execute(FileExplorerActivity.this, null,
+                                        new FileOperation.Callback() {
+                                            @Override
+                                            public void done() {
+                                                loadDirectory(currentDir.getPath());
+                                            }
+
+                                            @Override
+                                            public void failed(String path) {
+
+                                            }
+                                        });
                             }
-                        });
+                        })
+                        .create().show();
                 break;
             case FileOperation.COPY:
                 fileOperation = new Copy(selected_items);
@@ -849,7 +866,7 @@ public class FileExplorerActivity extends ThemeableActivity
                         public void setTitle(Toolbar toolbar) {
                             toolbar.setTitle(currentDir.getPath());
                         }
-                    }, false);
+                    }, true);
         }
 
         if (recyclerViewAdapter.getMode()
@@ -860,8 +877,6 @@ public class FileExplorerActivity extends ThemeableActivity
 
     public void resetToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this,
-                android.R.color.transparent));
 
         if (THEME != ThemeableActivity.LIGHT) {
             toolbar.setActivated(false);
@@ -870,6 +885,15 @@ public class FileExplorerActivity extends ThemeableActivity
         ColorFade.fadeBackgroundColor(toolbar,
                 ContextCompat.getColor(this, accent_color_res),
                 ContextCompat.getColor(this, toolbar_color_res));
+
+        ColorFade.fadeToolbarTitleColor(toolbar,
+                ContextCompat.getColor(this, text_color_res),
+                new ColorFade.ToolbarTitleFadeCallback() {
+                    @Override
+                    public void setTitle(Toolbar toolbar) {
+                        toolbar.setTitle(currentDir.getPath());
+                    }
+                }, true);
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
@@ -906,14 +930,14 @@ public class FileExplorerActivity extends ThemeableActivity
                     Util.setLightStatusBarIcons(findViewById(R.id.root_view));
                 }
 
-                int color = ContextCompat.getColor(FileExplorerActivity.this, text_color_res);
+                /*int color = ContextCompat.getColor(FileExplorerActivity.this, text_color_res);
                 ColorFade.fadeToolbarTitleColor(toolbar, color,
                         new ColorFade.ToolbarTitleFadeCallback() {
                             @Override
                             public void setTitle(Toolbar toolbar) {
                                 toolbar.setTitle(currentDir.getPath());
                             }
-                        }, false);
+                        }, false);*/
 
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {

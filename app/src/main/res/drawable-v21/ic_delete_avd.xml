@@ -66,6 +66,7 @@
         </aapt:attr>
     </target>
 
+    <!--Don't know why I need this, but without this the bucket disappears-->
     <target android:name="bucket">
         <aapt:attr name="android:animation">
             <set>

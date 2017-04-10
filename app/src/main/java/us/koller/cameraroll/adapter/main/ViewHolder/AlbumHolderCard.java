@@ -24,9 +24,8 @@ public class AlbumHolderCard extends AlbumHolder {
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
 
         final ImageView image = (ImageView) itemView.findViewById(R.id.image);
-        loadImage(image);
 
-        if (excluded) {
+        if (!excluded) {
             //album not excluded
             String count = album.getAlbumItems().size()
                     + (album.getAlbumItems().size() > 1 ?
@@ -49,5 +48,7 @@ public class AlbumHolderCard extends AlbumHolder {
             ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
             image.setColorFilter(filter);
         }
+
+        loadImage(image);
     }
 }

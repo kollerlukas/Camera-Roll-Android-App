@@ -87,13 +87,13 @@ public class MediaProvider extends Provider {
                                 }
                             } else {
                                 //remove indirectly excluded albums
-                                ArrayList<String> excludedPaths = MediaProvider.getExcludedPaths();
+                                /*ArrayList<String> excludedPaths = MediaProvider.getExcludedPaths();
                                 for (int i = albums.size() - 1; i >= 0; i--) {
                                     if (MediaProvider
                                             .isDirExcludedBecauseParentDirIsExcluded(albums.get(i).getPath(), excludedPaths)) {
                                         albums.remove(i);
                                     }
-                                }
+                                }*/
                             }
 
                             callback.onMediaLoaded(albums);

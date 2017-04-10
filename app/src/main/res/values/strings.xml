@@ -100,12 +100,15 @@
 
     <string name="item">" Item"</string>
     <string name="items">" Items"</string>
+    <string name="files">Files</string>
+    <string name="file">File</string>
 
     <string name="loading">Loading…</string>
     <string name="loading_failed">Loading failed</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="no">No</string>
 
     <string name="undo">Undo</string>
     <string name="done">Done</string>

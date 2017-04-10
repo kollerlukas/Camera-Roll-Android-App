@@ -177,6 +177,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             selected_items[pos] = true;
             notifyItemChanged(pos);
         }
+
+        callback.onItemSelected(selectedItemsPos.length);
     }
 
     public int[] getSelectedItemsPositions() {
