@@ -29,8 +29,6 @@ public class StylePreference extends DialogPreference {
                            int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
-        //setPersistent(false);
-
         setDialogLayoutResource(mDialogLayoutResId);
         setPositiveButtonText(android.R.string.ok);
         setNegativeButtonText(android.R.string.cancel);

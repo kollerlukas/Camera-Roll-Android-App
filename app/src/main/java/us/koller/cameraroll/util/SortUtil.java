@@ -58,9 +58,12 @@ public class SortUtil {
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                Long l1 = s1.getDate(context);
-                Long l2 = s2.getDate(context);
-                return l2.compareTo(l1);
+                if (s1 != null && s2 != null) {
+                    Long l1 = s1.getDate(context);
+                    Long l2 = s2.getDate(context);
+                    return l2.compareTo(l1);
+                }
+                return 0;
             }
         });
         return sortables;
@@ -71,7 +74,10 @@ public class SortUtil {
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                return s1.getName().compareTo(s2.getName());
+                if (s1 != null && s2 != null) {
+                    return s1.getName().compareTo(s2.getName());
+                }
+                return 0;
             }
         });
         return sortables;

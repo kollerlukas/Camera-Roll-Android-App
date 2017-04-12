@@ -92,9 +92,9 @@ public class StylePreferenceDialogFragment
         super.onDismiss(dialog);
         if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE) {
             if (preference instanceof StylePreference) {
-                StylePreference timePreference =
+                StylePreference stylePreference =
                         ((StylePreference) preference);
-                timePreference.setStyle(selectedStyle);
+                stylePreference.setStyle(selectedStyle);
 
                 Settings.getInstance(getActivity()).setStyle(selectedStyle);
             }

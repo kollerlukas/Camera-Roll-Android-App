@@ -49,6 +49,7 @@ import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.animators.ColorFade;
@@ -202,7 +203,7 @@ public class AlbumActivity extends ThemeableActivity
         });
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        final int columnCount = Util.getAlbumActivityGridColumnCount(this);
+        final int columnCount = Settings.getInstance(this).getColumnCount(this); //Util.getAlbumActivityGridColumnCount(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new GridMarginDecoration(

@@ -4,21 +4,27 @@
     <PreferenceCategory android:title="@string/appearance">
 
         <ListPreference
-            android:title="@string/theme"
-            android:key="@string/pref_key_theme"
             android:entries="@array/theme_names"
-            android:entryValues="@array/theme_values" />
+            android:entryValues="@array/theme_values"
+            android:key="@string/pref_key_theme"
+            android:title="@string/theme" />
 
         <us.koller.cameraroll.preferences.StylePreference
-            android:title="@string/style"
+            style="@style/Theme.CameraRoll.DialogPreference"
             android:key="@string/pref_key_style"
-            android:entries="@array/style_names"
-            android:entryValues="@array/style_values"
-            style="@style/Theme.CameraRoll.DialogPreference" />
+            android:title="@string/style" />
+
+        <us.koller.cameraroll.preferences.ColumnCountPreference
+            style="@style/Theme.CameraRoll.DialogPreference"
+            android:key="@string/pref_key_column_count"
+            android:title="@string/column_count" />
     </PreferenceCategory>
 
-    <SwitchPreference
-        android:title="@string/media_retriever"
-        android:key="@string/pref_key_media_retriever"
-        android:summary="@string/media_retriever_summary" />
+    <PreferenceCategory android:title="@string/other">
+
+        <SwitchPreference
+            android:key="@string/pref_key_media_retriever"
+            android:summary="@string/media_retriever_summary"
+            android:title="@string/media_retriever" />
+    </PreferenceCategory>
 </PreferenceScreen>

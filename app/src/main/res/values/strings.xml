@@ -127,6 +127,8 @@
     <string name="appearance">Appearance</string>
     <string name="theme">Theme</string>
     <string name="style">Style</string>
+    <string name="column_count">Column Count</string>
+    <string name="other">Other</string>
 
     <string name="media_retriever">MediaRetriever</string>
     <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api.
@@ -157,4 +159,6 @@
     <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
 
     <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
+    <string name="minus">Minus</string>
+    <string name="plus">Plus</string>
 </resources>

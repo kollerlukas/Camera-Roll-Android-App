@@ -35,10 +35,10 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.ui.ThemeableActivity;
 
 public class Util {
-    public static int getAlbumActivityGridColumnCount(Context context) {
+    /*public static int getAlbumActivityGridColumnCount(Context context) {
         boolean landscape = context.getResources().getBoolean(R.bool.landscape);
         return !landscape ? 3 : 4;
-    }
+    }*/
 
     public static int getScreenWidth(Activity context) {
         DisplayMetrics displaymetrics = new DisplayMetrics();

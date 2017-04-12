@@ -86,7 +86,7 @@ public class ItemViewUtil {
             imageDimens[1] = imageDimens[1] / 2;
         }
 
-        if (imageDimens[0] == 1 || imageDimens[1] == 1) {
+        if (imageDimens[0] <= 1 || imageDimens[1] <= 1) {
             return imageView;
         }
 

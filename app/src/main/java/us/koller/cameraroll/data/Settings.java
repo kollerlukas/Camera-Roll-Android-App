@@ -9,6 +9,8 @@ import us.koller.cameraroll.R;
 
 public class Settings {
 
+    public static final int DEFAULT_COLUMN_COUNT = 4;
+
     private String theme;
     private boolean storageRetriever;
     private int style;
@@ -42,11 +44,9 @@ public class Settings {
 
         styleColumnCount = getDefaultStyleColumnCount(context, style);
 
-        boolean landscape = context.getResources().getBoolean(R.bool.landscape);
-        int defaultColumnCount = !landscape ? 3 : 4;
         columnCount = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_column_count),
-                defaultColumnCount);
+                DEFAULT_COLUMN_COUNT);
     }
 
     /*Getter & Setter*/

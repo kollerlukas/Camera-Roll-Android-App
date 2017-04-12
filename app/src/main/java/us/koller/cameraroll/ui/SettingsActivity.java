@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.preference.ListPreference;
@@ -27,6 +28,8 @@ import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.preferences.ColumnCountPreference;
+import us.koller.cameraroll.preferences.ColumnCountPreferenceDialogFragment;
 import us.koller.cameraroll.preferences.StylePreference;
 import us.koller.cameraroll.preferences.StylePreferenceDialogFragment;
 import us.koller.cameraroll.util.Util;
@@ -168,6 +171,16 @@ public class SettingsActivity extends ThemeableActivity {
     public static class SettingsFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceChangeListener {
 
+        private static final String DIALOG_FRAGMENT_TAG
+                = "android.support.v7.preference.PreferenceFragment.DIALOG";
+        private static final String SHOWN_DIALOG_FRAGMENT = "SHOWN_DIALOG_FRAGMENT";
+        private static final int NONE = 0;
+        private static final int STYLE_DIALOG_FRAGMENT = 1;
+        private static final int COLUMN_COUNT_DIALOG_FRAGMENT = 2;
+
+        private int shownDialogFragment = NONE;
+
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.preferences);
@@ -179,7 +192,24 @@ public class SettingsActivity extends ThemeableActivity {
 
             initStylePref(sharedPreferences);
 
+            initColumnCountPref(sharedPreferences);
+
             initMediaRetrieverPref(sharedPreferences);
+
+            if (savedInstanceState != null
+                    && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
+                int shownDialogFragment = savedInstanceState.getInt(SHOWN_DIALOG_FRAGMENT);
+                Preference preference = null;
+                if (shownDialogFragment == STYLE_DIALOG_FRAGMENT) {
+                    preference = findPreference(getString(R.string.pref_key_style));
+                } else if (shownDialogFragment == COLUMN_COUNT_DIALOG_FRAGMENT) {
+                    preference = findPreference(getString(R.string.pref_key_column_count));
+                }
+
+                if (preference != null) {
+                    onDisplayPreferenceDialog(preference);
+                }
+            }
         }
 
         private void initThemePref(SharedPreferences sharedPreferences) {
@@ -208,6 +238,18 @@ public class SettingsActivity extends ThemeableActivity {
             stylePref.setOnPreferenceChangeListener(this);
         }
 
+        private void initColumnCountPref(SharedPreferences sharedPreferences) {
+            ColumnCountPreference columnCountPref = (ColumnCountPreference)
+                    findPreference(getString(R.string.pref_key_column_count));
+
+            int column_count = sharedPreferences.getInt(
+                    getString(R.string.pref_key_column_count),
+                    Settings.DEFAULT_COLUMN_COUNT);
+
+            columnCountPref.setSummary(String.valueOf(column_count));
+            columnCountPref.setOnPreferenceChangeListener(this);
+        }
+
         private void initMediaRetrieverPref(SharedPreferences sharedPreferences) {
             TwoStatePreference mediaRetrieverPref =
                     (TwoStatePreference) findPreference(getString(R.string.pref_key_media_retriever));
@@ -216,30 +258,60 @@ public class SettingsActivity extends ThemeableActivity {
                     getString(R.string.pref_key_media_retriever),
                     false);
 
-            Log.d("SettingsFragment", "storageRetriever: " + String.valueOf(storageRetriever));
-
             mediaRetrieverPref.setChecked(storageRetriever);
-
-            Log.d("SettingsFragment", "mediaRetrieverPref.isChecked(): " + String.valueOf(mediaRetrieverPref.isChecked()));
             mediaRetrieverPref.setOnPreferenceChangeListener(this);
         }
 
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
+            DialogFragment dialogFragment = null;
             if (preference instanceof StylePreference) {
-                DialogFragment dialogFragment
+                dialogFragment
                         = StylePreferenceDialogFragment
                         .newInstance(preference);
+            } else if (preference instanceof ColumnCountPreference) {
+                dialogFragment
+                        = ColumnCountPreferenceDialogFragment
+                        .newInstance(preference);
+            }
+
+            if (dialogFragment != null) {
                 dialogFragment.setTargetFragment(this, 0);
-                dialogFragment.show(this.getFragmentManager(), "android.support.v7.preference.PreferenceFragment.DIALOG");
+                dialogFragment.show(this.getFragmentManager(), DIALOG_FRAGMENT_TAG);
                 return;
             }
+
             super.onDisplayPreferenceDialog(preference);
         }
 
         @Override
+        public void onPause() {
+            super.onPause();
+
+            if (getActivity().isChangingConfigurations()) {
+                Fragment fragment =
+                        getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG);
+                if (fragment != null && fragment instanceof DialogFragment) {
+                    if (fragment instanceof StylePreferenceDialogFragment) {
+                        shownDialogFragment = STYLE_DIALOG_FRAGMENT;
+                    } else if (fragment instanceof ColumnCountPreferenceDialogFragment) {
+                        shownDialogFragment = COLUMN_COUNT_DIALOG_FRAGMENT;
+                    }
+
+                    ((DialogFragment) fragment).dismiss();
+                }
+            }
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+
+            outState.putInt(SHOWN_DIALOG_FRAGMENT, shownDialogFragment);
+        }
+
+        @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
-            Log.d("SettingsFragment", "onPreferenceChange() called with: preference = [" + preference + "], o = [" + o + "]");
             Settings settings = Settings.getInstance(getActivity());
             if (preference.getKey().equals(getString(R.string.pref_key_theme))) {
                 settings.setTheme((String) o);
@@ -260,6 +332,9 @@ public class SettingsActivity extends ThemeableActivity {
                 int columnCount = Settings.getDefaultStyleColumnCount(getActivity(), (int) o);
                 Settings.getInstance(getActivity()).setStyleColumnCount(columnCount);
 
+            } else if (preference.getKey().equals(getString(R.string.pref_key_column_count))) {
+                settings.setColumnCount((int) o);
+                preference.setSummary(String.valueOf(o));
             } else if (preference.getKey().equals(getString(R.string.pref_key_media_retriever))) {
                 settings.useStorageRetriever((boolean) o);
             }
