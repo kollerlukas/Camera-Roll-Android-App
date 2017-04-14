@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -27,18 +28,21 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
@@ -52,6 +56,7 @@ import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
+import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -155,6 +160,9 @@ public class AlbumActivity extends ThemeableActivity
             return;
         }
 
+        int sort_by = Settings.getInstance(this).sortAlbumBy();
+        SortUtil.sort(this, album.getAlbumItems(), sort_by);
+
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         if (rootView instanceof SwipeBackCoordinatorLayout) {
             ((SwipeBackCoordinatorLayout) rootView).setOnSwipeListener(this);
@@ -203,7 +211,7 @@ public class AlbumActivity extends ThemeableActivity
         });
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        final int columnCount = Settings.getInstance(this).getColumnCount(this); //Util.getAlbumActivityGridColumnCount(this);
+        final int columnCount = Settings.getInstance(this).getColumnCount(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new GridMarginDecoration(
@@ -216,6 +224,9 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            private int statusBarColor = getColorPrimaryDark();
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -231,6 +242,30 @@ public class AlbumActivity extends ThemeableActivity
                     translationY = 0;
                 }
                 toolbar.setTranslationY(translationY);
+
+                if (THEME == LIGHT) {
+                    float animatedValue = (-translationY) / toolbar.getPaddingTop();
+                    if (animatedValue > 1.0f) {
+                        animatedValue = 1.0f;
+                    }
+                    animatedValue = 1.0f - animatedValue;
+
+                    int alpha = (int) (Color.alpha(statusBarColor) * animatedValue);
+                    int animatedColor = Color.argb(alpha, Color.red(statusBarColor),
+                            Color.green(statusBarColor), Color.blue(statusBarColor));
+
+                    Window window = getWindow();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        window.setStatusBarColor(animatedColor);
+                    }
+
+                    animatedValue = (-translationY) / toolbar.getHeight();
+                    if (animatedValue > 0.9f) {
+                        Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                    } else {
+                        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                    }
+                }
             }
         });
 
@@ -431,6 +466,13 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
         }
 
+        int sort_by = Settings.getInstance(this).sortAlbumBy();
+        if (sort_by == SortUtil.BY_DATE) {
+            menu.findItem(R.id.sort_by_date).setChecked(true);
+        } else if (sort_by == SortUtil.BY_NAME) {
+            menu.findItem(R.id.sort_by_name).setChecked(true);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -489,6 +531,18 @@ public class AlbumActivity extends ThemeableActivity
                 }
                 item.setChecked(album.excluded);
                 refreshMainActivityWhenClosed = !refreshMainActivityWhenClosed;
+                break;
+            case R.id.sort_by_date:
+            case R.id.sort_by_name:
+                item.setChecked(true);
+
+                int sort_by = item.getItemId() == R.id.sort_by_date ?
+                        SortUtil.BY_DATE : SortUtil.BY_NAME;
+                Settings.getInstance(this).sortAlbumBy(this, sort_by);
+
+                SortUtil.sort(this, album.getAlbumItems(), sort_by);
+
+                recyclerView.getAdapter().notifyDataSetChanged();
                 break;
         }
         return super.onOptionsItemSelected(item);

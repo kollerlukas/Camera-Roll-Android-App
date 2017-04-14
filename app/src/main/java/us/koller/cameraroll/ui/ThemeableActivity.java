@@ -2,6 +2,7 @@ package us.koller.cameraroll.ui;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -157,6 +158,16 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
                 overviewIcon, color));
         overviewIcon.recycle();
+    }
+
+    public int getColorPrimaryDark() {
+        int[] attrs = new int[]{R.attr.colorPrimaryDark};
+        TypedArray ta = obtainStyledAttributes(attrs);
+        int defColor = ContextCompat.getColor(this, R.color.colorPrimaryDark);
+        int colorPrimaryDark = ta.getColor(0, defColor);
+        ta.recycle();
+
+        return colorPrimaryDark;
     }
 }
 

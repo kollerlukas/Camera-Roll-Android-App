@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.util.SortUtil;
 
 public class Settings {
 
@@ -16,6 +17,8 @@ public class Settings {
     private int style;
     private int styleColumnCount;
     private int columnCount;
+    private int sort_albums_by;
+    private int sort_album_by;
 
     private static Settings instance;
 
@@ -47,6 +50,14 @@ public class Settings {
         columnCount = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_column_count),
                 DEFAULT_COLUMN_COUNT);
+
+        sort_albums_by = sharedPreferences.getInt(
+                context.getString(R.string.pref_key_sort_albums),
+                SortUtil.BY_NAME);
+
+        sort_album_by = sharedPreferences.getInt(
+                context.getString(R.string.pref_key_sort_album),
+                SortUtil.BY_DATE);
     }
 
     /*Getter & Setter*/
@@ -107,6 +118,38 @@ public class Settings {
             return res.getInteger(R.integer.STYLE_CARDS_COLUMN_COUNT);
         }
         return 1;
+    }
+
+    public int sortAlbumsBy() {
+        return sort_albums_by;
+    }
+
+    public void sortAlbumsBy(Context context, int sort_albums_by) {
+        this.sort_albums_by = sort_albums_by;
+
+        String key = context.getString(R.string.pref_key_sort_albums);
+        saveInt(context, key, sort_albums_by);
+    }
+
+    public int sortAlbumBy() {
+        return sort_album_by;
+    }
+
+    public void sortAlbumBy(Context context, int sort_album_by) {
+        this.sort_album_by = sort_album_by;
+
+        String key = context.getString(R.string.pref_key_sort_album);
+        saveInt(context, key, sort_album_by);
+    }
+
+
+    private static void saveInt(Context context, String key, int value) {
+        SharedPreferences sharedPreferences
+                = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences
+                .edit()
+                .putInt(key, value)
+                .apply();
     }
 
     public static class Utils {

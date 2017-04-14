@@ -22,18 +22,28 @@ public class SortUtil {
 
     public static final int BY_DATE = 1;
     public static final int BY_NAME = 2;
+    public static final int BY_SIZE = 3;
 
-    public static ArrayList<? extends Sortable> sortAlbums(Activity context, ArrayList<? extends Sortable> albums, int by) {
-        //sort each individual album
-        if (albums.size() > 0 && albums.get(0) instanceof Album) {
-            for (int i = 0; i < albums.size(); i++) {
-                sort(context, ((Album) albums.get(i)).getAlbumItems(), BY_DATE);
-            }
+    public static ArrayList<? extends Sortable> sortAlbums(Activity context, ArrayList<Album> albums, int by) {
+        switch (by) {
+            case BY_NAME:
+            case BY_DATE:
+                return sort(context, albums, by);
+            case BY_SIZE:
+                // Sorting
+                Collections.sort(albums, new Comparator<Album>() {
+                    @Override
+                    public int compare(Album a1, Album a2) {
+                        if (a1 != null && a2 != null) {
+                            Integer a1_size = a1.getAlbumItems().size();
+                            Integer a2_size = a2.getAlbumItems().size();
+                            return a2_size.compareTo(a1_size);
+                        }
+                        return 0;
+                    }
+                });
+                return albums;
         }
-
-        //sort albums arrayList
-        sort(context, albums, by);
-
         return albums;
     }
 
@@ -43,13 +53,29 @@ public class SortUtil {
         return files;
     }
 
-    private static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
+    public static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
         switch (by) {
-            case BY_DATE:
-                return sortByDate(context, sortables);
             case BY_NAME:
                 return sortByName(sortables);
+            case BY_DATE:
+                return sortByDate(context, sortables);
+            case BY_SIZE:
+                return sortByDate(context, sortables);
         }
+        return sortables;
+    }
+
+    public static ArrayList<? extends Sortable> sortByName(ArrayList<? extends Sortable> sortables) {
+        // Sorting
+        Collections.sort(sortables, new Comparator<Sortable>() {
+            @Override
+            public int compare(Sortable s1, Sortable s2) {
+                if (s1 != null && s2 != null) {
+                    return s1.getName().compareTo(s2.getName());
+                }
+                return 0;
+            }
+        });
         return sortables;
     }
 
@@ -62,20 +88,6 @@ public class SortUtil {
                     Long l1 = s1.getDate(context);
                     Long l2 = s2.getDate(context);
                     return l2.compareTo(l1);
-                }
-                return 0;
-            }
-        });
-        return sortables;
-    }
-
-    public static ArrayList<? extends Sortable> sortByName(ArrayList<? extends Sortable> sortables) {
-        // Sorting
-        Collections.sort(sortables, new Comparator<Sortable>() {
-            @Override
-            public int compare(Sortable s1, Sortable s2) {
-                if (s1 != null && s2 != null) {
-                    return s1.getName().compareTo(s2.getName());
                 }
                 return 0;
             }

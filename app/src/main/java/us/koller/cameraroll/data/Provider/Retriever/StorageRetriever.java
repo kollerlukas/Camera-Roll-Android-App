@@ -22,6 +22,7 @@ import us.koller.cameraroll.data.Provider.ItemLoader.FileLoader;
 import us.koller.cameraroll.data.Provider.ItemLoader.ItemLoader;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
@@ -99,8 +100,6 @@ public class StorageRetriever implements Retriever {
                                 }
 
                                 //done loading media from storage
-                                //SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
-                                SortUtil.sortByName(albums);
                                 callback.onMediaLoaded(albums);
                                 cancelTimeout();
                                 if (THREAD_COUNT == -1) {

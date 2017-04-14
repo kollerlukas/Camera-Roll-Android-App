@@ -15,6 +15,7 @@ import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.Retriever.MediaStoreRetriever;
 import us.koller.cameraroll.data.Provider.Retriever.StorageRetriever;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.util.SortUtil;
 
 public class MediaProvider extends Provider {
 
@@ -53,7 +54,7 @@ public class MediaProvider extends Provider {
         return true;
     }
 
-    public void loadAlbums(Activity context,
+    public void loadAlbums(final Activity context,
                            final boolean hiddenFolders,
                            final Callback callback) {
 
@@ -95,6 +96,9 @@ public class MediaProvider extends Provider {
                                     }
                                 }*/
                             }
+
+                            int sort_by = Settings.getInstance(context).sortAlbumsBy();
+                            SortUtil.sortAlbums(context, albums, sort_by);
 
                             callback.onMediaLoaded(albums);
                             setAlbums(albums);

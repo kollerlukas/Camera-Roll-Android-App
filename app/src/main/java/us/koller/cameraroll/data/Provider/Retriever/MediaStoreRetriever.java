@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
@@ -101,8 +102,6 @@ public class MediaStoreRetriever implements Retriever {
                 cursor.close();
 
                 //done loading media with content resolver
-                //SortUtil.sortAlbums(context, albums, SortUtil.BY_NAME);
-                SortUtil.sortByName(albums);
                 callback.onMediaLoaded(albums);
                 Log.d("MediaStoreRetriever", "onMediaLoaded(): "
                         + String.valueOf(System.currentTimeMillis() - startTime) + " ms");

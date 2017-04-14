@@ -1,7 +1,9 @@
 package us.koller.cameraroll.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowInsets;
 
 import java.util.ArrayList;
@@ -34,7 +37,9 @@ import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
+import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
+import us.koller.cameraroll.util.animators.ColorFade;
 
 public class MainActivity extends ThemeableActivity {
 
@@ -128,6 +133,8 @@ public class MainActivity extends ThemeableActivity {
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
+            private int statusBarColor = getColorPrimaryDark();
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -144,6 +151,30 @@ public class MainActivity extends ThemeableActivity {
                 }
 
                 toolbar.setTranslationY(translationY);
+
+                if (THEME == LIGHT) {
+                    float animatedValue = (-translationY) / toolbar.getPaddingTop();
+                    if (animatedValue > 1.0f) {
+                        animatedValue = 1.0f;
+                    }
+                    animatedValue = 1.0f - animatedValue;
+
+                    int alpha = (int) (Color.alpha(statusBarColor) * animatedValue);
+                    int animatedColor = Color.argb(alpha, Color.red(statusBarColor),
+                            Color.green(statusBarColor), Color.blue(statusBarColor));
+
+                    Window window = getWindow();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        window.setStatusBarColor(animatedColor);
+                    }
+
+                    animatedValue = (-translationY) / toolbar.getHeight();
+                    if (animatedValue > 0.9f) {
+                        Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                    } else {
+                        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                    }
+                }
             }
         });
 
@@ -343,6 +374,14 @@ public class MainActivity extends ThemeableActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main, menu);
         menu.findItem(R.id.hiddenFolders).setChecked(hiddenFolders);
+
+        int sort_by = Settings.getInstance(this).sortAlbumsBy();
+        if (sort_by == SortUtil.BY_NAME) {
+            menu.findItem(R.id.sort_by_name).setChecked(true);
+        } else if (sort_by == SortUtil.BY_SIZE) {
+            menu.findItem(R.id.sort_by_size).setChecked(true);
+        }
+
         if (pick_photos) {
             menu.findItem(R.id.about).setVisible(false);
             menu.findItem(R.id.file_explorer).setVisible(false);
@@ -371,6 +410,16 @@ public class MainActivity extends ThemeableActivity {
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class),
                         ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+                break;
+            case R.id.sort_by_name:
+            case R.id.sort_by_size:
+                item.setChecked(true);
+
+                int sort_by = item.getItemId() == R.id.sort_by_name ?
+                        SortUtil.BY_NAME : SortUtil.BY_SIZE;
+                Settings.getInstance(this).sortAlbumsBy(this, sort_by);
+
+                refreshPhotos();
                 break;
         }
         return super.onOptionsItemSelected(item);

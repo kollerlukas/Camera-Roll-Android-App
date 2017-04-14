@@ -53,6 +53,8 @@
     <string name="pref_key_style" translatable="false">KEY_STYLE</string>
     <string name="pref_key_style_column_count" translatable="false">KEY_STYLE_COLUMN_COUNT</string>
     <string name="pref_key_column_count" translatable="false">KEY_COLUMN_COUNT</string>
+    <string name="pref_key_sort_albums" translatable="false">KEY_SORT_ALBUMS</string>
+    <string name="pref_key_sort_album" translatable="false">KEY_SORT_ALBUM</string>
 
     <!--translatable-->
     <string name="read_permission_denied">Camera Roll needs the permission access your Storage to
@@ -161,4 +163,7 @@
     <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
     <string name="minus">Minus</string>
     <string name="plus">Plus</string>
+    <string name="by_name">Name</string>
+    <string name="by_size">Size</string>
+    <string name="by_date">Last modified</string>
 </resources>

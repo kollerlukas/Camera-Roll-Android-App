@@ -17,14 +17,17 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/move"
-        android:title="@string/move" />
-
-    <item
         android:id="@+id/copy"
+        android:icon="@drawable/ic_content_copy_white_24dp"
         android:title="@string/copy" />
 
     <item
+        android:id="@+id/move"
+        android:icon="@drawable/ic_folder_move_white_24dp"
+        android:title="@string/move" />
+
+    <item
         android:id="@+id/delete"
+        android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/delete" />
 </menu>

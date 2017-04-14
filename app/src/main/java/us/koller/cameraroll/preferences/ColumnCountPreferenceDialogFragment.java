@@ -100,10 +100,4 @@ public class ColumnCountPreferenceDialogFragment
     public void setPreference(Preference preference) {
         this.preference = preference;
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        setTargetFragment(null, -1);
-    }*/
 }

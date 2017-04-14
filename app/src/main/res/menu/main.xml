@@ -8,10 +8,27 @@
         android:title="@string/refresh"
         app:showAsAction="never" />
 
-    <!--<item android:id="@+id/sort_by"
+    <item
+        android:id="@+id/sort_by"
           android:icon="@drawable/ic_sort_white_24dp"
           android:title="@string/sort_by"
-          app:showAsAction="never"/>-->
+        app:showAsAction="never">
+
+        <menu>
+            <group
+                android:id="@+id/sort_by_options"
+                android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/sort_by_name"
+                    android:title="@string/by_name" />
+
+                <item
+                    android:id="@+id/sort_by_size"
+                    android:title="@string/by_size" />
+            </group>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/hiddenFolders"
