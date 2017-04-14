@@ -1,6 +1,5 @@
 package us.koller.cameraroll.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -28,18 +27,15 @@ import android.view.WindowInsets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Set;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
-import us.koller.cameraroll.util.animators.ColorFade;
 
 public class MainActivity extends ThemeableActivity {
 
@@ -133,7 +129,7 @@ public class MainActivity extends ThemeableActivity {
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-            private int statusBarColor = getColorPrimaryDark();
+            private int statusBarColor = getStatusBarColor();
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -152,7 +148,8 @@ public class MainActivity extends ThemeableActivity {
 
                 toolbar.setTranslationY(translationY);
 
-                if (THEME == LIGHT) {
+                //animate statusBar color
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     float animatedValue = (-translationY) / toolbar.getPaddingTop();
                     if (animatedValue > 1.0f) {
                         animatedValue = 1.0f;
@@ -163,16 +160,15 @@ public class MainActivity extends ThemeableActivity {
                     int animatedColor = Color.argb(alpha, Color.red(statusBarColor),
                             Color.green(statusBarColor), Color.blue(statusBarColor));
 
-                    Window window = getWindow();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        window.setStatusBarColor(animatedColor);
-                    }
+                    getWindow().setStatusBarColor(animatedColor);
 
-                    animatedValue = (-translationY) / toolbar.getHeight();
-                    if (animatedValue > 0.9f) {
-                        Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                    } else {
-                        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                    if (THEME == LIGHT) {
+                        animatedValue = (-translationY) / toolbar.getHeight();
+                        if (animatedValue > 0.9f) {
+                            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                        } else {
+                            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                        }
                     }
                 }
             }

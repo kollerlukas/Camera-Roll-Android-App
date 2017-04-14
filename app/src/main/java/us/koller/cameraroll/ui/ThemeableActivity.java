@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -160,14 +161,11 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         overviewIcon.recycle();
     }
 
-    public int getColorPrimaryDark() {
-        int[] attrs = new int[]{R.attr.colorPrimaryDark};
-        TypedArray ta = obtainStyledAttributes(attrs);
-        int defColor = ContextCompat.getColor(this, R.color.colorPrimaryDark);
-        int colorPrimaryDark = ta.getColor(0, defColor);
-        ta.recycle();
-
-        return colorPrimaryDark;
+    public int getStatusBarColor() {
+        if (THEME == LIGHT) {
+            return Color.argb(20, 0, 0, 0);
+        }
+        return Color.argb(30, 0, 0, 0);
     }
 }
 

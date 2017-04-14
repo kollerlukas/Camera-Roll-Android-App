@@ -28,21 +28,18 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
@@ -225,7 +222,7 @@ public class AlbumActivity extends ThemeableActivity
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-            private int statusBarColor = getColorPrimaryDark();
+            private int statusBarColor = getStatusBarColor();
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -243,7 +240,8 @@ public class AlbumActivity extends ThemeableActivity
                 }
                 toolbar.setTranslationY(translationY);
 
-                if (THEME == LIGHT) {
+                //animate statusBar color
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     float animatedValue = (-translationY) / toolbar.getPaddingTop();
                     if (animatedValue > 1.0f) {
                         animatedValue = 1.0f;
@@ -254,16 +252,15 @@ public class AlbumActivity extends ThemeableActivity
                     int animatedColor = Color.argb(alpha, Color.red(statusBarColor),
                             Color.green(statusBarColor), Color.blue(statusBarColor));
 
-                    Window window = getWindow();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        window.setStatusBarColor(animatedColor);
-                    }
+                    getWindow().setStatusBarColor(animatedColor);
 
-                    animatedValue = (-translationY) / toolbar.getHeight();
-                    if (animatedValue > 0.9f) {
-                        Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                    } else {
-                        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                    if (THEME == LIGHT) {
+                        animatedValue = (-translationY) / toolbar.getHeight();
+                        if (animatedValue > 0.9f) {
+                            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                        } else {
+                            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                        }
                     }
                 }
             }

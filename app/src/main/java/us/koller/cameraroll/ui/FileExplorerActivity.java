@@ -967,6 +967,10 @@ public class FileExplorerActivity extends ThemeableActivity
         fab.setBackgroundTintList(ColorStateList
                 .valueOf(ContextCompat.getColor(this, accent_color_res)));
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getStatusBarColor());
+        }
+
         if (theme == ThemeableActivity.LIGHT) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setActivated(true);

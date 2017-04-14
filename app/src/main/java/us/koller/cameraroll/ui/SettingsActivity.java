@@ -156,8 +156,7 @@ public class SettingsActivity extends ThemeableActivity {
         toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int statusBarColorRes = theme == DARK ? R.color.black : R.color.grey_300;
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, statusBarColorRes));
+            getWindow().setStatusBarColor(getStatusBarColor());
         }
 
         if (theme == LIGHT) {
