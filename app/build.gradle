@@ -7,11 +7,10 @@ android {
         applicationId "us.koller.cameraroll"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 17
-        versionName "v1.3.2 Beta"
+        versionCode 18
+        versionName "v1.4 Beta"
         renderscriptTargetApi 25
         vectorDrawables.useSupportLibrary = true
-        /*renderscriptSupportModeEnabled true*/
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
