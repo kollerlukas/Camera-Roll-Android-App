@@ -128,9 +128,6 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setAdapter(recyclerViewAdapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            private int statusBarColor = getStatusBarColor();
-
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -148,22 +145,10 @@ public class MainActivity extends ThemeableActivity {
 
                 toolbar.setTranslationY(translationY);
 
-                //animate statusBar color
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    float animatedValue = (-translationY) / toolbar.getPaddingTop();
-                    if (animatedValue > 1.0f) {
-                        animatedValue = 1.0f;
-                    }
-                    animatedValue = 1.0f - animatedValue;
-
-                    int alpha = (int) (Color.alpha(statusBarColor) * animatedValue);
-                    int animatedColor = Color.argb(alpha, Color.red(statusBarColor),
-                            Color.green(statusBarColor), Color.blue(statusBarColor));
-
-                    getWindow().setStatusBarColor(animatedColor);
-
-                    if (THEME == LIGHT) {
-                        animatedValue = (-translationY) / toolbar.getHeight();
+                //animate statusBarIcon color
+                if (THEME == LIGHT) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        float animatedValue = (-translationY) / toolbar.getHeight();
                         if (animatedValue > 0.9f) {
                             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
                         } else {
@@ -193,7 +178,7 @@ public class MainActivity extends ThemeableActivity {
                     toolbar.setLayoutParams(toolbarParams);
 
                     recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop() + (pick_photos ? 0 : +insets.getSystemWindowInsetTop()),
+                            recyclerView.getPaddingTop() + (pick_photos ? 0 : insets.getSystemWindowInsetTop()),
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
@@ -217,8 +202,6 @@ public class MainActivity extends ThemeableActivity {
                                             Math.abs(screenSize[1] - rootView.getTop()),
                                             Math.abs(screenSize[2] - rootView.getRight()),
                                             Math.abs(screenSize[3] - rootView.getBottom())};
-
-                                    Log.d("MainActivity", "windowInsets: " + Arrays.toString(windowInsets));
 
                                     toolbar.setPadding(toolbar.getPaddingStart(),
                                             toolbar.getPaddingTop() + windowInsets[1],

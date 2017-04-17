@@ -16,7 +16,7 @@
     <style name="Theme.CameraRoll.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary_light</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_light</item>
-        <item name="colorAccent">@color/colorAccent_light</item>
+        <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:windowTranslucentNavigation">@bool/show_nav_bar</item>
         <item name="android:windowTranslucentStatus">true</item>
@@ -118,7 +118,7 @@
     </style>
 
     <style name="Theme.CameraRoll.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/colorAccent_light</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <!-- Style for a DialogPreference Entry -->

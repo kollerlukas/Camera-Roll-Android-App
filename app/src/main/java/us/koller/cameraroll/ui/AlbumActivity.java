@@ -194,6 +194,9 @@ public class AlbumActivity extends ThemeableActivity
                 toolbar.setNavigationIcon(navIcon);
             }
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+
+            Util.colorToolbarOverflowMenuIcon(toolbar,
+                    ContextCompat.getColor(this, R.color.grey_900_translucent));
         }
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -221,9 +224,6 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            private int statusBarColor = getStatusBarColor();
-
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -240,22 +240,10 @@ public class AlbumActivity extends ThemeableActivity
                 }
                 toolbar.setTranslationY(translationY);
 
-                //animate statusBar color
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    float animatedValue = (-translationY) / toolbar.getPaddingTop();
-                    if (animatedValue > 1.0f) {
-                        animatedValue = 1.0f;
-                    }
-                    animatedValue = 1.0f - animatedValue;
-
-                    int alpha = (int) (Color.alpha(statusBarColor) * animatedValue);
-                    int animatedColor = Color.argb(alpha, Color.red(statusBarColor),
-                            Color.green(statusBarColor), Color.blue(statusBarColor));
-
-                    getWindow().setStatusBarColor(animatedColor);
-
-                    if (THEME == LIGHT) {
-                        animatedValue = (-translationY) / toolbar.getHeight();
+                //animate statusBarIcon color
+                if (THEME == LIGHT) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        float animatedValue = (-translationY) / toolbar.getHeight();
                         if (animatedValue > 0.9f) {
                             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
                         } else {
@@ -444,10 +432,10 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!pick_photos) {
-            getMenuInflater().inflate(R.menu.album, menu);
-            this.menu = menu;
+        getMenuInflater().inflate(R.menu.album, menu);
+        this.menu = menu;
 
+        if (!pick_photos) {
             //set share icon tint
             Drawable icon = menu.findItem(R.id.share).getIcon().mutate();
             icon = DrawableCompat.wrap(icon);
@@ -461,6 +449,9 @@ public class AlbumActivity extends ThemeableActivity
                             Provider.getExcludedPaths());
             menu.findItem(R.id.exclude).setEnabled(enabled);
             menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
+        } else {
+            menu.findItem(R.id.share).setVisible(false);
+            menu.findItem(R.id.exclude).setVisible(false);
         }
 
         int sort_by = Settings.getInstance(this).sortAlbumBy();
@@ -829,6 +820,10 @@ public class AlbumActivity extends ThemeableActivity
                 ContextCompat.getColor(this, R.color.grey_900_translucent),
                 ContextCompat.getColor(this, text_color_secondary_res));
 
+        if (THEME != ThemeableActivity.LIGHT) {
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+        }
+
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
@@ -854,10 +849,6 @@ public class AlbumActivity extends ThemeableActivity
                         ContextCompat.getColor(AlbumActivity.this,
                                 text_color_secondary_res));
                 toolbar.setNavigationIcon(d);
-
-                if (THEME != ThemeableActivity.LIGHT) {
-                    Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                }
 
                 menu.findItem(R.id.exclude).setVisible(true);
                 menu.findItem(R.id.share).setVisible(false);

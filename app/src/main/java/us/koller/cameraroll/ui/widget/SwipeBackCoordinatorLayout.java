@@ -8,6 +8,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.Toolbar;
+
+import us.koller.cameraroll.R;
+import us.koller.cameraroll.util.Util;
 
 //Solution heavily inspired by: https://github.com/WangDaYeeeeee/Mysplash/blob/master/app/src/main/res/about/layout/activity_about.xml
 
@@ -132,12 +136,10 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
     }
 
     private void setSwipeTranslation() {
-        setTranslationY((float) (1.0 * swipeDistance / SWIPE_RADIO));
+        float translationY = (float) (1.0 * swipeDistance / SWIPE_RADIO);
+        setTranslationY(translationY);
         if (listener != null) {
-            listener.onSwipeProcess(
-                    (float) Math.min(
-                            1,
-                            Math.abs(1.0 * swipeDistance / SWIPE_TRIGGER)));
+            listener.onSwipeProcess(Math.min(1, Math.abs(translationY)));
         }
     }
 

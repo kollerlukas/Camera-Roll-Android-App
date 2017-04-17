@@ -3,16 +3,16 @@
     <!--dark theme colors-->
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#69F0AE</color>
-    <color name="colorAccent_translucent">#8A69F0AE</color>
     <color name="dark_bg">#303030</color>
 
     <!--light theme colors-->
     <color name="colorPrimary_light">#F5F5F5</color>
     <color name="colorPrimaryDark_light">#E0E0E0</color>
-    <color name="colorAccent_light">#69F0AE</color>
-    <color name="colorAccent_translucent_light">#8A69F0AE</color>
     <color name="light_bg">#FAFAFA</color>
+
+    <!--accent color-->
+    <color name="colorAccent">#69F0AE</color>
+    <color name="colorAccent_translucent">#8A69F0AE</color>
 
     <color name="white">#FFFFFF</color>
     <color name="grey_300">#E0E0E0</color>

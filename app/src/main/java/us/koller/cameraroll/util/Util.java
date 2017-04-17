@@ -117,6 +117,13 @@ public class Util {
         }
     }
 
+    public static boolean areStatusBarIconsDark(final View v) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return v.getSystemUiVisibility() != 0;
+        }
+        return false;
+    }
+
     public static String getParentPath(String path) {
         return new File(path).getParent();
     }

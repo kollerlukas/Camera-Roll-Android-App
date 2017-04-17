@@ -704,12 +704,14 @@ public class FileExplorerActivity extends ThemeableActivity
                 Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                            ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.cancel_to_back_avd);
+                            ContextCompat.getDrawable(FileExplorerActivity.this,
+                                    R.drawable.cancel_to_back_avd);
                     //mutating avd to reset it
                     drawable.mutate();
                     d = drawable;
                 } else {
-                    d = ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                    d = ContextCompat.getDrawable(FileExplorerActivity.this,
+                            R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(),
@@ -878,8 +880,9 @@ public class FileExplorerActivity extends ThemeableActivity
     public void resetToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        if (THEME != ThemeableActivity.LIGHT) {
+        if (THEME != LIGHT) {
             toolbar.setActivated(false);
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
         ColorFade.fadeBackgroundColor(toolbar,
@@ -926,19 +929,6 @@ public class FileExplorerActivity extends ThemeableActivity
                                 text_color_secondary_res));
                 toolbar.setNavigationIcon(d);
 
-                if (THEME != ThemeableActivity.LIGHT) {
-                    Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                }
-
-                /*int color = ContextCompat.getColor(FileExplorerActivity.this, text_color_res);
-                ColorFade.fadeToolbarTitleColor(toolbar, color,
-                        new ColorFade.ToolbarTitleFadeCallback() {
-                            @Override
-                            public void setTitle(Toolbar toolbar) {
-                                toolbar.setTitle(currentDir.getPath());
-                            }
-                        }, false);*/
-
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {
                     int id = menu.getItem(i).getItemId();
@@ -966,10 +956,6 @@ public class FileExplorerActivity extends ThemeableActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList
                 .valueOf(ContextCompat.getColor(this, accent_color_res)));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getStatusBarColor());
-        }
 
         if (theme == ThemeableActivity.LIGHT) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

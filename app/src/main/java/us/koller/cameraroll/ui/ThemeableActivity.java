@@ -6,12 +6,15 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,8 +93,7 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         text_color_secondary_res = dark ? R.color.white_translucent1
                 : R.color.grey_900_translucent;
 
-        accent_color_res = dark ? R.color.colorAccent
-                : R.color.colorAccent_light;
+        accent_color_res = R.color.colorAccent;
     }
 
     public void setViewBgColors() {
@@ -106,7 +108,6 @@ public abstract class ThemeableActivity extends AppCompatActivity {
 
         int bg_color = ContextCompat.getColor(this, bg_color_res);
         for (int i = 0; i < views.size(); i++) {
-            Log.d("ThemeableActivity", "setViewBgColor");
             views.get(i).setBackgroundColor(bg_color);
         }
     }
@@ -161,11 +162,32 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         overviewIcon.recycle();
     }
 
-    public int getStatusBarColor() {
-        if (THEME == LIGHT) {
-            return Color.argb(20, 0, 0, 0);
+    public void addStatusBarOverlay(final Toolbar toolbar,
+                                    int toolbarColor,
+                                    final int statusBarHeight) {
+        float darken = 0.9f;
+        if (toolbarColor == -1) {
+            toolbarColor = ContextCompat
+                    .getColor(this, toolbar_color_res);
         }
-        return Color.argb(30, 0, 0, 0);
+        int statusBarColor = Color.argb(
+                (int) (Color.alpha(toolbarColor) * darken),
+                (int) (Color.red(toolbarColor) * darken),
+                (int) (Color.green(toolbarColor) * darken),
+                (int) (Color.blue(toolbarColor) * darken));
+
+        final Drawable statusBarOverlay
+                = new ColorDrawable(statusBarColor);
+
+        toolbar.post(new Runnable() {
+            @Override
+            public void run() {
+                toolbar.getOverlay().clear();
+                statusBarOverlay.setBounds(0, 0,
+                        toolbar.getWidth(), statusBarHeight);
+                toolbar.getOverlay().add(statusBarOverlay);
+            }
+        });
     }
 }
 
