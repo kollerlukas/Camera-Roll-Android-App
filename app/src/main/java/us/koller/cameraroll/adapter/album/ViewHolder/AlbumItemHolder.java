@@ -16,6 +16,8 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
 
     public AlbumItem albumItem;
 
+    private boolean selected = false;
+
     AlbumItemHolder(View itemView) {
         super(itemView);
     }
@@ -36,7 +38,19 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
     }
 
     public void setSelected(boolean selected) {
+        this.selected = selected;
+
+        animateSelected();
+    }
+
+    void animateSelected() {
         final View imageView = itemView.findViewById(R.id.image);
+
+        float scale = selected ? 0.8f : 1.0f;
+        imageView.animate()
+                .scaleX(scale)
+                .scaleY(scale)
+                .start();
 
         final Drawable selectorOverlay = Util
                 .getAlbumItemSelectorOverlay(imageView.getContext());

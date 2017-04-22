@@ -87,8 +87,8 @@ public class Settings {
 
     public int getStyleColumnCount(Context context) {
         boolean landscape = context.getResources().getBoolean(R.bool.landscape);
-        if (landscape && getStyle() != context.getResources()
-                .getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
+        if (landscape && getStyle() == context.getResources()
+                .getInteger(R.integer.STYLE_CARDS_VALUE)) {
             return styleColumnCount + 1;
         }
         return styleColumnCount;
@@ -99,6 +99,10 @@ public class Settings {
     }
 
     public int getColumnCount(Context context) {
+        if (columnCount == 0) {
+            columnCount = DEFAULT_COLUMN_COUNT;
+        }
+
         boolean landscape = context.getResources().getBoolean(R.bool.landscape);
         if (landscape) {
             return columnCount + 1;

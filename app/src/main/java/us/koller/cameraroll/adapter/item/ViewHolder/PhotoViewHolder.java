@@ -42,7 +42,7 @@ public class PhotoViewHolder extends ViewHolder {
         return v;
     }
 
-    public void swapView(final boolean isReturning) {
+    private void swapView(final boolean isReturning) {
         final View view = itemView.findViewById(R.id.subsampling);
         final View transitionView = itemView.findViewById(R.id.image);
         if (!isReturning) {
@@ -135,7 +135,6 @@ public class PhotoViewHolder extends ViewHolder {
 
     @Override
     public void onDestroy() {
-        Log.d("PhotoViewHolder", "onDestroy() called");
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) itemView.findViewById(R.id.subsampling);
         if (imageView != null) {

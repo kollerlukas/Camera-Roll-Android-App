@@ -48,6 +48,7 @@ dependencies {
     compile 'com.android.support:exifinterface:25.3.1'
     compile 'com.android.support:preference-v7:25.3.1'
     compile 'com.android.support:preference-v14:25.3.1'
+    compile 'com.android.support:percent:25.3.1'
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
 

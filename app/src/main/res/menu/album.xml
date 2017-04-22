@@ -3,6 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/sort_by"
+        android:icon="@drawable/ic_sort_white_24dp"
+        android:title="@string/sort_by"
+        app:showAsAction="never">
+
+        <menu>
+            <group
+                android:id="@+id/sort_by_options"
+                android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/sort_by_date"
+                    android:title="@string/by_date" />
+
+                <item
+                    android:id="@+id/sort_by_name"
+                    android:title="@string/by_name" />
+            </group>
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/share"
         android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share"
@@ -29,26 +51,4 @@
         android:icon="@drawable/ic_eye_off_white_24dp"
         android:title="@string/exclude"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/sort_by"
-        android:icon="@drawable/ic_sort_white_24dp"
-        android:title="@string/sort_by"
-        app:showAsAction="never">
-
-        <menu>
-            <group
-                android:id="@+id/sort_by_options"
-                android:checkableBehavior="single">
-
-                <item
-                    android:id="@+id/sort_by_date"
-                    android:title="@string/by_date" />
-
-                <item
-                    android:id="@+id/sort_by_name"
-                    android:title="@string/by_name" />
-            </group>
-        </menu>
-    </item>
 </menu>

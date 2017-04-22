@@ -2,6 +2,8 @@ package us.koller.cameraroll.adapter.album.ViewHolder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -21,7 +23,7 @@ public class VideoViewHolder extends AlbumItemHolder {
     }
 
     @Override
-    public void loadImage(ImageView imageView, final AlbumItem albumItem) {
+    public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
         super.loadImage(imageView, albumItem);
 
         Context context = imageView.getContext();
@@ -43,7 +45,14 @@ public class VideoViewHolder extends AlbumItemHolder {
                                                    Target<Bitmap> target, boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
                         if (!albumItem.hasFadedIn) {
-                            fadeIn();
+                            if (isFirstResource) {
+                                //set thumbnail saturation to 0
+                                ColorMatrix matrix = new ColorMatrix();
+                                matrix.setSaturation(0);
+                                imageView.setColorFilter(new ColorMatrixColorFilter(matrix));
+                            } else {
+                                fadeIn();
+                            }
                         }
                         return false;
                     }

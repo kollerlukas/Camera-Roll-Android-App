@@ -52,12 +52,12 @@
     <style name="Theme.CameraRoll.Translucent.Light.Album" parent="Theme.CameraRoll.Light.Translucent" />
 
     <!--PhotoView Theme-->
-    <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
+    <style name="Theme.CameraRoll.Translucent.PhotoView" parent="Theme.CameraRoll.Translucent">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
-    <style name="Theme.CameraRoll.Light.PhotoView" parent="Theme.CameraRoll.Light">
+    <style name="Theme.CameraRoll.Translucent.Light.PhotoView" parent="Theme.CameraRoll.Light.Translucent">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:textColorPrimary">@color/white</item>

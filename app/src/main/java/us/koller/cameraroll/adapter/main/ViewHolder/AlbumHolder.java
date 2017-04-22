@@ -1,6 +1,8 @@
 package us.koller.cameraroll.adapter.main.ViewHolder;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,7 +39,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
 
-        Provider.loadExcludedPaths(itemView.getContext());
+        Provider.loadExcludedPaths(getContext());
         excluded = Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths())
                 || Provider.isDirExcludedBecauseParentDirIsExcluded(album.getPath(), Provider.getExcludedPaths());
     }
@@ -45,7 +47,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
     void loadImage(final ImageView image) {
         final AlbumItem coverImage = album.getAlbumItems().get(0);
 
-        Glide.with(itemView.getContext())
+        Glide.with(getContext())
                 .load(coverImage.getPath())
                 .asBitmap()
                 .error(R.drawable.error_placeholder_tinted)
@@ -78,5 +80,12 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
                 })
                 .into(image);
+    }
+
+    public Context getContext() {
+        if (itemView == null) {
+            return null;
+        }
+        return itemView.getContext();
     }
 }

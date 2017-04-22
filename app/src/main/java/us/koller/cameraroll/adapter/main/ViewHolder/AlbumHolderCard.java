@@ -29,8 +29,8 @@ public class AlbumHolderCard extends AlbumHolder {
             //album not excluded
             String count = album.getAlbumItems().size()
                     + (album.getAlbumItems().size() > 1 ?
-                    itemView.getContext().getString(R.string.items) :
-                    itemView.getContext().getString(R.string.item));
+                    getContext().getString(R.string.items) :
+                    getContext().getString(R.string.item));
             ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
             itemView.findViewById(R.id.hidden_folder_indicator)

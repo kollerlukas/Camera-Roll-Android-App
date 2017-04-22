@@ -94,6 +94,7 @@ public class ItemActivity extends ThemeableActivity {
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
     private static final String NO_DATA = "Unknown";
+    public static final String SHARED_ELEMENT_RETURN_TRANSITION = "SHARED_ELEMENT_RETURN_TRANSITION";
 
     private boolean isReturning;
     private final SharedElementCallback sharedElementCallback = new SharedElementCallback() {
@@ -120,7 +121,6 @@ public class ItemActivity extends ThemeableActivity {
             = new TransitionListenerAdapter() {
         @Override
         public void onTransitionStart(Transition transition) {
-            Log.d("ItemActivity", "onTransitionStart()");
             //hide toolbar & statusbar
             float toolbar_translationY = -(toolbar.getHeight());
             float bottomBar_translationY = ((View) bottomBar.getParent()).getHeight();
@@ -131,7 +131,6 @@ public class ItemActivity extends ThemeableActivity {
 
         @Override
         public void onTransitionEnd(Transition transition) {
-            Log.d("ItemActivity", "onTransitionEnd()");
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             if (viewHolder == null) {
@@ -512,7 +511,6 @@ public class ItemActivity extends ThemeableActivity {
         if (view_only) {
             startActivity(intent);
         } else {
-            Log.d("ItemActivity", "setResult()");
             setResult(RESULT_OK, intent);
         }
 
@@ -816,6 +814,8 @@ public class ItemActivity extends ThemeableActivity {
     public void setResultAndFinish() {
         isReturning = true;
         Intent data = new Intent();
+        data.setAction(SHARED_ELEMENT_RETURN_TRANSITION);
+        data.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
         data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION,
                 viewPager.getCurrentItem());
         setResult(RESULT_OK, data);
@@ -829,9 +829,9 @@ public class ItemActivity extends ThemeableActivity {
     @Override
     public int getThemeRes(int style) {
         if (style == DARK) {
-            return R.style.Theme_CameraRoll_PhotoView;
+            return R.style.Theme_CameraRoll_Translucent_PhotoView;
         } else {
-            return R.style.Theme_CameraRoll_Light_PhotoView;
+            return R.style.Theme_CameraRoll_Translucent_Light_PhotoView;
         }
     }
 

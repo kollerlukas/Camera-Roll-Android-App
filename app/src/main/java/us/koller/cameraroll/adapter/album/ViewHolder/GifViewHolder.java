@@ -1,6 +1,8 @@
 package us.koller.cameraroll.adapter.album.ViewHolder;
 
 import android.content.Context;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -43,7 +45,15 @@ public class GifViewHolder extends AlbumItemHolder {
                                                    Target<GifDrawable> target, boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
                         if (!albumItem.hasFadedIn) {
-                            fadeIn();
+                            if (isFirstResource) {
+                                //set thumbnail saturation to 0
+                                ColorMatrix matrix = new ColorMatrix();
+                                matrix.setSaturation(0);
+                                imageView.setColorFilter(new ColorMatrixColorFilter(matrix));
+                                return false;
+                            } else {
+                                fadeIn();
+                            }
                         }
                         resource.start();
                         return false;

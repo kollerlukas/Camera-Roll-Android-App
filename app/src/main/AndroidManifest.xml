@@ -37,7 +37,7 @@
         <activity
             android:name=".ui.ItemActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.PhotoView" />
+            android:theme="@style/Theme.CameraRoll.Translucent.PhotoView" />
 
         <activity
             android:name=".ui.VideoPlayerActivity"

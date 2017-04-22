@@ -50,7 +50,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         this.pick_photos = pick_photos;
         if (pick_photos) {
             selector_mode = true;
-            callback.onSelectorModeEnter();
+            if (callback != null) {
+                callback.onSelectorModeEnter();
+            }
         }
         selected_items = new boolean[album.getAlbumItems().size()];
 
@@ -61,9 +63,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                         for (int i = start; i <= end; i++) {
                             selected_items[i] = isSelected;
 
-                            RecyclerViewAdapter.this.callback
-                                    .onItemSelected(getSelectedItemCount());
-                            checkForNoSelectedItems();
+                            if (RecyclerViewAdapter.this.callback != null) {
+                                RecyclerViewAdapter.this.callback
+                                        .onItemSelected(getSelectedItemCount());
+                                checkForNoSelectedItems();
+                            }
 
                             //update ViewHolder
                             notifyItemChanged(i);
@@ -106,7 +110,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         ((AlbumItemHolder) holder).setAlbumItem(albumItem);
 
         boolean selected = selected_items[album.getAlbumItems()
-                .indexOf(((AlbumItemHolder) holder).albumItem)];
+                .indexOf(albumItem)];
 
         ((AlbumItemHolder) holder).setSelected(selected);
 
@@ -133,32 +137,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                                     holder.itemView.findViewById(R.id.image),
                                     albumItem.getPath());
                     ((Activity) holder.itemView.getContext())
-                            .startActivityForResult(intent, 6, options.toBundle());
+                            .startActivityForResult(intent, 8, options.toBundle());
                 }
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (!selector_mode) {
-                    selector_mode = true;
-                    selected_items = new boolean[album.getAlbumItems().size()];
+        if (callback != null) {
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (!selector_mode) {
+                        selector_mode = true;
+                        selected_items = new boolean[album.getAlbumItems().size()];
 
-                    //notify AlbumActivity
-                    callback.onSelectorModeEnter();
+                        //notify AlbumActivity
+                        if (callback != null) {
+                            callback.onSelectorModeEnter();
+                        }
+                    }
+
+                    onItemSelected((AlbumItemHolder) holder);
+
+                    //notify DragSelectTouchListener
+                    if (selected_items[album.getAlbumItems()
+                            .indexOf(((AlbumItemHolder) holder).albumItem)]) {
+                        int position = album.getAlbumItems().indexOf(albumItem);
+                        dragSelectTouchListener.startDragSelection(position);
+                    }
+                    return true;
                 }
-
-                onItemSelected((AlbumItemHolder) holder);
-
-                //notify DragSelectTouchListener
-                if (selected_items[album.getAlbumItems().indexOf(((AlbumItemHolder) holder).albumItem)]) {
-                    int position = album.getAlbumItems().indexOf(albumItem);
-                    dragSelectTouchListener.startDragSelection(position);
-                }
-                return true;
-            }
-        });
+            });
+        }
     }
 
     public boolean isSelectorModeActive() {
@@ -169,7 +178,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         selector_mode = true;
 
         //notify AlbumActivity
-        callback.onSelectorModeEnter();
+        if (callback != null) {
+            callback.onSelectorModeEnter();
+        }
 
         selected_items = new boolean[album.getAlbumItems().size()];
         for (int i = 0; i < selectedItemsPos.length; i++) {
@@ -178,7 +189,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             notifyItemChanged(pos);
         }
 
-        callback.onItemSelected(selectedItemsPos.length);
+        if (callback != null) {
+            callback.onItemSelected(selectedItemsPos.length);
+        }
     }
 
     public int[] getSelectedItemsPositions() {
@@ -220,7 +233,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 = !selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
         notifyItemChanged(album.getAlbumItems().indexOf(holder.albumItem));
 
-        callback.onItemSelected(getSelectedItemCount());
+        if (callback != null) {
+            callback.onItemSelected(getSelectedItemCount());
+        }
         checkForNoSelectedItems();
     }
 
@@ -235,7 +250,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         }
         this.selected_items = new boolean[album.getAlbumItems().size()];
         AlbumItem[] arr = new AlbumItem[selected_items.size()];
-        callback.onSelectorModeExit();
+        if (callback != null) {
+            callback.onSelectorModeExit();
+        }
         return selected_items.toArray(arr);
     }
 

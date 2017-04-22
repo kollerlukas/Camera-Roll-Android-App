@@ -25,7 +25,6 @@
     </option>
   </component>
   <component name="ProjectPlainTextFileTypeManager">
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/preference_category_title.xml" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values-v21/bools.xml" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">

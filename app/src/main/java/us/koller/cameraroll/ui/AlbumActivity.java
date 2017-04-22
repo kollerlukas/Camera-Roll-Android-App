@@ -68,7 +68,7 @@ public class AlbumActivity extends ThemeableActivity
     public static final String VIEW_ALBUM = "VIEW_ALBUM";
     public static final String DELETE_ALBUMITEM = "DELETE_ALBUMITEM";
     public static final String EXTRA_CURRENT_ALBUM_POSITION = "EXTRA_CURRENT_ALBUM_POSITION";
-    public static final String RECYCLER_VIEW_SCROLL_STATE = "RECYCLER_VIEW_SCROLL_STATE";
+    public static final String RECYCLER_VIEW_SCROLL_STATE = "RECYCLER_VIEW_STATE";
     public static final String SELECTOR_MODE_ACTIVE = "SELECTOR_MODE_ACTIVE";
     public static final String SELECTED_ITEMS_POSITIONS = "SELECTED_ITEMS_POSITIONS";
 
@@ -416,6 +416,9 @@ public class AlbumActivity extends ThemeableActivity
                 }
             });
             recyclerView.scrollToPosition(sharedElementReturnPosition);
+
+            /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTranslationY(0);*/
         }
     }
 

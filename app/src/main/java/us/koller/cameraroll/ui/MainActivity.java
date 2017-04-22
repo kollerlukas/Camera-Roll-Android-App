@@ -2,10 +2,10 @@ package us.koller.cameraroll.ui;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,14 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.WindowInsets;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
+import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolderNestedRecyclerView;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
@@ -242,10 +242,70 @@ public class MainActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onActivityReenter(int resultCode, Intent intent) {
+    public void onActivityReenter(final int resultCode, Intent intent) {
         super.onActivityReenter(resultCode, intent);
-        if (intent.getAction().equals(REFRESH_MEDIA)) {
-            refreshPhotos();
+
+        if (intent.getAction() != null) {
+            if (intent.getAction().equals(REFRESH_MEDIA)) {
+                refreshPhotos();
+            } else if (intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)) {
+                //handle shared-element transition, for nested recyclerView style
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (Settings.getInstance(this).getStyle()
+                            == getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
+                        Bundle tmpReenterState = new Bundle(intent.getExtras());
+                        if (tmpReenterState.containsKey(AlbumActivity.ALBUM_PATH)
+                                && tmpReenterState.containsKey(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION)) {
+
+                            String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
+                            final int sharedElementReturnPosition
+                                    = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
+
+                            int index = -1;
+
+                            for (int i = 0; i < albums.size(); i++) {
+                                if (albums.get(i).getPath().equals(albumPath)) {
+                                    index = i;
+                                    break;
+                                }
+                            }
+
+                            if (index == -1) {
+                                return;
+                            }
+
+                            /*postponeEnterTransition();
+
+                            final int finalIndex = index;
+                            recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                                @Override
+                                public void onLayoutChange(View v, int l, int t, int r, int b,
+                                                           int oL, int oT, int oR, int oB) {
+                                    recyclerView.removeOnLayoutChangeListener(this);
+                                    startPostponedEnterTransition();
+
+                                    RecyclerView.ViewHolder viewHolder
+                                            = recyclerView.findViewHolderForAdapterPosition(finalIndex);
+                                    if (viewHolder instanceof AlbumHolderNestedRecyclerView) {
+                                        ((AlbumHolderNestedRecyclerView) viewHolder)
+                                                .setSharedElementReturnPosition(sharedElementReturnPosition);
+                                    }
+                                }
+                            });*/
+
+                            recyclerView.scrollToPosition(index);
+
+                            RecyclerView.ViewHolder viewHolder
+                                    = recyclerView.findViewHolderForAdapterPosition(index);
+                            if (viewHolder instanceof AlbumHolderNestedRecyclerView) {
+                                ((AlbumHolderNestedRecyclerView) viewHolder)
+                                        .setSharedElementReturnPosition(sharedElementReturnPosition);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
