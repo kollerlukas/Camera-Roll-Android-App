@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolder;
 import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolderCard;
-import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolderNestedRecyclerView;
+import us.koller.cameraroll.adapter.main.ViewHolder.NestedRecyclerViewAlbumHolder;
 import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolderParallax;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.Provider;
@@ -76,11 +76,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_nested_recyclerview, parent, false);
-            return new AlbumHolderNestedRecyclerView(v);
+            return new NestedRecyclerViewAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_EXCLUDED_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_default_excluded, parent, false);
-            return new AlbumHolderNestedRecyclerView(v);
+            return new NestedRecyclerViewAlbumHolder(v);
         }
 
         return null;
@@ -113,7 +113,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                 if (!pick_photos) {
                     options = ActivityOptionsCompat.makeSceneTransitionAnimation(context);
-                    holder.itemView.getContext().startActivity(intent, options.toBundle());
+                    context.startActivityForResult(intent,
+                            MainActivity.REFRESH_PHOTOS_REQUEST_CODE, options.toBundle());
                 } else {
                     View toolbar = context.findViewById(R.id.toolbar);
                     options = ActivityOptionsCompat.makeSceneTransitionAnimation(context,

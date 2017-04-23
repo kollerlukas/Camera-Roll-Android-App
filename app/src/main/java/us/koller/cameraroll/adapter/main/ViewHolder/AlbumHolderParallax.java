@@ -19,8 +19,6 @@ public class AlbumHolderParallax extends AlbumHolder {
     public void setAlbum(Album album) {
         super.setAlbum(album);
 
-        ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
-
         if (!excluded) {
             //album not excluded
             String count = album.getAlbumItems().size()

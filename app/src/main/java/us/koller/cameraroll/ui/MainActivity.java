@@ -1,23 +1,26 @@
 package us.koller.cameraroll.ui;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,10 +29,13 @@ import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import us.koller.cameraroll.jobservices.MediaJobService;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
-import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolderNestedRecyclerView;
+import us.koller.cameraroll.adapter.main.ViewHolder.NestedRecyclerViewAlbumHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
@@ -46,6 +52,42 @@ public class MainActivity extends ThemeableActivity {
     public static final String PICK_PHOTOS = "PICK_PHOTOS";
 
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
+    public static final int REFRESH_PHOTOS_REQUEST_CODE = 7;
+
+    //needed for sharedElement-Transition in Nested RecyclerView Style
+    private NestedRecyclerViewAlbumHolder sharedElementViewHolder;
+    private final SharedElementCallback mCallback
+            = new SharedElementCallback() {
+        @Override
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            if (sharedElementViewHolder.sharedElementReturnPosition != -1) {
+                String newTransitionName = sharedElementViewHolder.album.getAlbumItems()
+                        .get(sharedElementViewHolder.sharedElementReturnPosition).getPath();
+                View layout = sharedElementViewHolder.recyclerView.findViewWithTag(newTransitionName);
+                View newSharedElement = layout != null ? layout.findViewById(R.id.image) : null;
+                if (newSharedElement != null) {
+                    names.clear();
+                    names.add(newTransitionName);
+                    sharedElements.clear();
+                    sharedElements.put(newTransitionName, newSharedElement);
+                }
+                sharedElementViewHolder.sharedElementReturnPosition = -1;
+            } else {
+                View v = sharedElementViewHolder.itemView.getRootView();
+                View navigationBar = v.findViewById(android.R.id.navigationBarBackground);
+                View statusBar = v.findViewById(android.R.id.statusBarBackground);
+                if (navigationBar != null) {
+                    names.add(navigationBar.getTransitionName());
+                    sharedElements.put(navigationBar.getTransitionName(), navigationBar);
+                }
+                if (statusBar != null) {
+                    names.add(statusBar.getTransitionName());
+                    sharedElements.put(statusBar.getTransitionName(), statusBar);
+                }
+            }
+        }
+    };
 
     private ArrayList<Album> albums;
 
@@ -60,6 +102,8 @@ public class MainActivity extends ThemeableActivity {
 
     private boolean pick_photos;
     private boolean allowMultiple;
+
+    public static boolean refreshMediaWhenVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,9 +290,7 @@ public class MainActivity extends ThemeableActivity {
         super.onActivityReenter(resultCode, intent);
 
         if (intent.getAction() != null) {
-            if (intent.getAction().equals(REFRESH_MEDIA)) {
-                refreshPhotos();
-            } else if (intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)) {
+            if (intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)) {
                 //handle shared-element transition, for nested recyclerView style
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (Settings.getInstance(this).getStyle()
@@ -274,34 +316,41 @@ public class MainActivity extends ThemeableActivity {
                                 return;
                             }
 
-                            /*postponeEnterTransition();
+                            postponeEnterTransition();
+
+                            setExitSharedElementCallback(mCallback);
+
+                            final NestedRecyclerViewAlbumHolder
+                                    .StartSharedElementTransitionCallback callback =
+                                    new NestedRecyclerViewAlbumHolder
+                                            .StartSharedElementTransitionCallback() {
+                                        @Override
+                                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                                        public void startPostponedEnterTransition() {
+                                            MainActivity.this.startPostponedEnterTransition();
+                                        }
+                                    };
 
                             final int finalIndex = index;
+
+                            recyclerView.scrollToPosition(index);
+
                             recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                                 @Override
                                 public void onLayoutChange(View v, int l, int t, int r, int b,
                                                            int oL, int oT, int oR, int oB) {
-                                    recyclerView.removeOnLayoutChangeListener(this);
-                                    startPostponedEnterTransition();
-
                                     RecyclerView.ViewHolder viewHolder
                                             = recyclerView.findViewHolderForAdapterPosition(finalIndex);
-                                    if (viewHolder instanceof AlbumHolderNestedRecyclerView) {
-                                        ((AlbumHolderNestedRecyclerView) viewHolder)
-                                                .setSharedElementReturnPosition(sharedElementReturnPosition);
+                                    if (viewHolder instanceof NestedRecyclerViewAlbumHolder) {
+                                        sharedElementViewHolder = (NestedRecyclerViewAlbumHolder) viewHolder;
+                                        ((NestedRecyclerViewAlbumHolder) viewHolder)
+                                                .onSharedElement(sharedElementReturnPosition, callback);
                                     }
+
+                                    recyclerView.removeOnLayoutChangeListener(this);
                                 }
-                            });*/
-
-                            recyclerView.scrollToPosition(index);
-
-                            RecyclerView.ViewHolder viewHolder
-                                    = recyclerView.findViewHolderForAdapterPosition(index);
-                            if (viewHolder instanceof AlbumHolderNestedRecyclerView) {
-                                ((AlbumHolderNestedRecyclerView) viewHolder)
-                                        .setSharedElementReturnPosition(sharedElementReturnPosition);
-                            }
+                            });
                         }
                     }
                 }
@@ -314,6 +363,25 @@ public class MainActivity extends ThemeableActivity {
         super.onPostResume();
         if (getResources().getBoolean(R.bool.landscape)) {
             setSystemUiFlags();
+        }
+
+        if (refreshMediaWhenVisible) {
+            refreshPhotos();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent == null || intent.getAction() == null) {
+            return;
+        }
+
+        switch (intent.getAction()) {
+            case REFRESH_MEDIA:
+                refreshPhotos();
+                break;
         }
     }
 
@@ -346,6 +414,8 @@ public class MainActivity extends ThemeableActivity {
             mediaProvider.onDestroy();
             mediaProvider = null;
         }
+
+        refreshMediaWhenVisible = false;
 
         snackbar = Snackbar.make(findViewById(R.id.root_view),
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
@@ -406,6 +476,24 @@ public class MainActivity extends ThemeableActivity {
 
         mediaProvider = new MediaProvider(this);
         mediaProvider.loadAlbums(MainActivity.this, hiddenFolders, callback);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            listenForMediaChanges();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void listenForMediaChanges() {
+        //schedule Job
+        JobScheduler js =
+                (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        JobInfo.Builder builder = new JobInfo.Builder(
+                5,
+                new ComponentName(this, MediaJobService.class));
+        builder.addTriggerContentUri(
+                new JobInfo.TriggerContentUri(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS));
+        js.schedule(builder.build());
     }
 
     @Override
@@ -498,6 +586,14 @@ public class MainActivity extends ThemeableActivity {
                 if (resultCode != RESULT_CANCELED) {
                     setResult(RESULT_OK, data);
                     this.finish();
+                }
+                break;
+            case REFRESH_PHOTOS_REQUEST_CODE:
+                if (data != null && data.getAction() != null) {
+                    if (data.getAction().equals(AlbumActivity.ALBUM_ITEM_DELETED)
+                            || data.getAction().equals(REFRESH_MEDIA)) {
+                        refreshPhotos();
+                    }
                 }
                 break;
         }

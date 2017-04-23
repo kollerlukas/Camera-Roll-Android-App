@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
+import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.util.Util;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
@@ -56,25 +58,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         }
         selected_items = new boolean[album.getAlbumItems().size()];
 
-        dragSelectTouchListener = new DragSelectTouchListener()
-                .withSelectListener(new DragSelectTouchListener.OnDragSelectListener() {
-                    @Override
-                    public void onSelectChange(int start, int end, boolean isSelected) {
-                        for (int i = start; i <= end; i++) {
-                            selected_items[i] = isSelected;
+        //disable default change animation
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-                            if (RecyclerViewAdapter.this.callback != null) {
-                                RecyclerViewAdapter.this.callback
-                                        .onItemSelected(getSelectedItemCount());
-                                checkForNoSelectedItems();
+        if (callback != null) {
+            dragSelectTouchListener = new DragSelectTouchListener()
+                    .withSelectListener(new DragSelectTouchListener.OnDragSelectListener() {
+                        @Override
+                        public void onSelectChange(int start, int end, boolean isSelected) {
+                            for (int i = start; i <= end; i++) {
+                                selected_items[i] = isSelected;
+
+                                if (RecyclerViewAdapter.this.callback != null) {
+                                    RecyclerViewAdapter.this.callback
+                                            .onItemSelected(getSelectedItemCount());
+                                    checkForNoSelectedItems();
+                                }
+
+                                //update ViewHolder
+                                notifyItemChanged(i);
                             }
-
-                            //update ViewHolder
-                            notifyItemChanged(i);
                         }
-                    }
-                });
-        recyclerView.addOnItemTouchListener(dragSelectTouchListener);
+                    });
+            recyclerView.addOnItemTouchListener(dragSelectTouchListener);
+        }
     }
 
     @Override
@@ -137,7 +144,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                                     holder.itemView.findViewById(R.id.image),
                                     albumItem.getPath());
                     ((Activity) holder.itemView.getContext())
-                            .startActivityForResult(intent, 8, options.toBundle());
+                            .startActivityForResult(intent,
+                                    MainActivity.REFRESH_PHOTOS_REQUEST_CODE, options.toBundle());
                 }
             }
         });
@@ -229,9 +237,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     private void onItemSelected(AlbumItemHolder holder) {
-        selected_items[album.getAlbumItems().indexOf(holder.albumItem)]
-                = !selected_items[album.getAlbumItems().indexOf(holder.albumItem)];
-        notifyItemChanged(album.getAlbumItems().indexOf(holder.albumItem));
+        int index = album.getAlbumItems().indexOf(holder.albumItem);
+        boolean selected = !selected_items[index];
+        selected_items[index] = selected;
+        holder.setSelected(selected);
 
         if (callback != null) {
             callback.onItemSelected(getSelectedItemCount());

@@ -23,6 +23,10 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
     }
 
     public void setAlbumItem(AlbumItem albumItem) {
+        if (this.albumItem == albumItem) {
+            return;
+        }
+
         this.albumItem = albumItem;
         ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
         loadImage(imageView, albumItem);
@@ -43,7 +47,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
         animateSelected();
     }
 
-    void animateSelected() {
+    private void animateSelected() {
         final View imageView = itemView.findViewById(R.id.image);
 
         float scale = selected ? 0.8f : 1.0f;

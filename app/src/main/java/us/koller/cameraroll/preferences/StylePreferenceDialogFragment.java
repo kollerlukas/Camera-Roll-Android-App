@@ -116,7 +116,7 @@ public class StylePreferenceDialogFragment
         private static int[] imageRess = {
                 R.drawable.style_parallax,
                 R.drawable.style_cards,
-                R.drawable.style_cards};
+                R.drawable.style_nested_recycler_view};
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {

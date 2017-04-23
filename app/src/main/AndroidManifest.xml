@@ -69,7 +69,7 @@
             android:name=".ui.ExifEditorActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Theme.CameraRoll.Translucent.ExifEditor" />
+            android:theme="@style/Theme.CameraRoll.ExifEditor" />
 
         <activity android:name=".IntentReceiver">
             <intent-filter>
@@ -96,6 +96,10 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".jobservices.MediaJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

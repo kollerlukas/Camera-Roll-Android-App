@@ -66,7 +66,7 @@ public class AlbumActivity extends ThemeableActivity
     public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
     public static final String VIEW_ALBUM = "VIEW_ALBUM";
-    public static final String DELETE_ALBUMITEM = "DELETE_ALBUMITEM";
+    public static final String ALBUM_ITEM_DELETED = "ALBUM_ITEM_DELETED";
     public static final String EXTRA_CURRENT_ALBUM_POSITION = "EXTRA_CURRENT_ALBUM_POSITION";
     public static final String RECYCLER_VIEW_SCROLL_STATE = "RECYCLER_VIEW_STATE";
     public static final String SELECTOR_MODE_ACTIVE = "SELECTOR_MODE_ACTIVE";
@@ -160,9 +160,9 @@ public class AlbumActivity extends ThemeableActivity
         int sort_by = Settings.getInstance(this).sortAlbumBy();
         SortUtil.sort(this, album.getAlbumItems(), sort_by);
 
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
-        if (rootView instanceof SwipeBackCoordinatorLayout) {
-            ((SwipeBackCoordinatorLayout) rootView).setOnSwipeListener(this);
+        final ViewGroup swipeBackView = (ViewGroup) findViewById(R.id.swipeBackView);
+        if (swipeBackView instanceof SwipeBackCoordinatorLayout) {
+            ((SwipeBackCoordinatorLayout) swipeBackView).setOnSwipeListener(this);
         }
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -278,6 +278,7 @@ public class AlbumActivity extends ThemeableActivity
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
 
+        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
@@ -383,18 +384,21 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent.getAction().equals(DELETE_ALBUMITEM)) {
+        if (intent.getAction().equals(ALBUM_ITEM_DELETED)) {
             final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
-            if (intent.getBooleanExtra(ItemActivity.VIEW_ONLY, false)) {
-                album = MediaProvider.getErrorAlbum();
-                album.getAlbumItems().add(albumItem);
-                AlbumItem[] albumItems = {albumItem};
-                int[] indices = {album.getAlbumItems().indexOf(albumItem)};
-                deleteAlbumItems(albumItems, indices);
-                this.finish();
-            } else {
-                deleteAlbumItemSnackbar(albumItem, false);
+
+            int k = album.getAlbumItems().indexOf(albumItem);
+            for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
+                    k = i;
+                    break;
+                }
             }
+            final int index = k;
+            album.getAlbumItems().remove(index);
+            recyclerView.getAdapter().notifyDataSetChanged();
+
+            refreshMainActivityWhenClosed = true;
         }
     }
 
@@ -573,49 +577,6 @@ public class AlbumActivity extends ThemeableActivity
         }
     }
 
-    public void deleteAlbumItemSnackbar(final AlbumItem albumItem, boolean VIEW_ONLY) {
-        if (!MediaProvider.checkPermission(this)) {
-            return;
-        }
-
-        int k = album.getAlbumItems().indexOf(albumItem);
-        for (int i = 0; i < album.getAlbumItems().size(); i++) {
-            if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
-                k = i;
-                break;
-            }
-        }
-        final int index = k;
-        album.getAlbumItems().remove(index);
-        recyclerView.getAdapter().notifyDataSetChanged();
-
-        snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.photo_deleted, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        album.getAlbumItems().add(index, albumItem);
-                        recyclerView.getAdapter().notifyItemInserted(index);
-                    }
-                })
-                .setCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        super.onDismissed(snackbar, event);
-                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                            AlbumItem[] albumItems = {albumItem};
-                            int[] indices = {index};
-                            deleteAlbumItems(albumItems, indices);
-                        }
-                    }
-                });
-        Util.showSnackbar(snackbar);
-
-        if (VIEW_ONLY) {
-            snackbar.dismiss();
-            this.finish();
-        }
-    }
-
     public void deleteAlbumItemsSnackbar() {
         if (!MediaProvider.checkPermission(this)) {
             return;
@@ -671,6 +632,7 @@ public class AlbumActivity extends ThemeableActivity
                         new FileOperation.Callback() {
                             @Override
                             public void done() {
+                                refreshMainActivityWhenClosed = true;
                                 if (refreshMainActivityAfterItemWasDeleted) {
                                     setResult(RESULT_OK,
                                             new Intent(MainActivity.REFRESH_MEDIA));
@@ -971,11 +933,11 @@ public class AlbumActivity extends ThemeableActivity
             snackbar = null;
             refreshMainActivityAfterItemWasDeleted = true;
         } else {
-            super.onBackPressed();
             if (refreshMainActivityWhenClosed) {
                 Provider.saveExcludedPaths(this);
                 setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
             }
+            super.onBackPressed();
         }
     }
 
@@ -1001,8 +963,8 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onSwipeProcess(float percent) {
-        getWindow().getDecorView()
-                .setBackgroundColor(SwipeBackCoordinatorLayout.getBackgroundColor(percent));
+        getWindow().getDecorView().setBackgroundColor(
+                SwipeBackCoordinatorLayout.getBackgroundColor(percent));
     }
 
     @Override

@@ -58,7 +58,7 @@ public class ExifEditorActivity extends ThemeableActivity {
 
         albumItem = getIntent().getParcelableExtra(ALBUM_ITEM);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(EDITED_ITEMS)) {
             editedItems = savedInstanceState.getParcelableArrayList(EDITED_ITEMS);
         } else {
             editedItems = new ArrayList<>();
@@ -245,12 +245,20 @@ public class ExifEditorActivity extends ThemeableActivity {
         });
     }
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(EDITED_ITEMS, editedItems);
+    }
+
     @Override
     public int getThemeRes(int style) {
         if (style == DARK) {
-            return R.style.Theme_CameraRoll_Translucent_ExifEditor;
+            return R.style.Theme_CameraRoll_ExifEditor;
         } else {
-            return R.style.Theme_CameraRoll_Light_Translucent_ExifEditor;
+            return R.style.Theme_CameraRoll_Light_ExifEditor;
         }
     }
 
@@ -363,7 +371,6 @@ public class ExifEditorActivity extends ThemeableActivity {
 
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (value.hasFocus()) {
-                        Log.d("RecyclerViewAdapter", "onTextChanged() called with: s = [" + s + "], start = [" + start + "], before = [" + before + "], count = [" + count + "]");
                         callback.onItemEdited(constant, s.toString());
                     }
                 }

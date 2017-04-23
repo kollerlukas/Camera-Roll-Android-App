@@ -6,4 +6,5 @@
     <dimen name="parallax_image_view_offset">100dp</dimen>
     <dimen name="twenty_four_dp">24dp</dimen>
     <dimen name="eight_dp">8dp</dimen>
+    <dimen name="nested_recyclerView_line_height">100dp</dimen>
 </resources>

@@ -65,6 +65,9 @@ import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.FileOperations.Delete;
+import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Provider.MediaProvider;
@@ -498,23 +501,27 @@ public class ItemActivity extends ThemeableActivity {
             return;
         }
 
-        ViewGroup view = (ViewGroup) findViewById(R.id.root_view);
-        view.removeView(viewPager);
+        new Delete(new File_POJO[]{new File_POJO(albumItem.getPath(), true)})
+                .execute(this, null,
+                        new FileOperation.Callback() {
+                            @Override
+                            public void done() {
+                                Intent intent = new Intent(AlbumActivity.ALBUM_ITEM_DELETED);
+                                intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
+                                intent.putExtra(ALBUM_ITEM, albumItem);
+                                intent.putExtra(HIDDEN_ALBUMITEM, album.isHidden());
+                                intent.putExtra(VIEW_ONLY, view_only);
 
-        Intent intent = new Intent(this, AlbumActivity.class);
-        intent.setAction(AlbumActivity.DELETE_ALBUMITEM);
-        //intent.putExtra(AlbumActivity.ALBUM, album);
-        intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
-        intent.putExtra(ALBUM_ITEM, albumItem);
-        intent.putExtra(HIDDEN_ALBUMITEM, album.isHidden());
-        intent.putExtra(VIEW_ONLY, view_only);
-        if (view_only) {
-            startActivity(intent);
-        } else {
-            setResult(RESULT_OK, intent);
-        }
+                                setResult(RESULT_OK, intent);
 
-        this.finish();
+                                finish();
+                            }
+
+                            @Override
+                            public void failed(String path) {
+                                onBackPressed();
+                            }
+                        });
     }
 
     public void showInfoDialog() {

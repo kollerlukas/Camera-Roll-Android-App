@@ -28,28 +28,6 @@
         <item name="android:windowContentTransitions">true</item>
     </style>
 
-    <!--MainActivity Theme-->
-    <style name="Theme.CameraRoll.Main" parent="Theme.CameraRoll">
-        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
-        </item>
-    </style>
-
-    <style name="Theme.CameraRoll.Light.Main" parent="Theme.CameraRoll.Light">
-        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
-        </item>
-    </style>
-
-    <!--AlbumActivity Theme-->
-    <style name="Theme.CameraRoll.Translucent.Album" parent="Theme.CameraRoll.Translucent">
-        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
-        </item>
-    </style>
-
-    <style name="Theme.CameraRoll.Translucent.Light.Album" parent="Theme.CameraRoll.Light.Translucent">
-        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
-        </item>
-    </style>
-
     <!--PhotoView Theme-->
     <style name="Theme.CameraRoll.Translucent.PhotoView" parent="Theme.CameraRoll.Translucent">
         <item name="android:windowBackground">@color/black</item>
@@ -84,23 +62,14 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
-    <!--ExifEditor Theme-->
-    <style name="Theme.CameraRoll.Translucent.ExifEditor" parent="Theme.CameraRoll.Translucent">
-        <item name="android:windowTranslucentStatus">false</item>
-    </style>
-
-    <style name="Theme.CameraRoll.Light.Translucent.ExifEditor" parent="Theme.CameraRoll.Light.Translucent">
-        <item name="android:windowTranslucentStatus">false</item>
-    </style>
-
     <!--SettingsActivity Theme-->
     <style name="Theme.CameraRoll.Settings" parent="Theme.CameraRoll">
-        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
-        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 </resources>

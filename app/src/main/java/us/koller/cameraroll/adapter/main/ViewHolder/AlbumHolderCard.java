@@ -21,8 +21,6 @@ public class AlbumHolderCard extends AlbumHolder {
     public void setAlbum(Album album) {
         super.setAlbum(album);
 
-        ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
-
         final ImageView image = (ImageView) itemView.findViewById(R.id.image);
 
         if (!excluded) {
