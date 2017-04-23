@@ -14,9 +14,10 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolder;
-import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolderCard;
+import us.koller.cameraroll.adapter.main.ViewHolder.CardAlbumHolder;
+import us.koller.cameraroll.adapter.main.ViewHolder.ExcludedAlbumHolder;
 import us.koller.cameraroll.adapter.main.ViewHolder.NestedRecyclerViewAlbumHolder;
-import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolderParallax;
+import us.koller.cameraroll.adapter.main.ViewHolder.ParallaxAlbumHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.Settings;
@@ -60,19 +61,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_parallax, parent, false);
-            return new AlbumHolderParallax(v);
+            return new ParallaxAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_EXCLUDED_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_default_excluded, parent, false);
-            return new AlbumHolderParallax(v);
+            return new ExcludedAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_card, parent, false);
-            return new AlbumHolderCard(v);
+            return new CardAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_EXCLUDED_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_card_excluded, parent, false);
-            return new AlbumHolderCard(v);
+            return new CardAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_nested_recyclerview, parent, false);
@@ -80,7 +81,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_EXCLUDED_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_default_excluded, parent, false);
-            return new NestedRecyclerViewAlbumHolder(v);
+            return new ExcludedAlbumHolder(v);
         }
 
         return null;

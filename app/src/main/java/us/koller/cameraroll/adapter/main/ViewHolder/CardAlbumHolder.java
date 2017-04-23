@@ -1,5 +1,7 @@
 package us.koller.cameraroll.adapter.main.ViewHolder;
 
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
@@ -7,17 +9,19 @@ import android.widget.TextView;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.ui.widget.ParallaxImageView;
+import us.koller.cameraroll.data.AlbumItem;
 
-public class AlbumHolderParallax extends AlbumHolder {
+public class CardAlbumHolder extends AlbumHolder {
 
-    public AlbumHolderParallax(View itemView) {
+    public CardAlbumHolder(View itemView) {
         super(itemView);
     }
 
     @Override
     public void setAlbum(Album album) {
         super.setAlbum(album);
+
+        final ImageView image = (ImageView) itemView.findViewById(R.id.image);
 
         if (!excluded) {
             //album not excluded
@@ -29,14 +33,20 @@ public class AlbumHolderParallax extends AlbumHolder {
 
             itemView.findViewById(R.id.hidden_folder_indicator)
                     .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
-
-            final ImageView image = (ImageView) itemView.findViewById(R.id.image);
-            if (image instanceof ParallaxImageView) {
-                ((ParallaxImageView) image).setParallaxTranslation();
-            }
-            loadImage(image);
         } else {
             //album excluded
+
+            //set image saturation to 0
+            //prevent image from fading saturation
+            final AlbumItem coverImage = album.getAlbumItems().get(0);
+            coverImage.hasFadedIn = true;
+
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0);
+            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+            image.setColorFilter(filter);
         }
+
+        loadImage(image);
     }
 }

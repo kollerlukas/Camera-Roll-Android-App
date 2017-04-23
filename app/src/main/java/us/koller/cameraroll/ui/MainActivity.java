@@ -277,7 +277,7 @@ public class MainActivity extends ThemeableActivity {
                         recyclerView.getPaddingEnd(),
                         recyclerView.getPaddingBottom());
 
-                recyclerView.scrollToPosition(0);
+                recyclerView.scrollBy(0, -toolbar.getHeight());
 
                 toolbar.getViewTreeObserver().removeOnPreDrawListener(this);
                 return false;
@@ -316,6 +316,7 @@ public class MainActivity extends ThemeableActivity {
                                 return;
                             }
 
+                            //postponing transition until sharedElement is laid out
                             postponeEnterTransition();
 
                             setExitSharedElementCallback(mCallback);
@@ -327,6 +328,7 @@ public class MainActivity extends ThemeableActivity {
                                         @Override
                                         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                                         public void startPostponedEnterTransition() {
+                                            //sharedElement is laid out --> start transition
                                             MainActivity.this.startPostponedEnterTransition();
                                         }
                                     };
@@ -335,6 +337,7 @@ public class MainActivity extends ThemeableActivity {
 
                             recyclerView.scrollToPosition(index);
 
+                            //wait until ViewHolder is laid out
                             recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                                 @Override
@@ -343,6 +346,7 @@ public class MainActivity extends ThemeableActivity {
                                     RecyclerView.ViewHolder viewHolder
                                             = recyclerView.findViewHolderForAdapterPosition(finalIndex);
                                     if (viewHolder instanceof NestedRecyclerViewAlbumHolder) {
+                                        //found ViewHolder
                                         sharedElementViewHolder = (NestedRecyclerViewAlbumHolder) viewHolder;
                                         ((NestedRecyclerViewAlbumHolder) viewHolder)
                                                 .onSharedElement(sharedElementReturnPosition, callback);

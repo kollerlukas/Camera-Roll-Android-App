@@ -53,41 +53,37 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
 
         this.album = album;
 
-        if (!excluded) {
-            //album not excluded
-            String count = album.getAlbumItems().size()
-                    + (album.getAlbumItems().size() > 1 ?
-                    getContext().getString(R.string.items) :
-                    getContext().getString(R.string.item));
-            ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
+        //album not excluded
+        String count = album.getAlbumItems().size()
+                + (album.getAlbumItems().size() > 1 ?
+                getContext().getString(R.string.items) :
+                getContext().getString(R.string.item));
+        ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
-            itemView.findViewById(R.id.hidden_folder_indicator)
-                    .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
+        itemView.findViewById(R.id.hidden_folder_indicator)
+                .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
 
-            //make RecyclerView either single ore double lined, depending on the album size
-            int lineCount = album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT ? 2 : 1;
-            int lineHeight = (int) getContext().getResources()
-                    .getDimension(R.dimen.nested_recyclerView_line_height) * lineCount;
+        //make RecyclerView either single ore double lined, depending on the album size
+        int lineCount = album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT ? 2 : 1;
+        int lineHeight = (int) getContext().getResources()
+                .getDimension(R.dimen.nested_recyclerView_line_height) * lineCount;
 
-            LinearLayout.LayoutParams params
-                    = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, lineHeight);
-            recyclerView.setLayoutParams(params);
+        LinearLayout.LayoutParams params
+                = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, lineHeight);
+        recyclerView.setLayoutParams(params);
 
-            RecyclerView.LayoutManager manager;
-            if (album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT) {
-                manager = new GridLayoutManager(getContext(), lineCount,
-                        GridLayoutManager.HORIZONTAL, false);
-            } else {
-                manager = new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.HORIZONTAL, false);
-            }
-            recyclerView.setLayoutManager(manager);
-
-            recyclerView.setAdapter(new RecyclerViewAdapter(null,
-                    recyclerView, album, false));
+        RecyclerView.LayoutManager manager;
+        if (album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT) {
+            manager = new GridLayoutManager(getContext(), lineCount,
+                    GridLayoutManager.HORIZONTAL, false);
         } else {
-            //album excluded
+            manager = new LinearLayoutManager(getContext(),
+                    LinearLayoutManager.HORIZONTAL, false);
         }
+        recyclerView.setLayoutManager(manager);
+
+        recyclerView.setAdapter(new RecyclerViewAdapter(null,
+                recyclerView, album, false));
     }
 
     public interface StartSharedElementTransitionCallback {

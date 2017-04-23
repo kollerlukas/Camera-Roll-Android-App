@@ -694,6 +694,7 @@ public class AlbumActivity extends ThemeableActivity
 
         if (menu != null) {
             menu.findItem(R.id.exclude).setVisible(false);
+            menu.findItem(R.id.sort_by).setVisible(false);
             //show share button
             menu.findItem(R.id.share).setVisible(true);
             //show copy & move button
@@ -816,6 +817,7 @@ public class AlbumActivity extends ThemeableActivity
                 toolbar.setNavigationIcon(d);
 
                 menu.findItem(R.id.exclude).setVisible(true);
+                menu.findItem(R.id.sort_by).setVisible(true);
                 menu.findItem(R.id.share).setVisible(false);
                 menu.findItem(R.id.copy).setVisible(false);
                 menu.findItem(R.id.move).setVisible(false);
