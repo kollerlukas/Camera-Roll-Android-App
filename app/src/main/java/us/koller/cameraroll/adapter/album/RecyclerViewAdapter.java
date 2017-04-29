@@ -2,7 +2,6 @@ package us.koller.cameraroll.adapter.album;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -26,7 +25,6 @@ import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.ui.MainActivity;
-import us.koller.cameraroll.util.Util;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
@@ -34,12 +32,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private final int VIEW_TYPE_GIF = 2;
     private final int VIEW_TYPE_VIDEO = 3;
 
-    private Album album;
+    /*private*/ public Album album;
 
-    private boolean selector_mode = false;
+    /*private*/ public boolean selector_mode = false;
     private boolean pick_photos;
 
-    private boolean[] selected_items;
+    /*private*/ public boolean[] selected_items;
 
     private Callback callback;
 
@@ -219,7 +217,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return selectedItemsPos;
     }
 
-    private void checkForNoSelectedItems() {
+    public void checkForNoSelectedItems() {
         if (getSelectedItemCount() == 0 && !pick_photos) {
             selector_mode = false;
             cancelSelectorMode();
@@ -236,7 +234,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return k;
     }
 
-    private void onItemSelected(AlbumItemHolder holder) {
+    public void onItemSelected(AlbumItemHolder holder) {
         int index = album.getAlbumItems().indexOf(holder.albumItem);
         boolean selected = !selected_items[index];
         selected_items[index] = selected;

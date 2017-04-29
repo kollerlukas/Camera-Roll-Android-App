@@ -13,8 +13,13 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
+import us.koller.cameraroll.adapter.album.ViewHolder.AlbumItemHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.ThemeableActivity;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
@@ -82,8 +87,9 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
         }
         recyclerView.setLayoutManager(manager);
 
-        recyclerView.setAdapter(new RecyclerViewAdapter(null,
-                recyclerView, album, false));
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(null,
+                recyclerView, album, false);
+        recyclerView.setAdapter(adapter);
     }
 
     public interface StartSharedElementTransitionCallback {
@@ -119,9 +125,13 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
     static class RecyclerViewAdapter
             extends us.koller.cameraroll.adapter.album.RecyclerViewAdapter {
 
-        RecyclerViewAdapter(Callback callback, RecyclerView recyclerView, Album album,
-                            boolean pick_photos) {
+        RecyclerViewAdapter(Callback callback, RecyclerView recyclerView,
+                            Album album, boolean pick_photos) {
             super(callback, recyclerView, album, pick_photos);
+        }
+
+        void setSelectorMode(boolean selector_mode) {
+            this.selector_mode = selector_mode;
         }
     }
 }

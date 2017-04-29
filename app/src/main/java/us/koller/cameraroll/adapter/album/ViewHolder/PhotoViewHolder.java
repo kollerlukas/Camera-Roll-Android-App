@@ -52,6 +52,8 @@ public class PhotoViewHolder extends AlbumItemHolder {
                             } else {
                                 fadeIn();
                             }
+                        } else {
+                            imageView.clearColorFilter();
                         }
                         return false;
                     }

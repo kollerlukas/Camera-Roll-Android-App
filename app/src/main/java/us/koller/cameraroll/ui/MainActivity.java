@@ -210,6 +210,9 @@ public class MainActivity extends ThemeableActivity {
                 @Override
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+                    // clear this listener so insets aren't re-applied
+                    rootView.setOnApplyWindowInsetsListener(null);
+
                     toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
                             toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
@@ -226,8 +229,6 @@ public class MainActivity extends ThemeableActivity {
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
                     return insets.consumeSystemWindowInsets();
                 }
             });
@@ -237,6 +238,7 @@ public class MainActivity extends ThemeableActivity {
                             new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override
                                 public void onGlobalLayout() {
+                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                     // hacky way of getting window insets on pre-Lollipop
                                     // somewhat works...
                                     int[] screenSize = Util.getScreenSize(MainActivity.this);
@@ -262,8 +264,6 @@ public class MainActivity extends ThemeableActivity {
                                             recyclerView.getPaddingTop() + windowInsets[1],
                                             recyclerView.getPaddingEnd() + windowInsets[2],
                                             recyclerView.getPaddingBottom() + windowInsets[3]);
-
-                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 }
                             });
         }
@@ -272,14 +272,14 @@ public class MainActivity extends ThemeableActivity {
         toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
+                toolbar.getViewTreeObserver().removeOnPreDrawListener(this);
+
                 recyclerView.setPadding(recyclerView.getPaddingStart(),
                         recyclerView.getPaddingTop() + toolbar.getHeight(),
                         recyclerView.getPaddingEnd(),
                         recyclerView.getPaddingBottom());
 
                 recyclerView.scrollBy(0, -toolbar.getHeight());
-
-                toolbar.getViewTreeObserver().removeOnPreDrawListener(this);
                 return false;
             }
         });

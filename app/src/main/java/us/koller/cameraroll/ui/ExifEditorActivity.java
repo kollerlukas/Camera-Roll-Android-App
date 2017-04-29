@@ -273,6 +273,11 @@ public class ExifEditorActivity extends ThemeableActivity {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
             }
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int statusBarColor = getStatusBarColor(this, ContextCompat.getColor(this, toolbar_color_res));
+            getWindow().setStatusBarColor(statusBarColor);
+        }
     }
 
     public static class EditedItem implements Parcelable {

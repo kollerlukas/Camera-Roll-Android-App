@@ -62,14 +62,17 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <!--ExifEditor Theme-->
+    <style name="Theme.CameraRoll.ExifEditor" parent="Theme.CameraRoll" />
+
+    <style name="Theme.CameraRoll.Light.ExifEditor" parent="Theme.CameraRoll.Light" />
+
     <!--SettingsActivity Theme-->
     <style name="Theme.CameraRoll.Settings" parent="Theme.CameraRoll">
-        <item name="android:windowTranslucentStatus">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
-        <item name="android:windowTranslucentStatus">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 </resources>

@@ -53,6 +53,8 @@ public class VideoViewHolder extends AlbumItemHolder {
                             } else {
                                 fadeIn();
                             }
+                        } else {
+                            imageView.clearColorFilter();
                         }
                         return false;
                     }

@@ -162,19 +162,23 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         overviewIcon.recycle();
     }
 
-    public void addStatusBarOverlay(final Toolbar toolbar,
-                                    int toolbarColor,
-                                    final int statusBarHeight) {
+    public static int getStatusBarColor(Context context, int toolbarColor) {
         float darken = 0.9f;
         if (toolbarColor == -1) {
             toolbarColor = ContextCompat
-                    .getColor(this, toolbar_color_res);
+                    .getColor(context, toolbar_color_res);
         }
-        int statusBarColor = Color.argb(
+        return Color.argb(
                 (int) (Color.alpha(toolbarColor) * darken),
                 (int) (Color.red(toolbarColor) * darken),
                 (int) (Color.green(toolbarColor) * darken),
                 (int) (Color.blue(toolbarColor) * darken));
+    }
+
+    public void addStatusBarOverlay(final Toolbar toolbar,
+                                    int toolbarColor,
+                                    final int statusBarHeight) {
+        int statusBarColor = getStatusBarColor(this, toolbarColor);
 
         final Drawable statusBarOverlay
                 = new ColorDrawable(statusBarColor);

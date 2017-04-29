@@ -79,6 +79,12 @@ public class ColorFade {
                 imageView.clearColorFilter();
                 imageView.setHasTransientState(false);
             }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                imageView.clearColorFilter();
+                imageView.setHasTransientState(false);
+            }
         });
         saturation.start();
     }

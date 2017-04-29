@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -159,6 +160,11 @@ public class SettingsActivity extends ThemeableActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
             }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int statusBarColor = getStatusBarColor(this, ContextCompat.getColor(this, toolbar_color_res));
+            getWindow().setStatusBarColor(statusBarColor);
         }
     }
 

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,9 +109,10 @@ public class ItemViewUtil {
                     public boolean onResourceReady(Bitmap resource, String model,
                                                    Target<Bitmap> target, boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
-                        if (albumItem.isSharedElement && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (albumItem.isSharedElement
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
-                            ((ItemActivity) imageView.getContext())
+                            ((AppCompatActivity) imageView.getContext())
                                     .startPostponedEnterTransition();
                         }
 
@@ -131,7 +133,7 @@ public class ItemViewUtil {
                     @Override
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     public void run() {
-                        ((ItemActivity) imageView.getContext())
+                        ((AppCompatActivity) imageView.getContext())
                                 .startPostponedEnterTransition();
                     }
                 }, 500);

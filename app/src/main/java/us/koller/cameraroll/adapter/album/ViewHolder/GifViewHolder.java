@@ -54,6 +54,8 @@ public class GifViewHolder extends AlbumItemHolder {
                             } else {
                                 fadeIn();
                             }
+                        } else {
+                            imageView.clearColorFilter();
                         }
                         resource.start();
                         return false;

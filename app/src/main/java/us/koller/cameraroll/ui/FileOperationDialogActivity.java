@@ -2,10 +2,12 @@ package us.koller.cameraroll.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 
@@ -302,6 +307,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                                     imageView.getWidth(),
                                     imageView.getHeight());
                             imageView.getOverlay().add(selectorOverlay);
+                            Log.d("RecyclerViewAdapter", "Overlay added");
                         }
                     });
                 } else {
@@ -309,6 +315,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         @Override
                         public void run() {
                             imageView.getOverlay().clear();
+                            Log.d("RecyclerViewAdapter", "Overlay cleared");
                         }
                     });
                 }
@@ -343,10 +350,14 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             final Album album = albums.get(position);
             ((TextView) holder.itemView.findViewById(R.id.album_title))
                     .setText(album.getName());
+
+            final boolean selected = position == selected_position;
+            Log.d("RecyclerViewAdapter", album.getName() + ", setSelected(" + String.valueOf(selected) + ")");
+            ((ViewHolder) holder).setSelected(selected);
 
             if (album.getAlbumItems().size() > 0) {
                 Glide.with(holder.itemView.getContext())
@@ -355,16 +366,17 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         .into((ImageView) holder.itemView.findViewById(R.id.image));
             }
 
-            ((ViewHolder) holder).setSelected(position == selected_position);
-
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //un-select old item
-                    notifyItemChanged(selected_position);
-                    selected_position = position;
+                    int oldSelectedPosition = selected_position;
+                    if (selected_position != position) {
+                        //un-select old item
+                        notifyItemChanged(oldSelectedPosition);
+                        selected_position = position;
+                    }
                     //select new item
-                    notifyItemChanged(position);
+                    notifyItemChanged(selected_position);
                 }
             });
         }
