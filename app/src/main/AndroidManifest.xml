@@ -37,7 +37,7 @@
         <activity
             android:name=".ui.ItemActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.PhotoView" />
+            android:theme="@style/Theme.CameraRoll.PhotoView" />
 
         <activity
             android:name=".ui.VideoPlayerActivity"
@@ -95,6 +95,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
             </intent-filter>
+
+            <!--<intent-filter>
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>-->
         </activity>
 
         <service

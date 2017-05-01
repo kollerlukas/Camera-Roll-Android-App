@@ -21,6 +21,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +42,7 @@ import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
+import us.koller.cameraroll.util.SpacesItemDecoration;
 import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends ThemeableActivity {
@@ -61,6 +63,10 @@ public class MainActivity extends ThemeableActivity {
         @Override
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            if (sharedElementViewHolder == null) {
+                return;
+            }
+
             if (sharedElementViewHolder.sharedElementReturnPosition != -1) {
                 String newTransitionName = sharedElementViewHolder.album.getAlbumItems()
                         .get(sharedElementViewHolder.sharedElementReturnPosition).getPath();
@@ -73,6 +79,7 @@ public class MainActivity extends ThemeableActivity {
                     sharedElements.put(newTransitionName, newSharedElement);
                 }
                 sharedElementViewHolder.sharedElementReturnPosition = -1;
+
             } else {
                 View v = sharedElementViewHolder.itemView.getRootView();
                 View navigationBar = v.findViewById(android.R.id.navigationBarBackground);
@@ -170,6 +177,8 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
         recyclerViewAdapter = new RecyclerViewAdapter(this, pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.addItemDecoration(new SpacesItemDecoration(
+                settings.getStyleGridSpacing(this), columnCount));
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -345,14 +354,20 @@ public class MainActivity extends ThemeableActivity {
                                                            int oL, int oT, int oR, int oB) {
                                     RecyclerView.ViewHolder viewHolder
                                             = recyclerView.findViewHolderForAdapterPosition(finalIndex);
+
+                                    if (viewHolder != null) {
+                                        recyclerView.removeOnLayoutChangeListener(this);
+                                    } else {
+                                        //viewHolder hasn't been laid out yet --> wait
+                                        recyclerView.scrollToPosition(finalIndex);
+                                    }
+
                                     if (viewHolder instanceof NestedRecyclerViewAlbumHolder) {
                                         //found ViewHolder
                                         sharedElementViewHolder = (NestedRecyclerViewAlbumHolder) viewHolder;
                                         ((NestedRecyclerViewAlbumHolder) viewHolder)
                                                 .onSharedElement(sharedElementReturnPosition, callback);
                                     }
-
-                                    recyclerView.removeOnLayoutChangeListener(this);
                                 }
                             });
                         }

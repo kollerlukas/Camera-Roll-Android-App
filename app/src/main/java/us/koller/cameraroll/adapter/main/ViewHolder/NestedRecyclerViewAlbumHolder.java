@@ -65,9 +65,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
                 getContext().getString(R.string.item));
         ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
-        itemView.findViewById(R.id.hidden_folder_indicator)
-                .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
-
         //make RecyclerView either single ore double lined, depending on the album size
         int lineCount = album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT ? 2 : 1;
         int lineHeight = (int) getContext().getResources()
@@ -128,10 +125,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
         RecyclerViewAdapter(Callback callback, RecyclerView recyclerView,
                             Album album, boolean pick_photos) {
             super(callback, recyclerView, album, pick_photos);
-        }
-
-        void setSelectorMode(boolean selector_mode) {
-            this.selector_mode = selector_mode;
         }
     }
 }

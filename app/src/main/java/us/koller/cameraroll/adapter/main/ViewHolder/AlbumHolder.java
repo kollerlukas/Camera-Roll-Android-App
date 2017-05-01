@@ -2,6 +2,8 @@ package us.koller.cameraroll.adapter.main.ViewHolder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+
+import java.io.File;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
@@ -42,6 +46,25 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         Provider.loadExcludedPaths(getContext());
         excluded = Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths())
                 || Provider.isDirExcludedBecauseParentDirIsExcluded(album.getPath(), Provider.getExcludedPaths());
+
+
+        ImageView hiddenFolderIndicator = (ImageView)
+                itemView.findViewById(R.id.hidden_folder_indicator);
+        if (hiddenFolderIndicator != null) {
+            hiddenFolderIndicator
+                    .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ImageView removableStorageIndicator = (ImageView)
+                    itemView.findViewById(R.id.removable_storage_indicator);
+            if (removableStorageIndicator != null) {
+                boolean removable = Environment
+                        .isExternalStorageRemovable(new File(album.getPath()));
+                removableStorageIndicator
+                        .setVisibility(removable ? View.VISIBLE : View.GONE);
+            }
+        }
     }
 
     void loadImage(final ImageView image) {

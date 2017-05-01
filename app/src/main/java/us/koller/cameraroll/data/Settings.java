@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.SortUtil;
@@ -86,12 +87,21 @@ public class Settings {
     }
 
     public int getStyleColumnCount(Context context) {
-        boolean landscape = context.getResources().getBoolean(R.bool.landscape);
-        if (landscape && getStyle() == context.getResources()
-                .getInteger(R.integer.STYLE_CARDS_VALUE)) {
+        Resources res = context.getResources();
+        boolean landscape = res.getBoolean(R.bool.landscape);
+        if (landscape && getStyle()
+                == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
             return styleColumnCount + 1;
         }
         return styleColumnCount;
+    }
+
+    public int getStyleGridSpacing(Context context) {
+        Resources res = context.getResources();
+        if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
+            return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
+        }
+        return 0;
     }
 
     public void setStyleColumnCount(int styleColumnCount) {

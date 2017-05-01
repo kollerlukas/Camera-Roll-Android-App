@@ -31,6 +31,9 @@ public class IntentReceiver extends AppCompatActivity {
             case Intent.ACTION_GET_CONTENT:
                 pick(getIntent());
                 break;
+            case Intent.ACTION_EDIT:
+                edit(getIntent());
+                break;
         }
     }
 
@@ -79,6 +82,15 @@ public class IntentReceiver extends AppCompatActivity {
                 .setAction(MainActivity.PICK_PHOTOS);
 
         startActivityForResult(pick_photos, MainActivity.PICK_PHOTOS_REQUEST_CODE);
+    }
+
+    public void edit(Intent intent) {
+        Uri uri = intent.getData();
+        if (uri == null) {
+            Toast.makeText(this, getString(R.string.error) + ": Uri = null", Toast.LENGTH_SHORT).show();
+            this.finish();
+            return;
+        }
     }
 
     @Override

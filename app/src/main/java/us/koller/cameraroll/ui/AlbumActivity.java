@@ -54,6 +54,7 @@ import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.SortUtil;
+import us.koller.cameraroll.util.SpacesItemDecoration;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -214,8 +215,8 @@ public class AlbumActivity extends ThemeableActivity
         final int columnCount = Settings.getInstance(this).getColumnCount(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.addItemDecoration(new GridMarginDecoration(
-                (int) getResources().getDimension(R.dimen.album_grid_spacing)));
+        recyclerView.addItemDecoration(new SpacesItemDecoration((int)
+                getResources().getDimension(R.dimen.album_grid_spacing), columnCount));
         recyclerView.setAdapter(new RecyclerViewAdapter(this, recyclerView, album, pick_photos));
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {

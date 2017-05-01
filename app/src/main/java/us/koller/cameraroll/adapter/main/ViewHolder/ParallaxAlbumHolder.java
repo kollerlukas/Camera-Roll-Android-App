@@ -25,9 +25,6 @@ public class ParallaxAlbumHolder extends AlbumHolder {
                 getContext().getString(R.string.item));
         ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
-        itemView.findViewById(R.id.hidden_folder_indicator)
-                .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
-
         final ImageView image = (ImageView) itemView.findViewById(R.id.image);
         if (image instanceof ParallaxImageView) {
             ((ParallaxImageView) image).setParallaxTranslation();

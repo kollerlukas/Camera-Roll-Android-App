@@ -58,7 +58,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Resources res = parent.getContext().getResources();
-        if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
+        if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_VALUE) || pick_photos) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_parallax, parent, false);
             return new ParallaxAlbumHolder(v);

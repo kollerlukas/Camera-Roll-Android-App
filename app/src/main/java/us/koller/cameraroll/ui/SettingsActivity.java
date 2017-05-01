@@ -1,12 +1,10 @@
 package us.koller.cameraroll.ui;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +13,6 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.support.v7.preference.SwitchPreferenceCompat;
 import android.support.v7.preference.TwoStatePreference;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -121,6 +118,12 @@ public class SettingsActivity extends ThemeableActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.preference_fragment_container, fragment)
                 .commit();
+
+        //needed to achieve transparent statusBar in landscape; don't ask me why, but its working
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
     @Override
@@ -163,7 +166,8 @@ public class SettingsActivity extends ThemeableActivity {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int statusBarColor = getStatusBarColor(this, ContextCompat.getColor(this, toolbar_color_res));
+            int statusBarColor = getStatusBarColor(this,
+                    ContextCompat.getColor(this, toolbar_color_res));
             getWindow().setStatusBarColor(statusBarColor);
         }
     }

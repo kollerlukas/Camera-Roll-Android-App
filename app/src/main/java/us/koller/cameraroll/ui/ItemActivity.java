@@ -836,9 +836,9 @@ public class ItemActivity extends ThemeableActivity {
     @Override
     public int getThemeRes(int style) {
         if (style == DARK) {
-            return R.style.Theme_CameraRoll_Translucent_PhotoView;
+            return R.style.Theme_CameraRoll_PhotoView;
         } else {
-            return R.style.Theme_CameraRoll_Translucent_Light_PhotoView;
+            return R.style.Theme_CameraRoll_Light_PhotoView;
         }
     }
 

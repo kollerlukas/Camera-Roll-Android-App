@@ -7,17 +7,20 @@
             android:entries="@array/theme_names"
             android:entryValues="@array/theme_values"
             android:key="@string/pref_key_theme"
-            android:title="@string/theme" />
+            android:title="@string/theme"
+            android:defaultValue="@string/DARK_THEME_VALUE" />
 
         <us.koller.cameraroll.preferences.StylePreference
             style="@style/Theme.CameraRoll.DialogPreference"
             android:key="@string/pref_key_style"
-            android:title="@string/style" />
+            android:title="@string/style"
+            android:defaultValue="@integer/STYLE_PARALLAX_VALUE" />
 
         <us.koller.cameraroll.preferences.ColumnCountPreference
             style="@style/Theme.CameraRoll.DialogPreference"
             android:key="@string/pref_key_column_count"
-            android:title="@string/column_count" />
+            android:title="@string/column_count"
+            android:defaultValue="4" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/other">

@@ -30,9 +30,6 @@ public class CardAlbumHolder extends AlbumHolder {
                     getContext().getString(R.string.items) :
                     getContext().getString(R.string.item));
             ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
-
-            itemView.findViewById(R.id.hidden_folder_indicator)
-                    .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
         } else {
             //album excluded
 

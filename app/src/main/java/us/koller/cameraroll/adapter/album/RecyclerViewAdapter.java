@@ -32,12 +32,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private final int VIEW_TYPE_GIF = 2;
     private final int VIEW_TYPE_VIDEO = 3;
 
-    /*private*/ public Album album;
+    private Album album;
 
-    /*private*/ public boolean selector_mode = false;
+    private boolean selector_mode = false;
     private boolean pick_photos;
 
-    /*private*/ public boolean[] selected_items;
+    private boolean[] selected_items;
 
     private Callback callback;
 
