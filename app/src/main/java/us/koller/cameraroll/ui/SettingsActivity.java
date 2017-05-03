@@ -297,11 +297,11 @@ public class SettingsActivity extends ThemeableActivity {
                 Fragment fragment =
                         getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG);
                 if (fragment != null && fragment instanceof DialogFragment) {
-                    if (fragment instanceof StylePreferenceDialogFragment) {
+                    /*if (fragment instanceof StylePreferenceDialogFragment) {
                         shownDialogFragment = STYLE_DIALOG_FRAGMENT;
                     } else if (fragment instanceof ColumnCountPreferenceDialogFragment) {
                         shownDialogFragment = COLUMN_COUNT_DIALOG_FRAGMENT;
-                    }
+                    }*/
 
                     ((DialogFragment) fragment).dismiss();
                 }

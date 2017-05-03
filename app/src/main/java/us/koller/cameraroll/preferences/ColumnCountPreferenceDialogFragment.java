@@ -36,6 +36,9 @@ public class ColumnCountPreferenceDialogFragment
         //get initial value from pref
         if (preference instanceof ColumnCountPreference) {
             columnCount = ((ColumnCountPreference) preference).getColumnCount();
+            if (columnCount == 0) {
+                columnCount = Settings.DEFAULT_COLUMN_COUNT;
+            }
         }
 
         View view = LayoutInflater.from(getContext())

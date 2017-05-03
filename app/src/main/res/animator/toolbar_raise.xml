@@ -4,7 +4,7 @@
         <objectAnimator
                 android:duration="150"
                 android:propertyName="translationZ"
-                android:valueTo="6dp"
+            android:valueTo="@dimen/toolbar_elevation"
                 android:valueType="floatType"/>
     </item>
 

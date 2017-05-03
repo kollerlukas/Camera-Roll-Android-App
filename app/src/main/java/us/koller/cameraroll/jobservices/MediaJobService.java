@@ -13,15 +13,16 @@ public class MediaJobService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        Log.d("MediaJobService", "onStartJob() called with: jobParameters = [" + jobParameters + "]");
+        Log.d("MediaJobService", "onStartJob() called");
 
         MainActivity.refreshMediaWhenVisible = true;
+
+        jobFinished(jobParameters, false);
         return false;
     }
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
-        Log.d("MediaJobService", "onStopJob() called with: jobParameters = [" + jobParameters + "]");
         return false;
     }
 }

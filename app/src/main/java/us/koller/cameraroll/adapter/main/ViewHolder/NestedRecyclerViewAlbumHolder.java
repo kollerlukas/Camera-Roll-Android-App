@@ -2,31 +2,24 @@ package us.koller.cameraroll.adapter.main.ViewHolder;
 
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
-import us.koller.cameraroll.adapter.album.ViewHolder.AlbumItemHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.ThemeableActivity;
-import us.koller.cameraroll.ui.widget.GridMarginDecoration;
+import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 
 public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
 
-    private static int SINGLE_LINE_MAX_ITEM_COUNT = 10;
+    private static int SINGLE_LINE_MAX_ITEM_COUNT = 4;
 
     public RecyclerView recyclerView;
 
@@ -34,13 +27,16 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
 
     public int sharedElementReturnPosition = -1;
 
+    private EqualSpacesItemDecoration itemDecoration;
+
     public NestedRecyclerViewAlbumHolder(View itemView) {
         super(itemView);
 
         recyclerView = (RecyclerView) itemView.findViewById(R.id.recyclerView);
         if (recyclerView != null) {
-            recyclerView.addItemDecoration(new GridMarginDecoration(
-                    (int) getContext().getResources().getDimension(R.dimen.album_grid_spacing)));
+            itemDecoration = new EqualSpacesItemDecoration(
+                    (int) getContext().getResources().getDimension(R.dimen.album_grid_spacing), 2, true);
+            recyclerView.addItemDecoration(itemDecoration);
         }
 
         ((TextView) itemView.findViewById(R.id.name))
@@ -73,6 +69,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder {
         LinearLayout.LayoutParams params
                 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, lineHeight);
         recyclerView.setLayoutParams(params);
+
+        itemDecoration.setSpanCount(lineCount);
 
         RecyclerView.LayoutManager manager;
         if (album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT) {

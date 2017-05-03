@@ -21,7 +21,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +41,7 @@ import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
-import us.koller.cameraroll.util.SpacesItemDecoration;
+import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends ThemeableActivity {
@@ -169,7 +168,7 @@ public class MainActivity extends ThemeableActivity {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        Settings settings = Settings.getInstance(this);
+        final Settings settings = Settings.getInstance(this);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
@@ -177,8 +176,8 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
         recyclerViewAdapter = new RecyclerViewAdapter(this, pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.addItemDecoration(new SpacesItemDecoration(
-                settings.getStyleGridSpacing(this), columnCount));
+        recyclerView.addItemDecoration(new EqualSpacesItemDecoration(
+                settings.getStyleGridSpacing(this), columnCount, false));
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

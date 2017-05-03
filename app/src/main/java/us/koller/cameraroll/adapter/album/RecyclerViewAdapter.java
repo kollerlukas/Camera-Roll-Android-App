@@ -217,7 +217,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return selectedItemsPos;
     }
 
-    public void checkForNoSelectedItems() {
+    private void checkForNoSelectedItems() {
         if (getSelectedItemCount() == 0 && !pick_photos) {
             selector_mode = false;
             cancelSelectorMode();
@@ -234,7 +234,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return k;
     }
 
-    public void onItemSelected(AlbumItemHolder holder) {
+    private void onItemSelected(AlbumItemHolder holder) {
         int index = album.getAlbumItems().indexOf(holder.albumItem);
         boolean selected = !selected_items[index];
         selected_items[index] = selected;

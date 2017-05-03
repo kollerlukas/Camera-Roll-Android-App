@@ -112,7 +112,12 @@ public class VideoPlayerActivity extends ThemeableActivity {
 
         //init Play pause button
         final ImageButton playPause = (ImageButton) findViewById(R.id.play_pause);
-        playPause.setImageResource(R.drawable.pause_to_play_avd);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            playPause.setImageResource(R.drawable.pause_to_play_avd);
+        } else {
+            playPause.setImageResource(R.drawable.ic_pause_white_24dp);
+        }
+
         playPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,6 +125,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
 
             }
         });
+
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -147,16 +153,25 @@ public class VideoPlayerActivity extends ThemeableActivity {
             @Override
             public void onPlayerStateChanged(boolean b, int i) {
                 //update PlayPause-Button
-                if (player.getPlayWhenReady()) {
-                    playPause.setImageResource(R.drawable.play_to_pause_avd);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (player.getPlayWhenReady()) {
+                        playPause.setImageResource(R.drawable.play_to_pause_avd);
+                    } else {
+                        playPause.setImageResource(R.drawable.pause_to_play_avd);
+                    }
+
+                    Drawable d = playPause.getDrawable();
+                    if (d instanceof Animatable) {
+                        ((Animatable) d).start();
+                    }
                 } else {
-                    playPause.setImageResource(R.drawable.pause_to_play_avd);
+                    if (player.getPlayWhenReady()) {
+                        playPause.setImageResource(R.drawable.ic_pause_white_24dp);
+                    } else {
+                        playPause.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+                    }
                 }
 
-                Drawable d = playPause.getDrawable();
-                if (d instanceof Animatable) {
-                    ((Animatable) d).start();
-                }
             }
 
             @Override
