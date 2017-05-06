@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolder;
 import us.koller.cameraroll.adapter.main.ViewHolder.CardAlbumHolder;
 import us.koller.cameraroll.adapter.main.ViewHolder.ExcludedAlbumHolder;
@@ -32,10 +33,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     private boolean pick_photos;
 
+    private SelectorModeManager selectorManager;
+
     public RecyclerViewAdapter(Context context, boolean pick_photos) {
         this.pick_photos = pick_photos;
         Settings settings = Settings.getInstance(context);
         viewType = settings.getStyle();
+
+        selectorManager = new SelectorModeManager();
     }
 
     public RecyclerViewAdapter setAlbums(ArrayList<Album> albums) {
@@ -77,7 +82,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_nested_recyclerview, parent, false);
-            return new NestedRecyclerViewAlbumHolder(v);
+            return new NestedRecyclerViewAlbumHolder(v).setSelectorModeManager(selectorManager);
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_EXCLUDED_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_default_excluded, parent, false);

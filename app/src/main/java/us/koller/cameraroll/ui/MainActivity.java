@@ -1,15 +1,10 @@
 package us.koller.cameraroll.ui;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -32,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import us.koller.cameraroll.jobservices.MediaJobService;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.adapter.main.ViewHolder.NestedRecyclerViewAlbumHolder;
@@ -494,24 +488,6 @@ public class MainActivity extends ThemeableActivity {
 
         mediaProvider = new MediaProvider(this);
         mediaProvider.loadAlbums(MainActivity.this, hiddenFolders, callback);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            listenForMediaChanges();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void listenForMediaChanges() {
-        //schedule Job
-        JobScheduler js =
-                (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        JobInfo.Builder builder = new JobInfo.Builder(
-                5,
-                new ComponentName(this, MediaJobService.class));
-        builder.addTriggerContentUri(
-                new JobInfo.TriggerContentUri(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS));
-        js.schedule(builder.build());
     }
 
     @Override
@@ -612,6 +588,11 @@ public class MainActivity extends ThemeableActivity {
                             || data.getAction().equals(REFRESH_MEDIA)) {
                         refreshPhotos();
                     }
+                }
+                break;
+            case AlbumActivity.FILE_OP_DIALOG_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    refreshPhotos();
                 }
                 break;
         }

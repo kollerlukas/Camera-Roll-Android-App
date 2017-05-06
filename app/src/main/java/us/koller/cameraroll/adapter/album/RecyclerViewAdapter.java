@@ -2,9 +2,11 @@ package us.koller.cameraroll.adapter.album;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.ViewHolder.AlbumItemHolder;
 import us.koller.cameraroll.adapter.album.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.album.ViewHolder.PhotoViewHolder;
@@ -23,6 +26,7 @@ import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.ui.MainActivity;
 
@@ -34,38 +38,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     private Album album;
 
-    private boolean selector_mode = false;
     private boolean pick_photos;
 
-    private boolean[] selected_items;
+    private SelectorModeManager manager;
 
     private Callback callback;
 
     private DragSelectTouchListener dragSelectTouchListener;
 
     public RecyclerViewAdapter(Callback callback, final RecyclerView recyclerView,
-                               Album album, boolean pick_photos) {
+                               final Album album, boolean pick_photos) {
         this.callback = callback;
         this.album = album;
         this.pick_photos = pick_photos;
         if (pick_photos) {
-            selector_mode = true;
+            setSelectorMode(true);
             if (callback != null) {
                 callback.onSelectorModeEnter();
             }
         }
-        selected_items = new boolean[album.getAlbumItems().size()];
+        manager = new SelectorModeManager();
 
         //disable default change animation
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        if (callback != null) {
+        if (callback != null && dragSelectEnabled()) {
             dragSelectTouchListener = new DragSelectTouchListener()
                     .withSelectListener(new DragSelectTouchListener.OnDragSelectListener() {
                         @Override
                         public void onSelectChange(int start, int end, boolean isSelected) {
                             for (int i = start; i <= end; i++) {
-                                selected_items[i] = isSelected;
+                                manager.onItemSelect(album.getAlbumItems().get(i).getPath());
 
                                 if (RecyclerViewAdapter.this.callback != null) {
                                     RecyclerViewAdapter.this.callback
@@ -80,6 +83,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     });
             recyclerView.addOnItemTouchListener(dragSelectTouchListener);
         }
+    }
+
+    public RecyclerViewAdapter setSelectorModeManager(SelectorModeManager manager) {
+        this.manager = manager;
+        return this;
     }
 
     @Override
@@ -114,8 +122,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
         ((AlbumItemHolder) holder).setAlbumItem(albumItem);
 
-        boolean selected = selected_items[album.getAlbumItems()
-                .indexOf(albumItem)];
+        boolean selected = manager.isItemSelected(albumItem.getPath());
 
         ((AlbumItemHolder) holder).setSelected(selected);
 
@@ -124,14 +131,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (selector_mode) {
+                if (getSelectorMode()) {
                     onItemSelected((AlbumItemHolder) holder);
                 } else if ((albumItem instanceof Photo
                         || albumItem instanceof Gif
                         || albumItem instanceof Video) && !albumItem.error) {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
-                    //intent.putExtra(ItemActivity.ALBUM, album);
+                    //intent.putExtra(ItemActivity.ALBUM, getAlbum());
                     intent.putExtra(ItemActivity.ALBUM_PATH, album.getPath());
                     intent.putExtra(ItemActivity.ITEM_POSITION,
                             album.getAlbumItems().indexOf(albumItem));
@@ -152,9 +159,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    if (!selector_mode) {
-                        selector_mode = true;
-                        selected_items = new boolean[album.getAlbumItems().size()];
+                    if (!getSelectorMode()) {
+                        setSelectorMode(true);
+                        clearSelectedItemsList();
 
                         //notify AlbumActivity
                         if (callback != null) {
@@ -164,11 +171,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                     onItemSelected((AlbumItemHolder) holder);
 
-                    //notify DragSelectTouchListener
-                    if (selected_items[album.getAlbumItems()
-                            .indexOf(((AlbumItemHolder) holder).albumItem)]) {
-                        int position = album.getAlbumItems().indexOf(albumItem);
-                        dragSelectTouchListener.startDragSelection(position);
+                    if (dragSelectEnabled()) {
+                        //notify DragSelectTouchListener
+                        boolean selected = manager.isItemSelected(albumItem.getPath());
+                        if (selected) {
+                            int position = getAlbum().getAlbumItems().indexOf(albumItem);
+                            dragSelectTouchListener.startDragSelection(position);
+                        }
                     }
                     return true;
                 }
@@ -177,67 +186,39 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     public boolean isSelectorModeActive() {
-        return selector_mode && !pick_photos;
+        return getSelectorMode() && !pick_photos;
     }
 
-    public void restoreSelectedItems(int[] selectedItemsPos) {
-        selector_mode = true;
-
+    public void restoreSelectedItems() {
         //notify AlbumActivity
         if (callback != null) {
             callback.onSelectorModeEnter();
         }
 
-        selected_items = new boolean[album.getAlbumItems().size()];
-        for (int i = 0; i < selectedItemsPos.length; i++) {
-            int pos = selectedItemsPos[i];
-            selected_items[pos] = true;
-            notifyItemChanged(pos);
-        }
-
-        if (callback != null) {
-            callback.onItemSelected(selectedItemsPos.length);
-        }
-    }
-
-    public int[] getSelectedItemsPositions() {
-        if (!selector_mode && !pick_photos) {
-            return null;
-        }
-
-        int[] selectedItemsPos = new int[getSelectedItemCount()];
-        int index = 0;
-        for (int i = 0; i < selected_items.length; i++) {
-            if (selected_items[i]) {
-                selectedItemsPos[index] = i;
-                index++;
+        for (int i = 0; i < this.album.getAlbumItems().size(); i++) {
+            if (manager.isItemSelected(album.getAlbumItems().get(i).getPath())) {
+                notifyItemChanged(i);
             }
         }
 
-        return selectedItemsPos;
+        if (callback != null) {
+            callback.onItemSelected(manager.getSelectedItemCount());
+        }
     }
 
-    private void checkForNoSelectedItems() {
+    public void checkForNoSelectedItems() {
         if (getSelectedItemCount() == 0 && !pick_photos) {
-            selector_mode = false;
+            setSelectorMode(false);
             cancelSelectorMode();
         }
     }
 
-    private int getSelectedItemCount() {
-        int k = 0;
-        for (int i = 0; i < selected_items.length; i++) {
-            if (selected_items[i]) {
-                k++;
-            }
-        }
-        return k;
+    public int getSelectedItemCount() {
+        return manager.getSelectedItemCount();
     }
 
-    private void onItemSelected(AlbumItemHolder holder) {
-        int index = album.getAlbumItems().indexOf(holder.albumItem);
-        boolean selected = !selected_items[index];
-        selected_items[index] = selected;
+    public void onItemSelected(AlbumItemHolder holder) {
+        boolean selected = manager.onItemSelect(holder.albumItem.getPath());
         holder.setSelected(selected);
 
         if (callback != null) {
@@ -246,34 +227,68 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         checkForNoSelectedItems();
     }
 
-    public AlbumItem[] cancelSelectorMode() {
-        ArrayList<AlbumItem> selected_items = new ArrayList<>();
-        selector_mode = false;
-        for (int i = 0; i < this.selected_items.length; i++) {
-            if (this.selected_items[i]) {
+    public String[] cancelSelectorMode() {
+        setSelectorMode(false);
+        //update ui
+        for (int i = 0; i < this.album.getAlbumItems().size(); i++) {
+            if (manager.isItemSelected(album.getAlbumItems().get(i).getPath())) {
                 notifyItemChanged(i);
-                selected_items.add(album.getAlbumItems().get(i));
             }
         }
-        this.selected_items = new boolean[album.getAlbumItems().size()];
-        AlbumItem[] arr = new AlbumItem[selected_items.size()];
+        //generate paths array
+        String[] paths = manager.createStringArray();
+        //clear manager list
+        clearSelectedItemsList();
+        //notify that SelectorMode was exited
         if (callback != null) {
             callback.onSelectorModeExit();
         }
-        return selected_items.toArray(arr);
+        return paths;
     }
 
     public boolean onBackPressed() {
-        if (selector_mode && !pick_photos) {
+        if (getSelectorMode() && !pick_photos) {
             cancelSelectorMode();
             return true;
         }
         return false;
     }
 
+    public boolean getSelectorMode() {
+        return manager.isSelectorModeActive();
+    }
+
+    public void setSelectorMode(boolean activate) {
+        manager.setSelectorMode(activate);
+    }
+
+    public boolean dragSelectEnabled() {
+        return true;
+    }
+
+    public void clearSelectedItemsList() {
+        manager.clearList();
+    }
+
     @Override
     public int getItemCount() {
-        return album.getAlbumItems().size();
+        return getAlbum().getAlbumItems().size();
+    }
+
+    public Album getAlbum() {
+        return album;
+    }
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public SelectorModeManager getManager() {
+        return manager;
+    }
+
+    public void saveInstanceState(Bundle state) {
+        manager.saveInstanceState(state);
     }
 
     public interface Callback {
