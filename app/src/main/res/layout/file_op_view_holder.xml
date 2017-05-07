@@ -4,7 +4,8 @@
     android:layout_width="200dp"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardBackgroundColor="@color/grey_900">
+    app:cardBackgroundColor="@color/grey_900"
+    app:cardElevation="0dp">
 
     <ImageView
         android:id="@+id/image"

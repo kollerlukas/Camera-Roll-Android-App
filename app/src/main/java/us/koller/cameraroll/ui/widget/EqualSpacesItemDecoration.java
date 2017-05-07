@@ -54,8 +54,9 @@ public class EqualSpacesItemDecoration extends RecyclerView.ItemDecoration {
             }
 
             //bottom spacing
-            if (position > itemCount - spanCount) {
-                //item is on the right edge
+            if (position > itemCount - itemCount % spanCount
+                    || (itemCount % spanCount == 0 && position + 1 > itemCount - spanCount)) {
+                //item is on the bottom edge
                 outRect.bottom = space;
             } else {
                 outRect.bottom = space / 2;
@@ -81,7 +82,8 @@ public class EqualSpacesItemDecoration extends RecyclerView.ItemDecoration {
             }
 
             //right spacing
-            if (position > itemCount - lineCount) {
+            if (position + 1 > itemCount - itemCount % lineCount
+                    || (itemCount % lineCount == 0 && position + 1 > itemCount - lineCount)) {
                 //item is on the top edge
                 outRect.right = space;
             } else {

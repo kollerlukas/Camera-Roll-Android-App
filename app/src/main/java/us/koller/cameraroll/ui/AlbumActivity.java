@@ -693,10 +693,13 @@ public class AlbumActivity extends ThemeableActivity
                 = SelectorModeManager.createAlbumItemArray(this,
                 ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode());
 
-        ClipData clipData = createClipData(selected_items);
-
         Intent intent = new Intent("us.koller.RESULT_ACTION");
-        intent.setClipData(clipData);
+        if (allowMultiple) {
+            ClipData clipData = createClipData(selected_items);
+            intent.setClipData(clipData);
+        } else {
+            intent.setData(selected_items[0].getUri(this));
+        }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         setResult(RESULT_OK, intent);
         finish();
@@ -844,7 +847,6 @@ public class AlbumActivity extends ThemeableActivity
         final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
                 getString(R.string.items) : getString(R.string.item));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle(title);
 
         ColorFade.fadeToolbarTitleColor(toolbar,
                 ContextCompat.getColor(this, R.color.grey_900_translucent),
@@ -858,7 +860,11 @@ public class AlbumActivity extends ThemeableActivity
 
         if (selectedItemCount > 0) {
             if (pick_photos) {
-                animateFab(true, false);
+                if (allowMultiple) {
+                    animateFab(true, false);
+                } else {
+                    setPhotosResult();
+                }
             }
         } else {
             if (pick_photos) {
