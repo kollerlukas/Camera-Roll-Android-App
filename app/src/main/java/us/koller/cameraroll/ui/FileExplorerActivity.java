@@ -958,12 +958,20 @@ public class FileExplorerActivity extends ThemeableActivity
                 .valueOf(ContextCompat.getColor(this, accent_color_res)));
 
         if (theme == ThemeableActivity.LIGHT) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setActivated(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
             }
+
+            /*toolbar.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            addStatusBarOverlay(toolbar, -1, toolbar.getPaddingTop());
+                        }
+                    });*/
         }
     }
 }

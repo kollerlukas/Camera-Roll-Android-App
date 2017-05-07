@@ -51,13 +51,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         this.callback = callback;
         this.album = album;
         this.pick_photos = pick_photos;
+
+        manager = new SelectorModeManager();
+
         if (pick_photos) {
             setSelectorMode(true);
             if (callback != null) {
                 callback.onSelectorModeEnter();
             }
         }
-        manager = new SelectorModeManager();
 
         //disable default change animation
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);

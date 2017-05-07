@@ -2,6 +2,7 @@ package us.koller.cameraroll.adapter.main.ViewHolder;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.StateListAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -67,8 +68,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             = new us.koller.cameraroll.adapter.album.RecyclerViewAdapter.Callback() {
         @Override
         public void onSelectorModeEnter() {
-            View rootView = NestedRecyclerViewAlbumHolder.this
-                    .itemView.getRootView().findViewById(R.id.root_view);
+            View rootView = recyclerView.getRootView().findViewById(R.id.root_view);
 
             final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
 
@@ -76,6 +76,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 Log.d("NRVAH", "onItemSelected(): Error");
                 return;
             }
+
+            toolbar.setActivated(false);
 
             Util.setDarkStatusBarIcons(rootView);
 
@@ -117,8 +119,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
         @Override
         public void onSelectorModeExit() {
-            final View rootView = NestedRecyclerViewAlbumHolder.this
-                    .itemView.getRootView().findViewById(R.id.root_view);
+            final View rootView = recyclerView.getRootView().findViewById(R.id.root_view);
 
             //find selector-toolbar
             final Toolbar selectorToolbar = (Toolbar) rootView
@@ -139,6 +140,9 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
                             if (MainActivity.THEME != ThemeableActivity.LIGHT) {
                                 Util.setLightStatusBarIcons(rootView);
+                            } else if (MainActivity.THEME == ThemeableActivity.LIGHT) {
+                                Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+                                toolbar.setActivated(true);
                             }
 
                             //remove selector-toolbar
@@ -149,8 +153,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
         @Override
         public void onItemSelected(int selectedItemCount) {
-            View rootView = NestedRecyclerViewAlbumHolder.this
-                    .itemView.getRootView();
+            View rootView = recyclerView.getRootView().findViewById(R.id.root_view);
 
             final Toolbar toolbar = (Toolbar) rootView
                     .findViewWithTag(SelectorModeUtil.SELECTOR_TOOLBAR_TAG);
@@ -398,26 +401,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         public boolean dragSelectEnabled() {
             return false;
         }
-
-        /*@Override
-        public String[] cancelSelectorMode() {
-            setSelectorMode(false);
-            //update ui
-            for (int i = 0; i < this.getAlbum().getAlbumItems().size(); i++) {
-                if (getManager().isItemSelected(getAlbum().getAlbumItems().get(i).getPath())) {
-                    notifyItemChanged(i);
-                }
-            }
-            //generate paths array
-            String[] paths = getManager().createStringArray();
-            //clear manager list
-            clearSelectedItemsList();
-            //notify that SelectorMode was exited
-            if (getCallback() != null) {
-                getCallback().onSelectorModeExit();
-            }
-            return paths;
-        }*/
     }
 
     static class SelectorModeUtil {
@@ -460,6 +443,11 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             toolbar.setNavigationIcon(navIcon);
 
             toolbar.setNavigationOnClickListener(onClickListener);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.setElevation(context.getResources()
+                        .getDimension(R.dimen.toolbar_elevation));
+            }
 
             return toolbar;
         }

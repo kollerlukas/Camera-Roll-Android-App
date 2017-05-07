@@ -2,7 +2,6 @@ package us.koller.cameraroll.ui;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -15,7 +14,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -179,6 +177,8 @@ public abstract class ThemeableActivity extends AppCompatActivity {
                                     int toolbarColor,
                                     final int statusBarHeight) {
         int statusBarColor = getStatusBarColor(this, toolbarColor);
+
+        //int statusBarColor = Color.argb( 54, 0, 0, 0);
 
         final Drawable statusBarOverlay
                 = new ColorDrawable(statusBarColor);

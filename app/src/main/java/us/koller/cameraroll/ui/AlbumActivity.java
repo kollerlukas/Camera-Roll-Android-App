@@ -710,18 +710,16 @@ public class AlbumActivity extends ThemeableActivity
 
         Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
 
-        /*if (menu != null) {
-            menu.findItem(R.id.exclude).setVisible(false);
-            menu.findItem(R.id.sort_by).setVisible(false);
-            //show share button
-            menu.findItem(R.id.share).setVisible(true);
-            //show copy & move button
-            menu.findItem(R.id.copy).setVisible(true);
-            menu.findItem(R.id.move).setVisible(true);
-        }*/
         handleMenuVisibilityForSelectorMode(true);
 
         if (!pick_photos) {
+            toolbar.post(new Runnable() {
+                @Override
+                public void run() {
+                    toolbar.getOverlay().clear();
+                }
+            });
+
             ColorFade.fadeBackgroundColor(toolbar,
                     ContextCompat.getColor(this, toolbar_color_res),
                     ContextCompat.getColor(this, accent_color_res));
@@ -760,7 +758,6 @@ public class AlbumActivity extends ThemeableActivity
                             ContextCompat.getColor(AlbumActivity.this,
                                     R.color.grey_900_translucent));
                     toolbar.setNavigationIcon(d);
-
                 }
             }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
         } else {
@@ -835,11 +832,6 @@ public class AlbumActivity extends ThemeableActivity
                                 text_color_secondary_res));
                 toolbar.setNavigationIcon(d);
 
-                /*menu.findItem(R.id.exclude).setVisible(true);
-                menu.findItem(R.id.sort_by).setVisible(true);
-                menu.findItem(R.id.share).setVisible(false);
-                menu.findItem(R.id.copy).setVisible(false);
-                menu.findItem(R.id.move).setVisible(false);*/
                 handleMenuVisibilityForSelectorMode(false);
             }
         }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
@@ -1014,7 +1006,7 @@ public class AlbumActivity extends ThemeableActivity
             return;
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
         toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
 
@@ -1031,6 +1023,16 @@ public class AlbumActivity extends ThemeableActivity
                 getWindow().setStatusBarColor(ContextCompat.getColor(this,
                         R.color.black_translucent1));
             }
+
+            /*if (!pick_photos) {
+                toolbar.getViewTreeObserver().addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                addStatusBarOverlay(toolbar, -1, toolbar.getPaddingTop());
+                            }
+                        });
+            }*/
         }
     }
 }

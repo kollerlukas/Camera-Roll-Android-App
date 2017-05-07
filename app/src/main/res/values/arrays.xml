@@ -25,22 +25,29 @@
     <integer name="STYLE_CARDS_EXCLUDED_VALUE">3</integer>
     <integer name="STYLE_CARDS_COLUMN_COUNT">2</integer>
 
+    <integer name="STYLE_CARDS_2_VALUE">6</integer>
+    <integer name="STYLE_CARDS_2_EXCLUDED_VALUE">7</integer>
+    <integer name="STYLE_CARDS_2_COLUMN_COUNT">2</integer>
+
     <integer name="STYLE_NESTED_RECYCLER_VIEW_VALUE">4</integer>
     <integer name="STYLE_NESTED_RECYCLER_VIEW_EXCLUDED_VALUE">5</integer>
     <integer name="STYLE_NESTED_RECYCLER_VIEW_COLUMN_COUNT">1</integer>
 
     <string name="STYLE_PARALLAX_NAME" translatable="false">Parallax</string>
     <string name="STYLE_CARDS_NAME" translatable="false">Cards</string>
+    <string name="STYLE_CARDS_2_NAME" translatable="false">Cards 2</string>
     <string name="STYLE_NESTED_RECYCLER_VIEW_NAME" translatable="false">Nested RecyclerView</string>
 
     <integer-array name="style_values">
         <item>@integer/STYLE_PARALLAX_VALUE</item>
         <item>@integer/STYLE_CARDS_VALUE</item>
+        <item>@integer/STYLE_CARDS_2_VALUE</item>
         <item>@integer/STYLE_NESTED_RECYCLER_VIEW_VALUE</item>
     </integer-array>
     <string-array name="style_names">
         <item>@string/STYLE_PARALLAX_NAME</item>
         <item>@string/STYLE_CARDS_NAME</item>
+        <item>@string/STYLE_CARDS_2_NAME</item>
         <item>@string/STYLE_NESTED_RECYCLER_VIEW_NAME</item>
     </string-array>
 </resources>

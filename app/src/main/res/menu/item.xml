@@ -12,12 +12,14 @@
         android:id="@+id/info"
         android:icon="@drawable/ic_info_white_24dp"
         android:title="@string/info"
+        android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/share"
         android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share"
+        android:visible="false"
         app:showAsAction="never" />
 
     <item
@@ -30,6 +32,7 @@
         android:id="@+id/edit"
         android:icon="@drawable/ic_mode_edit_white_24dp"
         android:title="@string/edit"
+        android:visible="false"
         app:showAsAction="never" />
 
     <item
@@ -48,5 +51,6 @@
         android:id="@+id/delete"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/delete"
+        android:visible="false"
         app:showAsAction="never" />
 </menu>

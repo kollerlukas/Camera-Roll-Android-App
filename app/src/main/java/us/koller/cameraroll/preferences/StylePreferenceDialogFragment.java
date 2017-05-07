@@ -111,11 +111,13 @@ public class StylePreferenceDialogFragment
         private static int[] nameRess = {
                 R.string.STYLE_PARALLAX_NAME,
                 R.string.STYLE_CARDS_NAME,
+                R.string.STYLE_CARDS_2_NAME,
                 R.string.STYLE_NESTED_RECYCLER_VIEW_NAME};
 
         private static int[] imageRess = {
                 R.drawable.style_parallax,
                 R.drawable.style_cards,
+                R.drawable.style_cards_2,
                 R.drawable.style_nested_recycler_view};
 
         @Override

@@ -79,6 +79,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_card_excluded, parent, false);
             return new CardAlbumHolder(v);
+        } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.album_cover_card_2, parent, false);
+            return new CardAlbumHolder(v);
+        } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_2_EXCLUDED_VALUE)) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.album_cover_card_2_excluded, parent, false);
+            return new CardAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_nested_recyclerview, parent, false);
@@ -130,6 +138,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 }
             }
         });
+    }
+
+    public SelectorModeManager getSelectorManager() {
+        return selectorManager;
     }
 
     @Override

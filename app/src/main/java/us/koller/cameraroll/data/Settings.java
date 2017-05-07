@@ -89,8 +89,9 @@ public class Settings {
     public int getStyleColumnCount(Context context) {
         Resources res = context.getResources();
         boolean landscape = res.getBoolean(R.bool.landscape);
-        if (landscape && getStyle()
-                == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
+        if (landscape &&
+                (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
+                        getStyle() == res.getInteger(R.integer.STYLE_CARDS_2_VALUE))) {
             return styleColumnCount + 1;
         }
         return styleColumnCount;
@@ -100,6 +101,8 @@ public class Settings {
         Resources res = context.getResources();
         if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
+        } else if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
+            return (int) res.getDimension(R.dimen.album_grid_spacing);
         }
         return 0;
     }
@@ -130,6 +133,10 @@ public class Settings {
             return res.getInteger(R.integer.STYLE_PARALLAX_COLUMN_COUNT);
         } else if (style == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
             return res.getInteger(R.integer.STYLE_CARDS_COLUMN_COUNT);
+        } else if (style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
+            return res.getInteger(R.integer.STYLE_CARDS_2_COLUMN_COUNT);
+        } else if (style == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
+            return res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_COLUMN_COUNT);
         }
         return 1;
     }

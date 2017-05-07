@@ -192,13 +192,17 @@ public class MainActivity extends ThemeableActivity {
                 toolbar.setTranslationY(translationY);
 
                 //animate statusBarIcon color
-                if (THEME == LIGHT) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        float animatedValue = (-translationY) / toolbar.getHeight();
-                        if (animatedValue > 0.9f) {
-                            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                        } else {
-                            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                if (!((RecyclerViewAdapter) recyclerView.getAdapter())
+                        .getSelectorManager().isSelectorModeActive()) {
+                    //only animate statusBar icons color, when not in selectorMode
+                    if (THEME == LIGHT) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            float animatedValue = (-translationY) / toolbar.getHeight();
+                            if (animatedValue > 0.9f) {
+                                Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                            } else {
+                                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+                            }
                         }
                     }
                 }
@@ -547,7 +551,9 @@ public class MainActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case MediaProvider.PERMISSION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
@@ -629,7 +635,7 @@ public class MainActivity extends ThemeableActivity {
         }
 
         if (theme == ThemeableActivity.LIGHT) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setActivated(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -638,6 +644,16 @@ public class MainActivity extends ThemeableActivity {
                 getWindow().setStatusBarColor(ContextCompat.getColor(this,
                         R.color.black_translucent1));
             }
+
+            /*if (!pick_photos) {
+                toolbar.getViewTreeObserver().addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                addStatusBarOverlay(toolbar, -1, toolbar.getPaddingTop());
+                            }
+                        });
+            }*/
         }
     }
 }
