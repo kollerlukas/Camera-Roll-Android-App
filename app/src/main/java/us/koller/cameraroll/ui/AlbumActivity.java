@@ -61,7 +61,7 @@ import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
 public class AlbumActivity extends ThemeableActivity
-        implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
+        implements SwipeBackCoordinatorLayout.OnSwipeListener, SelectorModeManager.Callback {
 
     public static final int FILE_OP_DIALOG_REQUEST = 1;
 
@@ -296,7 +296,7 @@ public class AlbumActivity extends ThemeableActivity
                     toolbar.setLayoutParams(toolbarParams);
 
                     recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
+                            recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
@@ -354,27 +354,13 @@ public class AlbumActivity extends ThemeableActivity
                             });
         }
 
-        toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                recyclerView.setPadding(recyclerView.getPaddingStart(),
-                        recyclerView.getPaddingTop() + toolbar.getHeight(),
-                        recyclerView.getPaddingEnd(),
-                        recyclerView.getPaddingBottom());
-
-                recyclerView.scrollBy(0, -toolbar.getHeight());
-
-                toolbar.getViewTreeObserver().removeOnPreDrawListener(this);
-                return false;
-            }
-        });
-
         onNewIntent(getIntent());
 
         //restore Selector mode, when needed
         if (savedInstanceState != null) {
             RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
             SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
+            manager.setCallback(this);
             adapter.setSelectorModeManager(manager);
             if (manager.isSelectorModeActive()) {
                 adapter.restoreSelectedItems();
@@ -421,9 +407,6 @@ public class AlbumActivity extends ThemeableActivity
                 }
             });
             recyclerView.scrollToPosition(sharedElementReturnPosition);
-
-            /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            toolbar.setTranslationY(0);*/
         }
     }
 

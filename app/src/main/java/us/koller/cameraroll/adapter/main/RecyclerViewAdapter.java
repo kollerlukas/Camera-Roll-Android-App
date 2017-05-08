@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,7 +39,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     public RecyclerViewAdapter(Context context, boolean pick_photos) {
         this.pick_photos = pick_photos;
         Settings settings = Settings.getInstance(context);
+
         viewType = settings.getStyle();
+        // not allowing NestedRecyclerView Style, when picking photos
+        Resources res = context.getResources();
+        if (pick_photos && viewType == res
+                .getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
+            viewType = res.getInteger(R.integer.STYLE_CARDS_VALUE);
+        }
 
         selectorManager = new SelectorModeManager();
     }
@@ -51,8 +59,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         boolean albumExcluded
-                = Provider.isDirExcluded(albums.get(position).getPath(), Provider.getExcludedPaths()) ||
-                Provider.isDirExcludedBecauseParentDirIsExcluded(albums.get(position).getPath(), Provider.getExcludedPaths());
+                = Provider.isDirExcluded(albums.get(position).getPath(),
+                Provider.getExcludedPaths()) ||
+                Provider.isDirExcludedBecauseParentDirIsExcluded(
+                        albums.get(position).getPath(), Provider.getExcludedPaths());
         if (albumExcluded) {
             return viewType + 1;
         } else {
@@ -63,7 +73,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Resources res = parent.getContext().getResources();
-        if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_VALUE) || pick_photos) {
+        if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_cover_parallax, parent, false);
             return new ParallaxAlbumHolder(v);
@@ -104,7 +114,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final Album album = albums.get(position);
 
-        ((AlbumHolder) holder).setAlbum(album);
+        if (!album.equals(((AlbumHolder) holder).getAlbum())) {
+            ((AlbumHolder) holder).setAlbum(album);
+        } else {
+            ((AlbumHolder) holder).onItemChanged();
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +154,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         });
     }
 
+    public void setSelectorModeManager(SelectorModeManager selectorManager) {
+        this.selectorManager = selectorManager;
+        notifyItemRangeChanged(0, getItemCount() - 1);
+    }
+
     public SelectorModeManager getSelectorManager() {
         return selectorManager;
     }
@@ -147,5 +166,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return albums.size();
+    }
+
+    public boolean onBackPressed() {
+        return getSelectorManager().onBackPressed();
+    }
+
+    public void saveInstanceState(Bundle outState) {
+        getSelectorManager().saveInstanceState(outState);
     }
 }

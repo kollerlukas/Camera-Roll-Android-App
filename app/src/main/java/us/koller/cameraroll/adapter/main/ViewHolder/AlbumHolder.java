@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +30,10 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
     AlbumHolder(View itemView) {
         super(itemView);
+    }
+
+    public Album getAlbum() {
+        return album;
     }
 
     public void setAlbum(Album album) {
@@ -68,6 +71,13 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
     }
 
     void loadImage(final ImageView image) {
+        if (album.getAlbumItems().size() == 0) {
+            Glide.with(getContext())
+                    .load(R.drawable.error_placeholder_tinted)
+                    .into(image);
+            return;
+        }
+
         final AlbumItem coverImage = album.getAlbumItems().get(0);
 
         Glide.with(getContext())
@@ -103,6 +113,10 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
                 })
                 .into(image);
+    }
+
+    public void onItemChanged() {
+
     }
 
     public Context getContext() {

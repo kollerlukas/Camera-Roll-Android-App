@@ -187,7 +187,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     toolbar.setLayoutParams(toolbarParams);
 
                     recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
+                            recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
@@ -244,22 +244,6 @@ public class FileExplorerActivity extends ThemeableActivity
                                 }
                             });
         }
-
-        //setting recyclerView top padding, so recyclerView starts below the toolbar
-        toolbar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                recyclerView.setPadding(recyclerView.getPaddingStart(),
-                        recyclerView.getPaddingTop() + toolbar.getHeight(),
-                        recyclerView.getPaddingEnd(),
-                        recyclerView.getPaddingBottom());
-
-                recyclerView.scrollToPosition(0);
-
-                toolbar.getViewTreeObserver().removeOnPreDrawListener(this);
-                return false;
-            }
-        });
 
         //needed to achieve transparent navBar
         getWindow().getDecorView().setSystemUiVisibility(

@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,11 +27,14 @@ public class Delete extends FileOperation {
     void executeAsync(final Activity context, File_POJO target, final Callback callback) {
         final File_POJO[] files = getFiles();
 
+        String s = context.getString(R.string.successfully_deleted);
+
         int success_count = 0;
         for (int i = 0; i < files.length; i++) {
             boolean result = deleteFile(context, files[i].getPath());
             if (result) {
                 success_count++;
+                setToastProgress(context, s, success_count);
             } else {
                 if (callback != null) {
                     final int final_i = i;
@@ -44,19 +48,13 @@ public class Delete extends FileOperation {
             }
         }
 
-        final int finalSuccess_count = success_count;
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, context.getString(R.string.successfully_deleted)
-                        + String.valueOf(finalSuccess_count) + "/"
-                        + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
+        if (success_count == 0) {
+            setToastProgress(context, s, success_count);
+        }
 
-                if (callback != null) {
-                    callback.done();
-                }
-            }
-        });
+        if (callback != null) {
+            callback.done();
+        }
 
         operation = EMPTY;
     }
@@ -83,6 +81,7 @@ public class Delete extends FileOperation {
                 e.printStackTrace();
             }
         } else if (MediaType.isMedia_MimeType(context, path)) {
+            Log.d("Delete", "deleteFile: ContentResolver");
             ContentResolver resolver = context.getContentResolver();
 
             ContentValues values = new ContentValues();
@@ -97,6 +96,7 @@ public class Delete extends FileOperation {
 
             success = rows > 0;
         } else {
+            Log.d("Delete", "deleteFile: java.io.File");
             File file = new File(path);
             if (file.isDirectory()) {
                 File[] files = file.listFiles();

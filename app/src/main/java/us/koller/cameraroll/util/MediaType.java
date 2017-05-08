@@ -13,7 +13,7 @@ public class MediaType {
     }
 
     public static boolean isMedia_MimeType(Context context, String path) {
-        return isImage(context, path) || isVideo(context, path);
+        return isImage(context, path) || isVideo(context, path) || isGif(context, path);
     }
 
     public static String getMimeType(Context context, String path) {

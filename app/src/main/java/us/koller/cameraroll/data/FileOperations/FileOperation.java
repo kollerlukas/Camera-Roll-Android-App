@@ -1,5 +1,6 @@
 package us.koller.cameraroll.data.FileOperations;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -9,12 +10,15 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
 import us.koller.cameraroll.R;
@@ -43,6 +47,8 @@ public abstract class FileOperation implements Parcelable {
 
     private File_POJO[] files;
 
+    private WeakReference<Toast> toastWeakReference;
+
     FileOperation(File_POJO[] files) {
         this.files = files;
     }
@@ -63,6 +69,28 @@ public abstract class FileOperation implements Parcelable {
     abstract void executeAsync(final Activity context, final File_POJO target, final Callback callback);
 
     public abstract int getType();
+
+
+    @SuppressLint("ShowToast")
+    void setToastProgress(final Activity context, final String s, final int successCount) {
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (toastWeakReference == null) {
+                    toastWeakReference = new WeakReference<>(Toast.makeText(context, "", Toast.LENGTH_SHORT));
+                }
+
+                final String text = s + String.valueOf(successCount) + "/"
+                        + String.valueOf(files.length);
+
+                Toast toast = toastWeakReference.get();
+                if (toast != null) {
+                    toast.setText(text);
+                    toast.show();
+                }
+            }
+        });
+    }
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {

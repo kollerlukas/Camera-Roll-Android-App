@@ -144,7 +144,7 @@ public class ExifEditorActivity extends ThemeableActivity {
                             toolbar.getPaddingBottom());
 
                     recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop() /*+ insets.getSystemWindowInsetTop()*/,
+                            recyclerView.getPaddingTop(),
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 

@@ -5,43 +5,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:id="@+id/root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:tag="@string/theme_bg_color">
-        <!--android:background="@color/dark_bg"-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingTop="?android:attr/actionBarSize"
             android:clipToPadding="false" />
 
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        <TextView
+            android:id="@+id/empty_state_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-monospace"
+            android:text="@string/no_files"
+            android:textSize="24sp"
+            android:alpha="0" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            app:backgroundTint="@color/colorAccent"
+            app:elevation="6dp"
+            app:fabSize="normal" />
+
+        <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stateListAnimator="@animator/toolbar_raise"
-            android:transitionName="@string/toolbar_transition_name" />
+            android:layout_height="wrap_content" />
     </FrameLayout>
-
-    <TextView
-        android:id="@+id/empty_state_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:fontFamily="sans-serif-monospace"
-        android:text="@string/no_files"
-        android:textSize="24sp" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorAccent"
-        app:elevation="6dp"
-        app:fabSize="normal" />
 </us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout>

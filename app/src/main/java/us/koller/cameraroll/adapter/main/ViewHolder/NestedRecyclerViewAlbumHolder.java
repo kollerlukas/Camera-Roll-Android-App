@@ -2,12 +2,10 @@ package us.koller.cameraroll.adapter.main.ViewHolder;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.StateListAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -20,13 +18,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,7 +49,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     private static int SINGLE_LINE_MAX_ITEM_COUNT = 4;
 
-    public RecyclerView recyclerView;
+    public RecyclerView nestedRecyclerView;
 
     public Album album;
 
@@ -64,18 +59,22 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     private SelectorModeManager manager;
 
-    public us.koller.cameraroll.adapter.album.RecyclerViewAdapter.Callback callback
-            = new us.koller.cameraroll.adapter.album.RecyclerViewAdapter.Callback() {
+    private SelectorModeManager.OnBackPressedCallback onBackPressedCallback
+            = new SelectorModeManager.OnBackPressedCallback() {
+        @Override
+        public void cancelSelectorMode() {
+            NestedRecyclerViewAlbumHolder.this.cancelSelectorMode();
+        }
+    };
+
+    private SelectorModeManager.Callback callback
+            = new SelectorModeManager.Callback() {
         @Override
         public void onSelectorModeEnter() {
-            View rootView = recyclerView.getRootView().findViewById(R.id.root_view);
+            final View rootView = ((Activity) nestedRecyclerView.getContext())
+                    .findViewById(R.id.root_view);
 
             final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-
-            if (toolbar == null) {
-                Log.d("NRVAH", "onItemSelected(): Error");
-                return;
-            }
 
             toolbar.setActivated(false);
 
@@ -89,46 +88,43 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 }
             };
 
-            Rect padding = new Rect(toolbar.getPaddingLeft(),
+            //create selector-toolbar
+            final Toolbar selectorToolbar = SelectorModeUtil.getSelectorModeToolbar(
+                    getContext(), onClickListener,
+                    NestedRecyclerViewAlbumHolder.this);
+
+            selectorToolbar.setPadding(toolbar.getPaddingLeft(),
                     toolbar.getPaddingTop(),
                     toolbar.getPaddingRight(),
                     toolbar.getPaddingBottom());
 
-            //create selector-toolbar
-            final Toolbar selectorToolbar = SelectorModeUtil
-                    .getSelectorModeToolbar(getContext(), padding, onClickListener,
-                            NestedRecyclerViewAlbumHolder.this);
-
             //add selector-toolbar
-            ((ViewGroup) rootView).addView(selectorToolbar,
-                    SelectorModeUtil.getSelectorToolbarLayoutParams());
+            ((ViewGroup) toolbar.getParent()).addView(selectorToolbar,
+                    toolbar.getLayoutParams());
+
+            selectorToolbar.requestLayout();
 
             //animate selector-toolbar
-            selectorToolbar.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
+            selectorToolbar.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
-                        public boolean onPreDraw() {
-                            selectorToolbar.getViewTreeObserver().removeOnPreDrawListener(this);
+                        public void onGlobalLayout() {
+                            selectorToolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
                             selectorToolbar.setTranslationY(-selectorToolbar.getHeight());
                             selectorToolbar.animate().translationY(0);
-                            return false;
                         }
                     });
         }
 
         @Override
         public void onSelectorModeExit() {
-            final View rootView = recyclerView.getRootView().findViewById(R.id.root_view);
+            final View rootView = ((Activity) nestedRecyclerView.getContext())
+                    .findViewById(R.id.root_view);
 
             //find selector-toolbar
             final Toolbar selectorToolbar = (Toolbar) rootView
                     .findViewWithTag(SelectorModeUtil.SELECTOR_TOOLBAR_TAG);
-
-            if (selectorToolbar == null) {
-                Log.d("NRVAH", "onItemSelected(): Error");
-                return;
-            }
 
             //animate selector-toolbar
             selectorToolbar.animate()
@@ -153,19 +149,12 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
         @Override
         public void onItemSelected(int selectedItemCount) {
-            View rootView = recyclerView.getRootView().findViewById(R.id.root_view);
+            final View rootView = ((Activity) nestedRecyclerView.getContext())
+                    .findViewById(R.id.root_view);
 
             final Toolbar toolbar = (Toolbar) rootView
                     .findViewWithTag(SelectorModeUtil.SELECTOR_TOOLBAR_TAG);
 
-            if (toolbar == null) {
-                Log.d("NRVAH", "onItemSelected(): Error");
-                return;
-            }
-
-            RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
-
-            selectedItemCount = adapter.getManager().getSelectedItemCount();
             final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
                     getContext().getString(R.string.items) : getContext().getString(R.string.item));
 
@@ -183,11 +172,11 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
     public NestedRecyclerViewAlbumHolder(View itemView) {
         super(itemView);
 
-        recyclerView = (RecyclerView) itemView.findViewById(R.id.recyclerView);
-        if (recyclerView != null) {
+        nestedRecyclerView = (RecyclerView) itemView.findViewById(R.id.nestedRecyclerView);
+        if (nestedRecyclerView != null) {
             itemDecoration = new EqualSpacesItemDecoration(
                     (int) getContext().getResources().getDimension(R.dimen.album_grid_spacing), 2, true);
-            recyclerView.addItemDecoration(itemDecoration);
+            nestedRecyclerView.addItemDecoration(itemDecoration);
         }
 
         ((TextView) itemView.findViewById(R.id.name))
@@ -201,6 +190,12 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     public NestedRecyclerViewAlbumHolder setSelectorModeManager(SelectorModeManager manager) {
         this.manager = manager;
+        if (!manager.onBackPressedCallbackAlreadySet()) {
+            manager.setOnBackPressedCallback(onBackPressedCallback);
+        }
+        if (manager.getCallback() == null) {
+            manager.setCallback(callback);
+        }
         return this;
     }
 
@@ -224,7 +219,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
         LinearLayout.LayoutParams params
                 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, lineHeight);
-        recyclerView.setLayoutParams(params);
+        nestedRecyclerView.setLayoutParams(params);
 
         itemDecoration.setSpanCount(lineCount);
 
@@ -236,12 +231,12 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             layoutManager = new LinearLayoutManager(getContext(),
                     LinearLayoutManager.HORIZONTAL, false);
         }
-        recyclerView.setLayoutManager(layoutManager);
+        nestedRecyclerView.setLayoutManager(layoutManager);
 
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(callback,
-                recyclerView, album, false);
+                nestedRecyclerView, album, false);
         adapter.setSelectorModeManager(manager);
-        recyclerView.setAdapter(adapter);
+        nestedRecyclerView.setAdapter(adapter);
     }
 
     public interface StartSharedElementTransitionCallback {
@@ -254,21 +249,21 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         this.sharedElementReturnPosition = sharedElementReturnPosition;
 
         //to prevent: requestLayout() improperly called [...] during layout: running second layout pass
-        recyclerView.getViewTreeObserver()
+        nestedRecyclerView.getViewTreeObserver()
                 .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        nestedRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                        recyclerView.scrollToPosition(sharedElementReturnPosition);
+                        nestedRecyclerView.scrollToPosition(sharedElementReturnPosition);
                     }
                 });
 
-        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        nestedRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int l, int t, int r, int b,
                                        int oL, int oT, int oR, int oB) {
-                recyclerView.removeOnLayoutChangeListener(this);
+                nestedRecyclerView.removeOnLayoutChangeListener(this);
                 callback.startPostponedEnterTransition();
             }
         });
@@ -276,7 +271,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        final String[] paths = ((RecyclerViewAdapter) recyclerView.getAdapter())
+        final String[] paths = ((RecyclerViewAdapter) nestedRecyclerView.getAdapter())
                 .cancelSelectorMode();
 
         cancelSelectorMode();
@@ -346,17 +341,24 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     private void cancelSelectorMode() {
         //cancel SelectorMode
-        if (recyclerView.getAdapter() instanceof RecyclerViewAdapter) {
-            ((RecyclerViewAdapter) recyclerView.getAdapter())
+        if (nestedRecyclerView.getAdapter() instanceof RecyclerViewAdapter) {
+            ((RecyclerViewAdapter) nestedRecyclerView.getAdapter())
                     .cancelSelectorMode();
         }
 
         //update other ViewHolders
-        View parent = (View) itemView.getParent();
-        if (parent instanceof RecyclerView) {
-            RecyclerView.Adapter adapter = ((RecyclerView) parent).getAdapter();
+        final View rootView = ((Activity) nestedRecyclerView.getContext()).findViewById(R.id.root_view);
+        View recyclerView = rootView.findViewById(R.id.recyclerView);
+        if (recyclerView instanceof RecyclerView) {
+            RecyclerView.Adapter adapter = ((RecyclerView) recyclerView).getAdapter();
             adapter.notifyItemRangeChanged(0, adapter.getItemCount() - 1);
         }
+    }
+
+    @Override
+    public void onItemChanged() {
+        nestedRecyclerView.getAdapter().notifyItemRangeChanged(0,
+                nestedRecyclerView.getAdapter().getItemCount() - 1);
     }
 
     private void deleteItems(String[] paths) {
@@ -392,7 +394,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
     static class RecyclerViewAdapter
             extends us.koller.cameraroll.adapter.album.RecyclerViewAdapter {
 
-        RecyclerViewAdapter(Callback callback, final RecyclerView recyclerView,
+        RecyclerViewAdapter(SelectorModeManager.Callback callback, final RecyclerView recyclerView,
                             Album album, boolean pick_photos) {
             super(callback, recyclerView, album, pick_photos);
         }
@@ -408,15 +410,10 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         static final String SELECTOR_TOOLBAR_TAG = "SELECTOR_TOOLBAR_TAG";
 
         static Toolbar getSelectorModeToolbar(Context context,
-                                              Rect padding,
                                               View.OnClickListener onClickListener,
                                               Toolbar.OnMenuItemClickListener onItemClickListener) {
-            Toolbar toolbar = new Toolbar(context);
+            final Toolbar toolbar = new Toolbar(context);
             toolbar.setTag(SELECTOR_TOOLBAR_TAG);
-            toolbar.setPadding(padding.left,
-                    padding.top,
-                    padding.right,
-                    padding.bottom);
 
             int accentColor = ContextCompat.getColor(context,
                     MainActivity.accent_color_res);
@@ -448,15 +445,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 toolbar.setElevation(context.getResources()
                         .getDimension(R.dimen.toolbar_elevation));
             }
-
             return toolbar;
-        }
-
-        static ViewGroup.LayoutParams getSelectorToolbarLayoutParams() {
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-            params.gravity = Gravity.TOP;
-            return params;
         }
     }
 }

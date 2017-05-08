@@ -20,27 +20,24 @@ public class Move extends FileOperation {
             return;
         }
 
+        String s = context.getString(R.string.successfully_moved);
+
         final File_POJO[] files = getFiles();
 
         int success_count = 0;
         for (int i = 0; i < files.length; i++) {
             boolean result = moveFile(context, files[i].getPath(), target.getPath());
             success_count += result ? 1 : 0;
+            setToastProgress(context, s, success_count);
         }
 
-        final int finalSuccess_count = success_count;
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, context.getString(R.string.successfully_moved)
-                        + String.valueOf(finalSuccess_count) + "/"
-                        + String.valueOf(files.length), Toast.LENGTH_SHORT).show();
+        if (success_count == 0) {
+            setToastProgress(context, s, success_count);
+        }
 
-                if (callback != null) {
-                    callback.done();
-                }
-            }
-        });
+        if (callback != null) {
+            callback.done();
+        }
 
         operation = EMPTY;
     }

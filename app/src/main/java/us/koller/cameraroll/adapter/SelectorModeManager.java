@@ -6,6 +6,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.AlbumItem;
 
 //simple wrapper class to handle the Selector Mode and selected items
@@ -16,6 +17,17 @@ public class SelectorModeManager {
 
     private boolean selectorModeActive = false;
     private ArrayList<String> selected_items_paths;
+
+    private Callback callback;
+
+    //SelectorMode Callback
+    public interface Callback {
+        void onSelectorModeEnter();
+
+        void onSelectorModeExit();
+
+        void onItemSelected(int selectedItemCount);
+    }
 
     public SelectorModeManager(Bundle savedState) {
         if (savedState.containsKey(SELECTOR_MODE_ACTIVE)) {
@@ -39,6 +51,13 @@ public class SelectorModeManager {
 
     public void setSelectorMode(boolean selectorMode) {
         this.selectorModeActive = selectorMode;
+        if (callback != null) {
+            if (selectorMode) {
+                callback.onSelectorModeEnter();
+            } else {
+                callback.onSelectorModeExit();
+            }
+        }
     }
 
     public boolean isSelectorModeActive() {
@@ -47,6 +66,9 @@ public class SelectorModeManager {
 
     public boolean onItemSelect(String path) {
         boolean selected = addOrRemovePathFromList(selected_items_paths, path);
+        if (callback != null) {
+            callback.onItemSelected(getSelectedItemCount());
+        }
         return selected;
     }
 
@@ -73,6 +95,44 @@ public class SelectorModeManager {
             outState.putStringArrayList(SELECTED_ITEMS_PATHS, selected_items_paths);
         }
     }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+        if (isSelectorModeActive()) {
+            getCallback().onSelectorModeEnter();
+            getCallback().onItemSelected(getSelectedItemCount());
+        }
+    }
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+
+    //to handle backPressed in SelectorMode
+    public interface OnBackPressedCallback {
+        public void cancelSelectorMode();
+    }
+
+    private OnBackPressedCallback onBackPressedCallback;
+
+    public void setOnBackPressedCallback(OnBackPressedCallback onBackPressedCallback) {
+        this.onBackPressedCallback = onBackPressedCallback;
+    }
+
+    public boolean onBackPressedCallbackAlreadySet() {
+        return onBackPressedCallback != null;
+    }
+
+    public boolean onBackPressed() {
+        if (onBackPressedCallback != null && isSelectorModeActive()) {
+            onBackPressedCallback.cancelSelectorMode();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     //Util methods
     private static boolean addOrRemovePathFromList(ArrayList<String> arr, String item) {

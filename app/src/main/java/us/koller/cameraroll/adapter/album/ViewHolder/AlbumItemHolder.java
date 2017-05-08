@@ -22,6 +22,10 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
+    public AlbumItem getAlbumItem() {
+        return albumItem;
+    }
+
     public void setAlbumItem(AlbumItem albumItem) {
         if (this.albumItem == albumItem) {
             return;

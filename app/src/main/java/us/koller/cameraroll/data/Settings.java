@@ -86,9 +86,14 @@ public class Settings {
         this.style = style;
     }
 
-    public int getStyleColumnCount(Context context) {
+    public int getStyleColumnCount(Context context, boolean pick_photos) {
         Resources res = context.getResources();
         boolean landscape = res.getBoolean(R.bool.landscape);
+        if (pick_photos) {
+            int styleColumnCount = getDefaultStyleColumnCount(context,
+                    res.getInteger(R.integer.STYLE_CARDS_VALUE));
+            return landscape ? styleColumnCount + 1 : styleColumnCount;
+        }
         if (landscape &&
                 (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
                         getStyle() == res.getInteger(R.integer.STYLE_CARDS_2_VALUE))) {
@@ -97,9 +102,9 @@ public class Settings {
         return styleColumnCount;
     }
 
-    public int getStyleGridSpacing(Context context) {
+    public int getStyleGridSpacing(Context context, boolean pick_photos) {
         Resources res = context.getResources();
-        if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
+        if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE) || pick_photos) {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
         } else if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
             return (int) res.getDimension(R.dimen.album_grid_spacing);
