@@ -28,6 +28,13 @@
         <SwitchPreference
             android:key="@string/pref_key_media_retriever"
             android:summary="@string/media_retriever_summary"
-            android:title="@string/media_retriever" />
+            android:title="@string/media_retriever"
+            android:defaultValue="false" />
+
+        <SwitchPreference
+            android:key="@string/pref_key_8_bit_color"
+            android:summary="@string/use_8_bit_color_summary"
+            android:title="@string/use_8_bit_color"
+            android:defaultValue="true" />
     </PreferenceCategory>
 </PreferenceScreen>

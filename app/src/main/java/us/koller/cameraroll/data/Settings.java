@@ -12,6 +12,7 @@ import us.koller.cameraroll.util.SortUtil;
 public class Settings {
 
     public static final int DEFAULT_COLUMN_COUNT = 4;
+    public static final String PREF_KEY_HIDDEN_FOLDERS = "HIDDEN_FOLDERS";
 
     private String theme;
     private boolean storageRetriever;
@@ -20,6 +21,10 @@ public class Settings {
     private int columnCount;
     private int sort_albums_by;
     private int sort_album_by;
+
+    private boolean hiddenFolders;
+
+    private boolean use8BitColor;
 
     private static Settings instance;
 
@@ -59,6 +64,14 @@ public class Settings {
         sort_album_by = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_sort_album),
                 SortUtil.BY_DATE);
+
+
+        hiddenFolders = sharedPreferences.getBoolean
+                (PREF_KEY_HIDDEN_FOLDERS, false);
+
+        use8BitColor = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_8_bit_color),
+                true);
     }
 
     /*Getter & Setter*/
@@ -168,6 +181,24 @@ public class Settings {
         saveInt(context, key, sort_album_by);
     }
 
+    public boolean getHiddenFolders() {
+        return hiddenFolders;
+    }
+
+    public boolean setHiddenFolders(Context context, boolean hiddenFolders) {
+        this.hiddenFolders = hiddenFolders;
+        saveBoolean(context, PREF_KEY_HIDDEN_FOLDERS, hiddenFolders);
+        return hiddenFolders;
+    }
+
+    public boolean use8BitColor() {
+        return use8BitColor;
+    }
+
+    public void use8BitColor(boolean use8BitColor) {
+        this.use8BitColor = use8BitColor;
+    }
+
 
     private static void saveInt(Context context, String key, int value) {
         SharedPreferences sharedPreferences
@@ -175,6 +206,15 @@ public class Settings {
         sharedPreferences
                 .edit()
                 .putInt(key, value)
+                .apply();
+    }
+
+    private static void saveBoolean(Context context, String key, boolean value) {
+        SharedPreferences sharedPreferences
+                = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences
+                .edit()
+                .putBoolean(key, value)
                 .apply();
     }
 

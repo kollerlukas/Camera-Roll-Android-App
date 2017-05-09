@@ -626,6 +626,10 @@ public class FileExplorerActivity extends ThemeableActivity
         if (filesProvider != null) {
             filesProvider.onDestroy();
         }
+
+        if (fileOperation != null) {
+            fileOperation.setCallback(null);
+        }
     }
 
     @Override

@@ -120,6 +120,8 @@ public class AlbumActivity extends ThemeableActivity
     private boolean pick_photos;
     private boolean allowMultiple;
 
+    private FileOperation fileOperation;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,7 +205,7 @@ public class AlbumActivity extends ThemeableActivity
             @Override
             public void onClick(View view) {
                 if (((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
-                    ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
+                    ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(null);
                 } else {
                     onBackPressed();
                 }
@@ -476,7 +478,7 @@ public class AlbumActivity extends ThemeableActivity
                 //share multiple items
                 selected_items_paths =
                         ((RecyclerViewAdapter) recyclerView.getAdapter())
-                                .cancelSelectorMode();
+                                .cancelSelectorMode(this);
 
                 ArrayList<Uri> uris = new ArrayList<>();
                 for (int i = 0; i < selected_items_paths.length; i++) {
@@ -499,7 +501,7 @@ public class AlbumActivity extends ThemeableActivity
             case R.id.move:
                 selected_items_paths =
                         ((RecyclerViewAdapter) recyclerView.getAdapter())
-                                .cancelSelectorMode();
+                                .cancelSelectorMode(this);
 
                 intent = new Intent(this, FileOperationDialogActivity.class);
                 intent.setAction(item.getItemId() == R.id.copy ?
@@ -577,11 +579,11 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         final String[] selected_items
-                = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
+                = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(this);
 
         final int[] indices = new int[selected_items.length];
         final AlbumItem[] deletedItems = new AlbumItem[selected_items.length];
-        for (int i = 0; i < selected_items.length; i++) {
+        for (int i = selected_items.length - 1; i >= 0; i--) {
             for (int k = 0; k < album.getAlbumItems().size(); k++) {
                 AlbumItem albumItem = album.getAlbumItems().get(k);
                 if (selected_items[i].equals(albumItem.getPath())) {
@@ -627,7 +629,7 @@ public class AlbumActivity extends ThemeableActivity
             filesToDelete[i] = new File_POJO(selected_items[i].getPath(), true);
         }
 
-        new Delete(filesToDelete)
+        fileOperation = new Delete(filesToDelete)
                 .execute(this, null,
                         new FileOperation.Callback() {
                             @Override
@@ -674,7 +676,7 @@ public class AlbumActivity extends ThemeableActivity
     public void setPhotosResult() {
         final AlbumItem[] selected_items
                 = SelectorModeManager.createAlbumItemArray(this,
-                ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode());
+                ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(this));
 
         Intent intent = new Intent("us.koller.RESULT_ACTION");
         if (allowMultiple) {
@@ -955,6 +957,15 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (fileOperation != null) {
+            fileOperation.setCallback(null);
+        }
+    }
+
+    @Override
     public boolean canSwipeBack(int dir) {
         return SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir) && !pick_photos;
     }
@@ -968,7 +979,7 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     public void onSwipeFinish(int dir) {
         if (((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
-            ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode();
+            ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(null);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setReturnTransition(new TransitionSet()

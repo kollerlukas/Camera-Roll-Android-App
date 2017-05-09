@@ -47,6 +47,8 @@ public abstract class FileOperation implements Parcelable {
 
     private File_POJO[] files;
 
+    Callback callback;
+
     private WeakReference<Toast> toastWeakReference;
 
     FileOperation(File_POJO[] files) {
@@ -57,18 +59,24 @@ public abstract class FileOperation implements Parcelable {
         return files;
     }
 
-    public void execute(final Activity context, final File_POJO target, final Callback callback) {
+    public FileOperation execute(final Activity context, final File_POJO target, final Callback callback) {
+        setCallback(callback);
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                executeAsync(context, target, callback);
+                executeAsync(context, target);
             }
         });
+        return this;
     }
 
-    abstract void executeAsync(final Activity context, final File_POJO target, final Callback callback);
+    abstract void executeAsync(final Activity context, final File_POJO target);
 
     public abstract int getType();
+
+    public void setCallback(final Callback callback) {
+        this.callback = callback;
+    }
 
 
     @SuppressLint("ShowToast")

@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.ui.ThemeableActivity;
@@ -70,6 +71,23 @@ public class Util {
             }
         }*/
 
+        return dimensions;
+    }
+
+    public static int[] getImageDimensions(Context context, Uri uri) {
+        int[] dimensions = new int[2];
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        try {
+            BitmapFactory.decodeStream(context
+                    .getContentResolver().openInputStream(uri), new Rect(0, 0, 0, 0), options);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        dimensions[0] = options.outWidth > 0 ? options.outWidth : 1;
+        dimensions[1] = options.outHeight > 0 ? options.outHeight : 1;
         return dimensions;
     }
 

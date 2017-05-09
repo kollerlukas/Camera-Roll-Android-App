@@ -1,6 +1,5 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -8,10 +7,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.davemorrissey.labs.subscaleview.decoder.DecoderFactory;
+import com.davemorrissey.labs.subscaleview.decoder.ImageDecoder;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
+import us.koller.cameraroll.imageDecoder.GlideRegionDecoder;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.util.ItemViewUtil;
 
@@ -63,6 +66,9 @@ public class PhotoViewHolder extends ViewHolder {
 
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) view;
+
+        imageView.setBitmapDecoderClass(GlideImageDecoder.class);
+        imageView.setRegionDecoderClass(GlideRegionDecoder.class);
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),

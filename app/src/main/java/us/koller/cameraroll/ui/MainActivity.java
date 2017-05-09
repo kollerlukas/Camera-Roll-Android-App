@@ -45,7 +45,6 @@ public class MainActivity extends ThemeableActivity {
     public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
     public static final String SHARED_PREF_NAME = "CAMERA_ROLL_SETTINGS";
-    public static final String HIDDEN_FOLDERS = "HIDDEN_FOLDERS";
     public static final String PICK_PHOTOS = "PICK_PHOTOS";
 
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
@@ -100,7 +99,7 @@ public class MainActivity extends ThemeableActivity {
 
     private MediaProvider mediaProvider;
 
-    private boolean hiddenFolders = false;
+    private boolean hiddenFolders;
 
     private boolean pick_photos;
     private boolean allowMultiple;
@@ -115,8 +114,9 @@ public class MainActivity extends ThemeableActivity {
         pick_photos = getIntent().getAction() != null && getIntent().getAction().equals(PICK_PHOTOS);
         allowMultiple = getIntent().getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
 
-        hiddenFolders = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
-                .getBoolean(HIDDEN_FOLDERS, false);
+        final Settings settings = Settings.getInstance(this);
+
+        hiddenFolders = settings.getHiddenFolders();
 
         //load media
         albums = MediaProvider.getAlbums();
@@ -163,8 +163,6 @@ public class MainActivity extends ThemeableActivity {
 
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
-
-        final Settings settings = Settings.getInstance(this);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
@@ -397,13 +395,6 @@ public class MainActivity extends ThemeableActivity {
     }
 
     @Override
-    protected void onStop() {
-        getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE).edit()
-                .putBoolean(HIDDEN_FOLDERS, hiddenFolders).apply();
-        super.onStop();
-    }
-
-    @Override
     protected void onRestart() {
         super.onRestart();
         if (recyclerView != null) {
@@ -516,7 +507,8 @@ public class MainActivity extends ThemeableActivity {
                 refreshPhotos();
                 break;
             case R.id.hiddenFolders:
-                hiddenFolders = !hiddenFolders;
+                hiddenFolders = Settings.getInstance(this)
+                        .setHiddenFolders(this, !hiddenFolders);
                 item.setChecked(hiddenFolders);
                 refreshPhotos();
                 break;

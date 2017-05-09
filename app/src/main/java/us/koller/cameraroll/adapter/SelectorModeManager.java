@@ -1,13 +1,18 @@
 package us.koller.cameraroll.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.util.SortUtil;
 
 //simple wrapper class to handle the Selector Mode and selected items
 public class SelectorModeManager {
@@ -76,11 +81,8 @@ public class SelectorModeManager {
         return selected_items_paths.size();
     }
 
-    public AlbumItem[] createAlbumItemArray(Context c) {
-        return createAlbumItemArray(c, selected_items_paths);
-    }
-
-    public String[] createStringArray() {
+    public String[] createStringArray(Activity context) {
+        ArrayList<String> selected_items_paths = sortStringArray(context, this.selected_items_paths);
         return createStringArray(selected_items_paths);
     }
 
@@ -175,6 +177,22 @@ public class SelectorModeManager {
         for (int i = 0; i < arr.size(); i++) {
             paths[i] = arr.get(i);
         }
+        return paths;
+    }
+
+    private static ArrayList<String> sortStringArray(Activity context, ArrayList<String> paths) {
+        ArrayList<AlbumItem> albumItems = new ArrayList<>();
+        for (int i = 0; i < paths.size(); i++) {
+            albumItems.add(AlbumItem.getInstance(context, paths.get(i)));
+        }
+        int sortBy = Settings.getInstance(context).sortAlbumBy();
+        SortUtil.sort(context, albumItems, sortBy);
+
+        paths = new ArrayList<>();
+        for (int i = 0; i < albumItems.size(); i++) {
+            paths.add(albumItems.get(i).getPath());
+        }
+
         return paths;
     }
 }

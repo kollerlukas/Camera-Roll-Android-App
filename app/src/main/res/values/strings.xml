@@ -55,6 +55,7 @@
     <string name="pref_key_column_count" translatable="false">KEY_COLUMN_COUNT</string>
     <string name="pref_key_sort_albums" translatable="false">KEY_SORT_ALBUMS</string>
     <string name="pref_key_sort_album" translatable="false">KEY_SORT_ALBUM</string>
+    <string name="pref_key_8_bit_color" translatable="false">KEY_8_BIT_COLOR</string>
 
     <!--translatable-->
     <string name="read_permission_denied">Camera Roll needs the permission access your Storage to
@@ -135,6 +136,9 @@
     <string name="media_retriever">MediaRetriever</string>
     <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api.
         This might help if you are missing some picture.</string>
+
+    <string name="use_8_bit_color">8-Bit Color</string>
+    <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images. Images might take longer to load.</string>
 
     <string name="warning">Warning!</string>
     <string name="file_explorer_warning_message">The File Explorer is an

@@ -24,7 +24,7 @@ public class Delete extends FileOperation {
     }
 
     @Override
-    void executeAsync(final Activity context, File_POJO target, final Callback callback) {
+    void executeAsync(final Activity context, File_POJO target) {
         final File_POJO[] files = getFiles();
 
         String s = context.getString(R.string.successfully_deleted);

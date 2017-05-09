@@ -194,12 +194,10 @@ public class SettingsActivity extends ThemeableActivity {
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
 
             initThemePref(sharedPreferences);
-
             initStylePref(sharedPreferences);
-
             initColumnCountPref(sharedPreferences);
-
             initMediaRetrieverPref(sharedPreferences);
+            init8BitColorPref(sharedPreferences);
 
             if (savedInstanceState != null
                     && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
@@ -265,6 +263,18 @@ public class SettingsActivity extends ThemeableActivity {
 
             mediaRetrieverPref.setChecked(storageRetriever);
             mediaRetrieverPref.setOnPreferenceChangeListener(this);
+        }
+
+        private void init8BitColorPref(SharedPreferences sharedPreferences) {
+            TwoStatePreference use8BitColorPref =
+                    (TwoStatePreference) findPreference(getString(R.string.pref_key_8_bit_color));
+
+            boolean storageRetriever = sharedPreferences.getBoolean(
+                    getString(R.string.pref_key_8_bit_color),
+                    true);
+
+            use8BitColorPref.setChecked(storageRetriever);
+            use8BitColorPref.setOnPreferenceChangeListener(this);
         }
 
         @Override
@@ -342,6 +352,8 @@ public class SettingsActivity extends ThemeableActivity {
                 preference.setSummary(String.valueOf(o));
             } else if (preference.getKey().equals(getString(R.string.pref_key_media_retriever))) {
                 settings.useStorageRetriever((boolean) o);
+            } else if (preference.getKey().equals(getString(R.string.pref_key_8_bit_color))) {
+                settings.use8BitColor((boolean) o);
             }
             return true;
         }

@@ -2,12 +2,10 @@ package us.koller.cameraroll.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,14 +16,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
@@ -49,6 +42,8 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     private static String CREATE_NEW_FOLDER = "CREATE_NEW_FOLDER";
 
     private String action;
+
+    private FileOperation fileOperation;
 
     private boolean creatingNewFolder = false;
 
@@ -114,6 +109,10 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
         if (dialog != null) {
             dialog.dismiss();
+        }
+
+        if (fileOperation != null) {
+            fileOperation.setCallback(null);
         }
     }
 
@@ -252,7 +251,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     }
 
     public void executeAction(File_POJO[] files, String target) {
-        FileOperation fileOperation;
         if (action.equals(ACTION_COPY)) {
             fileOperation = new Copy(files);
         } else {
@@ -272,6 +270,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                     }
                 });
     }
+
 
     @Override
     public int getThemeRes(int style) {

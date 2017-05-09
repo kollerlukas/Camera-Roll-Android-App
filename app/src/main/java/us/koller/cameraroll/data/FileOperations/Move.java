@@ -15,7 +15,7 @@ public class Move extends FileOperation {
     }
 
     @Override
-    void executeAsync(final Activity context, File_POJO target, final Callback callback) {
+    void executeAsync(final Activity context, File_POJO target) {
         if (target == null) {
             return;
         }

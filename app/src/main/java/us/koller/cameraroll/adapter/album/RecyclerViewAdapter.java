@@ -6,14 +6,11 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
-
-import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.SelectorModeManager;
@@ -26,7 +23,6 @@ import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
-import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.ui.MainActivity;
 
@@ -200,7 +196,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     public void checkForNoSelectedItems() {
         if (getSelectedItemCount() == 0 && !pick_photos) {
             setSelectorMode(false);
-            cancelSelectorMode();
+            cancelSelectorMode(null);
         }
     }
 
@@ -214,7 +210,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         checkForNoSelectedItems();
     }
 
-    public String[] cancelSelectorMode() {
+    public String[] cancelSelectorMode(Activity context) {
         setSelectorMode(false);
         //update ui
         for (int i = 0; i < this.album.getAlbumItems().size(); i++) {
@@ -223,7 +219,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             }
         }
         //generate paths array
-        String[] paths = manager.createStringArray();
+        String[] paths;
+        if (context != null) {
+            paths = manager.createStringArray(context);
+        } else {
+            paths = null;
+        }
         //clear manager list
         clearSelectedItemsList();
         return paths;
@@ -231,7 +232,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     public boolean onBackPressed() {
         if (getSelectorMode() && !pick_photos) {
-            cancelSelectorMode();
+            cancelSelectorMode(null);
             return true;
         }
         return false;

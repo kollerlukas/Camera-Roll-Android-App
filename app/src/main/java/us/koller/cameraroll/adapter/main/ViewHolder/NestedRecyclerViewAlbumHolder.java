@@ -272,7 +272,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         final String[] paths = ((RecyclerViewAdapter) nestedRecyclerView.getAdapter())
-                .cancelSelectorMode();
+                .cancelSelectorMode((Activity) getContext());
 
         cancelSelectorMode();
 
@@ -343,7 +343,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         //cancel SelectorMode
         if (nestedRecyclerView.getAdapter() instanceof RecyclerViewAdapter) {
             ((RecyclerViewAdapter) nestedRecyclerView.getAdapter())
-                    .cancelSelectorMode();
+                    .cancelSelectorMode((Activity) getContext());
         }
 
         //update other ViewHolders

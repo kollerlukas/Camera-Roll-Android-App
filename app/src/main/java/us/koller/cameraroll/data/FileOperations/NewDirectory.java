@@ -15,7 +15,7 @@ public class NewDirectory extends FileOperation {
     }
 
     @Override
-    void executeAsync(final Activity context, File_POJO target, final Callback callback) {
+    void executeAsync(final Activity context, File_POJO target) {
         final File_POJO[] files = getFiles();
         if (files.length > 0) {
             final File_POJO file = files[0];
