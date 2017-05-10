@@ -138,7 +138,8 @@
         This might help if you are missing some picture.</string>
 
     <string name="use_8_bit_color">8-Bit Color</string>
-    <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images. Images might take longer to load.</string>
+    <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images.
+        Images might take longer to load. This also increases the amount of memory is used, whe the app is running.</string>
 
     <string name="warning">Warning!</string>
     <string name="file_explorer_warning_message">The File Explorer is an

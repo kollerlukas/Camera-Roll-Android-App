@@ -61,9 +61,4 @@ dependencies {
     compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
 
     compile 'com.pacioianu.david:ink-page-indicator:1.2.0'
-
-
-    compile 'rapid.decoder:library:0.3.0'
-    compile 'rapid.decoder:jpeg-decoder:0.3.0'
-    compile 'rapid.decoder:png-decoder:0.3.0'
 }
