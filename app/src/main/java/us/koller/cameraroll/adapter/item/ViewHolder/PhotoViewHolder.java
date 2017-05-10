@@ -7,18 +7,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.davemorrissey.labs.subscaleview.decoder.DecoderFactory;
-import com.davemorrissey.labs.subscaleview.decoder.ImageDecoder;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
-import us.koller.cameraroll.imageDecoder.GlideRegionDecoder;
+import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.util.ItemViewUtil;
 
 public class PhotoViewHolder extends ViewHolder {
+
+    private boolean imageViewWasBound = false;
 
     public PhotoViewHolder(AlbumItem albumItem, int position) {
         super(albumItem, position);
@@ -64,11 +64,15 @@ public class PhotoViewHolder extends ViewHolder {
             return;
         }
 
+        if (imageViewWasBound) {
+            return;
+        }
+
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) view;
 
         imageView.setBitmapDecoderClass(GlideImageDecoder.class);
-        imageView.setRegionDecoderClass(GlideRegionDecoder.class);
+        imageView.setRegionDecoderClass(CustomRegionDecoder.class);
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),
@@ -94,6 +98,7 @@ public class PhotoViewHolder extends ViewHolder {
                     public void onImageLoaded() {
                         super.onImageLoaded();
                         transitionView.setVisibility(View.INVISIBLE);
+                        imageViewWasBound = true;
                     }
                 });
     }

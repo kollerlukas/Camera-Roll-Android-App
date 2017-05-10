@@ -12,17 +12,13 @@ import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
 import java.io.InputStream;
 
-import us.koller.cameraroll.data.Settings;
-
 //inspired by https://gist.github.com/davemorrissey/e2781ba5b966c9e95539
-public class GlideRegionDecoder implements ImageRegionDecoder {
+public class CustomRegionDecoder implements ImageRegionDecoder {
 
     private BitmapRegionDecoder decoder;
     private final Object decoderLock = new Object();
 
-    boolean use8BitColor;
-
-    public GlideRegionDecoder() {
+    public CustomRegionDecoder() {
 
     }
 
@@ -30,7 +26,6 @@ public class GlideRegionDecoder implements ImageRegionDecoder {
     public Point init(Context context, Uri uri) throws Exception {
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         this.decoder = BitmapRegionDecoder.newInstance(inputStream, false);
-        this.use8BitColor = Settings.getInstance(context).use8BitColor();
 
         return new Point(this.decoder.getWidth(), this.decoder.getHeight());
     }
@@ -40,7 +35,6 @@ public class GlideRegionDecoder implements ImageRegionDecoder {
         synchronized (this.decoderLock) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = sampleSize;
-            options.inPreferredConfig = use8BitColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
             Bitmap bitmap = this.decoder.decodeRegion(rect, options);
             if (bitmap == null) {
                 throw new RuntimeException("Region decoder returned null bitmap - image format may not be supported");
