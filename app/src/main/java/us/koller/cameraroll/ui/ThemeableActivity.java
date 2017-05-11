@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
 
@@ -158,6 +159,12 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
                 overviewIcon, color));
         overviewIcon.recycle();
+    }
+
+    //for RobotoMono font
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     public static int getStatusBarColor(Context context, int toolbarColor) {

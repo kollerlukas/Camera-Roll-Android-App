@@ -71,7 +71,7 @@ public class Settings {
 
         use8BitColor = sharedPreferences.getBoolean(
                 context.getString(R.string.pref_key_8_bit_color),
-                true);
+                false);
     }
 
     /*Getter & Setter*/

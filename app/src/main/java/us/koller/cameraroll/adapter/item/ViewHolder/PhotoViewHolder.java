@@ -11,6 +11,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
 import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
 import us.koller.cameraroll.ui.ItemActivity;
@@ -71,8 +72,10 @@ public class PhotoViewHolder extends ViewHolder {
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) view;
 
-        imageView.setBitmapDecoderClass(GlideImageDecoder.class);
-        imageView.setRegionDecoderClass(CustomRegionDecoder.class);
+        if (Settings.getInstance(view.getContext()).use8BitColor()) {
+            imageView.setBitmapDecoderClass(GlideImageDecoder.class);
+            imageView.setRegionDecoderClass(CustomRegionDecoder.class);
+        }
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),

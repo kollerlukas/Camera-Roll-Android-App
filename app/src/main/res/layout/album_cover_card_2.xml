@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:cardCornerRadius="0dp"
@@ -42,13 +43,23 @@
                     android:textColor="@color/white"
                     android:textSize="18sp" />
 
-                <TextView
+                <!--<TextView
                     android:id="@+id/count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-monospace"
                     android:textColor="@color/white_translucent1"
-                    android:textSize="12sp" />
+                    android:textSize="12sp" />-->
+
+                <TextView
+                    android:id="@+id/count"
+                    fontPath="fonts/RobotoMono-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white_translucent1"
+                    android:textSize="12sp"
+                    tools:ignore="MissingPrefix" />
+                <!--android:fontFamily="sans-serif-monospace"-->
             </LinearLayout>
 
             <ImageView

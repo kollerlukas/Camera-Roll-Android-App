@@ -46,7 +46,6 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:palette-v7:25.3.1'
     compile 'com.android.support:exifinterface:25.3.1'
-    compile 'com.android.support:preference-v7:25.3.1'
     compile 'com.android.support:preference-v14:25.3.1'
     compile 'com.android.support:percent:25.3.1'
 
@@ -61,4 +60,6 @@ dependencies {
     compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
 
     compile 'com.pacioianu.david:ink-page-indicator:1.2.0'
+
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/playback_control_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -35,12 +36,14 @@
 
             <TextView
                 android:id="@id/exo_position"
+                fontPath="fonts/RobotoMono-Regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/white_translucent1"
                 android:layout_margin="8dp"
-                android:fontFamily="monospace" />
+                tools:ignore="MissingPrefix" />
+            <!--android:fontFamily="monospace"-->
 
             <SeekBar
                 android:id="@id/exo_progress"
@@ -51,12 +54,14 @@
 
             <TextView
                 android:id="@id/exo_duration"
+                fontPath="fonts/RobotoMono-Regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/white_translucent1"
                 android:layout_margin="8dp"
-                android:fontFamily="monospace" />
+                tools:ignore="MissingPrefix" />
+            <!--android:fontFamily="monospace"-->
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

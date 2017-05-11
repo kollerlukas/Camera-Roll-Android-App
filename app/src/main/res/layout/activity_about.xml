@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swipeBackView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -37,26 +38,30 @@
 
                     <TextView
                         android:id="@+id/version"
+                        fontPath="fonts/RobotoMono-Regular.ttf"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:fontFamily="sans-serif-monospace"
                         android:textColor="@color/black_translucent2"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        tools:ignore="MissingPrefix" />
+                    <!--android:fontFamily="sans-serif-monospace"-->
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/about_text"
+                    fontPath="fonts/RobotoMono-Regular.ttf"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-monospace"
                     android:padding="16dp"
                     android:paddingTop="24dp"
+                    android:tag="@string/theme_bg_color"
                     android:textSize="18sp"
-                    android:tag="@string/theme_bg_color" />
+                    tools:ignore="MissingPrefix" />
+                <!--android:fontFamily="sans-serif-monospace"-->
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar

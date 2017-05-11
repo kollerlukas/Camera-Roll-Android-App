@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -22,11 +23,13 @@
 
         <TextView
             android:id="@+id/column_count"
+            fontPath="fonts/RobotoMono-Regular.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:fontFamily="monospace"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            tools:ignore="MissingPrefix" />
+        <!--android:fontFamily="monospace"-->
 
         <ImageButton
             android:id="@+id/plus"
@@ -38,6 +41,5 @@
             android:src="@drawable/ic_add_white_24dp"
             android:contentDescription="@string/plus"
             android:layout_gravity="center_vertical" />
-
     </LinearLayout>
 </FrameLayout>

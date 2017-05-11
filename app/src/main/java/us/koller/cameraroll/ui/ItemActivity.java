@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
@@ -545,7 +546,8 @@ public class ItemActivity extends ThemeableActivity {
 
         boolean exifSupported = exif != null;
         if (!albumItem.contentUri) {
-            exifSupported = exifSupported && MediaType.doesSupportExif(albumItem.getPath());
+            exifSupported = exifSupported &&
+                    MediaType.doesSupportExif(albumItem.getPath());
         }
 
         String height = NO_DATA, width = NO_DATA,

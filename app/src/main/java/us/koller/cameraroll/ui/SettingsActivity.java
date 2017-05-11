@@ -190,14 +190,13 @@ public class SettingsActivity extends ThemeableActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.preferences);
 
-            SharedPreferences sharedPreferences =
-                    PreferenceManager.getDefaultSharedPreferences(getActivity());
+            Settings settings = Settings.getInstance(getContext());
 
-            initThemePref(sharedPreferences);
-            initStylePref(sharedPreferences);
-            initColumnCountPref(sharedPreferences);
-            initMediaRetrieverPref(sharedPreferences);
-            init8BitColorPref(sharedPreferences);
+            initThemePref(settings.getTheme());
+            initStylePref(settings.getStyle());
+            initColumnCountPref(settings.getColumnCount(getContext()));
+            initMediaRetrieverPref(settings.useStorageRetriever());
+            init8BitColorPref(settings.use8BitColor());
 
             if (savedInstanceState != null
                     && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
@@ -215,65 +214,45 @@ public class SettingsActivity extends ThemeableActivity {
             }
         }
 
-        private void initThemePref(SharedPreferences sharedPreferences) {
+        private void initThemePref(String theme) {
             ListPreference themePref = (ListPreference)
                     findPreference(getString(R.string.pref_key_theme));
-
-            String theme = sharedPreferences.getString(
-                    getString(R.string.pref_key_theme),
-                    getString(R.string.DARK_THEME_VALUE));
 
             String theme_name = Settings.Utils.getThemeName(getActivity(), theme);
             themePref.setSummary(theme_name);
             themePref.setOnPreferenceChangeListener(this);
         }
 
-        private void initStylePref(SharedPreferences sharedPreferences) {
+        private void initStylePref(int style) {
             StylePreference stylePref = (StylePreference)
                     findPreference(getString(R.string.pref_key_style));
-
-            int style = sharedPreferences.getInt(
-                    getString(R.string.pref_key_style),
-                    getActivity().getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE));
 
             String style_name = Settings.Utils.getStyleName(getActivity(), style);
             stylePref.setSummary(style_name);
             stylePref.setOnPreferenceChangeListener(this);
         }
 
-        private void initColumnCountPref(SharedPreferences sharedPreferences) {
+        private void initColumnCountPref(int column_count) {
             ColumnCountPreference columnCountPref = (ColumnCountPreference)
                     findPreference(getString(R.string.pref_key_column_count));
-
-            int column_count = sharedPreferences.getInt(
-                    getString(R.string.pref_key_column_count),
-                    Settings.DEFAULT_COLUMN_COUNT);
 
             columnCountPref.setSummary(String.valueOf(column_count));
             columnCountPref.setOnPreferenceChangeListener(this);
         }
 
-        private void initMediaRetrieverPref(SharedPreferences sharedPreferences) {
+        private void initMediaRetrieverPref(boolean storageRetriever) {
             TwoStatePreference mediaRetrieverPref =
                     (TwoStatePreference) findPreference(getString(R.string.pref_key_media_retriever));
-
-            boolean storageRetriever = sharedPreferences.getBoolean(
-                    getString(R.string.pref_key_media_retriever),
-                    false);
 
             mediaRetrieverPref.setChecked(storageRetriever);
             mediaRetrieverPref.setOnPreferenceChangeListener(this);
         }
 
-        private void init8BitColorPref(SharedPreferences sharedPreferences) {
+        private void init8BitColorPref(boolean use8BitColor) {
             TwoStatePreference use8BitColorPref =
                     (TwoStatePreference) findPreference(getString(R.string.pref_key_8_bit_color));
 
-            boolean storageRetriever = sharedPreferences.getBoolean(
-                    getString(R.string.pref_key_8_bit_color),
-                    true);
-
-            use8BitColorPref.setChecked(storageRetriever);
+            use8BitColorPref.setChecked(use8BitColor);
             use8BitColorPref.setOnPreferenceChangeListener(this);
         }
 

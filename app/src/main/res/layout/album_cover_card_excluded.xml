@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:cardElevation="0dp">
@@ -29,16 +30,16 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="5dp"
-                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:alpha="0.54"
+                android:fontFamily="sans-serif-medium"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/excluded"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,7 +50,22 @@
                 android:textColor="@color/white"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp" />-->
+
+            <TextView
+                android:id="@+id/excluded"
+                fontPath="fonts/RobotoMono-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:alpha="0.54"
+                android:text="@string/excluded"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                tools:ignore="MissingPrefix" />
+            <!--android:fontFamily="sans-serif-monospace"-->
         </LinearLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

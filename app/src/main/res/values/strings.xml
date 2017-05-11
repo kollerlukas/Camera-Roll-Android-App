@@ -43,6 +43,12 @@
                 InkPageIndicator created by @nickbutcher for Plaid https://github.com/nickbutcher/plaid and backported by me for API 14+ (4.0+)<br/>
                 <a href=\"https://github.com/DavidPacioianu/InkPageIndicator/blob/master/LICENSE\">LICENSE</a>
             <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/chrisjenx/Calligraphy\">Calligraphy</a></b><br/>
+                Custom fonts in Android the easy way...<br/>
+                <a href=\"https://github.com/chrisjenx/Calligraphy/blob/master/LICENSE\">LICENSE</a>
+            <br>
         ]]>
     </string>
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
@@ -139,7 +145,7 @@
 
     <string name="use_8_bit_color">8-Bit Color</string>
     <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images.
-        Images might take longer to load. This also increases the amount of memory is used, whe the app is running.</string>
+        Images might take longer to load. This also increases the amount of memory is used, when the app is running.</string>
 
     <string name="warning">Warning!</string>
     <string name="file_explorer_warning_message">The File Explorer is an

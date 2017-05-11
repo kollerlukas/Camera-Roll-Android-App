@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     app:cardElevation="0dp">
 
     <RelativeLayout
@@ -43,11 +44,13 @@
 
                 <TextView
                     android:id="@+id/count"
+                    fontPath="fonts/RobotoMono-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-monospace"
                     android:textColor="@color/white_translucent1"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:ignore="MissingPrefix" />
+                <!--android:fontFamily="sans-serif-monospace"-->
             </LinearLayout>
 
             <ImageView
