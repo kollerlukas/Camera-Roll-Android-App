@@ -49,6 +49,18 @@
                 Custom fonts in Android the easy way...<br/>
                 <a href=\"https://github.com/chrisjenx/Calligraphy/blob/master/LICENSE\">LICENSE</a>
             <br>
+            <br/>
+            <br/>
+            Used icons:<br/>
+            <br>
+                <b><a href=\"https://material.io/icons/\">Material Design Icons</a></b>, by Google<br/>
+            <br>
+            <br/>
+            <br/>
+            Used fonts:<br/>
+            <br>
+                <b><a href=\"https://fonts.google.com/specimen/Roboto+Mono?selection.family=Roboto+Mono\">Roboto Mono Font</a></b>, by Christian Robertson
+            <br>
         ]]>
     </string>
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
