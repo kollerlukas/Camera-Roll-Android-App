@@ -82,7 +82,8 @@ public class Util {
 
         try {
             BitmapFactory.decodeStream(context
-                    .getContentResolver().openInputStream(uri), new Rect(0, 0, 0, 0), options);
+                            .getContentResolver().openInputStream(uri),
+                    new Rect(0, 0, 0, 0), options);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -110,6 +111,21 @@ public class Util {
         }
 
         return new int[]{1, 1};
+    }
+
+    public static TextView setToolbarTypeface(Toolbar toolbar, String path) {
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View view = toolbar.getChildAt(i);
+            if (view instanceof TextView) {
+                TextView textView = (TextView) view;
+                if (textView.getText().equals(toolbar.getTitle())) {
+                    textView.setTypeface(Typeface.createFromAsset(
+                            toolbar.getContext().getAssets(), path));
+                    return textView;
+                }
+            }
+        }
+        return null;
     }
 
     public static void setDarkStatusBarIcons(final View v) {

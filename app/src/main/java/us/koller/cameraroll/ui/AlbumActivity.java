@@ -21,6 +21,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -187,6 +188,11 @@ public class AlbumActivity extends ThemeableActivity
                 toolbar.setNavigationIcon(navIcon);
             }
         } else {
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) :
+                        getString(R.string.pick_photo));
+            }
             toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
@@ -415,9 +421,6 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(!pick_photos ? album.getName() :
-                (allowMultiple ? getString(R.string.pick_photo) : getString(R.string.pick_photos)));
         if (getResources().getBoolean(R.bool.landscape)) {
             setSystemUiFlags();
         }
@@ -687,7 +690,11 @@ public class AlbumActivity extends ThemeableActivity
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         setResult(RESULT_OK, intent);
-        finish();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAfterTransition();
+        } else {
+            finish();
+        }
     }
 
     @Override

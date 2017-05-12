@@ -1,12 +1,21 @@
 package us.koller.cameraroll.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Typeface;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
@@ -23,6 +32,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +55,6 @@ public class MainActivity extends ThemeableActivity {
 
     public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
-    public static final String SHARED_PREF_NAME = "CAMERA_ROLL_SETTINGS";
     public static final String PICK_PHOTOS = "PICK_PHOTOS";
 
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
@@ -164,6 +174,8 @@ public class MainActivity extends ThemeableActivity {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
+        //Util.setToolbarTypeface(toolbar, "fonts/RobotoMono-Regular.ttf");
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         int columnCount = settings.getStyleColumnCount(this, pick_photos);
@@ -212,6 +224,28 @@ public class MainActivity extends ThemeableActivity {
             }
         });
 
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Drawable d = ContextCompat.getDrawable(this,
+                    R.drawable.camera_lens_avd);
+            fab.setImageDrawable(d);
+        } else {
+            fab.setImageResource(R.drawable.ic_camera_white_24dp);
+        }
+        Drawable d = fab.getDrawable();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+        } else {
+            d = DrawableCompat.wrap(d);
+            DrawableCompat.setTint(d.mutate(),
+                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+        }
+        fab.setImageDrawable(d);
+
+        if (pick_photos || !settings.getCameraShortcut()) {
+            fab.setVisibility(View.GONE);
+        }
+
         //setting window insets manually
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
@@ -237,6 +271,12 @@ public class MainActivity extends ThemeableActivity {
                             recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+
+                    ViewGroup.MarginLayoutParams fabParams
+                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+                    fabParams.rightMargin += insets.getSystemWindowInsetRight();
+                    fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
+                    fab.setLayoutParams(fabParams);
 
                     return insets.consumeSystemWindowInsets();
                 }
@@ -273,6 +313,12 @@ public class MainActivity extends ThemeableActivity {
                                             recyclerView.getPaddingTop() + windowInsets[1],
                                             recyclerView.getPaddingEnd() + windowInsets[2],
                                             recyclerView.getPaddingBottom() + windowInsets[3]);
+
+                                    ViewGroup.MarginLayoutParams fabParams
+                                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+                                    fabParams.rightMargin += windowInsets[2];
+                                    fabParams.bottomMargin += windowInsets[3];
+                                    fab.setLayoutParams(fabParams);
                                 }
                             });
         }
@@ -494,8 +540,9 @@ public class MainActivity extends ThemeableActivity {
         }
 
         if (pick_photos) {
-            menu.findItem(R.id.about).setVisible(false);
             menu.findItem(R.id.file_explorer).setVisible(false);
+            menu.findItem(R.id.settings).setVisible(false);
+            menu.findItem(R.id.about).setVisible(false);
         }
         return true;
     }
@@ -535,6 +582,38 @@ public class MainActivity extends ThemeableActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void fabClicked(View v) {
+        if (v instanceof FloatingActionButton) {
+            FloatingActionButton fab = (FloatingActionButton) v;
+            Drawable drawable = fab.getDrawable();
+            if (drawable instanceof Animatable) {
+                ((Animatable) drawable).start();
+            }
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //getting default camera app and launching it; no return
+                Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                try {
+                    PackageManager pm = MainActivity.this.getPackageManager();
+
+                    final ResolveInfo mInfo = pm.resolveActivity(i, 0);
+
+                    Intent intent = new Intent();
+                    intent.setComponent(new ComponentName(mInfo.activityInfo.packageName,
+                            mInfo.activityInfo.name));
+                    intent.setAction(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, (int) (500 * Util.getAnimatorSpeed(this)));
     }
 
     @Override

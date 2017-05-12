@@ -21,6 +21,11 @@
             android:key="@string/pref_key_column_count"
             android:title="@string/column_count"
             android:defaultValue="4" />
+
+        <SwitchPreference
+            android:key="@string/pref_key_camera_shortcut"
+            android:title="@string/camera_shortcut"
+            android:defaultValue="false" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/other">
@@ -35,6 +40,6 @@
             android:key="@string/pref_key_8_bit_color"
             android:summary="@string/use_8_bit_color_summary"
             android:title="@string/use_8_bit_color"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>

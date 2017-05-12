@@ -129,9 +129,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
 
                 if (pick_photos) {
+                    Context c = holder.itemView.getContext();
+                    boolean allowMultiple = false;
+                    if (c instanceof Activity) {
+                        Activity a = (Activity) c;
+                        allowMultiple = a.getIntent()
+                                .getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+                    }
+
                     intent.setAction(MainActivity.PICK_PHOTOS);
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,
-                            intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false));
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
                 } else {
                     intent.setAction(AlbumActivity.VIEW_ALBUM);
                 }

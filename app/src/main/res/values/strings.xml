@@ -7,7 +7,9 @@
             <a href=\"https://github.com/kollerlukas/Camera-Roll-Android-App\">Source Code</a> for this App<br/>
             <br/>
             <br/>
-            Used Libraries:<br/>
+            <b>Licenses:</b><br/>
+            <br/>
+            Libraries:<br/>
             <br>
                 <a href=\"https://github.com/bumptech/glide\">Glide</a><br/>
                 An image loading and caching library for Android focused on smooth scrolling.<br/>
@@ -51,13 +53,12 @@
             <br>
             <br/>
             <br/>
-            Used icons:<br/>
+            Icons:<br/>
             <br>
                 <b><a href=\"https://material.io/icons/\">Material Design Icons</a></b>, by Google<br/>
             <br>
             <br/>
-            <br/>
-            Used fonts:<br/>
+            Fonts:<br/>
             <br>
                 <b><a href=\"https://fonts.google.com/specimen/Roboto+Mono?selection.family=Roboto+Mono\">Roboto Mono Font</a></b>, by Christian Robertson
             <br>
@@ -74,6 +75,7 @@
     <string name="pref_key_sort_albums" translatable="false">KEY_SORT_ALBUMS</string>
     <string name="pref_key_sort_album" translatable="false">KEY_SORT_ALBUM</string>
     <string name="pref_key_8_bit_color" translatable="false">KEY_8_BIT_COLOR</string>
+    <string name="pref_key_camera_shortcut" translatable="false">KEY_CAMERA_SHORTCUT</string>
 
     <!--translatable-->
     <string name="read_permission_denied">Camera Roll needs the permission access your Storage to
@@ -158,6 +160,8 @@
     <string name="use_8_bit_color">8-Bit Color</string>
     <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images.
         Images might take longer to load. This also increases the amount of memory is used, when the app is running.</string>
+
+    <string name="camera_shortcut">Camera Shortcut</string>
 
     <string name="warning">Warning!</string>
     <string name="file_explorer_warning_message">The File Explorer is an

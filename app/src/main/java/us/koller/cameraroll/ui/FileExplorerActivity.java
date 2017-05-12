@@ -25,6 +25,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.TextUtils;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
@@ -39,6 +40,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import us.koller.cameraroll.R;
@@ -127,14 +129,20 @@ public class FileExplorerActivity extends ThemeableActivity
         }
 
         setSupportActionBar(toolbar);
-
-        Util.colorToolbarOverflowMenuIcon(toolbar,
-                ContextCompat.getColor(this, text_color_secondary_res));
-
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(getString(R.string.file_explorer));
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        Util.colorToolbarOverflowMenuIcon(toolbar,
+                ContextCompat.getColor(this, text_color_secondary_res));
+
+        //need to be called after setTitle(), to ensure, that mTitleTextView exists
+        TextView titleTextView = Util.setToolbarTypeface(toolbar,
+                "fonts/RobotoMono-Regular.ttf");
+        if (titleTextView != null) {
+            titleTextView.setEllipsize(TextUtils.TruncateAt.START);
         }
 
         final ViewGroup rootView = (ViewGroup) findViewById(R.id.swipeBackView);

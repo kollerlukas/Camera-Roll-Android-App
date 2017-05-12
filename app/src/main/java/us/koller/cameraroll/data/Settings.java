@@ -21,10 +21,9 @@ public class Settings {
     private int columnCount;
     private int sort_albums_by;
     private int sort_album_by;
-
     private boolean hiddenFolders;
-
     private boolean use8BitColor;
+    private boolean cameraShortcut;
 
     private static Settings instance;
 
@@ -71,6 +70,10 @@ public class Settings {
 
         use8BitColor = sharedPreferences.getBoolean(
                 context.getString(R.string.pref_key_8_bit_color),
+                false);
+
+        cameraShortcut = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_camera_shortcut),
                 false);
     }
 
@@ -197,6 +200,14 @@ public class Settings {
 
     public void use8BitColor(boolean use8BitColor) {
         this.use8BitColor = use8BitColor;
+    }
+
+    public boolean getCameraShortcut() {
+        return cameraShortcut;
+    }
+
+    public void setCameraShortcut(boolean cameraShortcut) {
+        this.cameraShortcut = cameraShortcut;
     }
 
 
