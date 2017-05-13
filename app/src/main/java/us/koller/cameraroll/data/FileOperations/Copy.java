@@ -30,7 +30,7 @@ public class Copy extends FileOperation {
         final File_POJO[] files = getFiles();
 
         int success_count = 0;
-        for (int i = 0; i < files.length; i++) {
+        for (int i = files.length - 1; i >= 0; i--) {
             boolean result = copyFilesRecursively(context, files[i].getPath(), target.getPath(), true);
             success_count += result ? 1 : 0;
             setToastProgress(context, s, success_count);

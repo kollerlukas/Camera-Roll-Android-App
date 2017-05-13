@@ -805,12 +805,14 @@ public class ItemActivity extends ThemeableActivity {
             showUI(false);
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
-            viewHolder.onSharedElementExit(new ItemActivity.Callback() {
-                @Override
-                public void done() {
-                    setResultAndFinish();
-                }
-            });
+            if (viewHolder != null) {
+                viewHolder.onSharedElementExit(new ItemActivity.Callback() {
+                    @Override
+                    public void done() {
+                        setResultAndFinish();
+                    }
+                });
+            }
         }
     }
 

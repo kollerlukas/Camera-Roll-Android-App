@@ -1,18 +1,14 @@
 package us.koller.cameraroll.ui;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -32,8 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -227,7 +221,7 @@ public class MainActivity extends ThemeableActivity {
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
-                    R.drawable.camera_lens_avd);
+                    R.drawable.ic_camera_lens_avd);
             fab.setImageDrawable(d);
         } else {
             fab.setImageResource(R.drawable.ic_camera_white_24dp);
@@ -602,11 +596,7 @@ public class MainActivity extends ThemeableActivity {
 
                     final ResolveInfo mInfo = pm.resolveActivity(i, 0);
 
-                    Intent intent = new Intent();
-                    intent.setComponent(new ComponentName(mInfo.activityInfo.packageName,
-                            mInfo.activityInfo.name));
-                    intent.setAction(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    Intent intent = pm.getLaunchIntentForPackage(mInfo.activityInfo.packageName);
 
                     startActivity(intent);
                 } catch (Exception e) {

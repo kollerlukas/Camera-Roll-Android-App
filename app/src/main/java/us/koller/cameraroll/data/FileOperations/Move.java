@@ -25,7 +25,7 @@ public class Move extends FileOperation {
         final File_POJO[] files = getFiles();
 
         int success_count = 0;
-        for (int i = 0; i < files.length; i++) {
+        for (int i = files.length - 1; i >= 0; i--) {
             boolean result = moveFile(context, files[i].getPath(), target.getPath());
             success_count += result ? 1 : 0;
             setToastProgress(context, s, success_count);

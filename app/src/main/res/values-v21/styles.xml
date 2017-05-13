@@ -70,9 +70,11 @@
     <!--SettingsActivity Theme-->
     <style name="Theme.CameraRoll.Settings" parent="Theme.CameraRoll">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:windowTranslucentNavigation">false</item>
     </style>
 
     <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:windowTranslucentNavigation">false</item>
     </style>
 </resources>
