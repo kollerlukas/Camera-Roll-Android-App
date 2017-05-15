@@ -1,6 +1,5 @@
 package us.koller.cameraroll.ui;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -22,12 +21,14 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.util.Util;
 
-public class MainActivity extends ThemeableActivity {
+public class MainActivity extends ThemeableActivity implements SelectorModeManager.Callback {
 
     public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
@@ -182,6 +183,14 @@ public class MainActivity extends ThemeableActivity {
         //disable default change animation
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
+        //restore Selector mode, when needed
+        if (savedInstanceState != null) {
+            SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
+            recyclerViewAdapter.setSelectorModeManager(manager);
+        }
+
+        recyclerViewAdapter.getSelectorManager().addCallback(this);
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -315,12 +324,6 @@ public class MainActivity extends ThemeableActivity {
                                     fab.setLayoutParams(fabParams);
                                 }
                             });
-        }
-
-        //restore Selector mode, when needed
-        if (savedInstanceState != null) {
-            SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
-            recyclerViewAdapter.setSelectorModeManager(manager);
         }
     }
 
@@ -596,14 +599,31 @@ public class MainActivity extends ThemeableActivity {
 
                     final ResolveInfo mInfo = pm.resolveActivity(i, 0);
 
+                    Log.d("MainActivity", "camera app package name: " + mInfo.activityInfo.packageName);
                     Intent intent = pm.getLaunchIntentForPackage(mInfo.activityInfo.packageName);
 
                     startActivity(intent);
                 } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
         }, (int) (500 * Util.getAnimatorSpeed(this)));
+    }
+
+    public void showAndHideFab(boolean show) {
+        Log.d("MainActivity", "showAndHideFab() called with: show = [" + show + "]");
+        if (pick_photos || !Settings.getInstance(this).getCameraShortcut()) {
+            Log.d("MainActivity", "showAndHideFab: return;");
+            return;
+        }
+
+        findViewById(R.id.fab).animate()
+                .scaleX(show ? 1.0f : 0.0f)
+                .scaleY(show ? 1.0f : 0.0f)
+                .alpha(show ? 1.0f : 0.0f)
+                .setDuration(250)
+                .start();
     }
 
     @Override
@@ -723,5 +743,20 @@ public class MainActivity extends ThemeableActivity {
                         });
             }*/
         }
+    }
+
+    @Override
+    public void onSelectorModeEnter() {
+        showAndHideFab(false);
+    }
+
+    @Override
+    public void onSelectorModeExit() {
+        showAndHideFab(true);
+    }
+
+    @Override
+    public void onItemSelected(int selectedItemCount) {
+
     }
 }

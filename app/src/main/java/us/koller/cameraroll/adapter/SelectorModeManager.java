@@ -3,13 +3,10 @@ package us.koller.cameraroll.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.util.SortUtil;
@@ -23,7 +20,31 @@ public class SelectorModeManager {
     private boolean selectorModeActive = false;
     private ArrayList<String> selected_items_paths;
 
-    private Callback callback;
+    private ArrayList<Callback> callbacks;
+
+    public void onSelectorModeEnter() {
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onSelectorModeEnter();
+            }
+        }
+    }
+
+    public void onSelectorModeExit() {
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onSelectorModeExit();
+            }
+        }
+    }
+
+    public void onItemSelected(int selectedItemCount) {
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onItemSelected(selectedItemCount);
+            }
+        }
+    }
 
     //SelectorMode Callback
     public interface Callback {
@@ -56,12 +77,10 @@ public class SelectorModeManager {
 
     public void setSelectorMode(boolean selectorMode) {
         this.selectorModeActive = selectorMode;
-        if (callback != null) {
-            if (selectorMode) {
-                callback.onSelectorModeEnter();
-            } else {
-                callback.onSelectorModeExit();
-            }
+        if (selectorMode) {
+            onSelectorModeEnter();
+        } else {
+            onSelectorModeExit();
         }
     }
 
@@ -71,9 +90,7 @@ public class SelectorModeManager {
 
     public boolean onItemSelect(String path) {
         boolean selected = addOrRemovePathFromList(selected_items_paths, path);
-        if (callback != null) {
-            callback.onItemSelected(getSelectedItemCount());
-        }
+        onItemSelected(getSelectedItemCount());
         return selected;
     }
 
@@ -98,16 +115,34 @@ public class SelectorModeManager {
         }
     }
 
-    public void setCallback(Callback callback) {
-        this.callback = callback;
+    public void addCallback(Callback callback) {
+        if (callbacks == null) {
+            callbacks = new ArrayList<>();
+        }
+        callbacks.add(callback);
+
         if (isSelectorModeActive()) {
-            getCallback().onSelectorModeEnter();
-            getCallback().onItemSelected(getSelectedItemCount());
+            callback.onSelectorModeEnter();
+            callback.onItemSelected(getSelectedItemCount());
         }
     }
 
-    public Callback getCallback() {
-        return callback;
+    public void removeCallback(Callback callback) {
+        if (callbacks != null) {
+            callbacks.remove(callback);
+        }
+    }
+
+    public ArrayList<Callback> getCallbacks() {
+        return callbacks;
+    }
+
+    public boolean callbacksAttached() {
+        if (callbacks == null) {
+            return false;
+        }
+
+        return callbacks.size() > 0;
     }
 
 

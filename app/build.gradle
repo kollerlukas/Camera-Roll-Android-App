@@ -62,4 +62,6 @@ dependencies {
     compile 'com.pacioianu.david:ink-page-indicator:1.2.0'
 
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+
+    /*compile 'com.github.yalantis:ucrop:2.2.1'*/
 }

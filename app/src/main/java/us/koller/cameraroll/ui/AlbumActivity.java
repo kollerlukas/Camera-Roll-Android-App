@@ -368,7 +368,7 @@ public class AlbumActivity extends ThemeableActivity
         if (savedInstanceState != null) {
             RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
             SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
-            manager.setCallback(this);
+            manager.addCallback(this);
             adapter.setSelectorModeManager(manager);
             if (manager.isSelectorModeActive()) {
                 adapter.restoreSelectedItems();

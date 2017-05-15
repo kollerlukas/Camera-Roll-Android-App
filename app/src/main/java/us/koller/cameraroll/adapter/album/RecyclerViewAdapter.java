@@ -47,7 +47,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         this.pick_photos = pick_photos;
 
         manager = new SelectorModeManager();
-        manager.setCallback(callback);
+        manager.addCallback(callback);
 
         if (pick_photos) {
             setSelectorMode(true);
@@ -147,7 +147,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             }
         });
 
-        if (getManager().getCallback() != null) {
+        if (getManager().callbacksAttached()) {
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -178,9 +178,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     public void restoreSelectedItems() {
         //notify AlbumActivity
-        if (getCallback() != null) {
-            getCallback().onSelectorModeEnter();
-        }
+        getManager().onSelectorModeEnter();
 
         for (int i = 0; i < this.album.getAlbumItems().size(); i++) {
             if (manager.isItemSelected(album.getAlbumItems().get(i).getPath())) {
@@ -188,9 +186,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             }
         }
 
-        if (getCallback() != null) {
-            getCallback().onItemSelected(manager.getSelectedItemCount());
-        }
+        getManager().onItemSelected(manager.getSelectedItemCount());
     }
 
     public void checkForNoSelectedItems() {
@@ -261,10 +257,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     public Album getAlbum() {
         return album;
-    }
-
-    public SelectorModeManager.Callback getCallback() {
-        return getManager().getCallback();
     }
 
     public SelectorModeManager getManager() {

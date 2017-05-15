@@ -67,8 +67,11 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         }
     };
 
-    private SelectorModeManager.Callback callback
-            = new SelectorModeManager.Callback() {
+    public abstract class SelectorCallback implements SelectorModeManager.Callback {
+    }
+
+    private SelectorCallback callback
+            = new SelectorCallback() {
         @Override
         public void onSelectorModeEnter() {
             final View rootView = ((Activity) nestedRecyclerView.getContext())
@@ -193,8 +196,20 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         if (!manager.onBackPressedCallbackAlreadySet()) {
             manager.setOnBackPressedCallback(onBackPressedCallback);
         }
-        if (manager.getCallback() == null) {
-            manager.setCallback(callback);
+
+        //checking if Callback is already attached, if not attach it
+        boolean callbackAttached = false;
+        ArrayList<SelectorModeManager.Callback> callbacks = manager.getCallbacks();
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                if (callbacks.get(i) instanceof SelectorCallback) {
+                    callbackAttached = true;
+                    break;
+                }
+            }
+        }
+        if (!callbackAttached) {
+            manager.addCallback(callback);
         }
         return this;
     }
