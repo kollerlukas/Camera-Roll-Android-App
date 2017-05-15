@@ -39,19 +39,6 @@
                 android:textColor="@color/white"
                 android:textSize="18sp" />
 
-            <!--<TextView
-                android:id="@+id/excluded"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-monospace"
-                android:text="@string/excluded"
-                android:textSize="12sp"
-                android:alpha="0.54"
-                android:textColor="@color/white"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp" />-->
-
             <TextView
                 android:id="@+id/excluded"
                 fontPath="fonts/RobotoMono-Regular.ttf"
@@ -65,7 +52,6 @@
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="sans-serif-monospace"-->
         </LinearLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

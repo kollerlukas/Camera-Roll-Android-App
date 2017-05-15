@@ -48,7 +48,6 @@
                         android:textColor="@color/black_translucent2"
                         android:textSize="20sp"
                         tools:ignore="MissingPrefix" />
-                    <!--android:fontFamily="sans-serif-monospace"-->
                 </LinearLayout>
 
                 <TextView
@@ -61,7 +60,6 @@
                     android:tag="@string/theme_bg_color"
                     android:textSize="18sp"
                     tools:ignore="MissingPrefix" />
-                <!--android:fontFamily="sans-serif-monospace"-->
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar

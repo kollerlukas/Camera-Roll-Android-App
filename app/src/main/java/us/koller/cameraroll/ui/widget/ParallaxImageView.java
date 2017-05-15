@@ -4,11 +4,10 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 
 import us.koller.cameraroll.R;
 
-public class ParallaxImageView extends ImageView {
+public class ParallaxImageView extends android.support.v7.widget.AppCompatImageView {
 
     public static final String RECYCLER_VIEW_TAG = "RECYCLER_VIEW_TAG";
 
@@ -27,10 +26,6 @@ public class ParallaxImageView extends ImageView {
 
     public ParallaxImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public ParallaxImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

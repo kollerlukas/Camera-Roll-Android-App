@@ -1,5 +1,6 @@
 package us.koller.cameraroll.preferences;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -41,7 +42,7 @@ public class ColumnCountPreferenceDialogFragment
             }
         }
 
-        View view = LayoutInflater.from(getContext())
+        @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext())
                 .inflate(R.layout.pref_dialog_column_count, null);
 
         final TextView textView = (TextView) view.findViewById(R.id.column_count);

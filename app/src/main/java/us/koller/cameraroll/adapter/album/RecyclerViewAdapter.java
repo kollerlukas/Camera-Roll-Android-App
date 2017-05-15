@@ -28,6 +28,7 @@ import us.koller.cameraroll.ui.MainActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final int VIEW_TYPE_PHOTO = 1;
     private final int VIEW_TYPE_GIF = 2;
     private final int VIEW_TYPE_VIDEO = 3;
@@ -75,9 +76,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public RecyclerViewAdapter setSelectorModeManager(SelectorModeManager manager) {
+    public void setSelectorModeManager(SelectorModeManager manager) {
         this.manager = manager;
-        return this;
     }
 
     @Override
@@ -189,18 +189,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         getManager().onItemSelected(manager.getSelectedItemCount());
     }
 
-    public void checkForNoSelectedItems() {
+    private void checkForNoSelectedItems() {
         if (getSelectedItemCount() == 0 && !pick_photos) {
             setSelectorMode(false);
             cancelSelectorMode(null);
         }
     }
 
-    public int getSelectedItemCount() {
+    private int getSelectedItemCount() {
         return manager.getSelectedItemCount();
     }
 
-    public void onItemSelected(AlbumItemHolder holder) {
+    private void onItemSelected(AlbumItemHolder holder) {
         boolean selected = manager.onItemSelect(holder.albumItem.getPath());
         holder.setSelected(selected);
         checkForNoSelectedItems();
@@ -234,11 +234,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return false;
     }
 
-    public boolean getSelectorMode() {
+    private boolean getSelectorMode() {
         return manager.isSelectorModeActive();
     }
 
-    public void setSelectorMode(boolean activate) {
+    private void setSelectorMode(boolean activate) {
         manager.setSelectorMode(activate);
     }
 
@@ -246,7 +246,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return true;
     }
 
-    public void clearSelectedItemsList() {
+    private void clearSelectedItemsList() {
         manager.clearList();
     }
 
@@ -259,7 +259,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         return album;
     }
 
-    public SelectorModeManager getManager() {
+    private SelectorModeManager getManager() {
         return manager;
     }
 

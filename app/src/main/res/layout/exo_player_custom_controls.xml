@@ -43,7 +43,6 @@
                 android:textColor="@color/white_translucent1"
                 android:layout_margin="8dp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
 
             <SeekBar
                 android:id="@id/exo_progress"
@@ -61,7 +60,6 @@
                 android:textColor="@color/white_translucent1"
                 android:layout_margin="8dp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

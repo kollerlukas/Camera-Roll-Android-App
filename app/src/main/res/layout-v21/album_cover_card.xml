@@ -51,7 +51,6 @@
                     android:textColor="@color/white_translucent1"
                     android:textSize="12sp"
                     tools:ignore="MissingPrefix" />
-                <!--android:fontFamily="sans-serif-monospace"-->
             </LinearLayout>
 
             <ImageView
@@ -62,7 +61,8 @@
                 android:layout_margin="16dp"
                 android:alpha="0.7"
                 android:src="@drawable/ic_sd_storage_white_24dp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/hidden_folder_indicator"

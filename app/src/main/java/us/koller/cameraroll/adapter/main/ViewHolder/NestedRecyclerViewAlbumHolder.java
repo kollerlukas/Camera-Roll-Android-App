@@ -47,6 +47,7 @@ import us.koller.cameraroll.util.animators.ColorFade;
 public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         implements Toolbar.OnMenuItemClickListener {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private static int SINGLE_LINE_MAX_ITEM_COUNT = 4;
 
     public RecyclerView nestedRecyclerView;
@@ -67,7 +68,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         }
     };
 
-    public abstract class SelectorCallback implements SelectorModeManager.Callback {
+    abstract class SelectorCallback implements SelectorModeManager.Callback {
     }
 
     private SelectorCallback callback
@@ -168,7 +169,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         public void setTitle(Toolbar toolbar) {
                             toolbar.setTitle(title);
                         }
-                    }, true);
+                    });
         }
     };
 

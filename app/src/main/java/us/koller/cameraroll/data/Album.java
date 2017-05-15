@@ -3,7 +3,6 @@ package us.koller.cameraroll.data;
 import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -69,8 +68,7 @@ public class Album
 
     @Override
     public String getName() {
-        String name = new File(getPath()).getName();
-        return name != null ? name : "ERROR";
+        return new File(getPath()).getName();
     }
 
     @Override
@@ -88,6 +86,7 @@ public class Album
         return albumItems;
     }
 
+    @SuppressWarnings("unchecked")
     private Album(Parcel parcel) {
         path = parcel.readString();
         hidden = parcel.readInt();

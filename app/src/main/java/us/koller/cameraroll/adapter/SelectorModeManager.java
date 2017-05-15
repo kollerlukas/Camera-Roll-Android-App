@@ -14,8 +14,8 @@ import us.koller.cameraroll.util.SortUtil;
 //simple wrapper class to handle the Selector Mode and selected items
 public class SelectorModeManager {
 
-    public static final String SELECTOR_MODE_ACTIVE = "SELECTOR_MODE_ACTIVE";
-    public static final String SELECTED_ITEMS_PATHS = "SELECTED_ITEMS_PATHS";
+    private static final String SELECTOR_MODE_ACTIVE = "SELECTOR_MODE_ACTIVE";
+    private static final String SELECTED_ITEMS_PATHS = "SELECTED_ITEMS_PATHS";
 
     private boolean selectorModeActive = false;
     private ArrayList<String> selected_items_paths;
@@ -30,7 +30,7 @@ public class SelectorModeManager {
         }
     }
 
-    public void onSelectorModeExit() {
+    private void onSelectorModeExit() {
         if (callbacks != null) {
             for (int i = 0; i < callbacks.size(); i++) {
                 callbacks.get(i).onSelectorModeExit();
@@ -127,28 +127,18 @@ public class SelectorModeManager {
         }
     }
 
-    public void removeCallback(Callback callback) {
-        if (callbacks != null) {
-            callbacks.remove(callback);
-        }
-    }
-
     public ArrayList<Callback> getCallbacks() {
         return callbacks;
     }
 
     public boolean callbacksAttached() {
-        if (callbacks == null) {
-            return false;
-        }
-
-        return callbacks.size() > 0;
+        return callbacks != null && callbacks.size() > 0;
     }
 
 
     //to handle backPressed in SelectorMode
     public interface OnBackPressedCallback {
-        public void cancelSelectorMode();
+        void cancelSelectorMode();
     }
 
     private OnBackPressedCallback onBackPressedCallback;
@@ -199,7 +189,7 @@ public class SelectorModeManager {
         return createAlbumItemArray(c, arrayList);
     }
 
-    public static AlbumItem[] createAlbumItemArray(Context c, ArrayList<String> arr) {
+    private static AlbumItem[] createAlbumItemArray(Context c, ArrayList<String> arr) {
         AlbumItem[] albumItems = new AlbumItem[arr.size()];
         for (int i = 0; i < arr.size(); i++) {
             albumItems[i] = AlbumItem.getInstance(c, arr.get(i));
@@ -207,7 +197,7 @@ public class SelectorModeManager {
         return albumItems;
     }
 
-    public static String[] createStringArray(ArrayList<String> arr) {
+    private static String[] createStringArray(ArrayList<String> arr) {
         String[] paths = new String[arr.size()];
         for (int i = 0; i < arr.size(); i++) {
             paths[i] = arr.get(i);

@@ -1,5 +1,6 @@
 package us.koller.cameraroll.preferences;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -48,7 +49,7 @@ public class StylePreferenceDialogFragment
         styles = getContext().getResources()
                 .getIntArray(R.array.style_values);
 
-        View view = LayoutInflater.from(getContext())
+        @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext())
                 .inflate(R.layout.pref_dialog_style, null);
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);

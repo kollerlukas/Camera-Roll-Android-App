@@ -36,14 +36,6 @@
                 android:textColor="@color/white"
                 android:textSize="18sp" />
 
-            <!--<TextView
-                android:id="@+id/count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-monospace"
-                android:textColor="@color/white_translucent1"
-                android:textSize="12sp" />-->
-
             <TextView
                 android:id="@+id/count"
                 fontPath="fonts/RobotoMono-Regular.ttf"
@@ -52,7 +44,6 @@
                 android:textColor="@color/white_translucent1"
                 android:textSize="12sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="sans-serif-monospace"-->
         </LinearLayout>
 
         <ImageView
@@ -63,7 +54,8 @@
             android:layout_margin="16dp"
             android:alpha="0.7"
             android:src="@drawable/ic_sd_storage_white_24dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/hidden_folder_indicator"

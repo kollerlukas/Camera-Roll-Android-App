@@ -8,13 +8,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
-import android.widget.Toolbar;
-
-import us.koller.cameraroll.R;
-import us.koller.cameraroll.util.Util;
 
 //Solution heavily inspired by: https://github.com/WangDaYeeeeee/Mysplash/blob/master/app/src/main/res/about/layout/activity_about.xml
-
 public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
     // widget
     public OnSwipeListener listener;

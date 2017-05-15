@@ -2,7 +2,6 @@ package us.koller.cameraroll.data.Provider.ItemLoader;
 
 import android.app.Activity;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
 
@@ -24,13 +23,13 @@ public class FileLoader extends ItemLoader {
     @Override
     public void onNewDir(Activity context, File dir) {
         dir_pojo = new File_POJO(dir.getPath(),
-                MediaType.isMedia(context, dir.getPath()));
+                MediaType.isMedia(dir.getPath()));
     }
 
     @Override
     public void onFile(Activity context, File file) {
         File_POJO file_pojo = new File_POJO(file.getPath(),
-                MediaType.isMedia(context, file.getPath()));
+                MediaType.isMedia(file.getPath()));
         dir_pojo.addChild(file_pojo);
     }
 
@@ -46,7 +45,7 @@ public class FileLoader extends ItemLoader {
         return result;
     }
 
-    private static File_POJO addFiles(File_POJO files, File_POJO filesToAdd) {
+    private static void addFiles(File_POJO files, File_POJO filesToAdd) {
         if (files.getPath().equals(filesToAdd.getPath())) {
             files.getChildren().addAll(filesToAdd.getChildren());
         } else if (files.getPath().equals(filesToAdd.getPath()
@@ -73,6 +72,5 @@ public class FileLoader extends ItemLoader {
             }
         }
 
-        return files;
     }
 }

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.File_POJO;
 
 public class SortUtil {
 
@@ -24,11 +23,12 @@ public class SortUtil {
     public static final int BY_NAME = 2;
     public static final int BY_SIZE = 3;
 
-    public static ArrayList<? extends Sortable> sortAlbums(Activity context, ArrayList<Album> albums, int by) {
+    public static void sortAlbums(Activity context, ArrayList<Album> albums, int by) {
         switch (by) {
             case BY_NAME:
             case BY_DATE:
-                return sort(context, albums, by);
+                sort(context, albums, by);
+                return;
             case BY_SIZE:
                 // Sorting
                 Collections.sort(albums, new Comparator<Album>() {
@@ -42,30 +42,23 @@ public class SortUtil {
                         return 0;
                     }
                 });
-                return albums;
         }
-        return albums;
     }
 
-    public static File_POJO sortFiles(Activity context, File_POJO files) {
-        sort(context, files.getChildren(), BY_NAME);
-
-        return files;
-    }
-
-    public static ArrayList<? extends Sortable> sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
+    public static void sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
         switch (by) {
             case BY_NAME:
-                return sortByName(sortables);
+                sortByName(sortables);
+                return;
             case BY_DATE:
-                return sortByDate(context, sortables);
+                sortByDate(context, sortables);
+                return;
             case BY_SIZE:
-                return sortByDate(context, sortables);
+                sortByDate(context, sortables);
         }
-        return sortables;
     }
 
-    public static ArrayList<? extends Sortable> sortByName(ArrayList<? extends Sortable> sortables) {
+    public static void sortByName(ArrayList<? extends Sortable> sortables) {
         // Sorting
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
@@ -76,10 +69,9 @@ public class SortUtil {
                 return 0;
             }
         });
-        return sortables;
     }
 
-    public static ArrayList<? extends Sortable> sortByDate(final Activity context, ArrayList<? extends Sortable> sortables) {
+    public static void sortByDate(final Activity context, ArrayList<? extends Sortable> sortables) {
         // Sorting
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
@@ -92,6 +84,5 @@ public class SortUtil {
                 return 0;
             }
         });
-        return sortables;
     }
 }

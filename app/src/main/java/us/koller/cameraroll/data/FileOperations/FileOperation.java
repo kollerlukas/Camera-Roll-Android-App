@@ -5,12 +5,9 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -24,9 +21,6 @@ import java.util.Arrays;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Gif;
-import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.MediaType;
 
 public abstract class FileOperation implements Parcelable {
@@ -41,7 +35,7 @@ public abstract class FileOperation implements Parcelable {
     public static final int MOVE = 1;
     public static final int COPY = 2;
     public static final int DELETE = 3;
-    public static final int NEW_DIR = 4;
+    static final int NEW_DIR = 4;
 
     public static int operation = EMPTY;
 

@@ -5,15 +5,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -155,7 +152,7 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         int color = ContextCompat.getColor(this, colorRes);
 
         Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(),
-                R.mipmap.ic_launcher_round);
+                R.mipmap.ic_launcher);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
                 overviewIcon, color));
         overviewIcon.recycle();
@@ -180,7 +177,7 @@ public abstract class ThemeableActivity extends AppCompatActivity {
                 (int) (Color.blue(toolbarColor) * darken));
     }
 
-    public void addStatusBarOverlay(final Toolbar toolbar,
+    /*public void addStatusBarOverlay(final Toolbar toolbar,
                                     int toolbarColor,
                                     final int statusBarHeight) {
         int statusBarColor = getStatusBarColor(this, toolbarColor);
@@ -199,6 +196,6 @@ public abstract class ThemeableActivity extends AppCompatActivity {
                 toolbar.getOverlay().add(statusBarOverlay);
             }
         });
-    }
+    }*/
 }
 

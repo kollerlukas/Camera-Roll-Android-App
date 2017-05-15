@@ -6,7 +6,7 @@ import android.webkit.MimeTypeMap;
 
 public class MediaType {
 
-    public static boolean isMedia(Context context, String path) {
+    public static boolean isMedia(String path) {
         return checkImageExtension(path) ||
                 checkGifExtension(path) ||
                 checkVideoExtension(path);

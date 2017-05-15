@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
@@ -67,12 +69,12 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         final File_POJO[] files = new File_POJO[filePaths.length];
         for (int i = 0; i < filePaths.length; i++) {
             files[i] = new File_POJO(filePaths[i],
-                    MediaType.isMedia(this, filePaths[i]));
+                    MediaType.isMedia(filePaths[i]));
         }
 
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(CREATE_NEW_FOLDER)
-                && savedInstanceState.getString(CREATE_NEW_FOLDER).equals("true")) {
+                && Objects.equals(savedInstanceState.getString(CREATE_NEW_FOLDER), "true")) {
             creatingNewFolder = true;
             createNewFolder(files);
             return;
@@ -114,22 +116,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         if (fileOperation != null) {
             fileOperation.setCallback(null);
         }
-    }
-
-    public void showFolderSelectorDialog() {
-        Intent intent = getIntent();
-        if (intent == null) {
-            return;
-        }
-
-        String[] filePaths = intent.getStringArrayExtra(FILES);
-        final File_POJO[] files = new File_POJO[filePaths.length];
-        for (int i = 0; i < filePaths.length; i++) {
-            files[i] = new File_POJO(filePaths[i],
-                    MediaType.isMedia(this, filePaths[i]));
-        }
-
-        showFolderSelectorDialog(files);
     }
 
     public void showFolderSelectorDialog(final File_POJO[] files) {
@@ -351,7 +337,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
             final Album album = albums.get(position);
             ((TextView) holder.itemView.findViewById(R.id.album_title))
                     .setText(album.getName());

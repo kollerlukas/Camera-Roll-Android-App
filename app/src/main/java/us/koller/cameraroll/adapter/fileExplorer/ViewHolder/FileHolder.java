@@ -1,9 +1,7 @@
 package us.koller.cameraroll.adapter.fileExplorer.ViewHolder;
 
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,21 +12,16 @@ import java.io.File;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.StorageRoot;
-import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ThemeableActivity;
 import us.koller.cameraroll.util.MediaType;
 
 public class FileHolder extends RecyclerView.ViewHolder {
-
-    private File_POJO file;
 
     public FileHolder(View itemView) {
         super(itemView);
     }
 
     public void setFile(File_POJO file) {
-        this.file = file;
-
         ImageView folderIndicator = (ImageView) itemView.findViewById(R.id.folder_indicator);
         if (file instanceof StorageRoot) {
             if (file.getName().equals(itemView.getContext().getString(R.string.storage))) {

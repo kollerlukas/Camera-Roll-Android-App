@@ -355,9 +355,11 @@ public class VideoPlayerActivity extends ThemeableActivity {
             int white = ContextCompat.getColor(this, R.color.white);
 
             Drawable d = toolbar.getNavigationIcon();
-            DrawableCompat.wrap(d);
-            DrawableCompat.setTint(d.mutate(), white);
-            toolbar.setNavigationIcon(d);
+            if (d != null) {
+                DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d.mutate(), white);
+                toolbar.setNavigationIcon(d);
+            }
 
             toolbar.setTitleTextColor(white);
 

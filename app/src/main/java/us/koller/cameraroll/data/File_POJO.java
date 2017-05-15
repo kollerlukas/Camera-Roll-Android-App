@@ -75,6 +75,7 @@ public class File_POJO
         parcel.writeString(String.valueOf(excluded));
     }
 
+    @SuppressWarnings("unchecked")
     public File_POJO(Parcel parcel) {
         path = parcel.readString();
         isMedia = Boolean.valueOf(parcel.readString());
@@ -82,7 +83,7 @@ public class File_POJO
         excluded = Boolean.valueOf(parcel.readString());
     }
 
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+    private static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public File_POJO createFromParcel(Parcel parcel) {
             return new File_POJO(parcel);
         }

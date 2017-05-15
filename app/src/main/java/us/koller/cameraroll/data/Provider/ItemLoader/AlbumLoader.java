@@ -1,7 +1,6 @@
 package us.koller.cameraroll.data.Provider.ItemLoader;
 
 import android.app.Activity;
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class AlbumLoader extends ItemLoader {
 
     @Override
     public void onFile(Activity context, File file) {
-        if (MediaType.isMedia(context, file.getPath())) {
+        if (MediaType.isMedia(file.getPath())) {
             AlbumItem albumItem
                     = AlbumItem.getInstance(context, file.getPath());
             if (albumItem != null) {

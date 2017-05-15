@@ -27,7 +27,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.Util;
 
@@ -58,7 +57,8 @@ public class AboutActivity extends ThemeableActivity
 
         ImageView headerImage = (ImageView) findViewById(R.id.header_image);
         Glide.with(this)
-                .load("http://koller.us/lukas/camera_roll/new_logo.png")
+                .load("https://raw.githubusercontent.com/kollerlukas/Camera-Roll-Android-App/master/camera_roll_logo.png")
+                .error(R.drawable.error_placeholder)
                 .into(headerImage);
 
         TextView version = (TextView) findViewById(R.id.version);
@@ -76,6 +76,7 @@ public class AboutActivity extends ThemeableActivity
                 }
             });
         } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
 
         final TextView aboutText = (TextView) findViewById(R.id.about_text);

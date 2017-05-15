@@ -25,7 +25,7 @@ import us.koller.cameraroll.util.animators.ColorFade;
 
 public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
-    Album album;
+    private Album album;
     boolean excluded;
 
     AlbumHolder(View itemView) {

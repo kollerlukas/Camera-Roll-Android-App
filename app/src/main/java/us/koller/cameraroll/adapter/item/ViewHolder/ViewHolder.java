@@ -36,18 +36,9 @@ public abstract class ViewHolder {
         return v;
     }
 
-    boolean imageOnClick(View view) {
+    void imageOnClick(View view) {
         try {
-            return ((ItemActivity) view.getContext()).imageOnClick();
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    void imageOnClick(View view, boolean show) {
-        try {
-            ((ItemActivity) view.getContext()).imageOnClick(show);
+            ((ItemActivity) view.getContext()).imageOnClick();
         } catch (ClassCastException e) {
             e.printStackTrace();
         }

@@ -5,8 +5,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import java.io.File;
 
@@ -140,7 +138,7 @@ public abstract class AlbumItem
         parcel.writeString(String.valueOf(contentUri));
     }
 
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+    static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         @Override
         public AlbumItem createFromParcel(Parcel parcel) {
             switch (parcel.readInt()) {

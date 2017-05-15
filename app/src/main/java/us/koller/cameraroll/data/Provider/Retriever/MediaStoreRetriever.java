@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.MediaProvider;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.util.MediaType;
-import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
 //loading media through MediaStore
@@ -155,7 +153,7 @@ public class MediaStoreRetriever implements Retriever {
 
                 if (files != null) {
                     for (int i = 0; i < files.length; i++) {
-                        if (MediaType.isMedia(context, files[i].getPath())) {
+                        if (MediaType.isMedia(files[i].getPath())) {
                             AlbumItem albumItem = AlbumItem.getInstance(context, files[i].getPath());
                             if (albumItem != null) {
                                 album.getAlbumItems().add(albumItem);

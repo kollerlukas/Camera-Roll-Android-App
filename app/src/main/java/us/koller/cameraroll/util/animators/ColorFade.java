@@ -12,7 +12,6 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -97,7 +96,7 @@ public class ColorFade {
 
     //fade Toolbar title text change
     public static void fadeToolbarTitleColor(final Toolbar toolbar, final int color,
-                                             final ToolbarTitleFadeCallback callback, boolean fadeTitleOut) {
+                                             final ToolbarTitleFadeCallback callback) {
 
         if (toolbarTitleAnimSet != null) {
             toolbarTitleAnimSet.cancel();
@@ -106,19 +105,17 @@ public class ColorFade {
         final int transparent = ContextCompat.getColor(toolbar.getContext(), android.R.color.transparent);
 
         TextView titleView = null;
-        if (fadeTitleOut) {
-            for (int i = 0; i < toolbar.getChildCount(); i++) {
-                View v = toolbar.getChildAt(i);
-                if (v instanceof TextView) {
-                    titleView = (TextView) v;
-                    break;
-                }
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View v = toolbar.getChildAt(i);
+            if (v instanceof TextView) {
+                titleView = (TextView) v;
+                break;
             }
         }
         final TextView finalTextView = titleView;
 
         ValueAnimator fadeOut = null;
-        if (fadeTitleOut && finalTextView != null) {
+        if (finalTextView != null) {
             fadeOut = getDefaultValueAnimator();
             fadeOut.setDuration(250);
             fadeOut.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -142,7 +139,7 @@ public class ColorFade {
         }
 
         ValueAnimator fadeIn = getDefaultValueAnimator();
-        fadeIn.setDuration(fadeTitleOut ? 250 : 500);
+        fadeIn.setDuration(250);
         if (finalTextView != null) {
             fadeIn.addListener(new AnimatorListenerAdapter() {
                 @Override

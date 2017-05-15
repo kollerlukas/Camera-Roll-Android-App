@@ -147,6 +147,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 Activity context = (Activity) holder.itemView.getContext();
 
                 if (!pick_photos) {
+                    //noinspection unchecked
                     options = ActivityOptionsCompat.makeSceneTransitionAnimation(context);
                     context.startActivityForResult(intent,
                             MainActivity.REFRESH_PHOTOS_REQUEST_CODE, options.toBundle());

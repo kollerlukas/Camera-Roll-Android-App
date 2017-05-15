@@ -31,7 +31,6 @@ public class MediaProvider extends Provider {
 
     private static final int MODE_STORAGE = 1;
     private static final int MODE_MEDIASTORE = 2;
-    private static final String MODE_KEY = "MODE_KEY";
 
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
@@ -86,15 +85,6 @@ public class MediaProvider extends Provider {
                                         albums.remove(i);
                                     }
                                 }
-                            } else {
-                                //remove indirectly excluded albums
-                                /*ArrayList<String> excludedPaths = MediaProvider.getExcludedPaths();
-                                for (int i = albums.size() - 1; i >= 0; i--) {
-                                    if (MediaProvider
-                                            .isDirExcludedBecauseParentDirIsExcluded(albums.get(i).getPath(), excludedPaths)) {
-                                        albums.remove(i);
-                                    }
-                                }*/
                             }
 
                             int sort_by = Settings.getInstance(context).sortAlbumsBy();

@@ -2,12 +2,9 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,7 +21,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.TextUtils;
 import android.transition.Fade;
 import android.transition.Slide;
@@ -285,7 +281,8 @@ public class FileExplorerActivity extends ThemeableActivity
                     if (savedInstanceState.containsKey(FILE_OPERATION)) {
                         onSelectorModeEnter();
                         fileOperation = savedInstanceState.getParcelable(FILE_OPERATION);
-                        FileOperation.operation = fileOperation.getType();
+                        FileOperation.operation = fileOperation != null ?
+                                fileOperation.getType() : FileOperation.EMPTY;
                         //need to call pick target after onSelectorModeEnter animation are done
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -680,7 +677,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
         ColorFade.fadeToolbarTitleColor(toolbar,
                 ContextCompat.getColor(this, R.color.grey_900_translucent),
-                null, true);
+                null);
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
@@ -791,7 +788,7 @@ public class FileExplorerActivity extends ThemeableActivity
                         public void setTitle(Toolbar toolbar) {
                             toolbar.setTitle(title);
                         }
-                    }, true);
+                    });
         }
     }
 
@@ -810,7 +807,7 @@ public class FileExplorerActivity extends ThemeableActivity
                                     + String.valueOf(count)
                                     + (count > 1 ? getString(R.string.items) : getString(R.string.item)));
                         }
-                    }, true);
+                    });
         }
 
         animateFab(true);
@@ -864,7 +861,7 @@ public class FileExplorerActivity extends ThemeableActivity
                         public void setTitle(Toolbar toolbar) {
                             toolbar.setTitle(currentDir.getPath());
                         }
-                    }, true);
+                    });
         }
 
         if (recyclerViewAdapter.getMode()
@@ -892,7 +889,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     public void setTitle(Toolbar toolbar) {
                         toolbar.setTitle(currentDir.getPath());
                     }
-                }, true);
+                });
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),

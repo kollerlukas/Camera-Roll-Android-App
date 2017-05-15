@@ -1,8 +1,6 @@
 package us.koller.cameraroll.data.FileOperations;
 
 import android.app.Activity;
-import android.widget.Toast;
-
 import java.io.File;
 
 import us.koller.cameraroll.R;

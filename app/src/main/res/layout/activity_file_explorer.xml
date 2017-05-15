@@ -29,7 +29,6 @@
             android:text="@string/no_files"
             android:textSize="24sp"
             tools:ignore="MissingPrefix" />
-        <!--android:fontFamily="sans-serif-monospace"-->
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

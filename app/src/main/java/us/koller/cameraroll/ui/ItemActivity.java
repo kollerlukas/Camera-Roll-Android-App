@@ -57,10 +57,10 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
@@ -246,7 +246,7 @@ public class ItemActivity extends ThemeableActivity {
                             public void setTitle(Toolbar toolbar) {
                                 toolbar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
                             }
-                        }, true);
+                        });
 
                 ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
                         .findViewHolderByTag(albumItem.getPath());
@@ -530,7 +530,11 @@ public class ItemActivity extends ThemeableActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Uri uri = albumItem.getUri(this);
-                exif = new ExifInterface(getContentResolver().openInputStream(uri));
+                InputStream is = getContentResolver().openInputStream(uri);
+                if (is != null) {
+                    exif = new ExifInterface(is);
+                }
+
             } else {
                 exif = new ExifInterface(albumItem.getPath());
             }
@@ -676,10 +680,9 @@ public class ItemActivity extends ThemeableActivity {
         }
     }
 
-    public boolean imageOnClick() {
+    public void imageOnClick() {
         systemUiVisible = !systemUiVisible;
         showSystemUI(systemUiVisible);
-        return systemUiVisible;
     }
 
     public static void videoOnClick(Context context, AlbumItem albumItem) {
@@ -696,12 +699,6 @@ public class ItemActivity extends ThemeableActivity {
             Toast.makeText(context, "No App found to play your video", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-    }
-
-    public boolean imageOnClick(boolean show) {
-        systemUiVisible = show;
-        showSystemUI(systemUiVisible);
-        return systemUiVisible;
     }
 
     private void showUI(boolean show) {
@@ -852,9 +849,11 @@ public class ItemActivity extends ThemeableActivity {
             int white = ContextCompat.getColor(this, R.color.white);
 
             Drawable d = toolbar.getNavigationIcon();
-            DrawableCompat.wrap(d);
-            DrawableCompat.setTint(d.mutate(), white);
-            toolbar.setNavigationIcon(d);
+            if (d != null) {
+                DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d.mutate(), white);
+                toolbar.setNavigationIcon(d);
+            }
 
             toolbar.setTitleTextColor(white);
 

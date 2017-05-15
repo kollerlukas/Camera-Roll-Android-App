@@ -12,21 +12,22 @@ public class StylePreference extends DialogPreference {
     private int style;
     private int mDialogLayoutResId = R.layout.pref_dialog_style;
 
+    @SuppressWarnings("unused")
     public StylePreference(Context context) {
         this(context, null);
     }
 
-    public StylePreference(Context context, AttributeSet attrs) {
+    private StylePreference(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.dialogPreferenceStyle);
     }
 
-    public StylePreference(Context context, AttributeSet attrs,
-                           int defStyleAttr) {
+    private StylePreference(Context context, AttributeSet attrs,
+                            int defStyleAttr) {
         this(context, attrs, defStyleAttr, defStyleAttr);
     }
 
-    public StylePreference(Context context, AttributeSet attrs,
-                           int defStyleAttr, int defStyleRes) {
+    private StylePreference(Context context, AttributeSet attrs,
+                            int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         setDialogLayoutResource(mDialogLayoutResId);

@@ -48,7 +48,7 @@ import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends ThemeableActivity implements SelectorModeManager.Callback {
 
-    public static final String ALBUMS = "ALBUMS";
+    //public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
     public static final String PICK_PHOTOS = "PICK_PHOTOS";
 
@@ -107,6 +107,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     private boolean hiddenFolders;
 
     private boolean pick_photos;
+    @SuppressWarnings("FieldCanBeLocal")
     private boolean allowMultiple;
 
     public static boolean refreshMediaWhenVisible = false;
@@ -544,6 +545,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

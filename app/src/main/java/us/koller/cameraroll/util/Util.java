@@ -1,10 +1,7 @@
 package us.koller.cameraroll.util;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -13,8 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.BaseColumns;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -22,10 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,17 +28,14 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.ui.ThemeableActivity;
 
 public class Util {
-    /*public static int getAlbumActivityGridColumnCount(Context context) {
-        boolean landscape = context.getResources().getBoolean(R.bool.landscape);
-        return !landscape ? 3 : 4;
-    }*/
 
-    public static int getScreenWidth(Activity context) {
+    static int getScreenWidth(Activity context) {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         context.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         return displaymetrics.widthPixels;
     }
 
+    @SuppressWarnings("unused")
     public static int[] getImageDimensions(Context context, String path) {
         int[] dimensions = new int[2];
         dimensions[0] = 1;
@@ -113,6 +102,7 @@ public class Util {
         return new int[]{1, 1};
     }
 
+    @SuppressWarnings("inlineValue")
     public static TextView setToolbarTypeface(Toolbar toolbar, String path) {
         for (int i = 0; i < toolbar.getChildCount(); i++) {
             View view = toolbar.getChildAt(i);
@@ -151,11 +141,9 @@ public class Util {
         }
     }
 
+    @SuppressWarnings("unused")
     public static boolean areStatusBarIconsDark(final View v) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return v.getSystemUiVisibility() != 0;
-        }
-        return false;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && v.getSystemUiVisibility() != 0;
     }
 
     public static String getParentPath(String path) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.SortUtil;
@@ -12,7 +11,7 @@ import us.koller.cameraroll.util.SortUtil;
 public class Settings {
 
     public static final int DEFAULT_COLUMN_COUNT = 4;
-    public static final String PREF_KEY_HIDDEN_FOLDERS = "HIDDEN_FOLDERS";
+    private static final String PREF_KEY_HIDDEN_FOLDERS = "HIDDEN_FOLDERS";
 
     private String theme;
     private boolean storageRetriever;

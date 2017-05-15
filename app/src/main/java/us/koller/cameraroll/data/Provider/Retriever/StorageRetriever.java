@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
@@ -22,7 +23,6 @@ import us.koller.cameraroll.data.Provider.ItemLoader.FileLoader;
 import us.koller.cameraroll.data.Provider.ItemLoader.ItemLoader;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
@@ -102,13 +102,8 @@ public class StorageRetriever implements Retriever {
                                 //done loading media from storage
                                 callback.onMediaLoaded(albums);
                                 cancelTimeout();
-                                if (THREAD_COUNT == -1) {
-                                    Log.d("StorageRetriever", "onMediaLoaded(): "
-                                            + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
-                                } else {
-                                    Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
-                                            + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
-                                }
+                                Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
+                                        + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
                             }
                         });
             }
@@ -154,7 +149,7 @@ public class StorageRetriever implements Retriever {
                 boolean filesContainMedia = false;
                 for (int i = 0; i < files.getChildren().size(); i++) {
                     if (files.getChildren().get(i) != null &&
-                            MediaType.isMedia(context,
+                            MediaType.isMedia(
                                     files.getChildren().get(i).getPath())) {
                         filesContainMedia = true;
                         break;
@@ -247,9 +242,7 @@ public class StorageRetriever implements Retriever {
             File root = removableStorageRoots[i];
             File[] files = root.listFiles();
             if (files != null) {
-                for (int k = 0; k < files.length; k++) {
-                    temp.add(files[k]);
-                }
+                Collections.addAll(temp, files);
             }
         }
 
@@ -306,9 +299,7 @@ public class StorageRetriever implements Retriever {
                 public void done(AdaptableThread thread, ItemLoader.Result result,
                                  ArrayList<File> filesToSearch) {
                     callback.onPartialResult(result);
-                    for (int i = 0; i < filesToSearch.size(); i++) {
-                        queue.add(filesToSearch.get(i));
-                    }
+                    queue.addAll(filesToSearch);
                 }
 
                 @Override

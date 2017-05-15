@@ -23,7 +23,7 @@ public class VideoViewHolder extends ViewHolder {
 
         final View view = itemView.findViewById(R.id.image);
 
-        ItemViewUtil.bindTransitionView((ImageView) view, albumItem, null);
+        ItemViewUtil.bindTransitionView((ImageView) view, albumItem);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

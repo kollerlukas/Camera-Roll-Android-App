@@ -6,9 +6,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -26,13 +24,8 @@ import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
-import us.koller.cameraroll.ui.ItemActivity;
 
 public class ItemViewUtil {
-
-    public interface Callback {
-        public void onImageReady();
-    }
 
     public static ViewGroup inflatePhotoView(ViewGroup container) {
         return (ViewGroup) LayoutInflater.from(container.getContext())
@@ -44,7 +37,7 @@ public class ItemViewUtil {
                 .inflate(R.layout.video_view, container, false);
     }
 
-    public static View bindSubsamplingImageView(SubsamplingScaleImageView imageView,
+    public static void bindSubsamplingImageView(SubsamplingScaleImageView imageView,
                                                 Photo photo,
                                                 SubsamplingScaleImageView.DefaultOnImageEventListener onImageEventListener) {
         ImageViewState imageViewState = null;
@@ -61,12 +54,10 @@ public class ItemViewUtil {
         if (onImageEventListener != null) {
             imageView.setOnImageEventListener(onImageEventListener);
         }
-        return imageView;
     }
 
-    public static View bindTransitionView(final ImageView imageView,
-                                          final AlbumItem albumItem,
-                                          final ItemViewUtil.Callback callback) {
+    public static void bindTransitionView(final ImageView imageView,
+                                          final AlbumItem albumItem) {
 
         int[] imageDimens = albumItem instanceof Video ?
                 Util.getVideoDimensions(albumItem.getPath()) :
@@ -88,7 +79,7 @@ public class ItemViewUtil {
         }
 
         if (imageDimens[0] <= 1 || imageDimens[1] <= 1) {
-            return imageView;
+            return;
         }
 
         Glide.with(imageView.getContext())
@@ -116,9 +107,6 @@ public class ItemViewUtil {
                                     .startPostponedEnterTransition();
                         }
 
-                        if (callback != null) {
-                            callback.onImageReady();
-                        }
                         return false;
                     }
                 })
@@ -140,10 +128,9 @@ public class ItemViewUtil {
             }
         }
 
-        return imageView;
     }
 
-    public static View bindGif(final GifViewHolder gifViewHolder,
+    public static void bindGif(final GifViewHolder gifViewHolder,
                                final ImageView imageView,
                                final AlbumItem albumItem) {
         Glide.with(imageView.getContext())
@@ -173,6 +160,5 @@ public class ItemViewUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(albumItem.getPath());
         }
-        return imageView;
     }
 }

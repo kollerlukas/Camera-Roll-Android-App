@@ -89,7 +89,6 @@ public class IntentReceiver extends AppCompatActivity {
         if (uri == null) {
             Toast.makeText(this, getString(R.string.error) + ": Uri = null", Toast.LENGTH_SHORT).show();
             this.finish();
-            return;
         }
     }
 

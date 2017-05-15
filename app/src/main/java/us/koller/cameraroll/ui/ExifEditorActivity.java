@@ -17,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,8 +44,6 @@ public class ExifEditorActivity extends ThemeableActivity {
 
     private Menu menu;
 
-    private AlbumItem albumItem;
-
     private ExifInterface exifInterface;
 
     private ArrayList<EditedItem> editedItems;
@@ -56,7 +53,7 @@ public class ExifEditorActivity extends ThemeableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exif_editor);
 
-        albumItem = getIntent().getParcelableExtra(ALBUM_ITEM);
+        AlbumItem albumItem = getIntent().getParcelableExtra(ALBUM_ITEM);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(EDITED_ITEMS)) {
             editedItems = savedInstanceState.getParcelableArrayList(EDITED_ITEMS);
@@ -105,7 +102,7 @@ public class ExifEditorActivity extends ThemeableActivity {
                         //check if item was already edited
                         boolean alreadyInEditedItems = false;
                         for (int i = 0; i < editedItems.size(); i++) {
-                            if (editedItems.get(i).equals(constant)) {
+                            if (editedItems.get(i).constant.equals(constant)) {
                                 alreadyInEditedItems = true;
                             }
                         }

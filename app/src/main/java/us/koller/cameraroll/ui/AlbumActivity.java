@@ -28,7 +28,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,7 +65,7 @@ public class AlbumActivity extends ThemeableActivity
 
     public static final int FILE_OP_DIALOG_REQUEST = 1;
 
-    public static final String ALBUM = "ALBUM";
+    //public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
     public static final String VIEW_ALBUM = "VIEW_ALBUM";
     public static final String ALBUM_ITEM_DELETED = "ALBUM_ITEM_DELETED";
@@ -602,6 +601,7 @@ public class AlbumActivity extends ThemeableActivity
                 selected_items.length + " " + getString(R.string.photo_deleted) :
                 selected_items.length + " " + getString(R.string.photos_deleted);
 
+        //noinspection deprecation
         snackbar = Snackbar.make(findViewById(R.id.root_view), message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.undo, new View.OnClickListener() {
                     @Override
@@ -721,7 +721,7 @@ public class AlbumActivity extends ThemeableActivity
 
             ColorFade.fadeToolbarTitleColor(toolbar,
                     ContextCompat.getColor(this, R.color.grey_900_translucent),
-                    null, true);
+                    null);
 
             //fade overflow menu icon
             ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
@@ -790,7 +790,7 @@ public class AlbumActivity extends ThemeableActivity
                     public void setTitle(Toolbar toolbar) {
                         toolbar.setTitle(album.getName());
                     }
-                }, true);
+                });
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
@@ -847,7 +847,7 @@ public class AlbumActivity extends ThemeableActivity
                     public void setTitle(Toolbar toolbar) {
                         toolbar.setTitle(title);
                     }
-                }, true);
+                });
 
 
         if (selectedItemCount > 0) {

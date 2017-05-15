@@ -1,5 +1,6 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
+import android.annotation.SuppressLint;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,12 +37,7 @@ public class PhotoViewHolder extends ViewHolder {
                 && ((Photo) albumItem).getImageViewSavedState() != null) {
             transitionView.setVisibility(View.INVISIBLE);
         }
-        ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem, null);
-        /*if (albumItem.isSharedElement) {
-            view.setVisibility(View.INVISIBLE);
-        } else {
-            bindImageView(view, transitionView);
-        }*/
+        ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
         view.setVisibility(View.INVISIBLE);
         return v;
     }
@@ -61,7 +57,7 @@ public class PhotoViewHolder extends ViewHolder {
     private void bindImageView(View view, final View transitionView) {
         if (albumItem.error) {
             transitionView.setVisibility(View.VISIBLE);
-            ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem, null);
+            ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
             return;
         }
 
@@ -87,6 +83,7 @@ public class PhotoViewHolder extends ViewHolder {
                     }
                 });
         view.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 return gestureDetector.onTouchEvent(motionEvent);

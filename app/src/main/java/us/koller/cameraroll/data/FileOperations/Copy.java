@@ -1,7 +1,6 @@
 package us.koller.cameraroll.data.FileOperations;
 
 import android.app.Activity;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -83,11 +82,12 @@ public class Copy extends FileOperation {
     private static boolean copyFile(String path, String destination) throws IOException {
         //create output directory if it doesn't exist
         File dir = new File(destination);
-        boolean result;
         if (new File(path).isDirectory()) {
-            result = dir.mkdirs();
+            //noinspection ResultOfMethodCallIgnored
+            dir.mkdirs();
         } else {
-            result = dir.createNewFile();
+            //noinspection ResultOfMethodCallIgnored
+            dir.createNewFile();
         }
 
         InputStream inputStream = new FileInputStream(path);

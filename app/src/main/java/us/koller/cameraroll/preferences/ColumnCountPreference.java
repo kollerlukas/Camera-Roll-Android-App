@@ -12,19 +12,23 @@ public class ColumnCountPreference extends DialogPreference {
     private int columnCount;
     private int mDialogLayoutResId = R.layout.pref_dialog_style;
 
+    @SuppressWarnings("unused")
     public ColumnCountPreference(Context context) {
         super(context);
     }
 
+    @SuppressWarnings("unused")
     public ColumnCountPreference(Context context, AttributeSet attrs) {
         super(context, attrs, R.attr.dialogPreferenceStyle);
     }
 
+    @SuppressWarnings("unused")
     public ColumnCountPreference(Context context, AttributeSet attrs,
                                  int defStyleAttr) {
         super(context, attrs, defStyleAttr, defStyleAttr);
     }
 
+    @SuppressWarnings("unused")
     public ColumnCountPreference(Context context, AttributeSet attrs,
                                  int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -36,11 +40,11 @@ public class ColumnCountPreference extends DialogPreference {
         columnCount = getPersistedInt(Settings.DEFAULT_COLUMN_COUNT);
     }
 
-    public int getColumnCount() {
+    int getColumnCount() {
         return columnCount;
     }
 
-    public void setColumnCount(int columnCount) {
+    void setColumnCount(int columnCount) {
         this.columnCount = columnCount;
 
         // Save to Shared Preferences

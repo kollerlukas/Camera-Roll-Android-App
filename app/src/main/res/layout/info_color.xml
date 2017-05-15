@@ -26,7 +26,6 @@
                 android:layout_margin="16dp"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Dark color-->
@@ -45,7 +44,6 @@
                 android:layout_margin="16dp"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Light color-->
@@ -64,7 +62,6 @@
                 android:layout_margin="16dp"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
         </android.support.v7.widget.CardView>
 
         <!--Muted color-->
@@ -83,7 +80,6 @@
                 android:layout_margin="16dp"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
         </android.support.v7.widget.CardView>
 
         <!--Muted Dark color-->
@@ -102,7 +98,6 @@
                 android:layout_margin="16dp"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
         </android.support.v7.widget.CardView>
 
         <!--Muted Light color-->
@@ -121,7 +116,6 @@
                 android:layout_margin="16dp"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
-            <!--android:fontFamily="monospace"-->
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </HorizontalScrollView>
