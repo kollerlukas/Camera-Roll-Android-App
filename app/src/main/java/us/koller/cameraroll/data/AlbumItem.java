@@ -138,7 +138,8 @@ public abstract class AlbumItem
         parcel.writeString(String.valueOf(contentUri));
     }
 
-    static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+    @SuppressWarnings("WeakerAccess")
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         @Override
         public AlbumItem createFromParcel(Parcel parcel) {
             switch (parcel.readInt()) {

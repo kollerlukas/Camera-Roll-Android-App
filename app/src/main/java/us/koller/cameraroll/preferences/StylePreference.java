@@ -17,16 +17,19 @@ public class StylePreference extends DialogPreference {
         this(context, null);
     }
 
-    private StylePreference(Context context, AttributeSet attrs) {
+    @SuppressWarnings("WeakerAccess")
+    public StylePreference(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.dialogPreferenceStyle);
     }
 
-    private StylePreference(Context context, AttributeSet attrs,
+    @SuppressWarnings("WeakerAccess")
+    public StylePreference(Context context, AttributeSet attrs,
                             int defStyleAttr) {
         this(context, attrs, defStyleAttr, defStyleAttr);
     }
 
-    private StylePreference(Context context, AttributeSet attrs,
+    @SuppressWarnings("WeakerAccess")
+    public StylePreference(Context context, AttributeSet attrs,
                             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
