@@ -195,11 +195,8 @@ public class FileExplorerActivity extends ThemeableActivity
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    ViewGroup.MarginLayoutParams fabParams
-                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                    fabParams.rightMargin += insets.getSystemWindowInsetRight();
-                    fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
-                    fab.setLayoutParams(fabParams);
+                    fab.setTranslationY(-insets.getSystemWindowInsetBottom());
+                    fab.setTranslationX(-insets.getSystemWindowInsetRight());
 
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
@@ -238,11 +235,8 @@ public class FileExplorerActivity extends ThemeableActivity
                                             recyclerView.getPaddingEnd() + windowInsets[2],
                                             recyclerView.getPaddingBottom() + windowInsets[3]);
 
-                                    ViewGroup.MarginLayoutParams fabParams
-                                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                                    fabParams.rightMargin += windowInsets[2];
-                                    fabParams.bottomMargin += windowInsets[3];
-                                    fab.setLayoutParams(fabParams);
+                                    fab.setTranslationY(-windowInsets[2]);
+                                    fab.setTranslationX(-windowInsets[3]);
 
                                     rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 }

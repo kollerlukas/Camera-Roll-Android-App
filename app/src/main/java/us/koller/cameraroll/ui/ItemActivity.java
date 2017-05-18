@@ -424,6 +424,9 @@ public class ItemActivity extends ThemeableActivity {
         try {
             startActivityForResult(Intent.createChooser(intent,
                     getString(R.string.set_as)), 13);
+        } catch (SecurityException se) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            se.printStackTrace();
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "No App found to set your photo", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -770,13 +773,15 @@ public class ItemActivity extends ThemeableActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (albumItem instanceof Photo) {
-            View view = viewPager.findViewWithTag(albumItem.getPath())
-                    .findViewById(R.id.subsampling);
-            if (view instanceof SubsamplingScaleImageView) {
-                SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
-                ImageViewState state = imageView.getState();
-                if (state != null) {
-                    outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
+            View itemView = viewPager.findViewWithTag(albumItem.getPath());
+            if (itemView != null) {
+                View view = itemView.findViewById(R.id.subsampling);
+                if (view instanceof SubsamplingScaleImageView) {
+                    SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
+                    ImageViewState state = imageView.getState();
+                    if (state != null) {
+                        outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
+                    }
                 }
             }
         }

@@ -125,9 +125,8 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         false);
 
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
+        recyclerView.setLayoutManager(new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.addItemDecoration(new GridMarginDecoration(
                 (int) getResources().getDimension(R.dimen.album_grid_spacing_big)));
 
@@ -316,7 +315,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         RecyclerViewAdapter() {
             albums = MediaProvider.getAlbums();
 
-            if (albums.size() == 0) {
+            if (albums != null && albums.size() == 0) {
                 albums.add(MediaProvider.getErrorAlbum());
             }
         }

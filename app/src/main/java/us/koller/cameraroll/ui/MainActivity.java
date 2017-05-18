@@ -276,11 +276,8 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    ViewGroup.MarginLayoutParams fabParams
-                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                    fabParams.rightMargin += insets.getSystemWindowInsetRight();
-                    fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
-                    fab.setLayoutParams(fabParams);
+                    fab.setTranslationY(-insets.getSystemWindowInsetBottom());
+                    fab.setTranslationX(-insets.getSystemWindowInsetRight());
 
                     return insets.consumeSystemWindowInsets();
                 }
@@ -318,11 +315,8 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                                             recyclerView.getPaddingEnd() + windowInsets[2],
                                             recyclerView.getPaddingBottom() + windowInsets[3]);
 
-                                    ViewGroup.MarginLayoutParams fabParams
-                                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                                    fabParams.rightMargin += windowInsets[2];
-                                    fabParams.bottomMargin += windowInsets[3];
-                                    fab.setLayoutParams(fabParams);
+                                    fab.setTranslationY(-windowInsets[2]);
+                                    fab.setTranslationX(-windowInsets[3]);
                                 }
                             });
         }

@@ -307,11 +307,8 @@ public class AlbumActivity extends ThemeableActivity
                             recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    ViewGroup.MarginLayoutParams fabParams
-                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                    fabParams.rightMargin += insets.getSystemWindowInsetRight();
-                    fabParams.bottomMargin += insets.getSystemWindowInsetBottom();
-                    fab.setLayoutParams(fabParams);
+                    fab.setTranslationY(-insets.getSystemWindowInsetBottom());
+                    fab.setTranslationX(-insets.getSystemWindowInsetRight());
 
                     rootView.setOnApplyWindowInsetsListener(null);
                     return insets.consumeSystemWindowInsets();
@@ -350,11 +347,8 @@ public class AlbumActivity extends ThemeableActivity
                                             recyclerView.getPaddingBottom() + windowInsets[3]);
                                     recyclerView.scrollToPosition(0);
 
-                                    ViewGroup.MarginLayoutParams fabParams
-                                            = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-                                    fabParams.rightMargin += windowInsets[2];
-                                    fabParams.bottomMargin += windowInsets[3];
-                                    fab.setLayoutParams(fabParams);
+                                    fab.setTranslationY(-windowInsets[2]);
+                                    fab.setTranslationX(-windowInsets[3]);
 
                                     rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 }
