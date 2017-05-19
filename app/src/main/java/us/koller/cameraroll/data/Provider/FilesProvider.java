@@ -10,12 +10,8 @@ import us.koller.cameraroll.data.StorageRoot;
 
 public class FilesProvider extends Provider {
 
-    public interface Callback {
-        void onDirLoaded(File_POJO dir);
-
-        void timeout();
-
-        void needPermission();
+    public abstract static class Callback implements Provider.Callback {
+        public abstract void onDirLoaded(File_POJO dir);
     }
 
     private Retriever retriever;
@@ -31,23 +27,34 @@ public class FilesProvider extends Provider {
     }
 
     public void loadDir(final Activity context, String dirPath,
-                        final FilesProvider.Callback callback) {
+                        FilesProvider.Callback callback) {
+
+        setCallback(callback);
 
         ((StorageRetriever) retriever).loadDir(context, dirPath,
                 new Callback() {
                     @Override
                     public void onDirLoaded(File_POJO dir) {
-                        callback.onDirLoaded(dir);
+                        Callback callback = getCallback();
+                        if (callback != null) {
+                            callback.onDirLoaded(dir);
+                        }
                     }
 
                     @Override
                     public void timeout() {
-                        callback.timeout();
+                        Callback callback = getCallback();
+                        if (callback != null) {
+                            callback.timeout();
+                        }
                     }
 
                     @Override
                     public void needPermission() {
-                        callback.needPermission();
+                        Callback callback = getCallback();
+                        if (callback != null) {
+                            callback.needPermission();
+                        }
                     }
                 });
     }

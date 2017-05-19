@@ -13,11 +13,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.FileOperations.FileOperationManager;
 import us.koller.cameraroll.data.Settings;
 
 public abstract class ThemeableActivity extends AppCompatActivity {
@@ -46,6 +48,8 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         }
 
         setTheme(getThemeRes(THEME));
+
+        FileOperationManager.getInstance().setProgressUpdater(new FileOperationManager.ToastUpdater(this));
     }
 
     @Override
@@ -67,6 +71,13 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         if (THEME == UNDEFINED) {
             this.recreate();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        FileOperationManager.getInstance().setProgressUpdater(null);
     }
 
     private static void readTheme(Context context) {

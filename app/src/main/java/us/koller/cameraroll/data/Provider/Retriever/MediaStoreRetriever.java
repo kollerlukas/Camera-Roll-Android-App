@@ -19,7 +19,7 @@ import us.koller.cameraroll.util.Util;
 
 //loading media through MediaStore
 //advantage: speed, disadvantage: might be missing some items
-public class MediaStoreRetriever implements Retriever {
+public class MediaStoreRetriever extends Retriever {
 
     private static final String[] projection = new String[]{
             MediaStore.Files.FileColumns.DATA,
@@ -27,7 +27,7 @@ public class MediaStoreRetriever implements Retriever {
 
 
     @Override
-    public void loadAlbums(final Activity context, boolean hiddenFolders, final MediaProvider.Callback callback) {
+    void loadAlbums(final Activity context, boolean hiddenFolders) {
 
         final long startTime = System.currentTimeMillis();
 
@@ -100,7 +100,11 @@ public class MediaStoreRetriever implements Retriever {
                 cursor.close();
 
                 //done loading media with content resolver
-                callback.onMediaLoaded(albums);
+                MediaProvider.Callback callback = getCallback();
+                if (callback != null) {
+                    callback.onMediaLoaded(albums);
+                }
+
                 Log.d("MediaStoreRetriever", "onMediaLoaded(): "
                         + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
             }

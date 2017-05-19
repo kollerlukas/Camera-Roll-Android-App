@@ -8,7 +8,9 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
+import java.io.CharArrayReader;
 import java.util.ArrayList;
+import java.util.prefs.PreferenceChangeListener;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
@@ -21,12 +23,8 @@ public class MediaProvider extends Provider {
 
     private static ArrayList<Album> albums;
 
-    public interface Callback {
-        void onMediaLoaded(ArrayList<Album> albums);
-
-        void timeout();
-
-        void needPermission();
+    public abstract static class Callback implements Provider.Callback {
+        public abstract void onMediaLoaded(ArrayList<Album> albums);
     }
 
     private static final int MODE_STORAGE = 1;
@@ -55,7 +53,7 @@ public class MediaProvider extends Provider {
 
     public void loadAlbums(final Activity context,
                            final boolean hiddenFolders,
-                           final Callback callback) {
+                           Callback callback) {
 
         if (!MediaProvider.checkPermission(context)) {
             callback.needPermission();
@@ -74,6 +72,8 @@ public class MediaProvider extends Provider {
         }
 
         if (retriever != null) {
+            setCallback(callback);
+
             retriever.loadAlbums(context, hiddenFolders,
                     new Callback() {
                         @Override
@@ -90,22 +90,33 @@ public class MediaProvider extends Provider {
                             int sort_by = Settings.getInstance(context).sortAlbumsBy();
                             SortUtil.sortAlbums(context, albums, sort_by);
 
-                            callback.onMediaLoaded(albums);
                             setAlbums(albums);
+                            Callback callback = getCallback();
+                            if (callback != null) {
+                                callback.onMediaLoaded(albums);
+                            }
                         }
 
                         @Override
                         public void timeout() {
-                            callback.timeout();
+                            Callback callback = getCallback();
+                            if (callback != null) {
+                                callback.timeout();
+                            }
                         }
 
                         @Override
                         public void needPermission() {
-                            callback.needPermission();
+                            Callback callback = getCallback();
+                            if (callback != null) {
+                                callback.needPermission();
+                            }
                         }
                     });
         } else {
-            callback.onMediaLoaded(null);
+            if (callback != null) {
+                callback.onMediaLoaded(null);
+            }
         }
     }
 

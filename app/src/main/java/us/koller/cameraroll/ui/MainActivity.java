@@ -170,7 +170,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        //Util.setToolbarTypeface(toolbar, "fonts/RobotoMono-Regular.ttf");
+        //Util.setToolbarTypeface(toolbar, "fonts/roboto_mono_regular.ttf");
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);

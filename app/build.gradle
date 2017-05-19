@@ -1,11 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    /*compileSdkVersion 'android-O'
+    buildToolsVersion '26.0.0-rc2'*/
     compileSdkVersion 25
     buildToolsVersion '25.0.3'
     defaultConfig {
         applicationId "us.koller.cameraroll"
         minSdkVersion 19
+        /*targetSdkVersion 'O'*/
         targetSdkVersion 25
         versionCode 19
         versionName "v1.5 Beta"

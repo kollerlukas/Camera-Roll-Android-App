@@ -33,7 +33,7 @@ public class Delete extends FileOperation {
             boolean result = deleteFile(context, files[i].getPath());
             if (result) {
                 success_count++;
-                setToastProgress(context, s, success_count);
+                FileOperationManager.getInstance().onProgress(s, success_count, files.length);
             } else {
                 if (callback != null) {
                     final int final_i = i;
@@ -48,7 +48,7 @@ public class Delete extends FileOperation {
         }
 
         if (success_count == 0) {
-            setToastProgress(context, s, success_count);
+            FileOperationManager.getInstance().onProgress(s, success_count, files.length);
         }
 
         if (callback != null) {

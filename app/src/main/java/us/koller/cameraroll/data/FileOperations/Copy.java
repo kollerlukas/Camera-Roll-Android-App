@@ -32,11 +32,11 @@ public class Copy extends FileOperation {
         for (int i = files.length - 1; i >= 0; i--) {
             boolean result = copyFilesRecursively(context, files[i].getPath(), target.getPath(), true);
             success_count += result ? 1 : 0;
-            setToastProgress(context, s, success_count);
+            FileOperationManager.getInstance().onProgress(s, success_count, files.length);
         }
 
         if (success_count == 0) {
-            setToastProgress(context, s, success_count);
+            FileOperationManager.getInstance().onProgress(s, success_count, files.length);
         }
 
         if (callback != null) {

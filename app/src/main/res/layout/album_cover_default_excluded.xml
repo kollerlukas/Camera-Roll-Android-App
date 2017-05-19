@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/excluded"
-        fontPath="fonts/RobotoMono-Regular.ttf"
+        fontPath="fonts/roboto_mono_regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"

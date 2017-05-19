@@ -135,8 +135,8 @@ public class FileExplorerActivity extends ThemeableActivity
                 ContextCompat.getColor(this, text_color_secondary_res));
 
         //need to be called after setTitle(), to ensure, that mTitleTextView exists
-        TextView titleTextView = Util.setToolbarTypeface(toolbar,
-                "fonts/RobotoMono-Regular.ttf");
+        TextView titleTextView = Util.setToolbarTypeface(toolbar
+        );
         if (titleTextView != null) {
             titleTextView.setEllipsize(TextUtils.TruncateAt.START);
         }

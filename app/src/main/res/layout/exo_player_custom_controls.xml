@@ -15,10 +15,10 @@
         android:id="@+id/controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp"
+        android:layout_gravity="bottom"
         android:background="@drawable/transparent_to_dark_gradient"
-        android:layout_gravity="bottom">
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <ImageButton
             android:id="@+id/play_pause"
@@ -36,29 +36,29 @@
 
             <TextView
                 android:id="@id/exo_position"
-                fontPath="fonts/RobotoMono-Regular.ttf"
+                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/white_translucent1"
                 android:layout_margin="8dp"
+                android:textColor="@color/white_translucent1"
                 tools:ignore="MissingPrefix" />
 
             <SeekBar
                 android:id="@id/exo_progress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@id/exo_duration"
-                fontPath="fonts/RobotoMono-Regular.ttf"
+                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/white_translucent1"
                 android:layout_margin="8dp"
+                android:textColor="@color/white_translucent1"
                 tools:ignore="MissingPrefix" />
         </LinearLayout>
     </LinearLayout>

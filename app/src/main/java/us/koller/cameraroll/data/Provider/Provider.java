@@ -15,6 +15,12 @@ import us.koller.cameraroll.data.Provider.Retriever.Retriever;
 
 public abstract class Provider {
 
+    public interface Callback {
+        void timeout();
+
+        void needPermission();
+    }
+
     //prevent StorageRetriever from querying Android-Folder
     private static final String[] permanentlyExcludedPaths
             = {Environment.getExternalStorageDirectory().getPath() + "/Android"}; // "/storage/emulated/0/Android"
@@ -28,13 +34,29 @@ public abstract class Provider {
 
     Retriever retriever;
 
+    private Callback callback;
+
     Provider(Context context) {
         if (excludedPaths == null) {
             loadExcludedPaths(context);
         }
     }
 
+    void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Callback> T getCallback() {
+        if (callback != null) {
+            return (T) callback;
+        }
+        return null;
+    }
+
     public void onDestroy() {
+        setCallback(null);
+
         if (retriever != null) {
             retriever.onDestroy();
         }

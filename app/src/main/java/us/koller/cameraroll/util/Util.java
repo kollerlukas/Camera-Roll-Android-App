@@ -102,15 +102,17 @@ public class Util {
         return new int[]{1, 1};
     }
 
+    private static final String robotoMonoPath = "fonts/roboto_mono_regular.ttf";
+
     @SuppressWarnings("inlineValue")
-    public static TextView setToolbarTypeface(Toolbar toolbar, String path) {
+    public static TextView setToolbarTypeface(Toolbar toolbar) {
         for (int i = 0; i < toolbar.getChildCount(); i++) {
             View view = toolbar.getChildAt(i);
             if (view instanceof TextView) {
                 TextView textView = (TextView) view;
                 if (textView.getText().equals(toolbar.getTitle())) {
                     textView.setTypeface(Typeface.createFromAsset(
-                            toolbar.getContext().getAssets(), path));
+                            toolbar.getContext().getAssets(), robotoMonoPath));
                     return textView;
                 }
             }

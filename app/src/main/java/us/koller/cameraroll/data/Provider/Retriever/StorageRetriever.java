@@ -29,7 +29,7 @@ import us.koller.cameraroll.util.SortUtil;
 
 //loading media by searching through Storage
 //advantage: all items, disadvantage: slower than MediaStore
-public class StorageRetriever implements Retriever {
+public class StorageRetriever extends Retriever {
 
     interface StorageSearchCallback {
         void onPartialResult(ItemLoader.Result result);
@@ -57,8 +57,7 @@ public class StorageRetriever implements Retriever {
     }
 
     @Override
-    public void loadAlbums(final Activity context, final boolean hiddenFolders,
-                           final MediaProvider.Callback callback) {
+    void loadAlbums(final Activity context, final boolean hiddenFolders) {
 
         itemLoaderClass = AlbumLoader.class;
 
@@ -72,7 +71,10 @@ public class StorageRetriever implements Retriever {
             @Override
             public void run() {
                 Toast.makeText(context, "timeout", Toast.LENGTH_SHORT).show();
-                callback.timeout();
+                MediaProvider.Callback callback = getCallback();
+                if (callback != null) {
+                    callback.timeout();
+                }
             }
         };
         handler.postDelayed(timeout, 5000);
@@ -100,7 +102,10 @@ public class StorageRetriever implements Retriever {
                                 }
 
                                 //done loading media from storage
-                                callback.onMediaLoaded(albums);
+                                MediaProvider.Callback callback = getCallback();
+                                if (callback != null) {
+                                    callback.onMediaLoaded(albums);
+                                }
                                 cancelTimeout();
                                 Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
                                         + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
