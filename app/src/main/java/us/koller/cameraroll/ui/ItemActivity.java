@@ -1,11 +1,13 @@
 package us.koller.cameraroll.ui;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -58,6 +60,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +69,6 @@ import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.FileOperations.Delete;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Gif;
@@ -93,7 +95,6 @@ public class ItemActivity extends ThemeableActivity {
     public static final String ITEM_POSITION = "ITEM_POSITION";
     public static final String VIEW_ONLY = "VIEW_ONLY";
     public static final String FINISH_AFTER = "FINISH_AFTER";
-    public static final String HIDDEN_ALBUMITEM = "HIDDEN_ALBUMITEM";
     private static final String WAS_SYSTEM_UI_HIDDEN = "WAS_SYSTEM_UI_HIDDEN";
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
@@ -505,27 +506,31 @@ public class ItemActivity extends ThemeableActivity {
             return;
         }
 
-        new Delete(new File_POJO[]{new File_POJO(albumItem.getPath(), true)})
-                .execute(this, null,
-                        new FileOperation.Callback() {
-                            @Override
-                            public void done() {
-                                Intent intent = new Intent(AlbumActivity.ALBUM_ITEM_DELETED);
-                                intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
-                                intent.putExtra(ALBUM_ITEM, albumItem);
-                                intent.putExtra(HIDDEN_ALBUMITEM, album.isHidden());
-                                intent.putExtra(VIEW_ONLY, view_only);
+        final File_POJO[] files = new File_POJO[]{new File_POJO(albumItem.getPath(), true)};
 
-                                setResult(RESULT_OK, intent);
+        setLocalBroadcastReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case FileOperation.RESULT_DONE:
+                        Intent i = new Intent(AlbumActivity.ALBUM_ITEM_DELETED)
+                                .putExtra(AlbumActivity.ALBUM_PATH, album.getPath())
+                                .putExtra(ALBUM_ITEM, albumItem)
+                                .putExtra(VIEW_ONLY, view_only);
 
-                                finish();
-                            }
+                        ItemActivity.this.setResult(RESULT_OK, i);
 
-                            @Override
-                            public void failed(String path) {
-                                onBackPressed();
-                            }
-                        });
+                        finish();
+
+                        setLocalBroadcastReceiver(null);
+                        break;
+                    case FileOperation.FAILED:
+                        //onBackPressed();
+                        break;
+                }
+            }
+        });
+        startService(FileOperation.getDefaultIntent(this, FileOperation.DELETE, files));
     }
 
     public void showInfoDialog() {
@@ -864,6 +869,11 @@ public class ItemActivity extends ThemeableActivity {
 
             Util.colorToolbarOverflowMenuIcon(toolbar, white);
         }
+    }
+
+    @Override
+    public IntentFilter getBroadcastIntentFilter() {
+        return FileOperation.Util.getIntentFilter();
     }
 
     public String getFileSize(File file) {

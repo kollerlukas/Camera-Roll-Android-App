@@ -1,5 +1,7 @@
 package us.koller.cameraroll.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -206,10 +208,5 @@ public class AboutActivity extends ThemeableActivity
         } else {
             return R.style.Theme_CameraRoll_Translucent_Light_About;
         }
-    }
-
-    @Override
-    public void onThemeApplied(int theme) {
-
     }
 }

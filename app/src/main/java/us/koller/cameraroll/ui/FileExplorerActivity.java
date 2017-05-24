@@ -2,8 +2,11 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -45,7 +48,6 @@ import us.koller.cameraroll.data.FileOperations.Copy;
 import us.koller.cameraroll.data.FileOperations.Delete;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.FileOperations.Move;
-import us.koller.cameraroll.data.FileOperations.NewDirectory;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.FilesProvider;
 import us.koller.cameraroll.data.Provider.Provider;
@@ -80,7 +82,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
     private Menu menu;
 
-    private FileOperation fileOperation;
+    private Intent fileOpIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,9 +276,9 @@ public class FileExplorerActivity extends ThemeableActivity
                 } else if (mode == RecyclerViewAdapter.PICK_TARGET_MODE) {
                     if (savedInstanceState.containsKey(FILE_OPERATION)) {
                         onSelectorModeEnter();
-                        fileOperation = savedInstanceState.getParcelable(FILE_OPERATION);
-                        FileOperation.operation = fileOperation != null ?
-                                fileOperation.getType() : FileOperation.EMPTY;
+                        //fileOp = savedInstanceState.getParcelable(FILE_OPERATION);
+                        /*FileOperation.operation = fileOp != null ?
+                                fileOp.getType() : FileOperation.EMPTY;*/
                         //need to call pick target after onSelectorModeEnter animation are done
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -400,9 +402,11 @@ public class FileExplorerActivity extends ThemeableActivity
             outState.putParcelableArray(SELECTED_ITEMS, selectedItems);
         }
 
-        if (fileOperation != null) {
-            outState.putParcelable(FILE_OPERATION, fileOperation);
-        }
+        /*if (fileOp != null) {
+            outState.putParcelable(FILE_OPERATION, fileOp);
+            File_POJO[] files = FileOperation.getFiles(fileOpIntent);
+            outState.putParcelableArray(SELECTED_ITEMS, files);
+        }*/
     }
 
     @Override
@@ -456,7 +460,6 @@ public class FileExplorerActivity extends ThemeableActivity
                 if (recyclerViewAdapter.isModeActive()
                         || recyclerViewAdapter.getMode()
                         == RecyclerViewAdapter.PICK_TARGET_MODE) {
-                    FileOperation.operation = FileOperation.EMPTY;
                     recyclerViewAdapter.cancelMode();
                 } else {
                     onBackPressed();
@@ -474,37 +477,31 @@ public class FileExplorerActivity extends ThemeableActivity
             case R.id.paste:
                 if (!currentDir.getPath().equals(STORAGE_ROOTS)) {
                     recyclerViewAdapter.cancelMode();
-                    if (fileOperation != null) {
-                        fileOperation.execute(this,
-                                recyclerViewAdapter.getFiles(),
-                                new FileOperation.Callback() {
-                                    @Override
-                                    public void done() {
-                                        loadDirectory(currentDir.getPath());
-                                    }
-
-                                    @Override
-                                    public void failed(String path) {
-
-                                    }
-                                });
+                    if (fileOpIntent != null) {
+                        File_POJO target = recyclerViewAdapter.getFiles();
+                        fileOpIntent.putExtra(FileOperation.TARGET, target);
+                        startService(fileOpIntent);
+                        fileOpIntent = null;
                     }
                 } else {
                     Toast.makeText(this, "You can't "
-                            + FileOperation.getModeString(this)
+                            + fileOpIntent.getAction()
                             + " files here!", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case R.id.move:
-                FileOperation.operation = FileOperation.MOVE;
+            case R.id.copy:
+                fileOpIntent = new Intent(this, Copy.class)
+                        .setAction(FileOperation.Util.getActionString(this, FileOperation.COPY));
                 recyclerViewAdapter.cancelMode();
                 break;
-            case R.id.copy:
-                FileOperation.operation = FileOperation.COPY;
+            case R.id.move:
+                fileOpIntent = new Intent(this, Move.class)
+                        .setAction(FileOperation.Util.getActionString(this, FileOperation.MOVE));
                 recyclerViewAdapter.cancelMode();
                 break;
             case R.id.delete:
-                FileOperation.operation = FileOperation.DELETE;
+                fileOpIntent = new Intent(this, Delete.class)
+                        .setAction(FileOperation.Util.getActionString(this, FileOperation.DELETE));
                 recyclerViewAdapter.cancelMode();
                 break;
         }
@@ -528,20 +525,14 @@ public class FileExplorerActivity extends ThemeableActivity
                         String filename = editText.getText().toString();
                         File_POJO newFolder = new File_POJO(currentDir.getPath()
                                 + "/" + filename, false);
-                        new NewDirectory(new File_POJO[]{newFolder})
-                                .execute(FileExplorerActivity.this,
-                                        null,
-                                        new FileOperation.Callback() {
-                                            @Override
-                                            public void done() {
-                                                loadDirectory(currentDir.getPath());
-                                            }
 
-                                            @Override
-                                            public void failed(String path) {
+                        File_POJO[] files = new File_POJO[]{newFolder};
 
-                                            }
-                                        });
+                        Intent intent = FileOperation.getDefaultIntent(
+                                FileExplorerActivity.this,
+                                FileOperation.NEW_DIR,
+                                files);
+                        startService(intent);
                     }
                 })
                 .setNegativeButton(getString(R.string.cancel), null)
@@ -625,10 +616,6 @@ public class FileExplorerActivity extends ThemeableActivity
         if (filesProvider != null) {
             filesProvider.onDestroy();
         }
-
-        if (fileOperation != null) {
-            fileOperation.setCallback(null);
-        }
     }
 
     @Override
@@ -656,8 +643,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
     @Override
     public void onSelectorModeEnter() {
-        fileOperation = null;
-        FileOperation.operation = FileOperation.EMPTY;
+        fileOpIntent = null;
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setActivated(true);
@@ -721,49 +707,37 @@ public class FileExplorerActivity extends ThemeableActivity
 
     @Override
     public void onSelectorModeExit(final File_POJO[] selected_items) {
-        switch (FileOperation.operation) {
-            case FileOperation.DELETE:
-                resetToolbar();
+        if (fileOpIntent != null) {
+            fileOpIntent.putExtra(FileOperation.FILES, selected_items);
+            switch (FileOperation.Util.getActionInt(this, fileOpIntent.getAction())) {
+                case FileOperation.DELETE:
+                    resetToolbar();
 
-                String title = getString(R.string.delete) + " "
-                        + String.valueOf(selected_items.length)
-                        + " " + (selected_items.length > 1 ?
-                        getString(R.string.files) : getString(R.string.file));
+                    String title = getString(R.string.delete) + " "
+                            + String.valueOf(selected_items.length)
+                            + " " + (selected_items.length > 1 ?
+                            getString(R.string.files) : getString(R.string.file));
 
-                new AlertDialog.Builder(this, getDialogThemeRes())
-                        .setTitle(title)
-                        .setNegativeButton(getString(R.string.no), null)
-                        .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                fileOperation = new Delete(selected_items);
-                                fileOperation.execute(FileExplorerActivity.this, null,
-                                        new FileOperation.Callback() {
-                                            @Override
-                                            public void done() {
-                                                loadDirectory(currentDir.getPath());
-                                            }
-
-                                            @Override
-                                            public void failed(String path) {
-
-                                            }
-                                        });
-                            }
-                        })
-                        .create().show();
-                break;
-            case FileOperation.COPY:
-                fileOperation = new Copy(selected_items);
-                recyclerViewAdapter.pickTarget();
-                break;
-            case FileOperation.MOVE:
-                fileOperation = new Move(selected_items);
-                recyclerViewAdapter.pickTarget();
-                break;
+                    new AlertDialog.Builder(this, getDialogThemeRes())
+                            .setTitle(title)
+                            .setNegativeButton(getString(R.string.no), null)
+                            .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    startService(fileOpIntent);
+                                    fileOpIntent = null;
+                                }
+                            })
+                            .create().show();
+                    break;
+                case FileOperation.COPY:
+                case FileOperation.MOVE:
+                    recyclerViewAdapter.pickTarget();
+                    break;
+            }
         }
 
-        if (fileOperation == null) {
+        if (fileOpIntent == null) {
             resetToolbar();
         }
     }
@@ -789,15 +763,15 @@ public class FileExplorerActivity extends ThemeableActivity
     @Override
     public void onPickTargetModeEnter() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (fileOperation != null) {
-            final int count = fileOperation.getFiles().length;
+        if (fileOpIntent != null) {
+            final int count = FileOperation.getFiles(fileOpIntent).length;
 
             int color = ContextCompat.getColor(this, R.color.grey_900_translucent);
             ColorFade.fadeToolbarTitleColor(toolbar, color,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
-                            toolbar.setTitle(FileOperation.getModeString(FileExplorerActivity.this) + " "
+                            toolbar.setTitle(fileOpIntent.getAction() + " "
                                     + String.valueOf(count)
                                     + (count > 1 ? getString(R.string.items) : getString(R.string.item)));
                         }
@@ -960,5 +934,28 @@ public class FileExplorerActivity extends ThemeableActivity
                         }
                     });*/
         }
+    }
+
+    @Override
+    public BroadcastReceiver getLocalBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case FileOperation.RESULT_DONE:
+                        loadDirectory(currentDir.getPath());
+
+                        setLocalBroadcastReceiver(null);
+                        break;
+                    case FileOperation.FAILED:
+                        break;
+                }
+            }
+        };
+    }
+
+    @Override
+    public IntentFilter getBroadcastIntentFilter() {
+        return FileOperation.Util.getIntentFilter();
     }
 }

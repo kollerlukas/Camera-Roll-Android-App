@@ -102,4 +102,10 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
         return null;
     }
+
+    //for deleting items from the list
+    @Override
+    public int getItemPosition(Object object) {
+        return PagerAdapter.POSITION_NONE;
+    }
 }

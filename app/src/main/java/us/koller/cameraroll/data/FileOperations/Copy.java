@@ -1,6 +1,7 @@
 package us.koller.cameraroll.data.FileOperations;
 
-import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,36 +15,27 @@ import us.koller.cameraroll.data.File_POJO;
 
 public class Copy extends FileOperation {
 
-    public Copy(File_POJO[] files) {
-        super(files);
-    }
-
     @Override
-    void executeAsync(final Activity context, File_POJO target) {
+    void execute(Intent workIntent) {
+        File_POJO[] files = getFiles(workIntent);
+        File_POJO target = workIntent.getParcelableExtra(TARGET);
+
         if (target == null) {
             return;
         }
 
-        String s = context.getString(R.string.successfully_copied);
-
-        final File_POJO[] files = getFiles();
+        String s = getString(R.string.successfully_copied);
 
         int success_count = 0;
         for (int i = files.length - 1; i >= 0; i--) {
-            boolean result = copyFilesRecursively(context, files[i].getPath(), target.getPath(), true);
+            boolean result = copyFilesRecursively(getApplicationContext(), files[i].getPath(), target.getPath(), true);
             success_count += result ? 1 : 0;
-            FileOperationManager.getInstance().onProgress(s, success_count, files.length);
+            onProgress(s, success_count, files.length);
         }
 
         if (success_count == 0) {
-            FileOperationManager.getInstance().onProgress(s, success_count, files.length);
+            onProgress(s, success_count, files.length);
         }
-
-        if (callback != null) {
-            callback.done();
-        }
-
-        operation = EMPTY;
     }
 
     @Override
@@ -56,7 +48,7 @@ public class Copy extends FileOperation {
         return FileOperation.COPY;
     }
 
-    private static boolean copyFilesRecursively(Activity context, String path,
+    private static boolean copyFilesRecursively(Context context, String path,
                                                 String destination, boolean result) {
         File file = new File(path);
         String destinationFileName
@@ -64,7 +56,7 @@ public class Copy extends FileOperation {
         try {
             result = result && copyFile(path, destinationFileName);
 
-            scanPaths(context, new String[]{path, destinationFileName});
+            FileOperation.Util.scanPaths(context, new String[]{path, destinationFileName});
         } catch (IOException e) {
             e.printStackTrace();
         }

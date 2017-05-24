@@ -1,13 +1,16 @@
 package us.koller.cameraroll.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -21,7 +24,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +41,7 @@ import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.adapter.main.ViewHolder.NestedRecyclerViewAlbumHolder;
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
@@ -110,8 +113,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     @SuppressWarnings("FieldCanBeLocal")
     private boolean allowMultiple;
 
-    public static boolean refreshMediaWhenVisible = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +171,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        //Util.setToolbarTypeface(toolbar, "fonts/roboto_mono_regular.ttf");
+        //Util.setToolbarTypeface(toolbar);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
@@ -412,9 +413,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             setSystemUiFlags();
         }
 
-        if (refreshMediaWhenVisible) {
-            refreshPhotos();
-        }
+        //refreshPhotos();
     }
 
     @Override
@@ -454,8 +453,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             mediaProvider.onDestroy();
             mediaProvider = null;
         }
-
-        refreshMediaWhenVisible = false;
 
         snackbar = Snackbar.make(findViewById(R.id.root_view),
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
@@ -565,10 +562,18 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 break;
             case R.id.sort_by_name:
             case R.id.sort_by_size:
+            case R.id.sort_by_most_recent:
                 item.setChecked(true);
 
-                int sort_by = item.getItemId() == R.id.sort_by_name ?
-                        SortUtil.BY_NAME : SortUtil.BY_SIZE;
+                int sort_by;
+                if (item.getItemId() == R.id.sort_by_name) {
+                    sort_by = SortUtil.BY_NAME;
+                } else if (item.getItemId() == R.id.sort_by_size) {
+                    sort_by = SortUtil.BY_SIZE;
+                } else {
+                    sort_by = SortUtil.BY_DATE;
+                }
+
                 Settings.getInstance(this).sortAlbumsBy(this, sort_by);
 
                 refreshPhotos();
@@ -588,29 +593,20 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                //getting default camera app and launching it; no return
-                Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                try {
-                    PackageManager pm = MainActivity.this.getPackageManager();
-
-                    final ResolveInfo mInfo = pm.resolveActivity(i, 0);
-
-                    Log.d("MainActivity", "camera app package name: " + mInfo.activityInfo.packageName);
-                    Intent intent = pm.getLaunchIntentForPackage(mInfo.activityInfo.packageName);
-
-                    startActivity(intent);
-                } catch (Exception e) {
+                Intent i = new Intent();
+                i.setAction(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                if (i.resolveActivity(getPackageManager()) != null) {
+                    startActivity(i);
+                } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
                 }
+
             }
         }, (int) (500 * Util.getAnimatorSpeed(this)));
     }
 
     public void showAndHideFab(boolean show) {
-        Log.d("MainActivity", "showAndHideFab() called with: show = [" + show + "]");
         if (pick_photos || !Settings.getInstance(this).getCameraShortcut()) {
-            Log.d("MainActivity", "showAndHideFab: return;");
             return;
         }
 
@@ -754,5 +750,25 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     @Override
     public void onItemSelected(int selectedItemCount) {
 
+    }
+
+    @Override
+    public BroadcastReceiver getLocalBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case FileOperation.RESULT_DONE:
+                    case FileOperation.FAILED:
+                        refreshPhotos();
+                        break;
+                }
+            }
+        };
+    }
+
+    @Override
+    public IntentFilter getBroadcastIntentFilter() {
+        return FileOperation.Util.getIntentFilter();
     }
 }

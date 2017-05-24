@@ -1,8 +1,11 @@
 package us.koller.cameraroll.ui;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,16 +22,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-
+;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.FileOperations.Copy;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
-import us.koller.cameraroll.data.FileOperations.Move;
-import us.koller.cameraroll.data.FileOperations.NewDirectory;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
@@ -44,8 +44,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     private static String CREATE_NEW_FOLDER = "CREATE_NEW_FOLDER";
 
     private String action;
-
-    private FileOperation fileOperation;
 
     private boolean creatingNewFolder = false;
 
@@ -111,10 +109,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
         if (dialog != null) {
             dialog.dismiss();
-        }
-
-        if (fileOperation != null) {
-            fileOperation.setCallback(null);
         }
     }
 
@@ -198,24 +192,48 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         String filename = editText.getText().toString();
                         String picturesDir = Environment
                                 .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath();
+
                         final File_POJO newFolder
                                 = new File_POJO(picturesDir + "/" + filename, false);
-                        new NewDirectory(new File_POJO[]{newFolder})
-                                .execute(FileOperationDialogActivity.this,
-                                        null,
-                                        new FileOperation.Callback() {
-                                            @Override
-                                            public void done() {
-                                                creatingNewFolder = false;
-                                                callback.newFolderCreated(newFolder.getPath());
-                                            }
 
-                                            @Override
-                                            public void failed(String path) {
-                                                creatingNewFolder = false;
-                                                callback.failed();
-                                            }
-                                        });
+                        /*FileOperation newDir = new NewDirectory();
+                        newDir.setCallback(new FileOperation.Callback() {
+                            @Override
+                            public void done() {
+                                creatingNewFolder = false;
+                                callback.newFolderCreated(newFolder.getPath());
+                            }
+
+                            @Override
+                            public void failed(String path) {
+                                creatingNewFolder = false;
+                                callback.failed();
+                            }
+                        });*/
+
+                        setLocalBroadcastReceiver(new BroadcastReceiver() {
+                            @Override
+                            public void onReceive(Context context, Intent intent) {
+                                switch (intent.getAction()) {
+                                    case FileOperation.RESULT_DONE:
+                                        creatingNewFolder = false;
+                                        callback.newFolderCreated(newFolder.getPath());
+
+                                        setLocalBroadcastReceiver(null);
+                                        break;
+                                    case FileOperation.FAILED:
+                                        creatingNewFolder = false;
+                                        callback.failed();
+                                        break;
+                                }
+                            }
+                        });
+
+                        Intent intent = FileOperation.getDefaultIntent(
+                                FileOperationDialogActivity.this,
+                                FileOperation.NEW_DIR,
+                                new File_POJO[]{newFolder});
+                        startService(intent);
                     }
                 })
                 .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -236,24 +254,10 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     }
 
     public void executeAction(File_POJO[] files, String target) {
-        if (action.equals(ACTION_COPY)) {
-            fileOperation = new Copy(files);
-        } else {
-            fileOperation = new Move(files);
-        }
-        fileOperation.execute(this,
-                new File_POJO(target, false),
-                new FileOperation.Callback() {
-                    @Override
-                    public void done() {
-
-                    }
-
-                    @Override
-                    public void failed(String path) {
-
-                    }
-                });
+        int action = this.action.equals(ACTION_COPY) ? FileOperation.COPY : FileOperation.MOVE;
+        Intent intent = FileOperation.getDefaultIntent(this, action, files);
+        intent.putExtra(FileOperation.TARGET, new File_POJO(target, false));
+        startService(intent);
     }
 
 
@@ -267,8 +271,8 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onThemeApplied(int theme) {
-
+    public IntentFilter getBroadcastIntentFilter() {
+        return FileOperation.Util.getIntentFilter();
     }
 
     private static class RecyclerViewAdapter extends RecyclerView.Adapter {

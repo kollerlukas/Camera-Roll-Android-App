@@ -193,4 +193,5 @@
     <string name="by_name">Name</string>
     <string name="by_size">Size</string>
     <string name="by_date">Last modified</string>
+    <string name="folder_name">Folder Name</string>
 </resources>

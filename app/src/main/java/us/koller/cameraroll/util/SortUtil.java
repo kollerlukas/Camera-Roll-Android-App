@@ -42,6 +42,7 @@ public class SortUtil {
                         return 0;
                     }
                 });
+                break;
         }
     }
 
@@ -51,9 +52,6 @@ public class SortUtil {
                 sortByName(sortables);
                 return;
             case BY_DATE:
-                sortByDate(context, sortables);
-                return;
-            case BY_SIZE:
                 sortByDate(context, sortables);
         }
     }

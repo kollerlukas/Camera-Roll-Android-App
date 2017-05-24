@@ -1,8 +1,9 @@
 package us.koller.cameraroll.data.FileOperations;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,44 +19,26 @@ import us.koller.cameraroll.util.StorageUtil;
 
 public class Delete extends FileOperation {
 
-    public Delete(File_POJO[] files) {
-        super(files);
-    }
-
     @Override
-    void executeAsync(final Activity context, File_POJO target) {
-        final File_POJO[] files = getFiles();
+    void execute(Intent workIntent) {
+        final File_POJO[] files = getFiles(workIntent);
 
-        String s = context.getString(R.string.successfully_deleted);
+        String s = getString(R.string.successfully_deleted);
 
         int success_count = 0;
         for (int i = 0; i < files.length; i++) {
-            boolean result = deleteFile(context, files[i].getPath());
+            boolean result = deleteFile(getApplicationContext(), files[i].getPath());
             if (result) {
                 success_count++;
-                FileOperationManager.getInstance().onProgress(s, success_count, files.length);
+                onProgress(s, success_count, files.length);
             } else {
-                if (callback != null) {
-                    final int final_i = i;
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.failed(files[final_i].getPath());
-                        }
-                    });
-                }
+                sendFailedBroadcast(workIntent, files[i].getPath());
             }
         }
 
         if (success_count == 0) {
-            FileOperationManager.getInstance().onProgress(s, success_count, files.length);
+            onProgress(s, success_count, files.length);
         }
-
-        if (callback != null) {
-            callback.done();
-        }
-
-        operation = EMPTY;
     }
 
     @Override
@@ -68,7 +51,7 @@ public class Delete extends FileOperation {
         return FileOperation.DELETE;
     }
 
-    private static boolean deleteFile(final Activity context, String path) {
+    private static boolean deleteFile(final Context context, String path) {
         boolean success;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && Environment.isExternalStorageRemovable(new File(path))) {

@@ -10,19 +10,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.FileOperations.FileOperationManager;
 import us.koller.cameraroll.data.Settings;
 
-public abstract class ThemeableActivity extends AppCompatActivity {
+public abstract class ThemeableActivity extends BaseActivity {
 
     public static final int UNDEFINED = -1;
     public static final int DARK = 1;
@@ -48,15 +46,15 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         }
 
         setTheme(getThemeRes(THEME));
-
-        FileOperationManager.getInstance().setProgressUpdater(new FileOperationManager.ToastUpdater(this));
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        setViewBgColors();
+        ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+
+        checkTags(rootView);
 
         onThemeApplied(THEME);
 
@@ -71,13 +69,6 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         if (THEME == UNDEFINED) {
             this.recreate();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        FileOperationManager.getInstance().setProgressUpdater(null);
     }
 
     private static void readTheme(Context context) {
@@ -103,17 +94,55 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         accent_color_res = R.color.colorAccent;
     }
 
-    public void setViewBgColors() {
-        ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
-        if (rootView == null) {
+    public static void checkTags(ViewGroup viewGroup) {
+        setViewBgColors(viewGroup);
+
+        setViewTextColors(viewGroup);
+    }
+
+    public static void setViewTextColors(ViewGroup vg) {
+        if (vg == null) {
             return;
         }
 
         //find views
-        String TAG = this.getString(R.string.theme_bg_color);
-        ArrayList<View> views = findViewsWithTag(TAG, rootView);
+        String TAG_TEXT_PRIMARY = vg.getContext().getString(R.string.theme_text_color_primary);
+        ArrayList<View> viewsPrimary = findViewsWithTag(TAG_TEXT_PRIMARY, vg);
 
-        int bg_color = ContextCompat.getColor(this, bg_color_res);
+        int textColorPrimary = ContextCompat.getColor(vg.getContext(), text_color_res);
+        for (int i = 0; i < viewsPrimary.size(); i++) {
+            View v = viewsPrimary.get(i);
+            if (v instanceof TextView) {
+                ((TextView) v).setTextColor(textColorPrimary);
+            } else if (v instanceof ImageView) {
+                ((ImageView) v).setColorFilter(textColorPrimary);
+            }
+        }
+
+        String TAG_TEXT_SECONDARY = vg.getContext().getString(R.string.theme_text_color_secondary);
+        ArrayList<View> viewsSecondary = findViewsWithTag(TAG_TEXT_SECONDARY, vg);
+
+        int textColorSecondary = ContextCompat.getColor(vg.getContext(), text_color_secondary_res);
+        for (int i = 0; i < viewsSecondary.size(); i++) {
+            View v = viewsSecondary.get(i);
+            if (v instanceof TextView) {
+                ((TextView) v).setTextColor(textColorSecondary);
+            } else if (v instanceof ImageView) {
+                ((ImageView) v).setColorFilter(textColorSecondary);
+            }
+        }
+    }
+
+    public static void setViewBgColors(ViewGroup vg) {
+        if (vg == null) {
+            return;
+        }
+
+        //find views
+        String TAG = vg.getContext().getString(R.string.theme_bg_color);
+        ArrayList<View> views = findViewsWithTag(TAG, vg);
+
+        int bg_color = ContextCompat.getColor(vg.getContext(), bg_color_res);
         for (int i = 0; i < views.size(); i++) {
             views.get(i).setBackgroundColor(bg_color);
         }
@@ -147,7 +176,9 @@ public abstract class ThemeableActivity extends AppCompatActivity {
 
     public abstract int getThemeRes(int style);
 
-    public abstract void onThemeApplied(int theme);
+    public void onThemeApplied(int theme) {
+
+    }
 
     public static int getDialogThemeRes() {
         if (THEME == DARK) {
@@ -167,12 +198,6 @@ public abstract class ThemeableActivity extends AppCompatActivity {
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
                 overviewIcon, color));
         overviewIcon.recycle();
-    }
-
-    //for RobotoMono font
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     public static int getStatusBarColor(Context context, int toolbarColor) {

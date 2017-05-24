@@ -2,8 +2,11 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
@@ -46,7 +49,6 @@ import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.FileOperations.Delete;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
@@ -112,15 +114,8 @@ public class AlbumActivity extends ThemeableActivity
 
     private Menu menu;
 
-    //to refresh MainActivity, when deleting of items is done
-    private boolean refreshMainActivityAfterItemWasDeleted = false;
-    //to refresh MainActivity, when exclude-Flag changed
-    private boolean refreshMainActivityWhenClosed = false;
-
     private boolean pick_photos;
     private boolean allowMultiple;
-
-    private FileOperation fileOperation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -169,7 +164,12 @@ public class AlbumActivity extends ThemeableActivity
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
         if (!pick_photos) {
+            if (actionBar != null) {
+                actionBar.setTitle(album.getName());
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
                         ContextCompat.getDrawable(AlbumActivity.this, R.drawable.back_to_cancel_avd);
@@ -187,7 +187,6 @@ public class AlbumActivity extends ThemeableActivity
                 toolbar.setNavigationIcon(navIcon);
             }
         } else {
-            ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) :
                         getString(R.string.pick_photo));
@@ -385,8 +384,6 @@ public class AlbumActivity extends ThemeableActivity
             final int index = k;
             album.getAlbumItems().remove(index);
             recyclerView.getAdapter().notifyDataSetChanged();
-
-            refreshMainActivityWhenClosed = true;
         }
     }
 
@@ -517,7 +514,6 @@ public class AlbumActivity extends ThemeableActivity
                     album.excluded = false;
                 }
                 item.setChecked(album.excluded);
-                refreshMainActivityWhenClosed = !refreshMainActivityWhenClosed;
                 break;
             case R.id.sort_by_date:
             case R.id.sort_by_name:
@@ -626,32 +622,31 @@ public class AlbumActivity extends ThemeableActivity
             filesToDelete[i] = new File_POJO(selected_items[i].getPath(), true);
         }
 
-        fileOperation = new Delete(filesToDelete)
-                .execute(this, null,
-                        new FileOperation.Callback() {
-                            @Override
-                            public void done() {
-                                refreshMainActivityWhenClosed = true;
-                                if (refreshMainActivityAfterItemWasDeleted) {
-                                    setResult(RESULT_OK,
-                                            new Intent(MainActivity.REFRESH_MEDIA));
-                                    finish();
-                                }
+        setLocalBroadcastReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case FileOperation.RESULT_DONE:
+                        setLocalBroadcastReceiver(null);
+                        break;
+                    case FileOperation.FAILED:
+                        String path = intent.getStringExtra(FileOperation.FILES);
+                        for (int i = 0; i < selected_items.length; i++) {
+                            if (selected_items[i].getPath().equals(path)) {
+                                album.getAlbumItems().add(indices[i],
+                                        selected_items[i]);
+                                recyclerView.getAdapter()
+                                        .notifyItemInserted(indices[i]);
+                                break;
                             }
+                        }
+                        break;
+                }
+            }
+        });
 
-                            @Override
-                            public void failed(String path) {
-                                for (int i = 0; i < selected_items.length; i++) {
-                                    if (selected_items[i].getPath().equals(path)) {
-                                        album.getAlbumItems().add(indices[i],
-                                                selected_items[i]);
-                                        recyclerView.getAdapter()
-                                                .notifyItemInserted(indices[i]);
-                                        break;
-                                    }
-                                }
-                            }
-                        });
+        startService(FileOperation.getDefaultIntent(
+                this, FileOperation.DELETE, filesToDelete));
     }
 
     //needed to send multiple uris in intents
@@ -937,12 +932,7 @@ public class AlbumActivity extends ThemeableActivity
         } else if (snackbar != null) {
             snackbar.dismiss();
             snackbar = null;
-            refreshMainActivityAfterItemWasDeleted = true;
         } else {
-            if (refreshMainActivityWhenClosed) {
-                Provider.saveExcludedPaths(this);
-                setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
-            }
             super.onBackPressed();
         }
     }
@@ -960,10 +950,6 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (fileOperation != null) {
-            fileOperation.setCallback(null);
-        }
     }
 
     @Override
@@ -1035,5 +1021,10 @@ public class AlbumActivity extends ThemeableActivity
                         });
             }*/
         }
+    }
+
+    @Override
+    public IntentFilter getBroadcastIntentFilter() {
+        return FileOperation.Util.getIntentFilter();
     }
 }

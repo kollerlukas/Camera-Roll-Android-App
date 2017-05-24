@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.FileOperations.Delete;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.ui.AlbumActivity;
@@ -182,14 +181,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     (int) getContext().getResources().getDimension(R.dimen.album_grid_spacing), 2, true);
             nestedRecyclerView.addItemDecoration(itemDecoration);
         }
-
-        ((TextView) itemView.findViewById(R.id.name))
-                .setTextColor(ContextCompat.getColor(getContext(),
-                        ThemeableActivity.text_color_res));
-
-        ((TextView) itemView.findViewById(R.id.count))
-                .setTextColor(ContextCompat.getColor(getContext(),
-                        ThemeableActivity.text_color_secondary_res));
     }
 
     public NestedRecyclerViewAlbumHolder setSelectorModeManager(SelectorModeManager manager) {
@@ -383,28 +374,21 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             filesToDelete[i] = new File_POJO(paths[i], true);
         }
 
-        final Activity a;
-        if (getContext() instanceof Activity) {
-            a = ((Activity) getContext());
-        } else {
-            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        /*FileOperation fileOp = new Delete();
+        fileOp.setCallback(new FileOperation.Callback() {
+            @Override
+            public void done() {
+                a.startActivity(new Intent(a, MainActivity.class)
+                        .setAction(MainActivity.REFRESH_MEDIA));
+            }
 
-        new Delete(filesToDelete)
-                .execute(a, null,
-                        new FileOperation.Callback() {
-                            @Override
-                            public void done() {
-                                a.startActivity(new Intent(a, MainActivity.class)
-                                        .setAction(MainActivity.REFRESH_MEDIA));
-                            }
+            @Override
+            public void failed(String path) {
 
-                            @Override
-                            public void failed(String path) {
-
-                            }
-                        });
+            }
+        });*/
+        getContext().startService(FileOperation
+                .getDefaultIntent(getContext(), FileOperation.DELETE, filesToDelete));
     }
 
     static class RecyclerViewAdapter

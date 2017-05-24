@@ -1,7 +1,8 @@
 <resources>
-
     <!--Tag for a view, which need a bg color set, according to the current theme-->
     <string name="theme_bg_color" translatable="false">THEME_BG_COLOR</string>
+    <string name="theme_text_color_primary" translatable="false">THEME_TEXT_COLOR_PRIMARY</string>
+    <string name="theme_text_color_secondary" translatable="false">THEME_TEXT_COLOR_SECONDARY</string>
 
     <!--Base Theme-->
     <style name="Theme.CameraRoll" parent="Theme.AppCompat.NoActionBar">

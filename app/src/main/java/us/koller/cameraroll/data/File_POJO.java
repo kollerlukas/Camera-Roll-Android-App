@@ -83,7 +83,8 @@ public class File_POJO
         excluded = Boolean.valueOf(parcel.readString());
     }
 
-    private static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+    @SuppressWarnings("WeakerAccess")
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public File_POJO createFromParcel(Parcel parcel) {
             return new File_POJO(parcel);
         }
@@ -93,4 +94,12 @@ public class File_POJO
             return new File_POJO[i];
         }
     };
+
+    public static File_POJO[] generateArray(Parcelable[] parcelables) {
+        File_POJO[] files = new File_POJO[parcelables.length];
+        for (int i = 0; i < parcelables.length; i++) {
+            files[i] = (File_POJO) parcelables[i];
+        }
+        return files;
+    }
 }

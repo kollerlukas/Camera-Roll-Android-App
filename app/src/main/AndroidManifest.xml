@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="us.koller.cameraroll">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -72,7 +73,7 @@
             android:theme="@style/Theme.CameraRoll.ExifEditor" />
 
         <activity android:name=".IntentReceiver">
-            <intent-filter>
+            <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
@@ -110,5 +111,19 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+
+        <service
+            android:name=".data.FileOperations.Copy"
+            tools:ignore="InnerclassSeparator" />
+        <service
+            android:name=".data.FileOperations.Delete"
+            tools:ignore="InnerclassSeparator" />
+        <service
+            android:name=".data.FileOperations.Move"
+            tools:ignore="InnerclassSeparator" />
+        <service
+            android:name=".data.FileOperations.NewDirectory"
+            tools:ignore="InnerclassSeparator" />
     </application>
 </manifest>

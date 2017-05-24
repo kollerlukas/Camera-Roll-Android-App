@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -207,6 +208,13 @@ public class Util {
     }
 
     public static float getAnimatorSpeed(Context context) {
+        PowerManager powerManager = (PowerManager)
+                context.getSystemService(Context.POWER_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && powerManager.isPowerSaveMode()) {
+            // Animations are disabled in power save mode, so just show a toast instead.
+            return 0.0f;
+        }
         return Settings.Global.getFloat(context.getContentResolver(),
                 Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
     }

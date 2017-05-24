@@ -26,6 +26,10 @@
                 <item
                     android:id="@+id/sort_by_size"
                     android:title="@string/by_size" />
+
+                <item
+                    android:id="@+id/sort_by_most_recent"
+                    android:title="@string/by_date" />
             </group>
         </menu>
     </item>
