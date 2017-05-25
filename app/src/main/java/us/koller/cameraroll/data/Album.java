@@ -22,11 +22,13 @@ public class Album
 
     private int hidden = -1;
     public boolean excluded;
+    public boolean pinned;
 
     public Album() {
         albumItems = new ArrayList<>();
 
         excluded = false;
+        pinned = false;
     }
 
     public Album setPath(String path) {
@@ -34,6 +36,9 @@ public class Album
 
         excluded = Provider.isDirExcluded(getPath(),
                 Provider.getExcludedPaths());
+
+        pinned = Provider.isAlbumPinned(getPath(),
+                Provider.getPinnedPaths());
 
         return this;
     }
@@ -80,6 +85,11 @@ public class Album
             }
         }
         return newestItem;
+    }
+
+    @Override
+    public boolean pinned() {
+        return pinned;
     }
 
     public ArrayList<AlbumItem> getAlbumItems() {

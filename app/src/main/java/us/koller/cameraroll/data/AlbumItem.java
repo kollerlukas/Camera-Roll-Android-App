@@ -83,6 +83,11 @@ public abstract class AlbumItem
         return new File(getPath()).lastModified();
     }
 
+    @Override
+    public boolean pinned() {
+        return false;
+    }
+
     public Uri getUri(Context context) {
         if (!contentUri) {
             //my file provider isn't working with Google Photos ?!

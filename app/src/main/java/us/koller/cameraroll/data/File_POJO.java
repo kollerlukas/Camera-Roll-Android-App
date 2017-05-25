@@ -54,6 +54,11 @@ public class File_POJO
         return path;
     }
 
+    @Override
+    public boolean pinned() {
+        return false;
+    }
+
     public ArrayList<File_POJO> getChildren() {
         return children;
     }

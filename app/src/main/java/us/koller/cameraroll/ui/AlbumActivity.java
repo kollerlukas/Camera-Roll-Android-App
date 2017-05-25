@@ -429,6 +429,8 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.exclude).setEnabled(enabled);
             menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
 
+            menu.findItem(R.id.pin).setChecked(album.pinned);
+
             if (recyclerView.getAdapter() instanceof RecyclerViewAdapter &&
                     ((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
                 handleMenuVisibilityForSelectorMode(true);
@@ -436,6 +438,7 @@ public class AlbumActivity extends ThemeableActivity
         } else {
             menu.findItem(R.id.share).setVisible(false);
             menu.findItem(R.id.exclude).setVisible(false);
+            menu.findItem(R.id.pin).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
         }
@@ -453,6 +456,7 @@ public class AlbumActivity extends ThemeableActivity
     public void handleMenuVisibilityForSelectorMode(boolean selectorModeActive) {
         if (menu != null) {
             menu.findItem(R.id.exclude).setVisible(!selectorModeActive);
+            menu.findItem(R.id.pin).setVisible(!selectorModeActive);
             menu.findItem(R.id.sort_by).setVisible(!selectorModeActive);
             //show share button
             menu.findItem(R.id.share).setVisible(selectorModeActive);
@@ -514,6 +518,17 @@ public class AlbumActivity extends ThemeableActivity
                     album.excluded = false;
                 }
                 item.setChecked(album.excluded);
+                break;
+            case R.id.pin:
+                Provider.loadPinnedPaths(this);
+                if (!album.pinned) {
+                    Provider.pinPath(this, album.getPath());
+                    album.pinned = true;
+                } else {
+                    Provider.unpinPath(this, album.getPath());
+                    album.pinned = false;
+                }
+                item.setChecked(album.pinned);
                 break;
             case R.id.sort_by_date:
             case R.id.sort_by_name:
@@ -622,12 +637,12 @@ public class AlbumActivity extends ThemeableActivity
             filesToDelete[i] = new File_POJO(selected_items[i].getPath(), true);
         }
 
-        setLocalBroadcastReceiver(new BroadcastReceiver() {
+        registerLocalBroadcastReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 switch (intent.getAction()) {
                     case FileOperation.RESULT_DONE:
-                        setLocalBroadcastReceiver(null);
+                        unregisterLocalBroadcastReceiver(this);
                         break;
                     case FileOperation.FAILED:
                         String path = intent.getStringExtra(FileOperation.FILES);
@@ -950,6 +965,9 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        Provider.saveExcludedPaths(this);
+        Provider.savePinnedPaths(this);
     }
 
     @Override

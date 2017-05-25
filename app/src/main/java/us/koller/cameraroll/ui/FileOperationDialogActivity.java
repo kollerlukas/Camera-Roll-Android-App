@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -196,30 +195,15 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         final File_POJO newFolder
                                 = new File_POJO(picturesDir + "/" + filename, false);
 
-                        /*FileOperation newDir = new NewDirectory();
-                        newDir.setCallback(new FileOperation.Callback() {
-                            @Override
-                            public void done() {
-                                creatingNewFolder = false;
-                                callback.newFolderCreated(newFolder.getPath());
-                            }
-
-                            @Override
-                            public void failed(String path) {
-                                creatingNewFolder = false;
-                                callback.failed();
-                            }
-                        });*/
-
-                        setLocalBroadcastReceiver(new BroadcastReceiver() {
+                        registerLocalBroadcastReceiver(new BroadcastReceiver() {
                             @Override
                             public void onReceive(Context context, Intent intent) {
+                                unregisterLocalBroadcastReceiver(this);
+
                                 switch (intent.getAction()) {
                                     case FileOperation.RESULT_DONE:
                                         creatingNewFolder = false;
                                         callback.newFolderCreated(newFolder.getPath());
-
-                                        setLocalBroadcastReceiver(null);
                                         break;
                                     case FileOperation.FAILED:
                                         creatingNewFolder = false;

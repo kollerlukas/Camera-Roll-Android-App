@@ -8,21 +8,24 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+//simple BaseActivity that handles LocalBroadcastReceivers, need for communication with FileOperationServices
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private BroadcastReceiver broadcastReceiver;
+    private ArrayList<BroadcastReceiver> broadcastReceivers;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //register LocalBroadcastReceiver
-        BroadcastReceiver broadcastReceiver = getLocalBroadcastReceiver();
-        if (broadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this)
-                    .registerReceiver(broadcastReceiver, getBroadcastIntentFilter());
+        broadcastReceivers = new ArrayList<>();
+
+        BroadcastReceiver defaultBroadcastReceiver = getDefaultLocalBroadcastReceiver();
+        if (defaultBroadcastReceiver != null) {
+            registerLocalBroadcastReceiver(defaultBroadcastReceiver);
         }
     }
 
@@ -34,28 +37,31 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        //unregister LocalBroadcastReceiver
-        BroadcastReceiver broadcastReceiver = getLocalBroadcastReceiver();
-        if (broadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this)
-                    .unregisterReceiver(broadcastReceiver);
+        //unregister LocalBroadcastReceivers
+        for (int i = 0; i < broadcastReceivers.size(); i++) {
+            BroadcastReceiver broadcastReceiver = broadcastReceivers.get(i);
+            if (broadcastReceiver != null) {
+                unregisterLocalBroadcastReceiver(broadcastReceiver);
+            }
         }
-        setLocalBroadcastReceiver(null);
 
         super.onDestroy();
     }
 
-    public BroadcastReceiver getLocalBroadcastReceiver() {
-        return broadcastReceiver;
+    public BroadcastReceiver getDefaultLocalBroadcastReceiver() {
+        return null;
     }
 
-    public void setLocalBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
-        this.broadcastReceiver = broadcastReceiver;
-        //re-register new broadcastReceiver
-        if (broadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this)
-                    .registerReceiver(broadcastReceiver, getBroadcastIntentFilter());
-        }
+    public void registerLocalBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+        broadcastReceivers.add(broadcastReceiver);
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(broadcastReceiver, getBroadcastIntentFilter());
+    }
+
+    public void unregisterLocalBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+        broadcastReceivers.remove(broadcastReceiver);
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(broadcastReceiver);
     }
 
     public IntentFilter getBroadcastIntentFilter() {

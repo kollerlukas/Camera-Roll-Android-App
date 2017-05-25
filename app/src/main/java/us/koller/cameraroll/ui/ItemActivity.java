@@ -60,7 +60,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -508,9 +507,11 @@ public class ItemActivity extends ThemeableActivity {
 
         final File_POJO[] files = new File_POJO[]{new File_POJO(albumItem.getPath(), true)};
 
-        setLocalBroadcastReceiver(new BroadcastReceiver() {
+        registerLocalBroadcastReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                unregisterLocalBroadcastReceiver(this);
+
                 switch (intent.getAction()) {
                     case FileOperation.RESULT_DONE:
                         Intent i = new Intent(AlbumActivity.ALBUM_ITEM_DELETED)
@@ -521,8 +522,6 @@ public class ItemActivity extends ThemeableActivity {
                         ItemActivity.this.setResult(RESULT_OK, i);
 
                         finish();
-
-                        setLocalBroadcastReceiver(null);
                         break;
                     case FileOperation.FAILED:
                         //onBackPressed();

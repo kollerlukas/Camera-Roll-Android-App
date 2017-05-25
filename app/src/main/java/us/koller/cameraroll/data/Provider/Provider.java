@@ -40,6 +40,10 @@ public abstract class Provider {
         if (excludedPaths == null) {
             loadExcludedPaths(context);
         }
+
+        if (pinnedPaths == null) {
+            loadPinnedPaths(context);
+        }
     }
 
     void setCallback(Callback callback) {
@@ -61,6 +65,61 @@ public abstract class Provider {
             retriever.onDestroy();
         }
     }
+
+    //handle pinned albums
+    private static final String PINNED_PATHS_NAME = "pinned_paths.txt";
+
+    private static ArrayList<String> pinnedPaths;
+
+    public static ArrayList<String> getPinnedPaths() {
+        return pinnedPaths;
+    }
+
+    public static boolean isAlbumPinned(String albumPath, ArrayList<String> pinnedPaths) {
+        if (pinnedPaths == null) {
+            return false;
+        }
+        return pinnedPaths.contains(albumPath);
+    }
+
+    public static void pinPath(Context context, String path) {
+        if (pinnedPaths == null) {
+            pinnedPaths = loadPinnedPaths(context);
+        }
+
+        if (!pinnedPaths.contains(path)) {
+            pinnedPaths.add(path);
+        }
+    }
+
+    public static void unpinPath(Context context, String path) {
+        if (pinnedPaths == null) {
+            pinnedPaths = loadPinnedPaths(context);
+        }
+
+        pinnedPaths.remove(path);
+    }
+
+    public static ArrayList<String> loadPinnedPaths(Context context) {
+        pinnedPaths = new ArrayList<>();
+
+        try {
+            pinnedPaths = loadPathsArrayList(context, PINNED_PATHS_NAME);
+        } catch (IOException e) {
+            // no file found
+        }
+
+        return excludedPaths;
+    }
+
+    public static void savePinnedPaths(Context context) {
+        try {
+            savePathsArrayList(context, pinnedPaths, PINNED_PATHS_NAME);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     //handle excluded paths
     private static final String EXCLUDED_PATHS_NAME = "excluded_paths.txt";
@@ -149,7 +208,6 @@ public abstract class Provider {
         if (!excludedPaths.contains(path)) {
             excludedPaths.add(path);
         }
-
     }
 
     public static void removeExcludedPath(Context context, String path) {
@@ -162,6 +220,27 @@ public abstract class Provider {
     }
 
     public static ArrayList<String> loadExcludedPaths(Context context) {
+        excludedPaths = new ArrayList<>();
+
+        try {
+            excludedPaths = loadPathsArrayList(context, EXCLUDED_PATHS_NAME);
+        } catch (IOException e) {
+            // no file found
+            excludedPaths.addAll(Arrays.asList(defaultExcludedPaths));
+        }
+
+        return excludedPaths;
+    }
+
+    public static void saveExcludedPaths(Context context) {
+        try {
+            savePathsArrayList(context, excludedPaths, EXCLUDED_PATHS_NAME);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*public static ArrayList<String> loadExcludedPaths(Context context) {
         excludedPaths = new ArrayList<>();
 
         //read file
@@ -197,5 +276,52 @@ public abstract class Provider {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }*/
+
+    private static ArrayList<String> loadPathsArrayList(Context context, String filename) throws IOException {
+        ArrayList<String> paths = new ArrayList<>();
+
+        //read file
+        ArrayList<String> lines = readFromFile(context, filename);
+        paths.addAll(lines);
+
+        return paths;
+    }
+
+    private static void savePathsArrayList(Context context, ArrayList<String> paths, String filename) throws IOException {
+        if (paths == null) {
+            return;
+        }
+
+        //write to file
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < paths.size(); i++) {
+            sb.append(paths.get(i)).append('\n');
+        }
+
+        writeToFile(context, filename, sb.toString());
+    }
+
+    private static ArrayList<String> readFromFile(Context context, String filename) throws IOException {
+        ArrayList<String> lines = new ArrayList<>();
+
+        //read file
+        FileInputStream fis = context.openFileInput(filename);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+        fis.close();
+
+        return lines;
+    }
+
+    private static void writeToFile(Context context, String filename, String data) throws IOException {
+        //write to file
+        FileOutputStream fos
+                = context.openFileOutput(filename, Context.MODE_PRIVATE);
+        fos.write(data.getBytes());
+        fos.close();
     }
 }

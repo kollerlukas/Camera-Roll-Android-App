@@ -937,15 +937,13 @@ public class FileExplorerActivity extends ThemeableActivity
     }
 
     @Override
-    public BroadcastReceiver getLocalBroadcastReceiver() {
+    public BroadcastReceiver getDefaultLocalBroadcastReceiver() {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 switch (intent.getAction()) {
                     case FileOperation.RESULT_DONE:
                         loadDirectory(currentDir.getPath());
-
-                        setLocalBroadcastReceiver(null);
                         break;
                     case FileOperation.FAILED:
                         break;

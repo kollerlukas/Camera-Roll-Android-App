@@ -51,4 +51,11 @@
         android:icon="@drawable/ic_eye_off_white_24dp"
         android:title="@string/exclude"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/pin"
+        android:checkable="true"
+        android:icon="@drawable/ic_pin_white_24dp"
+        android:title="@string/pin_album"
+        app:showAsAction="never" />
 </menu>

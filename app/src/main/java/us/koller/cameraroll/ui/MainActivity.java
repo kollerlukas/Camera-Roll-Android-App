@@ -24,6 +24,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -753,10 +754,11 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     }
 
     @Override
-    public BroadcastReceiver getLocalBroadcastReceiver() {
+    public BroadcastReceiver getDefaultLocalBroadcastReceiver() {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.d("MainActivity", "onReceive() called");
                 switch (intent.getAction()) {
                     case FileOperation.RESULT_DONE:
                     case FileOperation.FAILED:

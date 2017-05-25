@@ -19,7 +19,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
 import us.koller.cameraroll.R;
@@ -46,29 +45,26 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public FileOperation() {
         super("");
-    }
 
-    @Override
-    protected void onHandleIntent(Intent workIntent) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 setUpdater(new ToastUpdater(getApplicationContext()));
             }
         });
+    }
 
+    @Override
+    protected void onHandleIntent(Intent workIntent) {
         execute(workIntent);
 
-        sendDoneBroadcast(workIntent);
-
-        stopSelf();
+        sendDoneBroadcast();
     }
 
     abstract void execute(Intent workIntent);
 
-    private void sendDoneBroadcast(Intent workIntent) {
+    private void sendDoneBroadcast() {
         Intent intent = new Intent(RESULT_DONE);
-        intent.putExtra(WORK_INTENT, workIntent);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
