@@ -2,6 +2,8 @@ package us.koller.cameraroll.data.FileOperations;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Environment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +29,9 @@ public class Copy extends FileOperation {
         String s = getString(R.string.successfully_copied);
 
         int success_count = 0;
+
+        onProgress(s, success_count, files.length);
+
         for (int i = files.length - 1; i >= 0; i--) {
             boolean result = copyFilesRecursively(getApplicationContext(), files[i].getPath(), target.getPath(), true);
             success_count += result ? 1 : 0;

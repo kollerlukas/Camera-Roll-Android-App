@@ -164,13 +164,26 @@ public class FileExplorerActivity extends ThemeableActivity
         recyclerViewAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(recyclerViewAdapter);
 
+        /*recyclerView.addOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    private float scrollY = 0.0f;
+
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        scrollY += dy;
+                        Util.animateToolbarElevation(toolbar, scrollY);
+                    }
+                });*/
+
         //setup fab
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_create_new_folder_white_24dp);
         Drawable d = fab.getDrawable();
         d = DrawableCompat.wrap(d);
         DrawableCompat.setTint(d.mutate(),
-                ContextCompat.getColor(this, R.color.grey_900_translucent));
+                ContextCompat.getColor(this, accent_color_text_res));
         fab.setImageDrawable(d);
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
@@ -267,10 +280,18 @@ public class FileExplorerActivity extends ThemeableActivity
 
                 if (mode == RecyclerViewAdapter.SELECTOR_MODE) {
                     if (savedInstanceState.containsKey(SELECTED_ITEMS)) {
-                        File_POJO[] selectedItems
+                        final File_POJO[] selectedItems
                                 = (File_POJO[]) savedInstanceState.getParcelableArray(SELECTED_ITEMS);
                         if (selectedItems != null) {
-                            recyclerViewAdapter.enterSelectorMode(selectedItems);
+                            rootView.getViewTreeObserver().addOnGlobalLayoutListener(
+                                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                                        @Override
+                                        public void onGlobalLayout() {
+                                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                            recyclerViewAdapter.enterSelectorMode(selectedItems);
+                                        }
+                                    });
+
                         }
                     }
                 } else if (mode == RecyclerViewAdapter.PICK_TARGET_MODE) {
@@ -419,7 +440,7 @@ public class FileExplorerActivity extends ThemeableActivity
         Drawable icon = menu.findItem(R.id.paste).getIcon().mutate();
         icon = DrawableCompat.wrap(icon);
         DrawableCompat.setTint(icon.mutate(),
-                ContextCompat.getColor(this, R.color.grey_900_translucent));
+                ContextCompat.getColor(this, accent_color_text_res));
         menu.findItem(R.id.paste).setIcon(icon);
 
         return super.onCreateOptionsMenu(menu);
@@ -649,27 +670,31 @@ public class FileExplorerActivity extends ThemeableActivity
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
-        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        if (darkIcons()) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        } else {
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+        }
 
         ColorFade.fadeBackgroundColor(toolbar,
                 ContextCompat.getColor(this, toolbar_color_res),
                 ContextCompat.getColor(this, accent_color_res));
 
         ColorFade.fadeToolbarTitleColor(toolbar,
-                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                ContextCompat.getColor(this, accent_color_text_res),
                 null);
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
                 ContextCompat.getColor(this, text_color_secondary_res),
-                ContextCompat.getColor(this, R.color.grey_900_translucent));
+                ContextCompat.getColor(this, accent_color_text_res));
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
             ColorFade.fadeIconColor(navIcon,
                     ContextCompat.getColor(this, text_color_secondary_res),
-                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+                    ContextCompat.getColor(this, accent_color_text_res));
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -688,8 +713,7 @@ public class FileExplorerActivity extends ThemeableActivity
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(),
-                        ContextCompat.getColor(FileExplorerActivity.this,
-                                R.color.grey_900_translucent));
+                        ContextCompat.getColor(FileExplorerActivity.this, accent_color_text_res));
                 toolbar.setNavigationIcon(d);
 
                 //make menu items visible
@@ -749,7 +773,7 @@ public class FileExplorerActivity extends ThemeableActivity
             final String title = String.valueOf(count) + (count > 1 ?
                     getString(R.string.items) : getString(R.string.item));
 
-            int color = ContextCompat.getColor(this, R.color.grey_900_translucent);
+            int color = ContextCompat.getColor(this, accent_color_text_res);
             ColorFade.fadeToolbarTitleColor(toolbar, color,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
@@ -766,7 +790,7 @@ public class FileExplorerActivity extends ThemeableActivity
         if (fileOpIntent != null) {
             final int count = FileOperation.getFiles(fileOpIntent).length;
 
-            int color = ContextCompat.getColor(this, R.color.grey_900_translucent);
+            int color = ContextCompat.getColor(this, accent_color_text_res);
             ColorFade.fadeToolbarTitleColor(toolbar, color,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
@@ -844,6 +868,8 @@ public class FileExplorerActivity extends ThemeableActivity
         if (THEME != LIGHT) {
             toolbar.setActivated(false);
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+        } else {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
         ColorFade.fadeBackgroundColor(toolbar,
@@ -861,14 +887,14 @@ public class FileExplorerActivity extends ThemeableActivity
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
-                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                ContextCompat.getColor(this, accent_color_text_res),
                 ContextCompat.getColor(this, text_color_secondary_res));
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
             ColorFade.fadeIconColor(navIcon,
-                    ContextCompat.getColor(this, R.color.grey_900_translucent),
+                    ContextCompat.getColor(this, accent_color_text_res),
                     ContextCompat.getColor(this, text_color_secondary_res));
         }
         new Handler().postDelayed(new Runnable() {

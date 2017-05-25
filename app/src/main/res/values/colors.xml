@@ -13,6 +13,12 @@
     <!--accent color-->
     <color name="colorAccent">#69F0AE</color>
     <color name="colorAccent_translucent">#8A69F0AE</color>
+    <color name="colorAccent_text">#8A212121</color>
+    <bool name="dark_icons">true</bool>
+    <!--<color name="colorAccent">#2196F3</color>
+    <color name="colorAccent_translucent">#8A2196F3</color>
+    <color name="colorAccent_text">#FFFFFF</color>
+    <bool name="dark_icons">false</bool>-->
 
     <color name="white">#FFFFFF</color>
     <color name="grey_300">#E0E0E0</color>

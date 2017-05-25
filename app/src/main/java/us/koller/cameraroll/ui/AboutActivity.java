@@ -1,7 +1,5 @@
 package us.koller.cameraroll.ui;
 
-import android.content.BroadcastReceiver;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -153,8 +151,14 @@ public class AboutActivity extends ThemeableActivity
 
         for (int i = 0; i < toolbar.getChildCount(); i++) {
             if (toolbar.getChildAt(i) instanceof ImageView) {
-                ((ImageView) toolbar.getChildAt(i)).setColorFilter(ContextCompat
-                        .getColor(this, R.color.black_translucent2), PorterDuff.Mode.SRC_IN);
+                ImageView imageView = ((ImageView) toolbar.getChildAt(i));
+                int color;
+                if (!darkIcons()) {
+                    color = ContextCompat.getColor(this, R.color.white_translucent1);
+                } else {
+                    color = ContextCompat.getColor(this, R.color.black_translucent2);
+                }
+                imageView.setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 break;
             }
         }

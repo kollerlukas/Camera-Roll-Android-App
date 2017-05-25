@@ -26,6 +26,9 @@ public class Delete extends FileOperation {
         String s = getString(R.string.successfully_deleted);
 
         int success_count = 0;
+
+        onProgress(s, success_count, files.length);
+
         for (int i = 0; i < files.length; i++) {
             boolean result = deleteFile(getApplicationContext(), files[i].getPath());
             if (result) {

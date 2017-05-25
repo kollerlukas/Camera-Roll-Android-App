@@ -35,6 +35,7 @@ public abstract class ThemeableActivity extends BaseActivity {
     public static int text_color_secondary_res;
 
     public static int accent_color_res;
+    public static int accent_color_text_res;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,6 +93,11 @@ public abstract class ThemeableActivity extends BaseActivity {
                 : R.color.grey_900_translucent;
 
         accent_color_res = R.color.colorAccent;
+        accent_color_text_res = R.color.colorAccent_text;
+    }
+
+    public boolean darkIcons() {
+        return getResources().getBoolean(R.bool.dark_icons);
     }
 
     public static void checkTags(ViewGroup viewGroup) {

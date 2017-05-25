@@ -184,6 +184,19 @@ public class Util {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public static void animateToolbarElevation(Toolbar toolbar, float scrollY) {
+        float maxToolbarElevation = toolbar.getContext().getResources()
+                .getDimension(R.dimen.toolbar_elevation);
+        float toolbarElevation = scrollY;
+        if (toolbarElevation > maxToolbarElevation) {
+            toolbarElevation = maxToolbarElevation;
+        } else if (toolbarElevation < 0) {
+            toolbarElevation = 0;
+        }
+        toolbar.setElevation(toolbarElevation);
+    }
+
     private static Drawable selectorOverlay;
 
     public static Drawable getAlbumItemSelectorOverlay(Context context) {

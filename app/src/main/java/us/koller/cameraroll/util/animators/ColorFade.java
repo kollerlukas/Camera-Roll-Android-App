@@ -102,7 +102,8 @@ public class ColorFade {
             toolbarTitleAnimSet.cancel();
         }
 
-        final int transparent = ContextCompat.getColor(toolbar.getContext(), android.R.color.transparent);
+        //final int transparent = ContextCompat.getColor(toolbar.getContext(), android.R.color.transparent);
+        final int transparent = Color.argb(0, Color.red(color), Color.green(color), Color.blue(color));
 
         TextView titleView = null;
         for (int i = 0; i < toolbar.getChildCount(); i++) {
@@ -169,6 +170,12 @@ public class ColorFade {
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         toolbarTitleAnimSet = null;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        super.onAnimationCancel(animation);
+                        toolbar.setTitleTextColor(color);
                     }
                 });
         toolbarTitleAnimSet.start();

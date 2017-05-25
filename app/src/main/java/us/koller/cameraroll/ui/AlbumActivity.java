@@ -196,13 +196,13 @@ public class AlbumActivity extends ThemeableActivity
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
                 DrawableCompat.setTint(navIcon.mutate(),
-                        ContextCompat.getColor(this, R.color.grey_900_translucent));
+                        ContextCompat.getColor(this, accent_color_text_res));
                 toolbar.setNavigationIcon(navIcon);
             }
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
 
             Util.colorToolbarOverflowMenuIcon(toolbar,
-                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+                    ContextCompat.getColor(this, accent_color_text_res));
         }
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -230,6 +230,8 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private float scrollY = 0.0f;
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -255,6 +257,10 @@ public class AlbumActivity extends ThemeableActivity
                         } else {
                             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
                         }
+
+                        //animate Toolbar elevation
+                        scrollY += dy;
+                        //Util.animateToolbarElevation(toolbar, scrollY);
                     }
                 }
             }
@@ -274,11 +280,11 @@ public class AlbumActivity extends ThemeableActivity
         }
         Drawable d = fab.getDrawable();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            d.setTint(ContextCompat.getColor(this, accent_color_text_res));
         } else {
             d = DrawableCompat.wrap(d);
             DrawableCompat.setTint(d.mutate(),
-                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+                    ContextCompat.getColor(this, accent_color_text_res));
         }
         fab.setImageDrawable(d);
         fab.setScaleX(0.0f);
@@ -358,13 +364,21 @@ public class AlbumActivity extends ThemeableActivity
 
         //restore Selector mode, when needed
         if (savedInstanceState != null) {
-            RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
-            SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
+            final RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
+            final SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
             manager.addCallback(this);
             adapter.setSelectorModeManager(manager);
-            if (manager.isSelectorModeActive()) {
-                adapter.restoreSelectedItems();
-            }
+            rootView.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            if (manager.isSelectorModeActive())
+                                adapter.restoreSelectedItems();
+                        }
+                    });
+
         }
     }
 
@@ -707,7 +721,11 @@ public class AlbumActivity extends ThemeableActivity
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
-        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        if (darkIcons()) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        } else {
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+        }
 
         handleMenuVisibilityForSelectorMode(true);
 
@@ -724,20 +742,20 @@ public class AlbumActivity extends ThemeableActivity
                     ContextCompat.getColor(this, accent_color_res));
 
             ColorFade.fadeToolbarTitleColor(toolbar,
-                    ContextCompat.getColor(this, R.color.grey_900_translucent),
+                    ContextCompat.getColor(this, accent_color_text_res),
                     null);
 
             //fade overflow menu icon
             ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
                     ContextCompat.getColor(this, text_color_secondary_res),
-                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+                    ContextCompat.getColor(this, accent_color_text_res));
 
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon instanceof Animatable) {
                 ((Animatable) navIcon).start();
                 ColorFade.fadeIconColor(navIcon,
                         ContextCompat.getColor(this, text_color_secondary_res),
-                        ContextCompat.getColor(this, R.color.grey_900_translucent));
+                        ContextCompat.getColor(this, accent_color_text_res));
             }
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -754,8 +772,7 @@ public class AlbumActivity extends ThemeableActivity
                     }
                     d = DrawableCompat.wrap(d);
                     DrawableCompat.setTint(d.mutate(),
-                            ContextCompat.getColor(AlbumActivity.this,
-                                    R.color.grey_900_translucent));
+                            ContextCompat.getColor(AlbumActivity.this, accent_color_text_res));
                     toolbar.setNavigationIcon(d);
                 }
             }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
@@ -763,7 +780,7 @@ public class AlbumActivity extends ThemeableActivity
             toolbar.setBackgroundColor(ContextCompat
                     .getColor(this, accent_color_res));
             toolbar.setTitleTextColor(ContextCompat
-                    .getColor(AlbumActivity.this, R.color.grey_900_translucent));
+                    .getColor(AlbumActivity.this, accent_color_text_res));
         }
 
         if (!pick_photos) {
@@ -781,6 +798,9 @@ public class AlbumActivity extends ThemeableActivity
 
         if (THEME != ThemeableActivity.LIGHT) {
             toolbar.setActivated(false);
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+        } else {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
         ColorFade.fadeBackgroundColor(toolbar,
@@ -798,18 +818,14 @@ public class AlbumActivity extends ThemeableActivity
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
-                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                ContextCompat.getColor(this, accent_color_text_res),
                 ContextCompat.getColor(this, text_color_secondary_res));
-
-        if (THEME != ThemeableActivity.LIGHT) {
-            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-        }
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
             ColorFade.fadeIconColor(navIcon,
-                    ContextCompat.getColor(this, R.color.grey_900_translucent),
+                    ContextCompat.getColor(this, accent_color_text_res),
                     ContextCompat.getColor(this, text_color_secondary_res));
         }
         new Handler().postDelayed(new Runnable() {
@@ -845,7 +861,7 @@ public class AlbumActivity extends ThemeableActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         ColorFade.fadeToolbarTitleColor(toolbar,
-                ContextCompat.getColor(this, R.color.grey_900_translucent),
+                ContextCompat.getColor(this, accent_color_text_res),
                 new ColorFade.ToolbarTitleFadeCallback() {
                     @Override
                     public void setTitle(Toolbar toolbar) {

@@ -140,10 +140,10 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(!pick_photos ?
                 ContextCompat.getColor(this, toolbar_color_res) :
-                ContextCompat.getColor(this, R.color.colorAccent));
+                ContextCompat.getColor(this, accent_color_res));
         toolbar.setTitleTextColor(!pick_photos ?
                 ContextCompat.getColor(this, text_color_res) :
-                ContextCompat.getColor(this, R.color.grey_900_translucent));
+                ContextCompat.getColor(this, accent_color_text_res));
 
         if (pick_photos) {
             ActionBar actionBar = getSupportActionBar();
@@ -156,7 +156,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
                 DrawableCompat.setTint(navIcon.mutate(),
-                        ContextCompat.getColor(this, R.color.grey_900_translucent));
+                        ContextCompat.getColor(this, accent_color_text_res));
                 toolbar.setNavigationIcon(navIcon);
             }
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -167,9 +167,13 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             });
 
             Util.colorToolbarOverflowMenuIcon(toolbar,
-                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+                    ContextCompat.getColor(this, accent_color_text_res));
 
-            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            if (darkIcons()) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            } else {
+                Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+            }
         }
 
         //Util.setToolbarTypeface(toolbar);
@@ -195,6 +199,8 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         recyclerViewAdapter.getSelectorManager().addCallback(this);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            /*private float scrollY = 0.0f;*/
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -224,6 +230,10 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                             } else {
                                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
                             }
+
+                            //animate Toolbar elevation
+                            /*scrollY += dy;
+                            Util.animateToolbarElevation(toolbar, scrollY);*/
                         }
                     }
                 }
@@ -240,11 +250,11 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         }
         Drawable d = fab.getDrawable();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            d.setTint(ContextCompat.getColor(this, R.color.grey_900_translucent));
+            d.setTint(ContextCompat.getColor(this, accent_color_text_res));
         } else {
             d = DrawableCompat.wrap(d);
             DrawableCompat.setTint(d.mutate(),
-                    ContextCompat.getColor(this, R.color.grey_900_translucent));
+                    ContextCompat.getColor(this, accent_color_text_res));
         }
         fab.setImageDrawable(d);
 
@@ -601,7 +611,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
                 }
-
             }
         }, (int) (500 * Util.getAnimatorSpeed(this)));
     }
@@ -721,9 +730,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(ContextCompat.getColor(this,
-                        R.color.black_translucent1));
             }
 
             /*if (!pick_photos) {

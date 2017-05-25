@@ -12,6 +12,7 @@ import us.koller.cameraroll.adapter.fileExplorer.ViewHolder.FileHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.FileExplorerActivity;
 import us.koller.cameraroll.ui.ItemActivity;

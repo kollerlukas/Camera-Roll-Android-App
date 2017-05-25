@@ -81,7 +81,11 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
             toolbar.setActivated(false);
 
-            Util.setDarkStatusBarIcons(rootView);
+            if (getContext().getResources().getBoolean(R.bool.dark_icons)) {
+                Util.setDarkStatusBarIcons(rootView);
+            } else {
+                Util.setLightStatusBarIcons(rootView);
+            }
 
             View.OnClickListener onClickListener
                     = new View.OnClickListener() {
@@ -142,6 +146,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                             } else if (MainActivity.THEME == ThemeableActivity.LIGHT) {
                                 Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
                                 toolbar.setActivated(true);
+                                Util.setDarkStatusBarIcons(rootView);
                             }
 
                             //remove selector-toolbar
@@ -162,7 +167,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     getContext().getString(R.string.items) : getContext().getString(R.string.item));
 
             ColorFade.fadeToolbarTitleColor(toolbar,
-                    ContextCompat.getColor(getContext(), R.color.grey_900_translucent),
+                    ContextCompat.getColor(getContext(), /*R.color.grey_900_translucent*/ ThemeableActivity.accent_color_text_res),
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
@@ -418,7 +423,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             int accentColor = ContextCompat.getColor(context,
                     MainActivity.accent_color_res);
             int textColor = ContextCompat.getColor(context,
-                    R.color.grey_900_translucent);
+                    /*R.color.grey_900_translucent*/ ThemeableActivity.accent_color_text_res);
 
             toolbar.setBackgroundColor(accentColor);
 

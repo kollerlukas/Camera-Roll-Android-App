@@ -27,6 +27,9 @@ public class Move extends FileOperation {
         String s = getString(R.string.successfully_moved);
 
         int success_count = 0;
+
+        onProgress(s, success_count, files.length);
+
         for (int i = files.length - 1; i >= 0; i--) {
             boolean result = moveFile(getApplicationContext(), files[i].getPath(), target.getPath());
             success_count += result ? 1 : 0;
