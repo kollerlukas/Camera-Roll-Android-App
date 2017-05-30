@@ -2,9 +2,11 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -15,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,13 +28,16 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +45,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +57,7 @@ import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.FileOperations.Rename;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
@@ -455,6 +463,7 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.share).setVisible(false);
             menu.findItem(R.id.exclude).setVisible(false);
             menu.findItem(R.id.pin).setVisible(false);
+            menu.findItem(R.id.rename).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
         }
@@ -473,6 +482,7 @@ public class AlbumActivity extends ThemeableActivity
         if (menu != null) {
             menu.findItem(R.id.exclude).setVisible(!selectorModeActive);
             menu.findItem(R.id.pin).setVisible(!selectorModeActive);
+            menu.findItem(R.id.rename).setVisible(!selectorModeActive);
             menu.findItem(R.id.sort_by).setVisible(!selectorModeActive);
             //show share button
             menu.findItem(R.id.share).setVisible(selectorModeActive);
@@ -545,6 +555,70 @@ public class AlbumActivity extends ThemeableActivity
                     album.pinned = false;
                 }
                 item.setChecked(album.pinned);
+                break;
+            case R.id.rename:
+                View dialogLayout = LayoutInflater.from(this).inflate(R.layout.new_folder_dialog,
+                        (ViewGroup) findViewById(R.id.root_view), false);
+
+                final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
+                editText.setText(album.getName());
+                editText.setSelection(album.getName().length());
+
+                new AlertDialog.Builder(this, getDialogThemeRes())
+                        .setTitle(R.string.rename)
+                        .setView(dialogLayout)
+                        .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                final String newFileName = editText.getText().toString();
+
+                                registerLocalBroadcastReceiver(new BroadcastReceiver() {
+                                    @Override
+                                    public void onReceive(Context context, Intent intent) {
+                                        unregisterLocalBroadcastReceiver(this);
+
+                                        final Activity a = AlbumActivity.this;
+
+                                        new MediaProvider(a).loadAlbums(a,
+                                                Settings.getInstance(a).getHiddenFolders(),
+                                                new MediaProvider.Callback() {
+                                                    @Override
+                                                    public void onMediaLoaded(ArrayList<Album> albums) {
+                                                        //reload activity
+
+                                                        String newFilePath = Rename.getNewFilePath(album.getPath(), newFileName);
+                                                        Log.d("AlbumActivity", "newFilePath: " + newFilePath);
+
+                                                        Intent intent = getIntent();
+                                                        intent.putExtra(ALBUM_PATH, newFilePath);
+                                                        finish();
+                                                        startActivity(intent);
+                                                    }
+
+                                                    @Override
+                                                    public void timeout() {
+                                                        finish();
+                                                    }
+
+                                                    @Override
+                                                    public void needPermission() {
+                                                        finish();
+                                                    }
+                                                });
+                                    }
+                                });
+
+                                final File_POJO[] files = new File_POJO[]{
+                                        new File_POJO(album.getPath(), false)};
+                                Intent intent =
+                                        FileOperation.getDefaultIntent(AlbumActivity.this, FileOperation.RENAME, files)
+                                                .putExtra(FileOperation.NEW_FILE_NAME, newFileName);
+                                startService(intent);
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .create()
+                        .show();
                 break;
             case R.id.sort_by_date:
             case R.id.sort_by_name:
@@ -792,6 +866,8 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onSelectorModeExit() {
+        Log.d("AlbumActivity", "onSelectorModeExit() called");
+
         if (pick_photos) {
             return;
         }
@@ -858,19 +934,20 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onItemSelected(int selectedItemCount) {
-        final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
-                getString(R.string.items) : getString(R.string.item));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (selectedItemCount != 0) {
+            final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
+                    getString(R.string.items) : getString(R.string.item));
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        ColorFade.fadeToolbarTitleColor(toolbar,
-                ContextCompat.getColor(this, accent_color_text_res),
-                new ColorFade.ToolbarTitleFadeCallback() {
-                    @Override
-                    public void setTitle(Toolbar toolbar) {
-                        toolbar.setTitle(title);
-                    }
-                });
-
+            ColorFade.fadeToolbarTitleColor(toolbar,
+                    ContextCompat.getColor(this, accent_color_text_res),
+                    new ColorFade.ToolbarTitleFadeCallback() {
+                        @Override
+                        public void setTitle(Toolbar toolbar) {
+                            toolbar.setTitle(title);
+                        }
+                    });
+        }
 
         if (selectedItemCount > 0) {
             if (pick_photos) {

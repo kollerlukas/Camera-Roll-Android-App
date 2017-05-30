@@ -12,6 +12,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;

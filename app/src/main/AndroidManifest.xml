@@ -119,5 +119,9 @@
         <service
             android:name=".data.FileOperations.NewDirectory"
             tools:ignore="InnerclassSeparator" />
+
+        <service
+            android:name=".data.FileOperations.Rename"
+            tools:ignore="InnerclassSeparator" />
     </application>
 </manifest>

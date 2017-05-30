@@ -58,4 +58,9 @@
         android:icon="@drawable/ic_pin_white_24dp"
         android:title="@string/pin_album"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/rename"
+        android:title="@string/rename"
+        app:showAsAction="never" />
 </menu>

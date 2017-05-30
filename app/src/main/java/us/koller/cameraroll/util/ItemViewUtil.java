@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,6 +19,8 @@ import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
+import java.io.FileNotFoundException;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
@@ -59,27 +62,42 @@ public class ItemViewUtil {
     public static void bindTransitionView(final ImageView imageView,
                                           final AlbumItem albumItem) {
 
-        int[] imageDimens = albumItem instanceof Video ?
-                Util.getVideoDimensions(albumItem.getPath()) :
-                Util.getImageDimensions(imageView.getContext(), albumItem.getPath());
+        int[] imageDimens;
+        try {
+            imageDimens = albumItem instanceof Video ?
+                    Util.getVideoDimensions(albumItem.getPath()) :
+                    Util.getImageDimensions(imageView.getContext(), albumItem.getPath());
 
-        if (imageView.getContext() instanceof Activity) {
-            int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
-            float scale = ((float) screenWidth) / (float) imageDimens[0];
-            scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-            imageDimens[0] =
-                    (int) (imageDimens[0] * scale * 0.5f) > 0
-                            ? (int) (imageDimens[0] * scale * 0.5f) : 1;
-            imageDimens[1] =
-                    (int) (imageDimens[1] * scale * 0.5f) > 0
-                            ? (int) (imageDimens[1] * scale * 0.5f) : 1;
-        } else {
-            imageDimens[0] = imageDimens[0] / 2;
-            imageDimens[1] = imageDimens[1] / 2;
+            if (imageView.getContext() instanceof Activity) {
+                int screenWidth = Util.getScreenWidth((Activity) imageView.getContext());
+                float scale = ((float) screenWidth) / (float) imageDimens[0];
+                scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
+                imageDimens[0] =
+                        (int) (imageDimens[0] * scale * 0.5f) > 0
+                                ? (int) (imageDimens[0] * scale * 0.5f) : 1;
+                imageDimens[1] =
+                        (int) (imageDimens[1] * scale * 0.5f) > 0
+                                ? (int) (imageDimens[1] * scale * 0.5f) : 1;
+            } else {
+                imageDimens[0] = imageDimens[0] / 2;
+                imageDimens[1] = imageDimens[1] / 2;
+            }
+
+            if (imageDimens[0] <= 1 || imageDimens[1] <= 1) {
+                return;
+            }
+        } catch (FileNotFoundException e) {
+            if (albumItem.isSharedElement
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                albumItem.isSharedElement = false;
+                ((AppCompatActivity) imageView.getContext())
+                        .startPostponedEnterTransition();
+            }
+            imageDimens = new int[]{1, 1};
         }
 
-        if (imageDimens[0] <= 1 || imageDimens[1] <= 1) {
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setTransitionName(albumItem.getPath());
         }
 
         Glide.with(imageView.getContext())
@@ -93,6 +111,12 @@ public class ItemViewUtil {
                     public boolean onException(Exception e, String model,
                                                Target<Bitmap> target,
                                                boolean isFirstResource) {
+                        if (albumItem.isSharedElement
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            albumItem.isSharedElement = false;
+                            ((AppCompatActivity) imageView.getContext())
+                                    .startPostponedEnterTransition();
+                        }
                         return false;
                     }
 
@@ -111,23 +135,6 @@ public class ItemViewUtil {
                     }
                 })
                 .into(imageView);
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setTransitionName(albumItem.getPath());
-            //Handle timeout
-            if (albumItem.isSharedElement) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                    public void run() {
-                        ((AppCompatActivity) imageView.getContext())
-                                .startPostponedEnterTransition();
-                    }
-                }, 500);
-            }
-        }
-
     }
 
     public static void bindGif(final GifViewHolder gifViewHolder,

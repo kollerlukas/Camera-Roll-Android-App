@@ -11,11 +11,6 @@ import us.koller.cameraroll.data.File_POJO;
 public class NewDirectory extends FileOperation {
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
         if (files.length > 0) {

@@ -45,11 +45,6 @@ public class Delete extends FileOperation {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public int getType() {
         return FileOperation.DELETE;
     }

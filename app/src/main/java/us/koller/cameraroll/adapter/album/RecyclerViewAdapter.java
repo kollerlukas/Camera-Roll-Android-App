@@ -43,7 +43,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     public RecyclerViewAdapter(SelectorModeManager.Callback callback, final RecyclerView recyclerView,
                                final Album album, boolean pick_photos) {
-        //this.callback = callback;
         this.album = album;
         this.pick_photos = pick_photos;
 
@@ -191,7 +190,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     private void checkForNoSelectedItems() {
         if (getSelectedItemCount() == 0 && !pick_photos) {
-            setSelectorMode(false);
             cancelSelectorMode(null);
         }
     }

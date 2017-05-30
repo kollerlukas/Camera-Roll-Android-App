@@ -44,11 +44,6 @@ public class Copy extends FileOperation {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public int getType() {
         return FileOperation.COPY;
     }
@@ -61,7 +56,7 @@ public class Copy extends FileOperation {
         try {
             result = result && copyFile(path, destinationFileName);
 
-            FileOperation.Util.scanPaths(context, new String[]{path, destinationFileName});
+            FileOperation.Util.scanPaths(context, new String[]{path, destinationFileName}, null);
         } catch (IOException e) {
             e.printStackTrace();
         }

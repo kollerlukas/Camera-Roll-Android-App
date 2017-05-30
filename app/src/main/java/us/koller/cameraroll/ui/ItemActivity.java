@@ -597,9 +597,14 @@ public class ItemActivity extends ThemeableActivity {
                 }
             }
         } else {
-            int[] imageDimens = albumItem instanceof Video ?
-                    Util.getVideoDimensions(albumItem.getPath()) :
-                    Util.getImageDimensions(this, albumItem.getPath());
+            int[] imageDimens = new int[]{1, 1};
+            try {
+                imageDimens = albumItem instanceof Video ?
+                        Util.getVideoDimensions(albumItem.getPath()) :
+                        Util.getImageDimensions(this, albumItem.getPath());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
             height = String.valueOf(imageDimens[1]);
             width = String.valueOf(imageDimens[0]);

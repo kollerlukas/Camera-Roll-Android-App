@@ -19,6 +19,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import us.koller.cameraroll.R;
@@ -36,10 +37,12 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     public static final int COPY = 2;
     public static final int DELETE = 3;
     public static final int NEW_DIR = 4;
+    public static final int RENAME = 5;
 
     public static final String WORK_INTENT = "WORK_INTENT";
     public static final String FILES = "FILES";
     public static final String TARGET = "TARGET";
+    public static final String NEW_FILE_NAME = "NEW_FILE_NAME";
 
     private ProgressUpdater updater;
 
@@ -58,12 +61,18 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     protected void onHandleIntent(Intent workIntent) {
         execute(workIntent);
 
-        sendDoneBroadcast();
+        if (autoSendDoneBroadcast()) {
+            sendDoneBroadcast();
+        }
     }
 
     abstract void execute(Intent workIntent);
 
-    private void sendDoneBroadcast() {
+    public boolean autoSendDoneBroadcast() {
+        return true;
+    }
+
+    public void sendDoneBroadcast() {
         Intent intent = new Intent(RESULT_DONE);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
@@ -76,6 +85,11 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     public abstract int getType();
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     public void setUpdater(ProgressUpdater updater) {
         this.updater = updater;
@@ -121,6 +135,10 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             case NEW_DIR:
                 service = NewDirectory.class;
                 actionString = Util.getActionString(context, NEW_DIR);
+                break;
+            case RENAME:
+                service = Rename.class;
+                actionString = Util.getActionString(context, RENAME);
                 break;
         }
         if (service != null) {
@@ -211,6 +229,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                     return context.getString(R.string.delete);
                 case NEW_DIR:
                     return context.getString(R.string.new_folder);
+                case RENAME:
+                    return context.getString(R.string.rename);
             }
             return "";
         }
@@ -226,15 +246,39 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             return EMPTY;
         }
 
-        static void scanPaths(final Context context, String[] paths) {
+        static String[] getAllChildPaths(ArrayList<String> paths, String path) {
+            File file = new File(path);
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    File[] children = file.listFiles();
+                    for (int i = 0; i < children.length; i++) {
+                        getAllChildPaths(paths, children[i].getPath());
+                    }
+                } else {
+                    paths.add(path);
+                }
+            }
+            String[] pathsArray = new String[paths.size()];
+            paths.toArray(pathsArray);
+            return pathsArray;
+        }
+
+        interface MediaScannerCallback {
+            void onAllPathsScanned();
+        }
+
+        static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback) {
             Log.d("FileOperation", "scanPaths(), paths = [" + Arrays.deepToString(paths) + "]");
             MediaScannerConnection.scanFile(context.getApplicationContext(),
                     paths,
                     null,
                     new MediaScannerConnection.OnScanCompletedListener() {
+                        int pathsScanned;
+
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
                             Log.d("FileOperation", "onScanCompleted: " + path);
+                            pathsScanned++;
                             if (MediaType.isMedia_MimeType(context, path)) {
                                 ContentResolver resolver = context.getContentResolver();
                                 if (new File(path).exists()) {
@@ -260,6 +304,10 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                                     resolver.delete(MediaStore.Files.getContentUri("external"),
                                             where, selectionArgs);
                                 }
+                            }
+
+                            if (callback != null && pathsScanned == paths.length) {
+                                callback.onAllPathsScanned();
                             }
                         }
                     });

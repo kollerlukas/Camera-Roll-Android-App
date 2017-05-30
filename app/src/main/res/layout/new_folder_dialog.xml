@@ -14,7 +14,6 @@
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/folder_name" />
+            android:layout_height="wrap_content" />
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

@@ -1,6 +1,7 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
 import android.annotation.SuppressLint;
+import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;

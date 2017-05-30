@@ -112,11 +112,13 @@
     <string name="copy">Copy</string>
     <string name="create">Create</string>
     <string name="new_folder">New Folder</string>
+    <string name="rename">Rename</string>
     <string name="paste">Paste</string>
     <string name="to">" to"</string>
     <string name="successfully_moved">"successfully moved "</string>
     <string name="successfully_copied">"successfully copied "</string>
     <string name="successfully_created_new_folder">Successfully created new Folder</string>
+    <string name="successfully_renamed_file">Successfully renamed file</string>
 
     <string name="pick_photo">Pick Photo</string>
     <string name="pick_photos">Pick Photos</string>

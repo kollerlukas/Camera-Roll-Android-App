@@ -40,7 +40,12 @@ public class Util {
     }
 
     @SuppressWarnings("unused")
-    public static int[] getImageDimensions(Context context, String path) {
+    public static int[] getImageDimensions(Context context, String path) throws FileNotFoundException {
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new FileNotFoundException();
+        }
+
         int[] dimensions = new int[2];
         dimensions[0] = 1;
         dimensions[1] = 1;
@@ -85,7 +90,12 @@ public class Util {
         return dimensions;
     }
 
-    public static int[] getVideoDimensions(String path) {
+    public static int[] getVideoDimensions(String path) throws FileNotFoundException {
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new FileNotFoundException();
+        }
+
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
         try {
