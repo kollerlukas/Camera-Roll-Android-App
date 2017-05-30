@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -17,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,7 +26,6 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -37,7 +34,6 @@ import android.transition.Slide;
 import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,7 +41,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -393,19 +388,30 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent.getAction().equals(ALBUM_ITEM_DELETED)) {
-            final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
+        switch (intent.getAction()) {
+            case ALBUM_ITEM_DELETED:
+                final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
 
-            int k = album.getAlbumItems().indexOf(albumItem);
-            for (int i = 0; i < album.getAlbumItems().size(); i++) {
-                if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
-                    k = i;
-                    break;
+                int k = album.getAlbumItems().indexOf(albumItem);
+                for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                    if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
+                        k = i;
+                        break;
+                    }
                 }
-            }
-            final int index = k;
-            album.getAlbumItems().remove(index);
-            recyclerView.getAdapter().notifyDataSetChanged();
+                final int index = k;
+                album.getAlbumItems().remove(index);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                break;
+            case VIEW_ALBUM:
+                if (!pick_photos) {
+                    String path = getIntent().getStringExtra(ALBUM_PATH);
+                    album = MediaProvider.loadAlbum(path);
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                    toolbar.setTitle(album.getName());
+                }
+                break;
         }
     }
 
@@ -557,68 +563,38 @@ public class AlbumActivity extends ThemeableActivity
                 item.setChecked(album.pinned);
                 break;
             case R.id.rename:
-                View dialogLayout = LayoutInflater.from(this).inflate(R.layout.new_folder_dialog,
-                        (ViewGroup) findViewById(R.id.root_view), false);
+                File_POJO file = new File_POJO(album.getPath(), false);
+                Rename.Util.getRenameDialog(this, file, new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        final Activity a = AlbumActivity.this;
 
-                final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
-                editText.setText(album.getName());
-                editText.setSelection(album.getName().length());
+                        final String newFilePath = intent.getStringExtra(Rename.NEW_FILE_PATH);
 
-                new AlertDialog.Builder(this, getDialogThemeRes())
-                        .setTitle(R.string.rename)
-                        .setView(dialogLayout)
-                        .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                final String newFileName = editText.getText().toString();
-
-                                registerLocalBroadcastReceiver(new BroadcastReceiver() {
+                        new MediaProvider(a).loadAlbums(a,
+                                Settings.getInstance(a).getHiddenFolders(),
+                                new MediaProvider.Callback() {
                                     @Override
-                                    public void onReceive(Context context, Intent intent) {
-                                        unregisterLocalBroadcastReceiver(this);
+                                    public void onMediaLoaded(ArrayList<Album> albums) {
+                                        //reload activity
+                                        Intent intent = getIntent();
+                                        intent.putExtra(ALBUM_PATH, newFilePath);
+                                        finish();
+                                        startActivity(intent);
+                                    }
 
-                                        final Activity a = AlbumActivity.this;
+                                    @Override
+                                    public void timeout() {
+                                        finish();
+                                    }
 
-                                        new MediaProvider(a).loadAlbums(a,
-                                                Settings.getInstance(a).getHiddenFolders(),
-                                                new MediaProvider.Callback() {
-                                                    @Override
-                                                    public void onMediaLoaded(ArrayList<Album> albums) {
-                                                        //reload activity
-
-                                                        String newFilePath = Rename.getNewFilePath(album.getPath(), newFileName);
-                                                        Log.d("AlbumActivity", "newFilePath: " + newFilePath);
-
-                                                        Intent intent = getIntent();
-                                                        intent.putExtra(ALBUM_PATH, newFilePath);
-                                                        finish();
-                                                        startActivity(intent);
-                                                    }
-
-                                                    @Override
-                                                    public void timeout() {
-                                                        finish();
-                                                    }
-
-                                                    @Override
-                                                    public void needPermission() {
-                                                        finish();
-                                                    }
-                                                });
+                                    @Override
+                                    public void needPermission() {
+                                        finish();
                                     }
                                 });
-
-                                final File_POJO[] files = new File_POJO[]{
-                                        new File_POJO(album.getPath(), false)};
-                                Intent intent =
-                                        FileOperation.getDefaultIntent(AlbumActivity.this, FileOperation.RENAME, files)
-                                                .putExtra(FileOperation.NEW_FILE_NAME, newFileName);
-                                startService(intent);
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .create()
-                        .show();
+                    }
+                }).show();
                 break;
             case R.id.sort_by_date:
             case R.id.sort_by_name:
@@ -866,8 +842,6 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onSelectorModeExit() {
-        Log.d("AlbumActivity", "onSelectorModeExit() called");
-
         if (pick_photos) {
             return;
         }

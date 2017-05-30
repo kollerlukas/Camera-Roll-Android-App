@@ -532,7 +532,7 @@ public class FileExplorerActivity extends ThemeableActivity
     public void fabClicked(View v) {
         animateFab(false);
 
-        View dialogLayout = LayoutInflater.from(this).inflate(R.layout.new_folder_dialog,
+        View dialogLayout = LayoutInflater.from(this).inflate(R.layout.input_dialog_layout,
                 (ViewGroup) findViewById(R.id.root_view), false);
 
         final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);

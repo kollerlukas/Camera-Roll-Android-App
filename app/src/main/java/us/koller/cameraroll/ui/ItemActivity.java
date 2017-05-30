@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -60,6 +61,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,10 +71,12 @@ import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.FileOperations.Rename;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
@@ -392,6 +396,39 @@ public class ItemActivity extends ThemeableActivity {
                         new String[]{albumItem.getPath()});
 
                 startActivityForResult(intent, FILEOPDIALOG_REQUEST);
+                break;
+            case R.id.rename:
+                File_POJO file = new File_POJO(albumItem.getPath(), true);
+                Rename.Util.getRenameDialog(this, file, new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        final Activity a = ItemActivity.this;
+
+                        new MediaProvider(a).loadAlbums(a,
+                                Settings.getInstance(a).getHiddenFolders(),
+                                new MediaProvider.Callback() {
+                                    @Override
+                                    public void onMediaLoaded(ArrayList<Album> albums) {
+                                        //reload activity
+                                        Intent intent = new Intent(a, AlbumActivity.class);
+                                        intent.setAction(AlbumActivity.VIEW_ALBUM);
+                                        intent.putExtra(ALBUM_PATH, album.getPath());
+                                        finish();
+                                        startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void timeout() {
+                                        onBackPressed();
+                                    }
+
+                                    @Override
+                                    public void needPermission() {
+                                        onBackPressed();
+                                    }
+                                });
+                    }
+                }).show();
                 break;
             case R.id.delete:
                 showDeleteDialog();

@@ -48,6 +48,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/rename"
+        android:title="@string/rename"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/delete"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/delete"

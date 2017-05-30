@@ -73,14 +73,22 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     public void sendDoneBroadcast() {
-        Intent intent = new Intent(RESULT_DONE);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        Intent intent = getDoneIntent();
+        sendLocalBroadcast(intent);
     }
 
     public void sendFailedBroadcast(Intent workIntent, String path) {
         Intent intent = new Intent(FAILED);
         intent.putExtra(FILES, path);
         intent.putExtra(WORK_INTENT, workIntent);
+        sendLocalBroadcast(intent);
+    }
+
+    public Intent getDoneIntent() {
+        return new Intent(RESULT_DONE);
+    }
+
+    public void sendLocalBroadcast(Intent intent) {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

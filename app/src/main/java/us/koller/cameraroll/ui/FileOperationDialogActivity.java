@@ -177,7 +177,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     }
 
     public void createNewFolderDialog(final NewFolderCallback callback) {
-        View dialogLayout = LayoutInflater.from(this).inflate(R.layout.new_folder_dialog,
+        View dialogLayout = LayoutInflater.from(this).inflate(R.layout.input_dialog_layout,
                 (ViewGroup) findViewById(R.id.root_view), false);
 
         final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
