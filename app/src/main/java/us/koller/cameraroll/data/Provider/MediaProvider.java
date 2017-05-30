@@ -8,9 +8,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import java.io.CharArrayReader;
 import java.util.ArrayList;
-import java.util.prefs.PreferenceChangeListener;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;

@@ -537,6 +537,8 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             menu.findItem(R.id.sort_by_name).setChecked(true);
         } else if (sort_by == SortUtil.BY_SIZE) {
             menu.findItem(R.id.sort_by_size).setChecked(true);
+        } else if (sort_by == SortUtil.BY_DATE) {
+            menu.findItem(R.id.sort_by_most_recent).setChecked(true);
         }
 
         if (pick_photos) {

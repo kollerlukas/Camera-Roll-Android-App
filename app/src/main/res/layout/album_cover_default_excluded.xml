@@ -16,7 +16,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:alpha="0.54"
+        android:ellipsize="end"
         android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
         android:textColor="@color/white"
         android:textSize="18sp" />
 

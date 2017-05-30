@@ -13,6 +13,7 @@ import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.ui.VideoPlayerActivity;
+import us.koller.cameraroll.util.Util;
 
 public class IntentReceiver extends AppCompatActivity {
 
@@ -30,9 +31,6 @@ public class IntentReceiver extends AppCompatActivity {
                 break;
             case Intent.ACTION_GET_CONTENT:
                 pick(getIntent());
-                break;
-            case Intent.ACTION_EDIT:
-                edit(getIntent());
                 break;
         }
     }
@@ -62,6 +60,8 @@ public class IntentReceiver extends AppCompatActivity {
                     .setData(uri);
             startActivity(view_video);
         } else {
+            Util.printIntentFlags(intent);
+
             Intent view_photo = new Intent(this, ItemActivity.class)
                     .setData(uri)
                     .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
@@ -82,14 +82,6 @@ public class IntentReceiver extends AppCompatActivity {
                 .setAction(MainActivity.PICK_PHOTOS);
 
         startActivityForResult(pick_photos, MainActivity.PICK_PHOTOS_REQUEST_CODE);
-    }
-
-    public void edit(Intent intent) {
-        Uri uri = intent.getData();
-        if (uri == null) {
-            Toast.makeText(this, getString(R.string.error) + ": Uri = null", Toast.LENGTH_SHORT).show();
-            this.finish();
-        }
     }
 
     @Override

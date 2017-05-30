@@ -255,7 +255,7 @@ public class ItemActivity extends ThemeableActivity {
             }
         });
 
-        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+        //viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         bottomBar = findViewById(R.id.bottom_bar);
         ImageView delete_button = (ImageView) bottomBar.findViewById(R.id.delete_button);
@@ -418,8 +418,7 @@ public class ItemActivity extends ThemeableActivity {
 
         Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
         intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
             startActivityForResult(Intent.createChooser(intent,
@@ -441,10 +440,11 @@ public class ItemActivity extends ThemeableActivity {
                 .setType(MediaType.getMimeType(this, albumItem.getPath()))
                 .getIntent();
 
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (shareIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_photo)));
+        } else {
+            Log.d("ItemActivity", "sharePhoto: else {}");
         }
     }
 
@@ -472,14 +472,19 @@ public class ItemActivity extends ThemeableActivity {
 
         Intent intent = new Intent(Intent.ACTION_EDIT);
         intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(Intent.createChooser(intent, getString(R.string.edit_space) + albumItem.getType()));
-        } else {
-            Toast.makeText(this, "No App found to edit your "
-                    + albumItem.getType(), Toast.LENGTH_SHORT).show();
+        try {
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(Intent.createChooser(intent,
+                        getString(R.string.edit_space) + albumItem.getType()));
+            } else {
+                Toast.makeText(this, "No App found to edit your "
+                        + albumItem.getType(), Toast.LENGTH_SHORT).show();
+            }
+        } catch (SecurityException se) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            se.printStackTrace();
         }
     }
 
@@ -784,7 +789,7 @@ public class ItemActivity extends ThemeableActivity {
                     SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) view;
                     ImageViewState state = imageView.getState();
                     if (state != null) {
-                        outState.putSerializable(IMAGE_VIEW_SAVED_STATE, imageView.getState());
+                        outState.putSerializable(IMAGE_VIEW_SAVED_STATE, state);
                     }
                 }
             }

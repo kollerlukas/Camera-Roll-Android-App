@@ -80,7 +80,7 @@ public class AlbumActivity extends ThemeableActivity
         @Override
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-            if (sharedElementReturnPosition != -1) {
+            if (sharedElementReturnPosition != -1 && sharedElementReturnPosition < album.getAlbumItems().size()) {
                 String newTransitionName = album.getAlbumItems().get(sharedElementReturnPosition).getPath();
                 View layout = recyclerView.findViewWithTag(newTransitionName);
                 View newSharedElement = layout != null ? layout.findViewById(R.id.image) : null;
@@ -230,7 +230,7 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private float scrollY = 0.0f;
+            //private float scrollY = 0.0f;
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -259,7 +259,7 @@ public class AlbumActivity extends ThemeableActivity
                         }
 
                         //animate Toolbar elevation
-                        scrollY += dy;
+                        //scrollY += dy;
                         //Util.animateToolbarElevation(toolbar, scrollY);
                     }
                 }
@@ -405,20 +405,22 @@ public class AlbumActivity extends ThemeableActivity
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onActivityReenter(int requestCode, Intent data) {
         super.onActivityReenter(requestCode, data);
-        Bundle tmpReenterState = new Bundle(data.getExtras());
-        sharedElementReturnPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-        album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
-        if (recyclerView.getAdapter().getItemCount() > 0) {
-            postponeEnterTransition();
-            recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int l, int t, int r, int b,
-                                           int oL, int oT, int oR, int oB) {
-                    recyclerView.removeOnLayoutChangeListener(this);
-                    startPostponedEnterTransition();
-                }
-            });
-            recyclerView.scrollToPosition(sharedElementReturnPosition);
+        if (data != null) {
+            Bundle tmpReenterState = new Bundle(data.getExtras());
+            sharedElementReturnPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+            album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
+            if (recyclerView.getAdapter().getItemCount() > 0) {
+                postponeEnterTransition();
+                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int l, int t, int r, int b,
+                                               int oL, int oT, int oR, int oB) {
+                        recyclerView.removeOnLayoutChangeListener(this);
+                        startPostponedEnterTransition();
+                    }
+                });
+                recyclerView.scrollToPosition(sharedElementReturnPosition);
+            }
         }
     }
 

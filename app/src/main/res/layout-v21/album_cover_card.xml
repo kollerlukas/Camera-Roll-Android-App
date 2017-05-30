@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:foreground="@drawable/ripple">
+    android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:foreground="@drawable/ripple"
         android:stateListAnimator="@animator/lift_up"
         app:cardElevation="0dp">
 
@@ -47,7 +47,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
                 android:tag="@string/theme_text_color_primary"
                 android:textSize="16sp" />
 

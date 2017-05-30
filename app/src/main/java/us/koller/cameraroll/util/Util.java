@@ -2,6 +2,7 @@ package us.koller.cameraroll.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -18,12 +19,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Field;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.ui.ThemeableActivity;
@@ -230,5 +233,26 @@ public class Util {
         }
         return Settings.Global.getFloat(context.getContentResolver(),
                 Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+    }
+
+    //stolen from: https://gist.github.com/joecks/4559331#file-showflags-intent-intent
+    public static void printIntentFlags(Intent intent) {
+        Field[] declaredFields = Intent.class.getDeclaredFields();
+        for (Field field : declaredFields) {
+            if (field.getName().startsWith("FLAG_")) {
+
+                try {
+                    int flag = field.getInt(null);
+
+                    if ((intent.getFlags() & flag) != 0) {
+                        Log.d("IntentReceiver", field.getName());
+                    }
+
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
     }
 }
