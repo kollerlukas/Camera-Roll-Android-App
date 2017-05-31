@@ -608,7 +608,7 @@ public class FileExplorerActivity extends ThemeableActivity
                 loadRoots();
             }
         } else {
-            setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
+            //setResult(RESULT_OK, new Intent(MainActivity.REFRESH_MEDIA));
             super.onBackPressed();
         }
     }

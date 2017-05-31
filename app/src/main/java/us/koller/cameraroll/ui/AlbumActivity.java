@@ -1062,7 +1062,7 @@ public class AlbumActivity extends ThemeableActivity
                     .addTransition(new Fade())
                     .setInterpolator(new AccelerateDecelerateInterpolator()));
         }
-        onBackPressed();
+        finish();
     }
 
     @Override

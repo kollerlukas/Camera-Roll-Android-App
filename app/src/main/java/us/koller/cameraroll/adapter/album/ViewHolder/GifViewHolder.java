@@ -31,8 +31,8 @@ public class GifViewHolder extends AlbumItemHolder {
         Glide.with(context)
                 .load(albumItem.getPath())
                 .asGif()
-                .skipMemoryCache(true)
-                .thumbnail(0.1f)
+                //.skipMemoryCache(true)
+                //.thumbnail(0.1f)
                 .listener(new RequestListener<String, GifDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -45,7 +45,7 @@ public class GifViewHolder extends AlbumItemHolder {
                                                    Target<GifDrawable> target, boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
                         if (!albumItem.hasFadedIn) {
-                            if (isFirstResource) {
+                            /*if (isFirstResource) {
                                 //set thumbnail saturation to 0
                                 ColorMatrix matrix = new ColorMatrix();
                                 matrix.setSaturation(0);
@@ -53,7 +53,8 @@ public class GifViewHolder extends AlbumItemHolder {
                                 return false;
                             } else {
                                 fadeIn();
-                            }
+                            }*/
+                            fadeIn();
                         } else {
                             imageView.clearColorFilter();
                         }

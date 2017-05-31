@@ -9,7 +9,7 @@
     android:layout_marginTop="8dp">
 
     <TextView
-        android:id="@+id/type"
+        android:id="@+id/tag"
         fontPath="fonts/roboto_mono_regular.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

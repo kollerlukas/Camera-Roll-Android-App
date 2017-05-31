@@ -78,11 +78,11 @@ import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
 import us.koller.cameraroll.util.Util;
-import us.koller.cameraroll.util.ZoomOutPageTransformer;
 
 public class ItemActivity extends ThemeableActivity {
 
@@ -603,34 +603,48 @@ public class ItemActivity extends ThemeableActivity {
                     MediaType.doesSupportExif(albumItem.getPath());
         }
 
-        String height = NO_DATA, width = NO_DATA,
-                date = NO_DATA, focal_length = NO_DATA,
-                exposure = NO_DATA, model = NO_DATA,
-                aperture = NO_DATA, iso = NO_DATA;
+        String height = NO_DATA,
+                width = NO_DATA,
+                date = NO_DATA,
+                focal_length = NO_DATA,
+                exposure = NO_DATA,
+                model = NO_DATA,
+                aperture = NO_DATA,
+                iso = NO_DATA;
+
         if (exifSupported) {
             if (exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
-                height = exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
+                //height = exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
+                height = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_LENGTH));
             }
             if (exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) != null) {
-                width = exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
+                //width = exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
+                width = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_WIDTH));
             }
             if (exif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
-                date = exif.getAttribute(ExifInterface.TAG_DATETIME);
+                //date = exif.getAttribute(ExifInterface.TAG_DATETIME);
+                date = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
             }
 
-            focal_length = parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH));
-            exposure = parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
+            //focal_length = parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH));
+            focal_length = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_FOCAL_LENGTH));
+            //exposure = parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
+            exposure = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_EXPOSURE_TIME));
             if (exif.getAttribute(ExifInterface.TAG_MAKE) != null) {
-                model = exif.getAttribute(ExifInterface.TAG_MAKE) + " "
-                        + exif.getAttribute(ExifInterface.TAG_MODEL);
+                /*model = exif.getAttribute(ExifInterface.TAG_MAKE) + " "
+                        + exif.getAttribute(ExifInterface.TAG_MODEL);*/
+                model = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_MAKE)) + " "
+                        + String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_MODEL));
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (exif.getAttribute(ExifInterface.TAG_F_NUMBER) != null) {
-                    aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
+                    //aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
+                    aperture = "f/" + String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_F_NUMBER));
                 }
                 if (exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) != null) {
-                    iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
+                    //iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
+                    iso = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_ISO_SPEED_RATINGS));
                 }
             }
         } else {
@@ -1010,7 +1024,7 @@ public class ItemActivity extends ThemeableActivity {
                 position--;
             }
 
-            TextView type = (TextView) holder.itemView.findViewById(R.id.type);
+            TextView type = (TextView) holder.itemView.findViewById(R.id.tag);
             type.setText(types[position]);
             TextView value = (TextView) holder.itemView.findViewById(R.id.value);
             value.setText(values[position]);

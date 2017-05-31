@@ -9,7 +9,7 @@
     android:layout_marginTop="8dp">
 
     <TextView
-        android:id="@+id/type"
+        android:id="@+id/tag"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.5"

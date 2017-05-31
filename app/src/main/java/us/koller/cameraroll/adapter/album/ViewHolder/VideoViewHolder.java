@@ -31,7 +31,7 @@ public class VideoViewHolder extends AlbumItemHolder {
         Glide.with(context)
                 .load(albumItem.getPath())
                 .asBitmap()
-                .skipMemoryCache(true)
+                //.skipMemoryCache(true)
                 .thumbnail(0.1f)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override

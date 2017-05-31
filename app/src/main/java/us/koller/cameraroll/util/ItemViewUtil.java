@@ -3,14 +3,12 @@ package us.koller.cameraroll.util;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
@@ -25,6 +23,7 @@ import java.io.FileNotFoundException;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Video;
 
@@ -100,12 +99,14 @@ public class ItemViewUtil {
             imageView.setTransitionName(albumItem.getPath());
         }
 
-        Glide.with(imageView.getContext())
+        BitmapRequestBuilder<String, Bitmap> requestBuilder = Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
-                .asBitmap()
-                .override(imageDimens[0], imageDimens[1])
-                .skipMemoryCache(true)
-                .error(R.drawable.error_placeholder_tinted)
+                .asBitmap();
+        if (!(albumItem instanceof Gif)) {
+            //not overriding image size for a gif --> OOM
+            requestBuilder = requestBuilder.override(imageDimens[0], imageDimens[1]);
+        }
+        requestBuilder.error(R.drawable.error_placeholder_tinted)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -143,7 +144,7 @@ public class ItemViewUtil {
         Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
                 .asGif()
-                .skipMemoryCache(true)
+                //.skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .error(R.drawable.error_placeholder_tinted)
                 .listener(new RequestListener<String, GifDrawable>() {
