@@ -32,7 +32,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     //for RobotoMono font
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+        if (useCalligraphyContextWrapper()) {
+            super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+        } else {
+            super.attachBaseContext(newBase);
+        }
+    }
+
+    public boolean useCalligraphyContextWrapper() {
+        return true;
     }
 
     @Override

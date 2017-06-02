@@ -1,17 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    /*compileSdkVersion 'android-O'
-    buildToolsVersion '26.0.0-rc2'*/
     compileSdkVersion 25
     buildToolsVersion '25.0.3'
     defaultConfig {
         applicationId "us.koller.cameraroll"
         minSdkVersion 19
-        /*targetSdkVersion 'O'*/
         targetSdkVersion 25
-        versionCode 19
-        versionName "v1.5 Beta"
+        versionCode 20
+        versionName "v1.5.1 Beta"
         renderscriptTargetApi 25
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -48,7 +45,7 @@ dependencies {
     compile 'com.android.support:preference-v14:25.3.1'
     compile 'com.android.support:percent:25.3.1'
 
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
 
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
 

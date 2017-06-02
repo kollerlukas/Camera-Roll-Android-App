@@ -122,7 +122,6 @@ public class VideoPlayerActivity extends ThemeableActivity {
             @Override
             public void onClick(View view) {
                 player.setPlayWhenReady(!player.getPlayWhenReady());
-
             }
         });
 
@@ -181,6 +180,11 @@ public class VideoPlayerActivity extends ThemeableActivity {
             @Override
             public void onPositionDiscontinuity() {
             }
+
+            /*@Override
+            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+            }*/
         });
 
         //hide & show Nav-/StatusBar together with controls
@@ -230,6 +234,11 @@ public class VideoPlayerActivity extends ThemeableActivity {
         super.onConfigurationChanged(newConfig);
 
         setWindowInsets();
+    }
+
+    @Override
+    public boolean useCalligraphyContextWrapper() {
+        return false;
     }
 
     public void setWindowInsets() {
