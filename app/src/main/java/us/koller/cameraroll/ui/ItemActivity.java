@@ -614,36 +614,28 @@ public class ItemActivity extends ThemeableActivity {
 
         if (exifSupported) {
             if (exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
-                //height = exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
                 height = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_LENGTH));
             }
             if (exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) != null) {
-                //width = exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
                 width = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_WIDTH));
             }
             if (exif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
-                //date = exif.getAttribute(ExifInterface.TAG_DATETIME);
                 date = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
             }
 
-            //focal_length = parseFocalLength(exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH));
             focal_length = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_FOCAL_LENGTH));
-            //exposure = parseExposureTime(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
             exposure = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_EXPOSURE_TIME));
+            exposure = parseExposureTime(exposure);
             if (exif.getAttribute(ExifInterface.TAG_MAKE) != null) {
-                /*model = exif.getAttribute(ExifInterface.TAG_MAKE) + " "
-                        + exif.getAttribute(ExifInterface.TAG_MODEL);*/
                 model = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_MAKE)) + " "
                         + String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_MODEL));
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (exif.getAttribute(ExifInterface.TAG_F_NUMBER) != null) {
-                    //aperture = "f/" + exif.getAttribute(ExifInterface.TAG_F_NUMBER);
                     aperture = "f/" + String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_F_NUMBER));
                 }
                 if (exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) != null) {
-                    //iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
                     iso = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_ISO_SPEED_RATINGS));
                 }
             }
@@ -963,22 +955,6 @@ public class ItemActivity extends ThemeableActivity {
         try {
             int i = Math.round(1 / f);
             return String.valueOf(1 + "/" + i) + " sec";
-        } catch (NumberFormatException e) {
-            return input;
-        }
-    }
-
-    public String parseFocalLength(String input) {
-        if (input == null || input.equals("null")) {
-            return NO_DATA;
-        }
-        String[] arr = input.split("/");
-        if (arr.length != 2) {
-            return input;
-        }
-        try {
-            double focalLength = Double.valueOf(arr[0]) / Double.valueOf(arr[1]);
-            return String.valueOf(focalLength) + " mm";
         } catch (NumberFormatException e) {
             return input;
         }

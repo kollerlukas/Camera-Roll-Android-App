@@ -50,7 +50,8 @@
     <item
         android:id="@+id/rename"
         android:title="@string/rename"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:visible="false" />
 
     <item
         android:id="@+id/delete"

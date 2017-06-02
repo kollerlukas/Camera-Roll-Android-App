@@ -32,7 +32,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -365,6 +364,9 @@ public class AlbumActivity extends ThemeableActivity
 
         onNewIntent(getIntent());
 
+        //needed for transparent statusBar
+        setSystemUiFlags();
+
         //restore Selector mode, when needed
         if (savedInstanceState != null) {
             final RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
@@ -435,14 +437,6 @@ public class AlbumActivity extends ThemeableActivity
                 });
                 recyclerView.scrollToPosition(sharedElementReturnPosition);
             }
-        }
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if (getResources().getBoolean(R.bool.landscape)) {
-            setSystemUiFlags();
         }
     }
 
@@ -1001,14 +995,6 @@ public class AlbumActivity extends ThemeableActivity
         }, click ? (int) (400 * Util.getAnimatorSpeed(this)) : 0);
     }
 
-    private void setSystemUiFlags() {
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
-    }
-
     @Override
     public void onBackPressed() {
         if (((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
@@ -1068,9 +1054,9 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     public int getThemeRes(int style) {
         if (style == DARK) {
-            return R.style.Theme_CameraRoll_Main;
+            return R.style.Theme_CameraRoll_Translucent_Album;
         } else {
-            return R.style.Theme_CameraRoll_Light_Main;
+            return R.style.Theme_CameraRoll_Translucent_Light_Album;
         }
     }
 

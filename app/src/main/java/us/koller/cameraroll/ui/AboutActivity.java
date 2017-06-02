@@ -163,15 +163,8 @@ public class AboutActivity extends ThemeableActivity
             }
         }
 
+        //needed for transparent statusBar
         setSystemUiFlags();
-    }
-
-    private void setSystemUiFlags() {
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
     @Override

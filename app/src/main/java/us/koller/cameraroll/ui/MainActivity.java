@@ -332,6 +332,9 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                                 }
                             });
         }
+
+        //needed for transparent statusBar
+        setSystemUiFlags();
     }
 
     @Override
@@ -418,16 +421,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if (getResources().getBoolean(R.bool.landscape)) {
-            setSystemUiFlags();
-        }
-
-        //refreshPhotos();
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
@@ -449,14 +442,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             int columnCount = Settings.getInstance(this).getStyleColumnCount(this, pick_photos);
             ((GridLayoutManager) recyclerView.getLayoutManager()).setSpanCount(columnCount);
         }
-    }
-
-    private void setSystemUiFlags() {
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
     public void refreshPhotos() {
