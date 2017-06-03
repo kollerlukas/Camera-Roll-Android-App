@@ -2,6 +2,8 @@ package us.koller.cameraroll.ui;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -10,12 +12,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
@@ -23,19 +27,20 @@ import us.koller.cameraroll.data.Settings;
 public abstract class ThemeableActivity extends BaseActivity {
 
     public static final int UNDEFINED = -1;
-    public static final int DARK = 1;
-    public static final int LIGHT = 2;
 
     public static int THEME = UNDEFINED;
+    /*true => dark, false => light*/
+    private static boolean[] baseThemes;
 
-    public static int bg_color_res;
+    private static ColorManager colorManager;
 
-    public static int toolbar_color_res;
-    public static int text_color_res;
-    public static int text_color_secondary_res;
-
-    public static int accent_color_res;
-    public static int accent_color_text_res;
+    /*themeable colors*/
+    public int backgroundColor,
+            toolbarColor,
+            textColor,
+            textColorSec,
+            accentColor,
+            accentTextColor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,10 +48,18 @@ public abstract class ThemeableActivity extends BaseActivity {
 
         if (THEME == UNDEFINED) {
             readTheme(this);
-            setColors();
+            colorManager = new ColorManager(this, THEME);
         }
 
         setTheme(getThemeRes(THEME));
+
+        //set color variables
+        backgroundColor = getThemeColor(ColorManager.BG_COLOR);
+        toolbarColor = getThemeColor(ColorManager.TOOLBAR_COLOR);
+        textColor = getThemeColor(ColorManager.TEXT_COLOR);
+        textColorSec = getThemeColor(ColorManager.TEXT_COLOR_SEC);
+        accentColor = getThemeColor(ColorManager.ACCENT_COLOR);
+        accentTextColor = getThemeColor(ColorManager.ACCENT_TEXT_COLOR);
     }
 
     @Override
@@ -57,7 +70,7 @@ public abstract class ThemeableActivity extends BaseActivity {
 
         checkTags(rootView);
 
-        onThemeApplied(THEME);
+        onThemeApplied(isLightBaseTheme(THEME));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setupTaskDescription();
@@ -75,40 +88,50 @@ public abstract class ThemeableActivity extends BaseActivity {
 
     @Override
     protected void onRestart() {
-        super.onRestart();
         if (THEME == UNDEFINED) {
             this.recreate();
         }
+
+        super.onRestart();
     }
 
     private static void readTheme(Context context) {
         Settings s = Settings.getInstance(context);
-        THEME = s.getTheme()
-                .equals(context.getString(R.string.DARK_THEME_VALUE)) ?
-                DARK : LIGHT;
+        THEME = s.getTheme(context);
+
+        readBaseThemes(context);
     }
 
-    public void setColors() {
-        boolean dark = THEME == DARK;
-
-        bg_color_res = dark ? R.color.dark_bg : R.color.light_bg;
-
-        toolbar_color_res = dark ? R.color.black_translucent2
-                : R.color.colorPrimary_light;
-
-        text_color_res = dark ? R.color.white : R.color.grey_900_translucent;
-
-        text_color_secondary_res = dark ? R.color.white_translucent1
-                : R.color.grey_900_translucent;
-
-        accent_color_res = R.color.colorAccent;
-        accent_color_text_res = R.color.colorAccent_text;
+    private static void readBaseThemes(Context context) {
+        Resources res = context.getResources();
+        TypedArray baseThemes = res.obtainTypedArray(R.array.base_themes);
+        ThemeableActivity.baseThemes = new boolean[baseThemes.length()];
+        for (int i = 0; i < baseThemes.length(); i++) {
+            ThemeableActivity.baseThemes[i] = baseThemes.getBoolean(i, true);
+        }
+        baseThemes.recycle();
+        Log.d("ThemeableActivity", "readBaseThemes: " + Arrays.toString(ThemeableActivity.baseThemes));
     }
 
-    public boolean darkIcons() {
-        return getResources().getBoolean(R.bool.dark_icons);
+    public static ColorManager getColorManager() {
+        return colorManager;
     }
 
+    public int getThemeColor(int COLOR) {
+        ColorManager colorManager = getColorManager();
+        if (colorManager != null) {
+            return colorManager.getColor(COLOR);
+        }
+        return -1;
+    }
+
+    //use dark statusBar icons over colorAccent
+    public boolean colorAccentDarkIcons() {
+        return getResources().getBoolean(R.bool.colorAccent_dark_icons);
+    }
+
+
+    //static Method to call, when adding a view dynamically in order to get Theme applied
     public static void checkTags(ViewGroup viewGroup) {
         setViewBgColors(viewGroup);
 
@@ -124,26 +147,28 @@ public abstract class ThemeableActivity extends BaseActivity {
         String TAG_TEXT_PRIMARY = vg.getContext().getString(R.string.theme_text_color_primary);
         ArrayList<View> viewsPrimary = findViewsWithTag(TAG_TEXT_PRIMARY, vg);
 
-        int textColorPrimary = ContextCompat.getColor(vg.getContext(), text_color_res);
+        ColorManager colorManager = getColorManager();
+
+        int textColorPrim = colorManager.getColor(ColorManager.TEXT_COLOR);
         for (int i = 0; i < viewsPrimary.size(); i++) {
             View v = viewsPrimary.get(i);
             if (v instanceof TextView) {
-                ((TextView) v).setTextColor(textColorPrimary);
+                ((TextView) v).setTextColor(textColorPrim);
             } else if (v instanceof ImageView) {
-                ((ImageView) v).setColorFilter(textColorPrimary);
+                ((ImageView) v).setColorFilter(textColorPrim);
             }
         }
 
         String TAG_TEXT_SECONDARY = vg.getContext().getString(R.string.theme_text_color_secondary);
         ArrayList<View> viewsSecondary = findViewsWithTag(TAG_TEXT_SECONDARY, vg);
 
-        int textColorSecondary = ContextCompat.getColor(vg.getContext(), text_color_secondary_res);
+        int textColorSec = colorManager.getColor(ColorManager.TEXT_COLOR_SEC);
         for (int i = 0; i < viewsSecondary.size(); i++) {
             View v = viewsSecondary.get(i);
             if (v instanceof TextView) {
-                ((TextView) v).setTextColor(textColorSecondary);
+                ((TextView) v).setTextColor(textColorSec);
             } else if (v instanceof ImageView) {
-                ((ImageView) v).setColorFilter(textColorSecondary);
+                ((ImageView) v).setColorFilter(textColorSec);
             }
         }
     }
@@ -157,7 +182,9 @@ public abstract class ThemeableActivity extends BaseActivity {
         String TAG = vg.getContext().getString(R.string.theme_bg_color);
         ArrayList<View> views = findViewsWithTag(TAG, vg);
 
-        int bg_color = ContextCompat.getColor(vg.getContext(), bg_color_res);
+        ColorManager colorManager = getColorManager();
+
+        int bg_color = colorManager.getColor(ColorManager.BG_COLOR);
         for (int i = 0; i < views.size(); i++) {
             views.get(i).setBackgroundColor(bg_color);
         }
@@ -189,14 +216,24 @@ public abstract class ThemeableActivity extends BaseActivity {
         return views;
     }
 
-    public abstract int getThemeRes(int style);
+    public boolean isLightBaseTheme(int style) {
+        return !baseThemes[style];
+    }
 
-    public void onThemeApplied(int theme) {
+    public int getThemeRes(int style) {
+        return baseThemes[style] ? getDarkThemeRes() : getLightThemeRes();
+    }
+
+    public abstract int getDarkThemeRes();
+
+    public abstract int getLightThemeRes();
+
+    public void onThemeApplied(boolean lightBaseTheme) {
 
     }
 
     public static int getDialogThemeRes() {
-        if (THEME == DARK) {
+        if (baseThemes[THEME]) {
             return R.style.Theme_CameraRoll_Dialog;
         } else {
             return R.style.Theme_CameraRoll_Light_Dialog;
@@ -205,7 +242,7 @@ public abstract class ThemeableActivity extends BaseActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
-        int colorRes = THEME == DARK ? R.color.colorPrimary : R.color.colorPrimary_light;
+        int colorRes = isLightBaseTheme(THEME) ? R.color.colorPrimary_light : R.color.colorPrimary;
         int color = ContextCompat.getColor(this, colorRes);
 
         Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(),
@@ -215,11 +252,10 @@ public abstract class ThemeableActivity extends BaseActivity {
         overviewIcon.recycle();
     }
 
-    public static int getStatusBarColor(Context context, int toolbarColor) {
+    public static int getStatusBarColor(int toolbarColor) {
         float darken = 0.9f;
         if (toolbarColor == -1) {
-            toolbarColor = ContextCompat
-                    .getColor(context, toolbar_color_res);
+            toolbarColor = getColorManager().getColor(ColorManager.TOOLBAR_COLOR);
         }
         return Color.argb(
                 (int) (Color.alpha(toolbarColor) * darken),
@@ -248,5 +284,30 @@ public abstract class ThemeableActivity extends BaseActivity {
             }
         });
     }*/
+
+    public static class ColorManager {
+
+        public static final int BG_COLOR = 0;
+        public static final int TOOLBAR_COLOR = 1;
+        public static final int TEXT_COLOR = 2;
+        public static final int TEXT_COLOR_SEC = 3;
+        public static final int ACCENT_COLOR = 4;
+        public static final int ACCENT_TEXT_COLOR = 5;
+
+        private int[] colors;
+
+        ColorManager(Context context, int theme) {
+            Resources res = context.getResources();
+            TypedArray themeColors = res.obtainTypedArray(R.array.themeColors);
+            int themeColorRes = themeColors.getResourceId(theme, R.array.dark_theme_colors);
+            themeColors.recycle();
+
+            colors = res.getIntArray(themeColorRes);
+        }
+
+        public int getColor(int COLOR) {
+            return colors[COLOR];
+        }
+    }
 }
 

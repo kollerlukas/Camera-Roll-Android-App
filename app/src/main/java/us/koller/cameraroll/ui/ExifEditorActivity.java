@@ -213,8 +213,7 @@ public class ExifEditorActivity extends ThemeableActivity {
         MenuItem save = menu.findItem(R.id.save);
         Drawable d = save.getIcon();
         DrawableCompat.wrap(d);
-        DrawableCompat.setTint(d, ContextCompat
-                .getColor(this, text_color_secondary_res));
+        DrawableCompat.setTint(d, textColorSec);
         save.setIcon(d);
 
         save.setVisible(editedItems.size() > 0);
@@ -279,33 +278,34 @@ public class ExifEditorActivity extends ThemeableActivity {
     }
 
     @Override
-    public int getThemeRes(int style) {
-        if (style == DARK) {
-            return R.style.Theme_CameraRoll_ExifEditor;
-        } else {
-            return R.style.Theme_CameraRoll_Light_ExifEditor;
-        }
+    public int getDarkThemeRes() {
+        return R.style.Theme_CameraRoll_ExifEditor;
     }
 
     @Override
-    public void onThemeApplied(int theme) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
+    public int getLightThemeRes() {
+        return R.style.Theme_CameraRoll_Light_ExifEditor;
+    }
 
-        if (theme == LIGHT) {
+    @Override
+    public void onThemeApplied(boolean lightBaseTheme) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(toolbarColor);
+        toolbar.setTitleTextColor(textColor);
+
+        if (lightBaseTheme) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
             }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int statusBarColor = getStatusBarColor(this, ContextCompat.getColor(this, toolbar_color_res));
+            int statusBarColor = getStatusBarColor(toolbarColor);
             getWindow().setStatusBarColor(statusBarColor);
         }
     }
 
-    public static class EditedItem implements Parcelable {
+    private static class EditedItem implements Parcelable {
         String tag;
         String newValue;
 
@@ -351,7 +351,7 @@ public class ExifEditorActivity extends ThemeableActivity {
         }
     }
 
-    public static class RecyclerViewAdapter extends RecyclerView.Adapter {
+    private static class RecyclerViewAdapter extends RecyclerView.Adapter {
 
         interface OnEditCallback {
             void onItemEdited(String tag, String newValue);

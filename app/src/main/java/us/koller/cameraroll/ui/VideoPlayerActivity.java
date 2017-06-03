@@ -348,17 +348,18 @@ public class VideoPlayerActivity extends ThemeableActivity {
     }
 
     @Override
-    public int getThemeRes(int style) {
-        if (style == DARK) {
-            return R.style.Theme_CameraRoll_VideoPlayer;
-        } else {
-            return R.style.Theme_CameraRoll_Light_VideoPlayer;
-        }
+    public int getDarkThemeRes() {
+        return R.style.Theme_CameraRoll_VideoPlayer;
     }
 
     @Override
-    public void onThemeApplied(int theme) {
-        if (theme == LIGHT) {
+    public int getLightThemeRes() {
+        return R.style.Theme_CameraRoll_Light_VideoPlayer;
+    }
+
+    @Override
+    public void onThemeApplied(boolean lightBaseTheme) {
+        if (lightBaseTheme) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
             int white = ContextCompat.getColor(this, R.color.white);

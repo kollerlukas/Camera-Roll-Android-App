@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -143,29 +142,29 @@ public class SettingsActivity extends ThemeableActivity {
     }
 
     @Override
-    public int getThemeRes(int style) {
-        if (style == DARK) {
-            return R.style.Theme_CameraRoll_Settings;
-        } else {
-            return R.style.Theme_CameraRoll_Light_Settings;
-        }
+    public int getDarkThemeRes() {
+        return R.style.Theme_CameraRoll_Settings;
     }
 
     @Override
-    public void onThemeApplied(int theme) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
+    public int getLightThemeRes() {
+        return R.style.Theme_CameraRoll_Light_Settings;
+    }
 
-        if (theme == LIGHT) {
+    @Override
+    public void onThemeApplied(boolean lightBaseTheme) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(toolbarColor);
+        toolbar.setTitleTextColor(textColor);
+
+        if (lightBaseTheme) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
             }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int statusBarColor = getStatusBarColor(this,
-                    ContextCompat.getColor(this, toolbar_color_res));
+            int statusBarColor = getStatusBarColor(toolbarColor);
             getWindow().setStatusBarColor(statusBarColor);
         }
     }
@@ -190,7 +189,7 @@ public class SettingsActivity extends ThemeableActivity {
 
             Settings settings = Settings.getInstance(getContext());
 
-            initThemePref(settings.getTheme());
+            initThemePref(settings.getThemeValue());
             initStylePref(settings.getStyle());
             initColumnCountPref(settings.getColumnCount(getContext()));
             initMediaRetrieverPref(settings.useStorageRetriever());

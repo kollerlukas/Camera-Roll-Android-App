@@ -81,7 +81,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
             toolbar.setActivated(false);
 
-            if (getContext().getResources().getBoolean(R.bool.dark_icons)) {
+            if (getContext().getResources().getBoolean(R.bool.colorAccent_dark_icons)) {
                 Util.setDarkStatusBarIcons(rootView);
             } else {
                 Util.setLightStatusBarIcons(rootView);
@@ -141,12 +141,16 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
 
-                            if (MainActivity.THEME != ThemeableActivity.LIGHT) {
-                                Util.setLightStatusBarIcons(rootView);
-                            } else if (MainActivity.THEME == ThemeableActivity.LIGHT) {
-                                Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-                                toolbar.setActivated(true);
-                                Util.setDarkStatusBarIcons(rootView);
+                            Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+                            Context c = getContext();
+                            if (c instanceof ThemeableActivity) {
+                                ThemeableActivity themeableActivity = (ThemeableActivity) c;
+                                if (themeableActivity.isLightBaseTheme(ThemeableActivity.THEME)) {
+                                    toolbar.setActivated(true);
+                                    Util.setDarkStatusBarIcons(rootView);
+                                } else {
+                                    Util.setLightStatusBarIcons(rootView);
+                                }
                             }
 
                             //remove selector-toolbar
@@ -167,7 +171,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     getContext().getString(R.string.items) : getContext().getString(R.string.item));
 
             ColorFade.fadeToolbarTitleColor(toolbar,
-                    ContextCompat.getColor(getContext(), /*R.color.grey_900_translucent*/ ThemeableActivity.accent_color_text_res),
+                    ThemeableActivity.getColorManager().getColor(ThemeableActivity.ColorManager.ACCENT_TEXT_COLOR),
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
@@ -222,6 +226,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 + (album.getAlbumItems().size() > 1 ?
                 getContext().getString(R.string.items) :
                 getContext().getString(R.string.item));
+        //noinspection deprecation
         ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
         //make RecyclerView either single ore double lined, depending on the album size
@@ -396,7 +401,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 .getDefaultIntent(getContext(), FileOperation.DELETE, filesToDelete));
     }
 
-    static class RecyclerViewAdapter
+    private static class RecyclerViewAdapter
             extends us.koller.cameraroll.adapter.album.RecyclerViewAdapter {
 
         RecyclerViewAdapter(SelectorModeManager.Callback callback, final RecyclerView recyclerView,
@@ -410,7 +415,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         }
     }
 
-    static class SelectorModeUtil {
+    private static class SelectorModeUtil {
 
         static final String SELECTOR_TOOLBAR_TAG = "SELECTOR_TOOLBAR_TAG";
 
@@ -420,14 +425,13 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             final Toolbar toolbar = new Toolbar(context);
             toolbar.setTag(SELECTOR_TOOLBAR_TAG);
 
-            int accentColor = ContextCompat.getColor(context,
-                    MainActivity.accent_color_res);
-            int textColor = ContextCompat.getColor(context,
-                    /*R.color.grey_900_translucent*/ ThemeableActivity.accent_color_text_res);
+            ThemeableActivity.ColorManager colorManager = ThemeableActivity.getColorManager();
+            int accentColor = colorManager.getColor(ThemeableActivity.ColorManager.ACCENT_COLOR);
+            int accentTextColor = colorManager.getColor(ThemeableActivity.ColorManager.ACCENT_TEXT_COLOR);
 
             toolbar.setBackgroundColor(accentColor);
 
-            toolbar.setTitleTextColor(textColor);
+            toolbar.setTitleTextColor(accentTextColor);
 
             toolbar.inflateMenu(R.menu.selector_mode);
             toolbar.setOnMenuItemClickListener(onItemClickListener);
@@ -435,13 +439,13 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             Drawable menuIcon = toolbar.getOverflowIcon();
             if (menuIcon != null) {
                 DrawableCompat.wrap(menuIcon);
-                DrawableCompat.setTint(menuIcon.mutate(), textColor);
+                DrawableCompat.setTint(menuIcon.mutate(), accentTextColor);
             }
 
             Drawable navIcon = ContextCompat.getDrawable(context,
                     R.drawable.ic_clear_black_24dp);
             DrawableCompat.wrap(navIcon);
-            DrawableCompat.setTint(navIcon.mutate(), textColor);
+            DrawableCompat.setTint(navIcon.mutate(), accentTextColor);
             toolbar.setNavigationIcon(navIcon);
 
             toolbar.setNavigationOnClickListener(onClickListener);

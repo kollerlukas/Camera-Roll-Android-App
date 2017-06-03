@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--simple resource file to define and configure themes-->
+<resources>
+    <integer name="THEME_DARK">0</integer>
+    <integer name="THEME_LIGHT">1</integer>
+    <integer name="THEME_BLACK">2</integer>
+
+    <!--define themes-->
+    <integer-array name="themes">
+        <item>@integer/THEME_DARK</item>
+        <item>@integer/THEME_LIGHT</item>
+        <item>@integer/THEME_BLACK</item>
+    </integer-array>
+
+    <!--dark or light base theme-->
+    <!--index correlates to themes-array index-->
+    <!--true => dark, false => light-->
+    <bool name="dark_base_theme">true</bool>
+    <bool name="light_base_theme">false</bool>
+    <array name="base_themes">
+        <item>@bool/dark_base_theme</item>
+        <item>@bool/light_base_theme</item>
+        <item>@bool/dark_base_theme</item>
+    </array>
+
+
+    <!--theme colors-->
+    <!--
+    scheme:
+        [0] = backgroundColor
+        [1] = toolbarColor
+        [2] = textColor primary
+        [3] = textColor secondary
+        [4] = accent color
+        [5] = accent textColor
+    -->
+
+    <!--color array ids-->
+    <array name="themeColors">
+        <item>@array/dark_theme_colors</item>
+        <item>@array/light_theme_colors</item>
+        <item>@array/black_theme_colors</item>
+    </array>
+
+
+    <!--dark theme colors-->
+    <integer-array name="dark_theme_colors">
+        <item>@color/dark_bg</item>
+        <item>@color/black_translucent2</item>
+        <item>@color/white</item>
+        <item>@color/white_translucent1</item>
+        <item>@color/colorAccent</item>
+        <item>@color/colorAccent_text</item>
+    </integer-array>
+
+    <!--light theme colors-->
+    <integer-array name="light_theme_colors">
+        <item>@color/light_bg</item>
+        <item>@color/colorPrimary_light</item>
+        <item>@color/grey_900_translucent</item>
+        <item>@color/grey_900_translucent</item>
+        <item>@color/colorAccent</item>
+        <item>@color/colorAccent_text</item>
+    </integer-array>
+
+    <!--black theme colors-->
+    <integer-array name="black_theme_colors">
+        <item>@color/black_bg</item>
+        <item>@color/black_translucent2</item>
+        <item>@color/white</item>
+        <item>@color/white_translucent1</item>
+        <item>@color/colorAccent</item>
+        <item>@color/colorAccent_text</item>
+    </integer-array>
+</resources>

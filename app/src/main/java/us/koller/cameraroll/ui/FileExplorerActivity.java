@@ -105,8 +105,9 @@ public class FileExplorerActivity extends ThemeableActivity
         }
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, toolbar_color_res));
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, text_color_res));
+
+        toolbar.setBackgroundColor(toolbarColor);
+        toolbar.setTitleTextColor(textColor);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
@@ -121,8 +122,7 @@ public class FileExplorerActivity extends ThemeableActivity
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon != null) {
             navIcon = DrawableCompat.wrap(navIcon);
-            DrawableCompat.setTint(navIcon.mutate(),
-                    ContextCompat.getColor(this, text_color_secondary_res));
+            DrawableCompat.setTint(navIcon.mutate(), textColorSec);
             toolbar.setNavigationIcon(navIcon);
         }
 
@@ -133,8 +133,7 @@ public class FileExplorerActivity extends ThemeableActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        Util.colorToolbarOverflowMenuIcon(toolbar,
-                ContextCompat.getColor(this, text_color_secondary_res));
+        Util.colorToolbarOverflowMenuIcon(toolbar, textColorSec);
 
         //need to be called after setTitle(), to ensure, that mTitleTextView exists
         TextView titleTextView = Util.setToolbarTypeface(toolbar
@@ -182,8 +181,7 @@ public class FileExplorerActivity extends ThemeableActivity
         fab.setImageResource(R.drawable.ic_create_new_folder_white_24dp);
         Drawable d = fab.getDrawable();
         d = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(d.mutate(),
-                ContextCompat.getColor(this, accent_color_text_res));
+        DrawableCompat.setTint(d.mutate(), accentTextColor);
         fab.setImageDrawable(d);
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
@@ -436,8 +434,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
         Drawable icon = menu.findItem(R.id.paste).getIcon().mutate();
         icon = DrawableCompat.wrap(icon);
-        DrawableCompat.setTint(icon.mutate(),
-                ContextCompat.getColor(this, accent_color_text_res));
+        DrawableCompat.setTint(icon.mutate(), accentTextColor);
         menu.findItem(R.id.paste).setIcon(icon);
 
         return super.onCreateOptionsMenu(menu);
@@ -667,31 +664,25 @@ public class FileExplorerActivity extends ThemeableActivity
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
-        if (darkIcons()) {
+        if (colorAccentDarkIcons()) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         } else {
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        ColorFade.fadeBackgroundColor(toolbar,
-                ContextCompat.getColor(this, toolbar_color_res),
-                ContextCompat.getColor(this, accent_color_res));
+        ColorFade.fadeBackgroundColor(toolbar, toolbarColor, accentColor);
 
-        ColorFade.fadeToolbarTitleColor(toolbar,
-                ContextCompat.getColor(this, accent_color_text_res),
-                null);
+        ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor, null);
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
-                ContextCompat.getColor(this, text_color_secondary_res),
-                ContextCompat.getColor(this, accent_color_text_res));
+                textColorSec, accentTextColor);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
             ColorFade.fadeIconColor(navIcon,
-                    ContextCompat.getColor(this, text_color_secondary_res),
-                    ContextCompat.getColor(this, accent_color_text_res));
+                    textColorSec, accentTextColor);
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -709,8 +700,7 @@ public class FileExplorerActivity extends ThemeableActivity
                             R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
-                DrawableCompat.setTint(d.mutate(),
-                        ContextCompat.getColor(FileExplorerActivity.this, accent_color_text_res));
+                DrawableCompat.setTint(d.mutate(), accentTextColor);
                 toolbar.setNavigationIcon(d);
 
                 //make menu items visible
@@ -770,8 +760,7 @@ public class FileExplorerActivity extends ThemeableActivity
             final String title = String.valueOf(count) + (count > 1 ?
                     getString(R.string.items) : getString(R.string.item));
 
-            int color = ContextCompat.getColor(this, accent_color_text_res);
-            ColorFade.fadeToolbarTitleColor(toolbar, color,
+            ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
@@ -787,8 +776,7 @@ public class FileExplorerActivity extends ThemeableActivity
         if (fileOpIntent != null) {
             final int count = FileOperation.getFiles(fileOpIntent).length;
 
-            int color = ContextCompat.getColor(this, accent_color_text_res);
-            ColorFade.fadeToolbarTitleColor(toolbar, color,
+            ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
@@ -843,8 +831,7 @@ public class FileExplorerActivity extends ThemeableActivity
         if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-            int color = ContextCompat.getColor(FileExplorerActivity.this, text_color_res);
-            ColorFade.fadeToolbarTitleColor(toolbar, color,
+            ColorFade.fadeToolbarTitleColor(toolbar, textColor,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
@@ -862,19 +849,15 @@ public class FileExplorerActivity extends ThemeableActivity
     public void resetToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        if (THEME != LIGHT) {
+        if (isLightBaseTheme(THEME)) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        } else {
             toolbar.setActivated(false);
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-        } else {
-            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        ColorFade.fadeBackgroundColor(toolbar,
-                ContextCompat.getColor(this, accent_color_res),
-                ContextCompat.getColor(this, toolbar_color_res));
-
-        ColorFade.fadeToolbarTitleColor(toolbar,
-                ContextCompat.getColor(this, text_color_res),
+        ColorFade.fadeBackgroundColor(toolbar, accentColor, toolbarColor);
+        ColorFade.fadeToolbarTitleColor(toolbar, textColor,
                 new ColorFade.ToolbarTitleFadeCallback() {
                     @Override
                     public void setTitle(Toolbar toolbar) {
@@ -883,16 +866,12 @@ public class FileExplorerActivity extends ThemeableActivity
                 });
 
         //fade overflow menu icon
-        ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
-                ContextCompat.getColor(this, accent_color_text_res),
-                ContextCompat.getColor(this, text_color_secondary_res));
+        ColorFade.fadeIconColor(toolbar.getOverflowIcon(), accentTextColor, textColor);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
-            ColorFade.fadeIconColor(navIcon,
-                    ContextCompat.getColor(this, accent_color_text_res),
-                    ContextCompat.getColor(this, text_color_secondary_res));
+            ColorFade.fadeIconColor(navIcon, accentTextColor, textColorSec);
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -908,9 +887,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     d = ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
-                DrawableCompat.setTint(d.mutate(),
-                        ContextCompat.getColor(FileExplorerActivity.this,
-                                text_color_secondary_res));
+                DrawableCompat.setTint(d.mutate(), textColorSec);
                 toolbar.setNavigationIcon(d);
 
                 //hide menu items
@@ -927,21 +904,21 @@ public class FileExplorerActivity extends ThemeableActivity
     }
 
     @Override
-    public int getThemeRes(int style) {
-        if (style == ThemeableActivity.DARK) {
-            return R.style.Theme_CameraRoll_Translucent_FileExplorer;
-        } else {
-            return R.style.Theme_CameraRoll_Light_Translucent_FileExplorer;
-        }
+    public int getDarkThemeRes() {
+        return R.style.Theme_CameraRoll_Translucent_FileExplorer;
     }
 
     @Override
-    public void onThemeApplied(int theme) {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setBackgroundTintList(ColorStateList
-                .valueOf(ContextCompat.getColor(this, accent_color_res)));
+    public int getLightThemeRes() {
+        return R.style.Theme_CameraRoll_Light_Translucent_FileExplorer;
+    }
 
-        if (theme == ThemeableActivity.LIGHT) {
+    @Override
+    public void onThemeApplied(boolean lightBaseTheme) {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
+
+        if (lightBaseTheme) {
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setActivated(true);
 

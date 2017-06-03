@@ -138,12 +138,8 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setBackgroundColor(!pick_photos ?
-                ContextCompat.getColor(this, toolbar_color_res) :
-                ContextCompat.getColor(this, accent_color_res));
-        toolbar.setTitleTextColor(!pick_photos ?
-                ContextCompat.getColor(this, text_color_res) :
-                ContextCompat.getColor(this, accent_color_text_res));
+        toolbar.setBackgroundColor(!pick_photos ? toolbarColor : accentColor);
+        toolbar.setTitleTextColor(!pick_photos ? textColor : accentTextColor);
 
         if (pick_photos) {
             ActionBar actionBar = getSupportActionBar();
@@ -155,8 +151,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
-                DrawableCompat.setTint(navIcon.mutate(),
-                        ContextCompat.getColor(this, accent_color_text_res));
+                DrawableCompat.setTint(navIcon.mutate(), accentTextColor);
                 toolbar.setNavigationIcon(navIcon);
             }
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -166,10 +161,9 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 }
             });
 
-            Util.colorToolbarOverflowMenuIcon(toolbar,
-                    ContextCompat.getColor(this, accent_color_text_res));
+            Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
 
-            if (darkIcons()) {
+            if (colorAccentDarkIcons()) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
             } else {
                 Util.setLightStatusBarIcons(findViewById(R.id.root_view));
@@ -222,7 +216,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 if (!((RecyclerViewAdapter) recyclerView.getAdapter())
                         .getSelectorManager().isSelectorModeActive()) {
                     //only animate statusBar icons color, when not in selectorMode
-                    if (THEME == LIGHT) {
+                    if (isLightBaseTheme(THEME)) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             float animatedValue = (-translationY) / toolbar.getHeight();
                             if (animatedValue > 0.9f) {
@@ -250,11 +244,10 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         }
         Drawable d = fab.getDrawable();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            d.setTint(ContextCompat.getColor(this, accent_color_text_res));
+            d.setTint(accentTextColor);
         } else {
             d = DrawableCompat.wrap(d);
-            DrawableCompat.setTint(d.mutate(),
-                    ContextCompat.getColor(this, accent_color_text_res));
+            DrawableCompat.setTint(d.mutate(), accentTextColor);
         }
         fab.setImageDrawable(d);
 
@@ -697,21 +690,22 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     }
 
     @Override
-    public int getThemeRes(int style) {
-        if (style == DARK) {
-            return R.style.Theme_CameraRoll_Main;
-        } else {
-            return R.style.Theme_CameraRoll_Light_Main;
-        }
+    public int getDarkThemeRes() {
+        return R.style.Theme_CameraRoll_Main;
     }
 
     @Override
-    public void onThemeApplied(int theme) {
+    public int getLightThemeRes() {
+        return R.style.Theme_CameraRoll_Light_Main;
+    }
+
+    @Override
+    public void onThemeApplied(boolean lightBaseTheme) {
         if (pick_photos) {
             return;
         }
 
-        if (theme == ThemeableActivity.LIGHT) {
+        if (lightBaseTheme) {
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setActivated(true);
 

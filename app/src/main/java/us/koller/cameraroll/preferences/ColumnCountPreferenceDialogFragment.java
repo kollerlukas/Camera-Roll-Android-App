@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.Preference;
 import android.view.LayoutInflater;
@@ -62,15 +61,15 @@ public class ColumnCountPreferenceDialogFragment
             }
         };
 
-        int secondaryTextColor = ContextCompat.getColor(getContext(),
-                ThemeableActivity.text_color_secondary_res);
+        ThemeableActivity.ColorManager colorManager = ThemeableActivity.getColorManager();
+        int textColorSec = colorManager.getColor(ThemeableActivity.ColorManager.TEXT_COLOR_SEC);
 
         ImageButton minus = (ImageButton) view.findViewById(R.id.minus);
-        minus.setColorFilter(secondaryTextColor);
+        minus.setColorFilter(textColorSec);
         minus.setOnClickListener(onClickListener);
 
         ImageButton plus = (ImageButton) view.findViewById(R.id.plus);
-        plus.setColorFilter(secondaryTextColor);
+        plus.setColorFilter(textColorSec);
         plus.setOnClickListener(onClickListener);
 
         return new AlertDialog.Builder(getContext())

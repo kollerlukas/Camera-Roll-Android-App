@@ -3,22 +3,23 @@
     <!--dark theme colors-->
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="dark_bg">#303030</color>
+    <color name="dark_bg">#212121</color><!--303030-->
 
     <!--light theme colors-->
     <color name="colorPrimary_light">#F5F5F5</color>
     <color name="colorPrimaryDark_light">#E0E0E0</color>
     <color name="light_bg">#FAFAFA</color>
 
+    <!--black theme colors-->
+    <color name="colorPrimary_black">#000000</color>
+    <color name="colorPrimaryDark_black">#000000</color>
+    <color name="black_bg">#000000</color>
+
     <!--accent color-->
     <color name="colorAccent">#69F0AE</color>
     <color name="colorAccent_translucent">#8A69F0AE</color>
     <color name="colorAccent_text">#8A212121</color>
-    <bool name="dark_icons">true</bool>
-    <!--<color name="colorAccent">#2196F3</color>
-    <color name="colorAccent_translucent">#8A2196F3</color>
-    <color name="colorAccent_text">#FFFFFF</color>
-    <bool name="dark_icons">false</bool>-->
+    <bool name="colorAccent_dark_icons">true</bool>
 
     <color name="white">#FFFFFF</color>
     <color name="grey_300">#E0E0E0</color>

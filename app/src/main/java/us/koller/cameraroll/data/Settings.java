@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
+import java.util.Arrays;
+
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.SortUtil;
 
@@ -77,8 +79,17 @@ public class Settings {
     }
 
     /*Getter & Setter*/
-    public String getTheme() {
+    public String getThemeValue() {
         return theme;
+    }
+
+    //storing the theme as a string: easier with switchPreference
+    //using theme as integer in code: easier comparision
+    public int getTheme(Context context) {
+        String[] themeValues = context.getResources().getStringArray(R.array.theme_values);
+        int[] themes = context.getResources().getIntArray(R.array.themes);
+        int index = Arrays.asList(themeValues).indexOf(theme);
+        return themes[index];
     }
 
     public void setTheme(String theme) {

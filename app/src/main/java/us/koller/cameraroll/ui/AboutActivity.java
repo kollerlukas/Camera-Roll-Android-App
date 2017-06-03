@@ -67,6 +67,7 @@ public class AboutActivity extends ThemeableActivity
                     .getPackageInfo(getPackageName(), 0).versionName;
             final int versionCode = getPackageManager()
                     .getPackageInfo(getPackageName(), 0).versionCode;
+            //noinspection deprecation
             version.setText(Html.fromHtml(/*getString(R.string.app_name) + "<br/>" +*/ versionName));
             version.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -80,6 +81,7 @@ public class AboutActivity extends ThemeableActivity
         }
 
         final TextView aboutText = (TextView) findViewById(R.id.about_text);
+        //noinspection deprecation
         aboutText.setText(Html.fromHtml(getString(R.string.about_text)));
         aboutText.setMovementMethod(new LinkMovementMethod());
 
@@ -153,7 +155,7 @@ public class AboutActivity extends ThemeableActivity
             if (toolbar.getChildAt(i) instanceof ImageView) {
                 ImageView imageView = ((ImageView) toolbar.getChildAt(i));
                 int color;
-                if (!darkIcons()) {
+                if (!colorAccentDarkIcons()) {
                     color = ContextCompat.getColor(this, R.color.white_translucent1);
                 } else {
                     color = ContextCompat.getColor(this, R.color.black_translucent2);
@@ -199,11 +201,12 @@ public class AboutActivity extends ThemeableActivity
     }
 
     @Override
-    public int getThemeRes(int style) {
-        if (style == DARK) {
-            return R.style.Theme_CameraRoll_Translucent_About;
-        } else {
-            return R.style.Theme_CameraRoll_Translucent_Light_About;
-        }
+    public int getDarkThemeRes() {
+        return R.style.Theme_CameraRoll_Translucent_About;
+    }
+
+    @Override
+    public int getLightThemeRes() {
+        return R.style.Theme_CameraRoll_Translucent_Light_About;
     }
 }

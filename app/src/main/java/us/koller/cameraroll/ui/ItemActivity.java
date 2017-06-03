@@ -897,17 +897,18 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     @Override
-    public int getThemeRes(int style) {
-        if (style == DARK) {
-            return R.style.Theme_CameraRoll_PhotoView;
-        } else {
-            return R.style.Theme_CameraRoll_Light_PhotoView;
-        }
+    public int getDarkThemeRes() {
+        return R.style.Theme_CameraRoll_PhotoView;
     }
 
     @Override
-    public void onThemeApplied(int theme) {
-        if (theme == LIGHT) {
+    public int getLightThemeRes() {
+        return R.style.Theme_CameraRoll_Light_PhotoView;
+    }
+
+    @Override
+    public void onThemeApplied(boolean lightBaseTheme) {
+        if (lightBaseTheme) {
             int white = ContextCompat.getColor(this, R.color.white);
 
             Drawable d = toolbar.getNavigationIcon();

@@ -3,17 +3,21 @@
     <!--Theme preference-->
     <string name="DARK_THEME_VALUE" translatable="false">DARK</string>
     <string name="LIGHT_THEME_VALUE" translatable="false">LIGHT</string>
+    <string name="BLACK_THEME_VALUE" translatable="false">BLACK</string>
 
     <string name="DARK_THEME_NAME" translatable="false">Dark</string>
     <string name="LIGHT_THEME_NAME" translatable="false">Light</string>
+    <string name="BLACK_THEME_NAME" translatable="false">Black</string>
 
     <string-array name="theme_values">
         <item>@string/DARK_THEME_VALUE</item>
         <item>@string/LIGHT_THEME_VALUE</item>
+        <item>@string/BLACK_THEME_VALUE</item>
     </string-array>
     <string-array name="theme_names">
         <item>@string/DARK_THEME_NAME</item>
         <item>@string/LIGHT_THEME_NAME</item>
+        <item>@string/BLACK_THEME_NAME</item>
     </string-array>
 
     <!--Style preference-->

@@ -51,9 +51,10 @@ public class FileHolder extends RecyclerView.ViewHolder {
                         selected ? R.color.colorAccent_translucent :
                                 android.R.color.transparent));
 
-        int color = ContextCompat.getColor(itemView.getContext(),
-                selected ? R.color.grey_900_translucent :
-                        ThemeableActivity.text_color_secondary_res);
+        ThemeableActivity.ColorManager colorManager = ThemeableActivity.getColorManager();
+        int color = colorManager.getColor(selected ?
+                ThemeableActivity.ColorManager.ACCENT_TEXT_COLOR :
+                ThemeableActivity.ColorManager.TEXT_COLOR_SEC);
 
         TextView textView = (TextView) itemView.findViewById(R.id.text);
         textView.setTextColor(color);

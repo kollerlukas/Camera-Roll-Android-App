@@ -197,7 +197,7 @@ public class Util {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    /*@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void animateToolbarElevation(Toolbar toolbar, float scrollY) {
         float maxToolbarElevation = toolbar.getContext().getResources()
                 .getDimension(R.dimen.toolbar_elevation);
@@ -208,7 +208,7 @@ public class Util {
             toolbarElevation = 0;
         }
         toolbar.setElevation(toolbarElevation);
-    }
+    }*/
 
     private static Drawable selectorOverlay;
 
@@ -217,8 +217,8 @@ public class Util {
             selectorOverlay = ContextCompat.getDrawable(context,
                     R.drawable.albumitem_selected_indicator);
         }
-        int tintColor = ContextCompat.getColor(context,
-                ThemeableActivity.accent_color_res);
+        ThemeableActivity.ColorManager colorManager = ThemeableActivity.getColorManager();
+        int tintColor = colorManager.getColor(ThemeableActivity.ColorManager.ACCENT_COLOR);
         selectorOverlay = DrawableCompat.wrap(selectorOverlay);
         DrawableCompat.setTint(selectorOverlay, tintColor);
         return selectorOverlay;
