@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
@@ -66,10 +67,15 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
             ImageView removableStorageIndicator = (ImageView)
                     itemView.findViewById(R.id.removable_storage_indicator);
             if (removableStorageIndicator != null) {
-                boolean removable = Environment
-                        .isExternalStorageRemovable(new File(album.getPath()));
-                removableStorageIndicator
-                        .setVisibility(removable ? View.VISIBLE : View.GONE);
+                try {
+                    boolean removable = Environment
+                            .isExternalStorageRemovable(new File(album.getPath()));
+                    removableStorageIndicator
+                            .setVisibility(removable ? View.VISIBLE : View.GONE);
+                } catch (IllegalArgumentException e) {
+                    Toast.makeText(itemView.getContext(), "Error while trying to load the image", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
         }
     }
