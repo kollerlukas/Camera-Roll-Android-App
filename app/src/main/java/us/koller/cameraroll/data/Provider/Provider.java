@@ -149,14 +149,15 @@ public abstract class Provider {
             }
         }
 
-        if (search && excludedPaths != null) {
+        //Provider are now taking care of excluded folders themselves
+        /*if (search && excludedPaths != null) {
             for (int i = 0; i < Provider.excludedPaths.size(); i++) {
                 if (path.contains(Provider.excludedPaths.get(i))) {
                     search = false;
                     break;
                 }
             }
-        }
+        }*/
 
         return search;
     }

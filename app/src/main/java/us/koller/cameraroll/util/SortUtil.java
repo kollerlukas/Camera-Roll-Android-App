@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.Settings;
 
 public class SortUtil {
 
@@ -25,11 +26,19 @@ public class SortUtil {
     public static final int BY_NAME = 2;
     public static final int BY_SIZE = 3;
 
-    public static void sortAlbums(Activity context, ArrayList<Album> albums, int by) {
-        switch (by) {
+    public static void sortAlbums(Activity context, ArrayList<Album> albums) {
+        Settings settings = Settings.getInstance(context);
+
+        int sortAlbumBy = settings.sortAlbumBy();
+        for (int i = 0; i < albums.size(); i++) {
+            sort(context, albums.get(i).getAlbumItems(), sortAlbumBy);
+        }
+
+        int sortAlbumsBy = settings.sortAlbumsBy();
+        switch (sortAlbumsBy) {
             case BY_NAME:
             case BY_DATE:
-                sort(context, albums, by);
+                sort(context, albums, sortAlbumsBy);
                 return;
             case BY_SIZE:
                 // Sorting
@@ -55,9 +64,10 @@ public class SortUtil {
         switch (by) {
             case BY_NAME:
                 sortByName(sortables);
-                return;
+                break;
             case BY_DATE:
                 sortByDate(context, sortables);
+                break;
         }
     }
 
@@ -66,13 +76,14 @@ public class SortUtil {
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                if (s1 != null && s2 != null) {
+                /*if (s1 != null && s2 != null) {
                     if (s1.pinned() ^ s2.pinned()) {
                         return s2.pinned() ? 1 : -1;
                     }
                     return s1.getName().compareTo(s2.getName());
                 }
-                return 0;
+                return 0;*/
+                return compareNames(s1, s2);
             }
         });
     }
@@ -82,16 +93,46 @@ public class SortUtil {
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                if (s1 != null && s2 != null) {
+                /*if (s1 != null && s2 != null) {
                     if (s1.pinned() ^ s2.pinned()) {
                         return s2.pinned() ? 1 : -1;
                     }
                     Long l1 = s1.getDate(context);
                     Long l2 = s2.getDate(context);
+                    if (l1 == l2) {
+
+                    }
                     return l2.compareTo(l1);
                 }
-                return 0;
+                return 0;*/
+                return compareDate(context, s1, s2);
             }
         });
+    }
+
+    private static int compareNames(Sortable s1, Sortable s2) {
+        if (s1 != null && s2 != null) {
+            if (s1.pinned() ^ s2.pinned()) {
+                return s2.pinned() ? 1 : -1;
+            }
+            return s1.getName().compareTo(s2.getName());
+        }
+        return 0;
+    }
+
+    private static int compareDate(Activity context, Sortable s1, Sortable s2) {
+        if (s1 != null && s2 != null) {
+            if (s1.pinned() ^ s2.pinned()) {
+                return s2.pinned() ? 1 : -1;
+            }
+            Long l1 = s1.getDate(context);
+            Long l2 = s2.getDate(context);
+            if (l1.equals(l2)) {
+                //if date is equal --> sort by Name
+                return compareNames(s1, s2);
+            }
+            return l2.compareTo(l1);
+        }
+        return 0;
     }
 }

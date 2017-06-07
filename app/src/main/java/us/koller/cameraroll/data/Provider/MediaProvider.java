@@ -86,8 +86,7 @@ public class MediaProvider extends Provider {
                                 }
                             }
 
-                            int sort_by = Settings.getInstance(context).sortAlbumsBy();
-                            SortUtil.sortAlbums(context, albums, sort_by);
+                            SortUtil.sortAlbums(context, albums);
 
                             setAlbums(albums);
                             Callback callback = getCallback();
