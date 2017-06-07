@@ -97,7 +97,7 @@ public class MediaType {
 
     private static boolean checkExtension(String path, String[] extensions) {
         for (int i = 0; i < extensions.length; i++) {
-            if (path.endsWith(extensions[i]) || path.endsWith(extensions[i].toUpperCase())) {
+            if (path.toLowerCase().endsWith(extensions[i])) {
                 return true;
             }
         }

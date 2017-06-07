@@ -3,14 +3,17 @@ package us.koller.cameraroll.util;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.UriPermission;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
+import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 //workarounds to handle removable storage
 
@@ -46,26 +49,10 @@ public class StorageUtil {
         }
     }
 
-    //not working; need to fix
-    public static boolean delete(final Context context, final File file) throws IOException {
-        final String where = MediaStore.MediaColumns.DATA + "=?";
-        final String[] selectionArgs = new String[]{
-                file.getCanonicalPath()
-        };
-        final ContentResolver contentResolver = context.getContentResolver();
-        final Uri filesUri = MediaStore.Files.getContentUri("external");
-        Log.d("StorageUtil", "delete: " + filesUri);
-
-        // Delete the entry from the media database. This will actually delete media files.
-        contentResolver.delete(filesUri, where, selectionArgs);
-        // If the file is not a media file, create a new entry.
-        if (file.exists()) {
-            final ContentValues values = new ContentValues();
-            values.put(MediaStore.MediaColumns.DATA, file.getAbsolutePath());
-            contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            // Delete the created entry, such that content provider will delete the file.
-            contentResolver.delete(filesUri, where, selectionArgs);
-        }
-        return !file.exists();
+    //TODO implement
+    public static boolean haveRemovableStoragePermission(ContentResolver contentResolver) {
+        List<UriPermission> uriPermissions = contentResolver.getPersistedUriPermissions();
+        Log.d("StorageUtil", "uriPermissions: " + uriPermissions.toString());
+        return true;
     }
 }

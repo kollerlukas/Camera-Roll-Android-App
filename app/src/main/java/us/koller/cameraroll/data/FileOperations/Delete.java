@@ -10,7 +10,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
-import java.io.IOException;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.File_POJO;
@@ -30,6 +29,19 @@ public class Delete extends FileOperation {
         onProgress(s, success_count, files.length);
 
         for (int i = 0; i < files.length; i++) {
+            //check if file is on removable storage
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                    Environment.isExternalStorageRemovable(new File(files[i].getPath()))) {
+                //file is on removable storage
+                //check permission
+                if (!StorageUtil.haveRemovableStoragePermission(getContentResolver())) {
+                    Log.d("Delete", "execute: request permission");
+                    //request permission
+                    requestPermissionForRemovableStorageBroadcast(workIntent);
+                    return;
+                }
+            }
+
             boolean result = deleteFile(getApplicationContext(), files[i].getPath());
             if (result) {
                 success_count++;
@@ -42,6 +54,13 @@ public class Delete extends FileOperation {
         if (success_count == 0) {
             onProgress(s, success_count, files.length);
         }
+
+        sendDoneBroadcast();
+    }
+
+    @Override
+    public boolean autoSendDoneBroadcast() {
+        return false;
     }
 
     @Override
@@ -53,13 +72,8 @@ public class Delete extends FileOperation {
         boolean success;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && Environment.isExternalStorageRemovable(new File(path))) {
-            //not working
-            try {
-                success = StorageUtil.delete(context, new File(path));
-            } catch (IOException e) {
-                success = false;
-                e.printStackTrace();
-            }
+            //TODO implement deleting files on removable sd card
+            success = false;
         } else if (MediaType.isMedia_MimeType(context, path)) {
             Log.d("Delete", "deleteFile: ContentResolver");
             ContentResolver resolver = context.getContentResolver();

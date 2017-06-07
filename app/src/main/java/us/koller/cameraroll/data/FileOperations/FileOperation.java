@@ -31,6 +31,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public static final String RESULT_DONE = "us.koller.cameraroll.data.FileOperations.FileOperation.RESULT_DONE";
     public static final String FAILED = "us.koller.cameraroll.data.FileOperations.FileOperation.FAILED";
+    public static final String NEED_PERMISSION = "us.koller.cameraroll.data.FileOperations.FileOperation.NEED_PERMISSION";
 
     public static final int EMPTY = 0;
     public static final int MOVE = 1;
@@ -80,6 +81,12 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     public void sendFailedBroadcast(Intent workIntent, String path) {
         Intent intent = new Intent(FAILED);
         intent.putExtra(FILES, path);
+        intent.putExtra(WORK_INTENT, workIntent);
+        sendLocalBroadcast(intent);
+    }
+
+    public void requestPermissionForRemovableStorageBroadcast(Intent workIntent) {
+        Intent intent = new Intent(NEED_PERMISSION);
         intent.putExtra(WORK_INTENT, workIntent);
         sendLocalBroadcast(intent);
     }

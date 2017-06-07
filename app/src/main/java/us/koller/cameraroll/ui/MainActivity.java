@@ -58,6 +58,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
 
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
     public static final int REFRESH_PHOTOS_REQUEST_CODE = 7;
+    public static final int REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE = 8;
 
     //needed for sharedElement-Transition in Nested RecyclerView Style
     private NestedRecyclerViewAlbumHolder sharedElementViewHolder;
@@ -659,6 +660,9 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                     refreshPhotos();
                 }
                 break;
+            case REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE:
+                Log.d("MainActivity", "onActivityResult: REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE");
+                break;
         }
     }
 
@@ -745,11 +749,13 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d("MainActivity", "onReceive() called");
                 switch (intent.getAction()) {
                     case FileOperation.RESULT_DONE:
                     case FileOperation.FAILED:
                         refreshPhotos();
+                        break;
+                    case FileOperation.NEED_PERMISSION:
+                        //TODO implement
                         break;
                 }
             }
