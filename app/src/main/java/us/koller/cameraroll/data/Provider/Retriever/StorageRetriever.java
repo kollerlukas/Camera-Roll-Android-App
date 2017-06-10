@@ -162,7 +162,7 @@ public class StorageRetriever extends Retriever {
                 }
 
                 if (filesContainMedia) {
-                    SortUtil.sortByDate(context, files.getChildren());
+                    SortUtil.sortByDate(files.getChildren());
                 } else {
                     SortUtil.sortByName(files.getChildren());
                 }

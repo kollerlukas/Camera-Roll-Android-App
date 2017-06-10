@@ -40,7 +40,7 @@ public class File_POJO
     }
 
     @Override
-    public long getDate(Activity context) {
+    public long getDate() {
         //not needed
         return new File(getPath()).lastModified();
     }

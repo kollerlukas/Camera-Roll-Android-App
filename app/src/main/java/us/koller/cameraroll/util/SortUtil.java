@@ -15,7 +15,7 @@ public class SortUtil {
     public interface Sortable {
         String getName();
 
-        long getDate(Activity context);
+        long getDate();
 
         String getPath();
 
@@ -31,14 +31,14 @@ public class SortUtil {
 
         int sortAlbumBy = settings.sortAlbumBy();
         for (int i = 0; i < albums.size(); i++) {
-            sort(context, albums.get(i).getAlbumItems(), sortAlbumBy);
+            sort(albums.get(i).getAlbumItems(), sortAlbumBy);
         }
 
         int sortAlbumsBy = settings.sortAlbumsBy();
         switch (sortAlbumsBy) {
             case BY_NAME:
             case BY_DATE:
-                sort(context, albums, sortAlbumsBy);
+                sort(albums, sortAlbumsBy);
                 return;
             case BY_SIZE:
                 // Sorting
@@ -60,13 +60,13 @@ public class SortUtil {
         }
     }
 
-    public static void sort(Activity context, ArrayList<? extends Sortable> sortables, int by) {
+    public static void sort(ArrayList<? extends Sortable> sortables, int by) {
         switch (by) {
             case BY_NAME:
                 sortByName(sortables);
                 break;
             case BY_DATE:
-                sortByDate(context, sortables);
+                sortByDate(sortables);
                 break;
         }
     }
@@ -76,36 +76,17 @@ public class SortUtil {
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                /*if (s1 != null && s2 != null) {
-                    if (s1.pinned() ^ s2.pinned()) {
-                        return s2.pinned() ? 1 : -1;
-                    }
-                    return s1.getName().compareTo(s2.getName());
-                }
-                return 0;*/
                 return compareNames(s1, s2);
             }
         });
     }
 
-    public static void sortByDate(final Activity context, ArrayList<? extends Sortable> sortables) {
+    public static void sortByDate(ArrayList<? extends Sortable> sortables) {
         // Sorting
         Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
-                /*if (s1 != null && s2 != null) {
-                    if (s1.pinned() ^ s2.pinned()) {
-                        return s2.pinned() ? 1 : -1;
-                    }
-                    Long l1 = s1.getDate(context);
-                    Long l2 = s2.getDate(context);
-                    if (l1 == l2) {
-
-                    }
-                    return l2.compareTo(l1);
-                }
-                return 0;*/
-                return compareDate(context, s1, s2);
+                return compareDate(s1, s2);
             }
         });
     }
@@ -120,13 +101,13 @@ public class SortUtil {
         return 0;
     }
 
-    private static int compareDate(Activity context, Sortable s1, Sortable s2) {
+    private static int compareDate(Sortable s1, Sortable s2) {
         if (s1 != null && s2 != null) {
             if (s1.pinned() ^ s2.pinned()) {
                 return s2.pinned() ? 1 : -1;
             }
-            Long l1 = s1.getDate(context);
-            Long l2 = s2.getDate(context);
+            Long l1 = s1.getDate();
+            Long l2 = s2.getDate();
             if (l1.equals(l2)) {
                 //if date is equal --> sort by Name
                 return compareNames(s1, s2);

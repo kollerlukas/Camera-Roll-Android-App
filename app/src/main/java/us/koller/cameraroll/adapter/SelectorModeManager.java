@@ -211,7 +211,7 @@ public class SelectorModeManager {
             albumItems.add(AlbumItem.getInstance(context, paths.get(i)));
         }
         int sortBy = Settings.getInstance(context).sortAlbumBy();
-        SortUtil.sort(context, albumItems, sortBy);
+        SortUtil.sort(albumItems, sortBy);
 
         paths = new ArrayList<>();
         for (int i = 0; i < albumItems.size(); i++) {

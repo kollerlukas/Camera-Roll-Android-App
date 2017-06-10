@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,6 +55,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
 
     //public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
+    public static final String RESORT_MEDIA = "RESORT_MEDIA";
     public static final String PICK_PHOTOS = "PICK_PHOTOS";
 
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
@@ -568,10 +570,31 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
 
                 Settings.getInstance(this).sortAlbumsBy(this, sort_by);
 
-                refreshPhotos();
+                /*refreshPhotos();*/
+                resortAlbums();
+
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void resortAlbums() {
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
+                "Sorting...", Snackbar.LENGTH_INDEFINITE);
+        Util.showSnackbar(snackbar);
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                SortUtil.sortAlbums(MainActivity.this, MediaProvider.getAlbums());
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        snackbar.dismiss();
+                        recyclerView.getAdapter().notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 
     public void fabClicked(View v) {
@@ -756,6 +779,9 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                         break;
                     case FileOperation.NEED_PERMISSION:
                         //TODO implement
+                        break;
+                    case REFRESH_MEDIA:
+                        refreshPhotos();
                         break;
                 }
             }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
 import us.koller.cameraroll.ui.BaseActivity;
 import us.koller.cameraroll.ui.ThemeableActivity;
 
@@ -77,9 +78,25 @@ public class Rename extends FileOperation {
         //keep old paths to remove them from MediaStore afterwards
         String[] oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), path);
 
+        //try to get dateAdded TimeStamps for MediaStore
+        Context context = fileOperation.getApplicationContext();
+        //old paths are being removed --> no point in figuring out the timeStamps
+        long[] dateAddedTimeStamps = new long[oldPaths.length * 2];
+        for (int i = 0; i < oldPaths.length; i++) {
+            if (i < oldPaths.length) {
+                dateAddedTimeStamps[i] = -1;
+            } else {
+                AlbumItem albumItem = AlbumItem.getInstance(context, oldPaths[i - oldPaths.length]);
+                AlbumLoader.tryToLoadDateTakenFromMediaStore(context, albumItem);
+                dateAddedTimeStamps[i] = albumItem.getDateTaken();
+            }
+        }
+
         File file = new File(path);
         final String newFilePath = getNewFilePath(path, newFileName);
         File newFile = new File(newFilePath);
+
+        //renaming file
         boolean success = file.renameTo(newFile);
 
         //re-scan all paths
@@ -93,7 +110,7 @@ public class Rename extends FileOperation {
         pathsList.toArray(paths);
 
         FileOperation.Util.scanPaths(fileOperation.getApplicationContext(), paths,
-                new FileOperation.Util.MediaScannerCallback() {
+                dateAddedTimeStamps, new FileOperation.Util.MediaScannerCallback() {
                     @Override
                     public void onAllPathsScanned() {
                         Intent intent = fileOperation.getDoneIntent();

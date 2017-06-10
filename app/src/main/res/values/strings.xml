@@ -194,7 +194,7 @@
     <string name="plus">Plus</string>
     <string name="by_name">Name</string>
     <string name="by_size">Size</string>
-    <string name="by_date">Last modified</string>
+    <string name="by_date">Date</string><!--Last Modified-->
     <string name="folder_name">Folder Name</string>
     <string name="pin_album">Pin Album</string>
 </resources>

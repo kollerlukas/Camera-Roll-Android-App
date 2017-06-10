@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -23,7 +24,8 @@ public class MediaStoreRetriever extends Retriever {
 
     private static final String[] projection = new String[]{
             MediaStore.Files.FileColumns.DATA,
-            MediaStore.Files.FileColumns.PARENT};
+            MediaStore.Files.FileColumns.PARENT,
+            MediaStore.Images.ImageColumns.DATE_TAKEN};
 
 
     @Override
@@ -67,13 +69,17 @@ public class MediaStoreRetriever extends Retriever {
             public void run() {
                 if (cursor.moveToFirst()) {
                     String path;
+                    long dateTaken;
                     int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+                    int dateTakenColumn = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
 
                     do {
                         path = cursor.getString(pathColumn);
+                        dateTaken = cursor.getLong(dateTakenColumn);
 
                         AlbumItem albumItem = AlbumItem.getInstance(context, path);
                         if (albumItem != null) {
+                            albumItem.setDate(dateTaken);
                             //search bucket
                             boolean foundBucket = false;
                             for (int i = 0; i < albums.size(); i++) {

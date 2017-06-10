@@ -77,11 +77,11 @@ public class Album
     }
 
     @Override
-    public long getDate(Activity context) {
+    public long getDate() {
         long newestItem = -1;
         for (int i = 0; i < albumItems.size(); i++) {
-            if (albumItems.get(i).getDate(context) > newestItem) {
-                newestItem = albumItems.get(i).getDate(context);
+            if (albumItems.get(i).getDate() > newestItem) {
+                newestItem = albumItems.get(i).getDate();
             }
         }
         return newestItem;

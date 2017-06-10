@@ -159,7 +159,7 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         int sort_by = Settings.getInstance(this).sortAlbumBy();
-        SortUtil.sort(this, album.getAlbumItems(), sort_by);
+        SortUtil.sort(album.getAlbumItems(), sort_by);
 
         final ViewGroup swipeBackView = (ViewGroup) findViewById(R.id.swipeBackView);
         if (swipeBackView instanceof SwipeBackCoordinatorLayout) {
@@ -383,6 +383,14 @@ public class AlbumActivity extends ThemeableActivity
                     });
 
         }
+
+
+        long[] dateAddedTimeStamps = new long[album.getAlbumItems().size()];
+        for (int i = 0; i < dateAddedTimeStamps.length; i++) {
+            AlbumItem albumItem = album.getAlbumItems().get(i);
+            dateAddedTimeStamps[i] = albumItem.getDateTaken();
+        }
+        Log.d("AlbumActivity", "onCreate: " + Arrays.toString(dateAddedTimeStamps));
     }
 
     @Override
@@ -596,7 +604,7 @@ public class AlbumActivity extends ThemeableActivity
                         SortUtil.BY_DATE : SortUtil.BY_NAME;
                 Settings.getInstance(this).sortAlbumBy(this, sort_by);
 
-                SortUtil.sort(this, album.getAlbumItems(), sort_by);
+                SortUtil.sort(album.getAlbumItems(), sort_by);
 
                 recyclerView.getAdapter().notifyDataSetChanged();
                 break;

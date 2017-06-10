@@ -3,6 +3,7 @@ package us.koller.cameraroll.util;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;

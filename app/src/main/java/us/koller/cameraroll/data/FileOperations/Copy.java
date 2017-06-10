@@ -2,8 +2,6 @@ package us.koller.cameraroll.data.FileOperations;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Environment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +11,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
 
 public class Copy extends FileOperation {
 
@@ -56,7 +56,13 @@ public class Copy extends FileOperation {
         try {
             result = result && copyFile(path, destinationFileName);
 
-            FileOperation.Util.scanPaths(context, new String[]{path, destinationFileName}, null);
+            AlbumItem oldAlbumItem = AlbumItem.getInstance(context, path);
+            AlbumLoader.tryToLoadDateTakenFromMediaStore(context, oldAlbumItem);
+            long dateAdded = oldAlbumItem.getDateTaken();
+
+            FileOperation.Util.scanPaths(context,
+                    new String[]{path, destinationFileName},
+                    new long[]{-1, dateAdded}, null);
         } catch (IOException e) {
             e.printStackTrace();
         }

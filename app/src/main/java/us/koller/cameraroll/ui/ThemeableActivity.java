@@ -88,11 +88,13 @@ public abstract class ThemeableActivity extends BaseActivity {
 
     @Override
     protected void onRestart() {
+        super.onRestart();
+
         if (THEME == UNDEFINED) {
+            readTheme(this);
+            colorManager = new ColorManager(this, THEME);
             this.recreate();
         }
-
-        super.onRestart();
     }
 
     private static void readTheme(Context context) {
@@ -110,7 +112,6 @@ public abstract class ThemeableActivity extends BaseActivity {
             ThemeableActivity.baseThemes[i] = baseThemes.getBoolean(i, true);
         }
         baseThemes.recycle();
-        Log.d("ThemeableActivity", "readBaseThemes: " + Arrays.toString(ThemeableActivity.baseThemes));
     }
 
     public static ColorManager getColorManager() {

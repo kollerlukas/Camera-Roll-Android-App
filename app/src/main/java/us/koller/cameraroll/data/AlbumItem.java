@@ -1,16 +1,16 @@
 package us.koller.cameraroll.data;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import java.io.File;
 
+import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
 import us.koller.cameraroll.util.MediaType;
-import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.SortUtil;
+import us.koller.cameraroll.util.StorageUtil;
 
 public abstract class AlbumItem
         implements Parcelable, SortUtil.Sortable {
@@ -21,6 +21,7 @@ public abstract class AlbumItem
 
     private String name;
     private String path;
+    private long dateTaken;
 
     public boolean error = false;
     public boolean contentUri = false;
@@ -28,7 +29,7 @@ public abstract class AlbumItem
     public boolean hasFadedIn = false;
 
     //factory method
-    public static AlbumItem getInstance(Context context, String path) {
+    public static AlbumItem getInstance(final Context context, String path) {
         if (path == null) {
             return null;
         }
@@ -57,6 +58,7 @@ public abstract class AlbumItem
     AlbumItem() {
         name = "";
         path = "";
+        dateTaken = -1;
     }
 
     public AlbumItem setName(String name) {
@@ -78,9 +80,21 @@ public abstract class AlbumItem
         return path;
     }
 
+    public void setDate(long dateTaken) {
+        this.dateTaken = dateTaken;
+    }
+
     @Override
-    public long getDate(Activity context) {
+    public long getDate() {
+        if (dateTaken != -1) {
+            return dateTaken;
+        }
+
         return new File(getPath()).lastModified();
+    }
+
+    public long getDateTaken() {
+        return dateTaken;
     }
 
     @Override

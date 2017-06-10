@@ -46,6 +46,8 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         }
 
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
+        //to fix ellipsize
+        itemView.findViewById(R.id.name).requestLayout();
 
         try {
             Provider.loadExcludedPaths(getContext());

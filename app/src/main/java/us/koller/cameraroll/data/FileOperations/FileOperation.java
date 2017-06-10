@@ -282,8 +282,9 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             void onAllPathsScanned();
         }
 
-        static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback) {
-            Log.d("FileOperation", "scanPaths(), paths = [" + Arrays.deepToString(paths) + "]");
+        static void scanPaths(final Context context, final String[] paths,
+                              final long[] dateTakenTimeStamps, final MediaScannerCallback callback) {
+            Log.d("FileOperation", "scanPaths(), paths = [" + Arrays.toString(paths) + "]");
             MediaScannerConnection.scanFile(context.getApplicationContext(),
                     paths,
                     null,
@@ -292,22 +293,43 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.d("FileOperation", "onScanCompleted: " + path);
                             pathsScanned++;
+
                             if (MediaType.isMedia_MimeType(context, path)) {
                                 ContentResolver resolver = context.getContentResolver();
                                 if (new File(path).exists()) {
-                                    Log.d("FileOperation", "add File to media store: " + path);
                                     //add File to media store
+                                    Log.d("FileOperation", "add File to media store: " + path);
+
+                                    //trying to transfer dateTakenTimeStamp from old media (when file was copied or moved)
+                                    int index = -1;
+                                    for (int i = 0; i < paths.length; i++) {
+                                        if (path.equals(paths[i])) {
+                                            index = i;
+                                            break;
+                                        }
+                                    }
+
+                                    long dateTaken = -1;
+                                    if (index != -1) {
+                                        dateTaken = dateTakenTimeStamps[index];
+                                    }
+
                                     ContentValues values = new ContentValues();
                                     values.put(MediaStore.MediaColumns.DATA, path);
                                     if (MediaType.isImage(context, path)) {
-                                        values.put(MediaStore.Images.Media.MIME_TYPE,
-                                                MediaType.getMimeType(context, path));
+                                        //add image
+                                        values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(context, path));
+                                        if (dateTaken != -1) {
+                                            values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
+                                        }
                                         resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                                     } else if (MediaType.isVideo(context, path)) {
-                                        values.put(MediaStore.Video.Media.MIME_TYPE,
-                                                MediaType.getMimeType(context, path));
+                                        //add video
+                                        values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(context, path));
+                                        if (dateTaken != -1) {
+                                            values.put(MediaStore.Video.Media.DATE_TAKEN, dateTaken);
+                                        }
                                         resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
                                     }
                                 } else {
@@ -316,8 +338,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                                     String where = MediaStore.MediaColumns.DATA + "=?";
                                     String[] selectionArgs = new String[]{path};
 
-                                    resolver.delete(MediaStore.Files.getContentUri("external"),
-                                            where, selectionArgs);
+                                    resolver.delete(MediaStore.Files.getContentUri("external"), where, selectionArgs);
                                 }
                             }
 
