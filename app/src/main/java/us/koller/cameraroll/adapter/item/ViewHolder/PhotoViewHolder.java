@@ -1,7 +1,6 @@
 package us.koller.cameraroll.adapter.item.ViewHolder;
 
 import android.annotation.SuppressLint;
-import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,7 +27,7 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     @Override
-    public View getView(ViewGroup container) {
+    public View inflateView(ViewGroup container) {
         ViewGroup v = super.inflatePhotoView(container);
         final View view = v.findViewById(R.id.subsampling);
         final View transitionView = itemView.findViewById(R.id.image);

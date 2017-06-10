@@ -6,12 +6,12 @@
     android:background="@color/black_translucent1">
 
     <ImageView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/photo"
-        android:foreground="@animator/albumitem_foreground"
-        android:scaleType="centerCrop" />
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/photo"
+            android:foreground="@drawable/albumitem_foreground"
+            android:scaleType="centerCrop" />
 
     <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"

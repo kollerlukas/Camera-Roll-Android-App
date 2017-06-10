@@ -2,12 +2,13 @@ package us.koller.cameraroll.data;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
-import java.io.File;
+import android.util.Log;
 
-import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
+import java.io.File;
+import java.util.Arrays;
+
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;
@@ -22,6 +23,7 @@ public abstract class AlbumItem
     private String name;
     private String path;
     private long dateTaken;
+    private int[] imageDimens;
 
     public boolean error = false;
     public boolean contentUri = false;
@@ -122,6 +124,15 @@ public abstract class AlbumItem
         }
         return Uri.parse(getPath());
     }
+
+    public int[] getImageDimens(Context context) {
+        if (imageDimens == null) {
+            imageDimens = retrieveImageDimens(context);
+        }
+        return new int[]{this.imageDimens[0], this.imageDimens[1]};
+    }
+
+    abstract int[] retrieveImageDimens(Context context);
 
     AlbumItem(Parcel parcel) {
         this.name = parcel.readString();

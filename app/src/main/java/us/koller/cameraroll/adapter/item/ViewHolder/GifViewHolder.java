@@ -20,7 +20,7 @@ public class GifViewHolder extends ViewHolder {
     }
 
     @Override
-    public View getView(ViewGroup container) {
+    public View inflateView(ViewGroup container) {
         ViewGroup v = super.inflatePhotoView(container);
         v.removeView(v.findViewById(R.id.subsampling));
         View view = v.findViewById(R.id.image);

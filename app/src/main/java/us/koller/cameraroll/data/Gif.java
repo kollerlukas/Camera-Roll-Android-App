@@ -1,7 +1,10 @@
 package us.koller.cameraroll.data;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import us.koller.cameraroll.util.Util;
 
 public class Gif extends AlbumItem implements Parcelable {
     Gif() {
@@ -10,6 +13,11 @@ public class Gif extends AlbumItem implements Parcelable {
 
     Gif(Parcel parcel) {
         super(parcel);
+    }
+
+    @Override
+    int[] retrieveImageDimens(Context context) {
+        return Util.getImageDimensions(context, getUri(context));
     }
 
     @Override

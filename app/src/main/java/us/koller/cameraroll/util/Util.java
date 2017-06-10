@@ -33,14 +33,8 @@ import us.koller.cameraroll.ui.ThemeableActivity;
 
 public class Util {
 
-    static int getScreenWidth(Activity context) {
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        context.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        return displaymetrics.widthPixels;
-    }
-
     @SuppressWarnings("unused")
-    public static int[] getImageDimensions(Context context, String path) throws FileNotFoundException {
+    /*public static int[] getImageDimensions(Context context, String path) throws FileNotFoundException {
         File file = new File(path);
         if (!file.exists()) {
             throw new FileNotFoundException();
@@ -59,7 +53,7 @@ public class Util {
             dimensions[1] = options.outHeight > 0 ? options.outHeight : 1;
         }
         //Fix performance
-        /*else {
+        *//*else {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(path));
                 dimensions[0] = bitmap.getWidth() > 0 ? bitmap.getWidth() : 1;
@@ -67,10 +61,10 @@ public class Util {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }*/
+        }*//*
 
         return dimensions;
-    }
+    }*/
 
     public static int[] getImageDimensions(Context context, Uri uri) {
         int[] dimensions = new int[2];

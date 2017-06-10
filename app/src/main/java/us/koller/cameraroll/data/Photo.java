@@ -1,9 +1,12 @@
 package us.koller.cameraroll.data;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+
+import us.koller.cameraroll.util.Util;
 
 public class Photo extends AlbumItem implements Parcelable {
     private Serializable imageViewSavedState;
@@ -22,6 +25,11 @@ public class Photo extends AlbumItem implements Parcelable {
 
     public Serializable getImageViewSavedState() {
         return imageViewSavedState;
+    }
+
+    @Override
+    int[] retrieveImageDimens(Context context) {
+        return Util.getImageDimensions(context, getUri(context));
     }
 
     @Override

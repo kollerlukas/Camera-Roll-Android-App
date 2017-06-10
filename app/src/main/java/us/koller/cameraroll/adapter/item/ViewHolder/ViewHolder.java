@@ -44,7 +44,14 @@ public abstract class ViewHolder {
         }
     }
 
-    public abstract View getView(ViewGroup container);
+    public View getView(ViewGroup container) {
+        if (itemView == null) {
+            itemView = inflateView(container);
+        }
+        return itemView;
+    }
+
+    public abstract View inflateView(ViewGroup container);
 
     public void onDestroy() {
         this.itemView.setOnClickListener(null);

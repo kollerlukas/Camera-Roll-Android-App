@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -90,7 +91,7 @@ public class ItemActivity extends ThemeableActivity {
         boolean onInstantiateItem(ViewHolder viewHolder);
     }
 
-    public static int FILEOPDIALOG_REQUEST = 1;
+    public static int FILE_OP_DIALOG_REQUEST = 1;
 
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
     public static final String ALBUM = "ALBUM";
@@ -395,7 +396,7 @@ public class ItemActivity extends ThemeableActivity {
                 intent.putExtra(FileOperationDialogActivity.FILES,
                         new String[]{albumItem.getPath()});
 
-                startActivityForResult(intent, FILEOPDIALOG_REQUEST);
+                startActivityForResult(intent, FILE_OP_DIALOG_REQUEST);
                 break;
             case R.id.rename:
                 File_POJO file = new File_POJO(albumItem.getPath(), true);
@@ -591,98 +592,20 @@ public class ItemActivity extends ThemeableActivity {
             e.printStackTrace();
         }
 
-        File file = new File(albumItem.getPath());
-
-        String name = file.getName();
-        String path = file.getPath();
-        String size = getFileSize(file);
-
         boolean exifSupported = exif != null;
         if (!albumItem.contentUri) {
             exifSupported = exifSupported &&
                     MediaType.doesSupportExif(albumItem.getPath());
         }
 
-        String height = NO_DATA,
-                width = NO_DATA,
-                date = NO_DATA,
-                focal_length = NO_DATA,
-                exposure = NO_DATA,
-                model = NO_DATA,
-                aperture = NO_DATA,
-                iso = NO_DATA;
-
-        if (exifSupported) {
-            if (exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
-                height = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_LENGTH));
-            }
-            if (exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) != null) {
-                width = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_WIDTH));
-            }
-            if (exif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
-                date = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
-            }
-
-            focal_length = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_FOCAL_LENGTH));
-            exposure = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_EXPOSURE_TIME));
-            exposure = parseExposureTime(exposure);
-            if (exif.getAttribute(ExifInterface.TAG_MAKE) != null) {
-                model = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_MAKE)) + " "
-                        + String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_MODEL));
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                if (exif.getAttribute(ExifInterface.TAG_F_NUMBER) != null) {
-                    aperture = "f/" + String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_F_NUMBER));
-                }
-                if (exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) != null) {
-                    iso = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_ISO_SPEED_RATINGS));
-                }
-            }
-        } else {
-            int[] imageDimens = new int[]{1, 1};
-            try {
-                imageDimens = albumItem instanceof Video ?
-                        Util.getVideoDimensions(albumItem.getPath()) :
-                        Util.getImageDimensions(this, albumItem.getPath());
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            height = String.valueOf(imageDimens[1]);
-            width = String.valueOf(imageDimens[0]);
-        }
-
-
-        String[] values = {name, path, size, width + " x " + height,
-                date, model, focal_length, exposure, aperture, iso};
-
-        View rootView = LayoutInflater.from(this)
+        final View rootView = LayoutInflater.from(this)
                 .inflate(R.layout.info_dialog_layout,
                         (ViewGroup) findViewById(R.id.root_view), false);
 
-        final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
-        final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
-
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(new InfoRecyclerViewAdapter(values,
-                (albumItem instanceof Photo || albumItem instanceof Gif) && !view_only));
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                scrollIndicatorTop.setVisibility(
-                        ViewCompat.canScrollVertically(recyclerView, -1) ?
-                                View.VISIBLE : View.INVISIBLE);
-
-                scrollIndicatorBottom.setVisibility(
-                        ViewCompat.canScrollVertically(recyclerView, 1) ?
-                                View.VISIBLE : View.INVISIBLE);
-            }
-        });
+        final View loadingBar = rootView.findViewById(R.id.progress_bar);
+        loadingBar.setVisibility(View.VISIBLE);
+        final View dialogLayout = rootView.findViewById(R.id.dialog_layout);
+        dialogLayout.setVisibility(View.GONE);
 
         AlertDialog.Builder builder
                 = new AlertDialog.Builder(this, getDialogThemeRes())
@@ -709,6 +632,95 @@ public class ItemActivity extends ThemeableActivity {
         }
         infoDialog = builder.create();
         infoDialog.show();
+
+        final boolean finalExifSupported = exifSupported;
+        final ExifInterface finalExif = exif;
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                File file = new File(albumItem.getPath());
+
+                String name = file.getName();
+                String path = file.getPath();
+                String size = getFileSize(file);
+
+                String height = NO_DATA,
+                        width = NO_DATA,
+                        date = NO_DATA,
+                        focal_length = NO_DATA,
+                        exposure = NO_DATA,
+                        model = NO_DATA,
+                        aperture = NO_DATA,
+                        iso = NO_DATA;
+
+                if (finalExifSupported) {
+                    if (finalExif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
+                        height = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_IMAGE_LENGTH));
+                    }
+                    if (finalExif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) != null) {
+                        width = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_IMAGE_WIDTH));
+                    }
+                    if (finalExif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
+                        date = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_DATETIME));
+                    }
+
+                    focal_length = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_FOCAL_LENGTH));
+                    exposure = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_EXPOSURE_TIME));
+                    exposure = parseExposureTime(exposure);
+                    if (finalExif.getAttribute(ExifInterface.TAG_MAKE) != null) {
+                        model = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_MAKE)) + " "
+                                + String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_MODEL));
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        if (finalExif.getAttribute(ExifInterface.TAG_F_NUMBER) != null) {
+                            aperture = "f/" + String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_F_NUMBER));
+                        }
+                        if (finalExif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) != null) {
+                            iso = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_ISO_SPEED_RATINGS));
+                        }
+                    }
+                } else {
+                    int[] imageDimens = albumItem.getImageDimens(ItemActivity.this);
+                    height = String.valueOf(imageDimens[1]);
+                    width = String.valueOf(imageDimens[0]);
+                }
+
+                final String[] values = {name, path, size, width + " x " + height,
+                        date, model, focal_length, exposure, aperture, iso};
+
+                ItemActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
+                        final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
+
+                        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemActivity.this);
+                        recyclerView.setLayoutManager(linearLayoutManager);
+                        recyclerView.setAdapter(new InfoRecyclerViewAdapter(values,
+                                (albumItem instanceof Photo || albumItem instanceof Gif) && !view_only));
+
+                        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                super.onScrolled(recyclerView, dx, dy);
+                                scrollIndicatorTop.setVisibility(
+                                        ViewCompat.canScrollVertically(recyclerView, -1) ?
+                                                View.VISIBLE : View.INVISIBLE);
+
+                                scrollIndicatorBottom.setVisibility(
+                                        ViewCompat.canScrollVertically(recyclerView, 1) ?
+                                                View.VISIBLE : View.INVISIBLE);
+                            }
+                        });
+
+                        loadingBar.setVisibility(View.GONE);
+                        dialogLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        });
     }
 
     public void bottomBarOnClick(View v) {

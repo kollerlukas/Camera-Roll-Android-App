@@ -18,7 +18,7 @@ public class VideoViewHolder extends ViewHolder {
     }
 
     @Override
-    public View getView(ViewGroup container) {
+    public View inflateView(ViewGroup container) {
         ViewGroup v = super.inflateVideoView(container);
 
         final View view = itemView.findViewById(R.id.image);

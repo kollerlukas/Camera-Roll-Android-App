@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -31,8 +32,6 @@ public class GifViewHolder extends AlbumItemHolder {
         Glide.with(context)
                 .load(albumItem.getPath())
                 .asGif()
-                //.skipMemoryCache(true)
-                //.thumbnail(0.1f)
                 .listener(new RequestListener<String, GifDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -45,15 +44,6 @@ public class GifViewHolder extends AlbumItemHolder {
                                                    Target<GifDrawable> target, boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
                         if (!albumItem.hasFadedIn) {
-                            /*if (isFirstResource) {
-                                //set thumbnail saturation to 0
-                                ColorMatrix matrix = new ColorMatrix();
-                                matrix.setSaturation(0);
-                                imageView.setColorFilter(new ColorMatrixColorFilter(matrix));
-                                return false;
-                            } else {
-                                fadeIn();
-                            }*/
                             fadeIn();
                         } else {
                             imageView.clearColorFilter();
