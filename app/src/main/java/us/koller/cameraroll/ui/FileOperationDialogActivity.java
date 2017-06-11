@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -281,7 +280,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                                     imageView.getWidth(),
                                     imageView.getHeight());
                             imageView.getOverlay().add(selectorOverlay);
-                            Log.d("RecyclerViewAdapter", "Overlay added");
                         }
                     });
                 } else {
@@ -289,7 +287,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         @Override
                         public void run() {
                             imageView.getOverlay().clear();
-                            Log.d("RecyclerViewAdapter", "Overlay cleared");
                         }
                     });
                 }
@@ -330,7 +327,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                     .setText(album.getName());
 
             final boolean selected = position == selected_position;
-            Log.d("RecyclerViewAdapter", album.getName() + ", setSelected(" + String.valueOf(selected) + ")");
             ((ViewHolder) holder).setSelected(selected);
 
             if (album.getAlbumItems().size() > 0) {

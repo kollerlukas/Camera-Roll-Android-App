@@ -4,9 +4,11 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
 import java.io.File;
@@ -29,20 +31,23 @@ public class Delete extends FileOperation {
         onProgress(s, success_count, files.length);
 
         for (int i = 0; i < files.length; i++) {
+            boolean result;
             //check if file is on removable storage
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                     Environment.isExternalStorageRemovable(new File(files[i].getPath()))) {
                 //file is on removable storage
-                //check permission
-                if (!StorageUtil.haveRemovableStoragePermission(getContentResolver())) {
-                    Log.d("Delete", "execute: request permission");
-                    //request permission
+                String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
+                if (treeUriExtra != null) {
+                    Uri treeUri = Uri.parse(treeUriExtra);
+                    result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
+                } else {
                     requestPermissionForRemovableStorageBroadcast(workIntent);
                     return;
                 }
+            } else {
+                result = deleteFile(getApplicationContext(), files[i].getPath());
             }
 
-            boolean result = deleteFile(getApplicationContext(), files[i].getPath());
             if (result) {
                 success_count++;
                 onProgress(s, success_count, files.length);
@@ -70,11 +75,7 @@ public class Delete extends FileOperation {
 
     private static boolean deleteFile(final Context context, String path) {
         boolean success;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && Environment.isExternalStorageRemovable(new File(path))) {
-            //TODO implement deleting files on removable sd card
-            success = false;
-        } else if (MediaType.isMedia_MimeType(context, path)) {
+        if (MediaType.isMedia_MimeType(context, path)) {
             Log.d("Delete", "deleteFile: ContentResolver");
             ContentResolver resolver = context.getContentResolver();
 
@@ -100,6 +101,19 @@ public class Delete extends FileOperation {
             }
             success = file.exists() && file.delete();
         }
+        return success;
+    }
+
+    private static boolean deleteFileOnRemovableStorage(Context context, Uri treeUri, String path) {
+        boolean success = false;
+        DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, path);
+        if (file != null) {
+            Log.d("Delete", "execute: file is on removable storage" + ", canWrite(): " + String.valueOf(file.canWrite()));
+            success = file.delete();
+        }
+
+        //remove from MediaStore
+        FileOperation.Util.scanPaths(context, new String[]{path}, new long[]{-1}, null);
         return success;
     }
 }

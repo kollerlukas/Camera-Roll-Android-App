@@ -31,7 +31,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public static final String RESULT_DONE = "us.koller.cameraroll.data.FileOperations.FileOperation.RESULT_DONE";
     public static final String FAILED = "us.koller.cameraroll.data.FileOperations.FileOperation.FAILED";
-    public static final String NEED_PERMISSION = "us.koller.cameraroll.data.FileOperations.FileOperation.NEED_PERMISSION";
+    public static final String NEED_REMOVABLE_STORAGE_PERMISSION = "us.koller.cameraroll.data.FileOperations.FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION";
 
     public static final int EMPTY = 0;
     public static final int MOVE = 1;
@@ -44,6 +44,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     public static final String FILES = "FILES";
     public static final String TARGET = "TARGET";
     public static final String NEW_FILE_NAME = "NEW_FILE_NAME";
+    public static final String REMOVABLE_STORAGE_TREE_URI = "REMOVABLE_STORAGE_TREE_URI";
 
     private ProgressUpdater updater;
 
@@ -86,7 +87,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     public void requestPermissionForRemovableStorageBroadcast(Intent workIntent) {
-        Intent intent = new Intent(NEED_PERMISSION);
+        Intent intent = new Intent(NEED_REMOVABLE_STORAGE_PERMISSION);
         intent.putExtra(WORK_INTENT, workIntent);
         sendLocalBroadcast(intent);
     }
@@ -188,11 +189,11 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     };
 
 
-    public interface ProgressUpdater {
+    interface ProgressUpdater {
         void onProgress(String action, int progress, int totalNumber);
     }
 
-    public static class ToastUpdater implements ProgressUpdater {
+    private static class ToastUpdater implements ProgressUpdater {
 
         private Toast toast;
 

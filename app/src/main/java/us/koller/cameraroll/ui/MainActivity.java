@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -46,16 +48,15 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
-import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.util.Util;
 
 public class MainActivity extends ThemeableActivity implements SelectorModeManager.Callback {
 
     //public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
-    public static final String RESORT_MEDIA = "RESORT_MEDIA";
     public static final String PICK_PHOTOS = "PICK_PHOTOS";
 
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
@@ -116,6 +117,9 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     private boolean pick_photos;
     @SuppressWarnings("FieldCanBeLocal")
     private boolean allowMultiple;
+
+    //workIntent for FileOperation awaiting permission to write to removable storage
+    private Intent workIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -685,6 +689,17 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 break;
             case REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE:
                 Log.d("MainActivity", "onActivityResult: REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE");
+                if (resultCode == RESULT_OK && workIntent != null) {
+                    Uri treeUri = data.getData();
+                    Log.d("MainActivity", "treeUri: " + treeUri);
+                    getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                    workIntent.putExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI, treeUri.toString());
+                    workIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    startService(workIntent);
+                    workIntent = null;
+                }
                 break;
         }
     }
@@ -777,11 +792,13 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                     case FileOperation.FAILED:
                         refreshPhotos();
                         break;
-                    case FileOperation.NEED_PERMISSION:
-                        //TODO implement
-                        break;
-                    case REFRESH_MEDIA:
-                        refreshPhotos();
+                    case FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION:
+                        workIntent = intent.getParcelableExtra(FileOperation.WORK_INTENT);
+                        Log.d("MainActivity", "FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION");
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            Intent requestIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                            startActivityForResult(requestIntent, REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
+                        }
                         break;
                 }
             }
@@ -790,6 +807,10 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        return FileOperation.Util.getIntentFilter();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(FileOperation.RESULT_DONE);
+        filter.addAction(FileOperation.FAILED);
+        filter.addAction(FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION);
+        return filter;
     }
 }

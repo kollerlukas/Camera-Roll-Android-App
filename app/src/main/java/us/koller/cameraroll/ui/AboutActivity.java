@@ -39,8 +39,8 @@ public class AboutActivity extends ThemeableActivity
         setContentView(R.layout.activity_about);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setEnterTransition(new Slide(Gravity.TOP));
-            getWindow().setReturnTransition(new Slide(Gravity.TOP));
+            getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
+            getWindow().setReturnTransition(new Slide(Gravity.BOTTOM));
         }
 
         SwipeBackCoordinatorLayout swipeBackView

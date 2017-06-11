@@ -3,7 +3,6 @@ package us.koller.cameraroll.util;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.UriPermission;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -11,9 +10,7 @@ import android.provider.MediaStore;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
-import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 //workarounds to handle removable storage
 
@@ -49,10 +46,42 @@ public class StorageUtil {
         }
     }
 
-    //TODO implement
-    public static boolean haveRemovableStoragePermission(ContentResolver contentResolver) {
-        List<UriPermission> uriPermissions = contentResolver.getPersistedUriPermissions();
-        Log.d("StorageUtil", "uriPermissions: " + uriPermissions.toString());
-        return true;
+    public static DocumentFile parseDocumentFile(Context context, Uri treeUri, String path) {
+        DocumentFile treeRoot = DocumentFile.fromTreeUri(context, treeUri);
+        path = path.replace("/storage/", "");
+        String[] pathParts = path.split("/");
+        Log.d("StorageUtil", "pathParts: " + Arrays.toString(pathParts));
+
+        DocumentFile file = treeRoot;
+        for (int i = 1; i < pathParts.length; i++) {
+            Log.d("StorageUtil", "pathParts[i]: " + pathParts[i]);
+            if (file != null) {
+                file = file.findFile(pathParts[i]);
+            } else {
+                Log.d("StorageUtil", "could find file: " + pathParts[i]);
+                break;
+            }
+        }
+        return file;
+    }
+
+    public static DocumentFile createDocumentFile(Context context, Uri treeUri, String path, String mimeType) {
+        int index = path.lastIndexOf("/");
+        DocumentFile file = parseDocumentFile(context, treeUri, path.substring(0, index));
+
+        if (file != null) {
+            file = file.createFile(mimeType, path.substring(index));
+        }
+        return file;
+    }
+
+    public static DocumentFile createDocumentDir(Context context, Uri treeUri, String path) {
+        int index = path.lastIndexOf("/");
+        DocumentFile file = parseDocumentFile(context, treeUri, path.substring(0, index));
+
+        if (file != null) {
+            file = file.createDirectory(path.substring(index));
+        }
+        return file;
     }
 }
