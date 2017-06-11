@@ -197,4 +197,8 @@
     <string name="by_date">Date</string><!--Last Modified-->
     <string name="folder_name">Folder Name</string>
     <string name="pin_album">Pin Album</string>
+    <string name="grant_removable_storage_permission">Grant removable Storage Permission</string>
+    <string name="grant_removable_storage_permission_message">Please select the root folder of your
+        removable Storage device (e.g. SD Card) on the next screen.
+    </string>
 </resources>

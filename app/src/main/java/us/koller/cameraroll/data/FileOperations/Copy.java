@@ -154,9 +154,11 @@ public class Copy extends FileOperation {
     private static boolean copyFileOntoRemovableStorage(Context context, Uri treeUri,
                                                         String path, String destination) throws IOException {
         String mimeType = MediaType.getMimeType(context, path);
-        DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, destination);
-        if (file != null) {
-            destination = destination + " Copy";
+        DocumentFile file = DocumentFile.fromFile(new File(destination));
+        if (file.exists()) {
+            int index = destination.lastIndexOf(".");
+            destination = destination.substring(0, index) + " Copy"
+                    + destination.substring(index, destination.length());
         }
         DocumentFile destinationFile = StorageUtil.createDocumentFile(context, treeUri, destination, mimeType);
 

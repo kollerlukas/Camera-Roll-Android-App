@@ -2,6 +2,7 @@ package us.koller.cameraroll.ui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -20,9 +21,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -786,19 +787,28 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     public BroadcastReceiver getDefaultLocalBroadcastReceiver() {
         return new BroadcastReceiver() {
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public void onReceive(Context context, final Intent intent) {
                 switch (intent.getAction()) {
                     case FileOperation.RESULT_DONE:
                     case FileOperation.FAILED:
                         refreshPhotos();
                         break;
                     case FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION:
-                        workIntent = intent.getParcelableExtra(FileOperation.WORK_INTENT);
-                        Log.d("MainActivity", "FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION");
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            Intent requestIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                            startActivityForResult(requestIntent, REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
-                        }
+                        new AlertDialog.Builder(MainActivity.this, getDialogThemeRes())
+                                .setTitle(R.string.grant_removable_storage_permission)
+                                .setMessage(R.string.grant_removable_storage_permission_message)
+                                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        workIntent = intent.getParcelableExtra(FileOperation.WORK_INTENT);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                            Intent requestIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                            startActivityForResult(requestIntent, REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
+                                        }
+                                    }
+                                }).setNegativeButton(getString(R.string.cancel), null)
+                                .create()
+                                .show();
                         break;
                 }
             }
