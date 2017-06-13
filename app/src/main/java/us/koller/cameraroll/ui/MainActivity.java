@@ -119,9 +119,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     @SuppressWarnings("FieldCanBeLocal")
     private boolean allowMultiple;
 
-    //workIntent for FileOperation awaiting permission to write to removable storage
-    private Intent workIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -688,20 +685,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                     refreshPhotos();
                 }
                 break;
-            case REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE:
-                Log.d("MainActivity", "onActivityResult: REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE");
-                if (resultCode == RESULT_OK && workIntent != null) {
-                    Uri treeUri = data.getData();
-                    Log.d("MainActivity", "treeUri: " + treeUri);
-                    getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-                    workIntent.putExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI, treeUri.toString());
-                    workIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    startService(workIntent);
-                    workIntent = null;
-                }
-                break;
         }
     }
 
@@ -793,23 +776,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                     case FileOperation.FAILED:
                         refreshPhotos();
                         break;
-                    case FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION:
-                        new AlertDialog.Builder(MainActivity.this, getDialogThemeRes())
-                                .setTitle(R.string.grant_removable_storage_permission)
-                                .setMessage(R.string.grant_removable_storage_permission_message)
-                                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        workIntent = intent.getParcelableExtra(FileOperation.WORK_INTENT);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                            Intent requestIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                                            startActivityForResult(requestIntent, REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
-                                        }
-                                    }
-                                }).setNegativeButton(getString(R.string.cancel), null)
-                                .create()
-                                .show();
-                        break;
                 }
             }
         };
@@ -817,10 +783,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(FileOperation.RESULT_DONE);
-        filter.addAction(FileOperation.FAILED);
-        filter.addAction(FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION);
-        return filter;
+        return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
     }
 }

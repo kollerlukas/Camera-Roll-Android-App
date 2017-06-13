@@ -938,7 +938,7 @@ public class ItemActivity extends ThemeableActivity {
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        return FileOperation.Util.getIntentFilter();
+        return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
     }
 
     public String getFileSize(File file) {

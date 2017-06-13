@@ -1083,6 +1083,6 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        return FileOperation.Util.getIntentFilter();
+        return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
     }
 }

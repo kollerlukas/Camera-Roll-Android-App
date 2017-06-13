@@ -7,9 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -44,6 +48,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     private String action;
 
     private boolean creatingNewFolder = false;
+    private boolean needRemovableStoragePermission = false;
 
     private AlertDialog dialog;
 
@@ -95,7 +100,8 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     }
 
     public void onDialogDismiss() {
-        if (!(creatingNewFolder || isChangingConfigurations())) {
+        if (!(needRemovableStoragePermission || creatingNewFolder ||
+                isChangingConfigurations())) {
             setResult(RESULT_CANCELED, null);
             finish();
         }
@@ -238,9 +244,29 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
     public void executeAction(File_POJO[] files, String target) {
         int action = this.action.equals(ACTION_COPY) ? FileOperation.COPY : FileOperation.MOVE;
-        Intent intent = FileOperation.getDefaultIntent(this, action, files);
-        intent.putExtra(FileOperation.TARGET, new File_POJO(target, false));
-        startService(intent);
+        Intent workIntent = FileOperation.getDefaultIntent(this, action, files);
+        workIntent.putExtra(FileOperation.TARGET, new File_POJO(target, false));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                Environment.isExternalStorageRemovable(new File(target))) {
+            needRemovableStoragePermission = true;
+            Intent intent = new Intent(FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION);
+            intent.putExtra(FileOperation.WORK_INTENT, workIntent);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        } else {
+            startService(workIntent);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE:
+                needRemovableStoragePermission = false;
+                onDialogDismiss();
+                break;
+        }
     }
 
     @Override
@@ -255,7 +281,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        return FileOperation.Util.getIntentFilter();
+        return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
     }
 
     private static class RecyclerViewAdapter extends RecyclerView.Adapter {

@@ -70,6 +70,15 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     abstract void execute(Intent workIntent);
 
+    Uri getTreeUri(Intent workIntent) {
+        String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
+        if (treeUriExtra != null) {
+            return Uri.parse(treeUriExtra);
+        }
+        requestPermissionForRemovableStorageBroadcast(workIntent);
+        return null;
+    }
+
     public boolean autoSendDoneBroadcast() {
         return true;
     }
@@ -226,8 +235,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
 
     public static class Util {
-        public static IntentFilter getIntentFilter() {
-            IntentFilter filter = new IntentFilter();
+        public static IntentFilter getIntentFilter(IntentFilter filter) {
             filter.addAction(FileOperation.RESULT_DONE);
             filter.addAction(FileOperation.FAILED);
             return filter;

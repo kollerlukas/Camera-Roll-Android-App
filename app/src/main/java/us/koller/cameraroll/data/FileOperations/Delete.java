@@ -36,14 +36,11 @@ public class Delete extends FileOperation {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                     Environment.isExternalStorageRemovable(new File(files[i].getPath()))) {
                 //file is on removable storage
-                String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
-                if (treeUriExtra != null) {
-                    Uri treeUri = Uri.parse(treeUriExtra);
-                    result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
-                } else {
-                    requestPermissionForRemovableStorageBroadcast(workIntent);
+                Uri treeUri = getTreeUri(workIntent);
+                if (treeUri == null) {
                     return;
                 }
+                result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
             } else {
                 result = deleteFile(getApplicationContext(), files[i].getPath());
             }
@@ -104,12 +101,14 @@ public class Delete extends FileOperation {
         return success;
     }
 
-    private static boolean deleteFileOnRemovableStorage(Context context, Uri treeUri, String path) {
+    static boolean deleteFileOnRemovableStorage(Context context, Uri treeUri, String path) {
         boolean success = false;
         DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, path);
         if (file != null) {
             Log.d("Delete", "execute: file is on removable storage" + ", canWrite(): " + String.valueOf(file.canWrite()));
             success = file.delete();
+        } else {
+            Log.d("Delete", "execute: file is on removable storage" + ", file = null");
         }
 
         //remove from MediaStore

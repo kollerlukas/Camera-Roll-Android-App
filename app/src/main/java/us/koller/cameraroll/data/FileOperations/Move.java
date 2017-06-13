@@ -2,6 +2,10 @@ package us.koller.cameraroll.data.FileOperations;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,8 +33,32 @@ public class Move extends FileOperation {
 
         onProgress(s, success_count, files.length);
 
+        //check if file is on removable storage
+        boolean movingOntoRemovableStorage =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                        Environment.isExternalStorageRemovable(new File(target.getPath()));
+
+        Uri treeUri = null;
+        if (movingOntoRemovableStorage) {
+            treeUri = getTreeUri(workIntent);
+            if (treeUri == null) {
+                return;
+            }
+        }
+
         for (int i = files.length - 1; i >= 0; i--) {
-            boolean result = moveFile(this, files[i].getPath(), target.getPath());
+            boolean movingFromRemovableStorage =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                            Environment.isExternalStorageRemovable(new File(files[i].getPath()));
+
+            if (treeUri == null && movingFromRemovableStorage) {
+                treeUri = getTreeUri(workIntent);
+                if (treeUri == null) {
+                    return;
+                }
+            }
+
+            boolean result = moveFile(this, treeUri, files[i].getPath(), target.getPath());
             success_count += result ? 1 : 0;
             onProgress(s, success_count, files.length);
         }
@@ -50,8 +78,8 @@ public class Move extends FileOperation {
         return FileOperation.MOVE;
     }
 
-    private static boolean moveFile(final FileOperation fileOperation, String path, String destination) {
-        String[] oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), path);
+    private static boolean moveFile(final FileOperation fileOperation, Uri treeUri, String path, String destination) {
+        String[] oldPaths = Util.getAllChildPaths(new ArrayList<String>(), path);
 
         //try to get dateAdded TimeStamps for MediaStore
         Context context = fileOperation.getApplicationContext();
@@ -71,10 +99,22 @@ public class Move extends FileOperation {
         File newFile = new File(destination, file.getName());
 
         //moving file
-        boolean success = file.renameTo(newFile);
+        /*boolean success = file.renameTo(newFile);*/
+
+        boolean success;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (!Environment.isExternalStorageRemovable(file)
+                    && !Environment.isExternalStorageRemovable(newFile)) {
+                success = renameFile(file, newFile);
+            } else {
+                success = renameFileRemovableStorage(context, treeUri, file, newFile);
+            }
+        } else {
+            success = renameFile(file, newFile);
+        }
 
         //re-scan all paths
-        String[] newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), newFile.getPath());
+        String[] newPaths = Util.getAllChildPaths(new ArrayList<String>(), newFile.getPath());
 
         ArrayList<String> pathsList = new ArrayList<>();
         Collections.addAll(pathsList, oldPaths);
@@ -83,7 +123,7 @@ public class Move extends FileOperation {
         String[] paths = new String[pathsList.size()];
         pathsList.toArray(paths);
 
-        FileOperation.Util.scanPaths(fileOperation.getApplicationContext(), paths,
+        Util.scanPaths(fileOperation.getApplicationContext(), paths,
                 dateAddedTimeStamps, new Util.MediaScannerCallback() {
             @Override
             public void onAllPathsScanned() {
@@ -92,5 +132,16 @@ public class Move extends FileOperation {
         });
 
         return success;
+    }
+
+    private static boolean renameFile(File file, File newFile) {
+        //moving file
+        return file.renameTo(newFile);
+    }
+
+    private static boolean renameFileRemovableStorage(Context context, Uri treeUri, File file, File newFile) {
+        //TODO implement
+        Toast.makeText(context, "Moving files to/from removable Storage is currently not supported. Please just copy and delete the file", Toast.LENGTH_SHORT).show();
+        return false;
     }
 }

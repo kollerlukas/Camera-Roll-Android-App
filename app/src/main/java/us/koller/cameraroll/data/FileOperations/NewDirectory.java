@@ -27,11 +27,8 @@ public class NewDirectory extends FileOperation {
 
             Uri treeUri = null;
             if (writingOntoRemovableStorage) {
-                String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
-                if (treeUriExtra != null) {
-                    treeUri = Uri.parse(treeUriExtra);
-                } else {
-                    requestPermissionForRemovableStorageBroadcast(workIntent);
+                treeUri = getTreeUri(workIntent);
+                if (treeUri == null) {
                     return;
                 }
             }

@@ -46,11 +46,8 @@ public class Copy extends FileOperation {
 
         Uri treeUri = null;
         if (copyingOntoRemovableStorage) {
-            String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
-            if (treeUriExtra != null) {
-                treeUri = Uri.parse(treeUriExtra);
-            } else {
-                requestPermissionForRemovableStorageBroadcast(workIntent);
+            treeUri = getTreeUri(workIntent);
+            if (treeUri == null) {
                 return;
             }
         }
@@ -151,8 +148,8 @@ public class Copy extends FileOperation {
     }
 
     //for files on removable storage
-    private static boolean copyFileOntoRemovableStorage(Context context, Uri treeUri,
-                                                        String path, String destination) throws IOException {
+    static boolean copyFileOntoRemovableStorage(Context context, Uri treeUri,
+                                                String path, String destination) throws IOException {
         String mimeType = MediaType.getMimeType(context, path);
         DocumentFile file = DocumentFile.fromFile(new File(destination));
         if (file.exists()) {

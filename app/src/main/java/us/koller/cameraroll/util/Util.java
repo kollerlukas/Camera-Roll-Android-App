@@ -18,7 +18,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -32,39 +31,6 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.ui.ThemeableActivity;
 
 public class Util {
-
-    @SuppressWarnings("unused")
-    /*public static int[] getImageDimensions(Context context, String path) throws FileNotFoundException {
-        File file = new File(path);
-        if (!file.exists()) {
-            throw new FileNotFoundException();
-        }
-
-        int[] dimensions = new int[2];
-        dimensions[0] = 1;
-        dimensions[1] = 1;
-
-        if (!path.startsWith("content")) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-
-            BitmapFactory.decodeFile(path, options);
-            dimensions[0] = options.outWidth > 0 ? options.outWidth : 1;
-            dimensions[1] = options.outHeight > 0 ? options.outHeight : 1;
-        }
-        //Fix performance
-        *//*else {
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(path));
-                dimensions[0] = bitmap.getWidth() > 0 ? bitmap.getWidth() : 1;
-                dimensions[1] = bitmap.getHeight() > 0 ? bitmap.getHeight() : 1;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*//*
-
-        return dimensions;
-    }*/
 
     public static int[] getImageDimensions(Context context, Uri uri) {
         int[] dimensions = new int[2];
