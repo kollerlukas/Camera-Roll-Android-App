@@ -375,6 +375,9 @@ public class ItemActivity extends ThemeableActivity {
             case R.id.set_as:
                 setPhotoAs();
                 break;
+            case R.id.open_with:
+                openWith();
+                break;
             case R.id.info:
                 showInfoDialog();
                 break;
@@ -466,6 +469,25 @@ public class ItemActivity extends ThemeableActivity {
             se.printStackTrace();
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "No App found to set your photo", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    public void openWith() {
+        Uri uri = albumItem.getUri(this);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        try {
+            startActivityForResult(Intent.createChooser(intent,
+                    getString(R.string.set_as)), 13);
+        } catch (SecurityException se) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            se.printStackTrace();
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "No App found to view your " + albumItem.getType(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }

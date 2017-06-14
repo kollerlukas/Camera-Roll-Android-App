@@ -201,4 +201,5 @@
     <string name="grant_removable_storage_permission_message">Please select the root folder of your
         removable Storage device (e.g. SD Card) on the next screen.
     </string>
+    <string name="open_with">Open with...</string>
 </resources>
