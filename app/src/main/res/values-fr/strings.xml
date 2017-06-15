@@ -1,0 +1,198 @@
+<resources>
+    <!--<string name="app_name">Camera Roll</string>-->
+    <string name="about_text" translatable="false">
+        <![CDATA[
+            © 2017 Lukas Koller, Munich, Germany<br/>
+            <br/>
+            <a href=\"https://github.com/kollerlukas/Camera-Roll-Android-App\">Source Code</a> for this App<br/>
+            <br/>
+            <br/>
+            <b>Licenses:</b><br/>
+            <br/>
+            Libraries:<br/>
+            <br>
+                <a href=\"https://github.com/bumptech/glide\">Glide</a><br/>
+                An image loading and caching library for Android focused on smooth scrolling.<br/>
+                <a href=\"https://github.com/bumptech/glide/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view\">Subsampling Scale Image View</a><br/>
+                Highly configurable, easily extendable view with pan and zoom gestures for displaying huge images without loss of detail. Perfect for photo galleries, maps, building plans etc.<br/>
+                <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/chrisbanes/PhotoView\">PhotoView</a></b><br/>
+                Implementation of ImageView for Android that supports zooming, by various touch gestures.<br/>
+                <a href=\"https://github.com/chrisbanes/PhotoView/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/MFlisar/DragSelectRecyclerView\">DragSelectRecyclerView</a></b><br/>
+                TouchListener that can be attached to any RecyclerView and handles multi selection for you.<br/>
+                <a href=\"https://github.com/MFlisar/DragSelectRecyclerView/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/google/ExoPlayer\">ExoPlayer</a></b><br/>
+                An extensible media player for Android.<br/>
+                <a href=\"https://github.com/google/ExoPlayer/blob/release-v2/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/DavidPacioianu/InkPageIndicator\">InkPageIndicator</a></b><br/>
+                InkPageIndicator created by @nickbutcher for Plaid https://github.com/nickbutcher/plaid and backported by me for API 14+ (4.0+)<br/>
+                <a href=\"https://github.com/DavidPacioianu/InkPageIndicator/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/chrisjenx/Calligraphy\">Calligraphy</a></b><br/>
+                Custom fonts in Android the easy way...<br/>
+                <a href=\"https://github.com/chrisjenx/Calligraphy/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br/>
+            Icons:<br/>
+            <br>
+                <b><a href=\"https://material.io/icons/\">Material Design Icons</a></b>, by Google<br/>
+            <br>
+            <br/>
+            Fonts:<br/>
+            <br>
+                <b><a href=\"https://fonts.google.com/specimen/Roboto+Mono?selection.family=Roboto+Mono\">Roboto Mono Font</a></b>, by Christian Robertson
+            <br>
+        ]]>
+    </string>
+    <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
+
+    <!--Preference Keys-->
+    <string name="pref_key_theme" translatable="false">KEY_THEME</string>
+    <string name="pref_key_media_retriever" translatable="false">KEY_MEDIA_RETRIEVER</string>
+    <string name="pref_key_style" translatable="false">KEY_STYLE</string>
+    <string name="pref_key_style_column_count" translatable="false">KEY_STYLE_COLUMN_COUNT</string>
+    <string name="pref_key_column_count" translatable="false">KEY_COLUMN_COUNT</string>
+    <string name="pref_key_sort_albums" translatable="false">KEY_SORT_ALBUMS</string>
+    <string name="pref_key_sort_album" translatable="false">KEY_SORT_ALBUM</string>
+    <string name="pref_key_8_bit_color" translatable="false">KEY_8_BIT_COLOR</string>
+    <string name="pref_key_camera_shortcut" translatable="false">KEY_CAMERA_SHORTCUT</string>
+
+    <!--translatable-->
+    <string name="read_permission_denied">Camera Roll requiert la permission Voir le contenu de la mémoire USB pour récupérer vos photos.</string>
+    <string name="write_permission_denied">Camera Roll requiert la permission Écrire sur la mémoire USB pour pouvoir effacer cette photo.</string>
+    <string name="missing_permission_title">Permission manquante</string>
+    <string name="missing_delete_permission">Camera Roll n\'a pas la permission de supprimer ce fichier.</string>
+
+    <string name="refresh">Actualiser</string>
+    <string name="sort_by">Trier par...</string>
+    <string name="hidden_folders">Dossiers cachés</string>
+    <string name="file_explorer">Gestionnaire de fichiers</string>
+    <string name="about">À propos</string>
+    <string name="settings">Pramètres</string>
+
+    <string name="set_as">Définir en tant que…</string>
+    <string name="info">Info</string>
+    <string name="share">Partager</string>
+    <string name="share_photo">Partager Photo</string>
+    <string name="edit">Mdifier</string>
+    <string name="print">Imprimer</string>
+
+    <string name="delete">Supprimer</string>
+    <string name="photo_deleted">Photo supprimée</string>
+    <string name="photos_deleted">Photos supprimées</string>
+    <string name="successfully_deleted">"supprimé avec succès"</string>
+
+    <string name="move">Déplacer</string>
+    <string name="copy">Copier</string>
+    <string name="create">Créer</string>
+    <string name="new_folder">Nouveau dossier</string>
+    <string name="rename">Renommer</string>
+    <string name="paste">Coller</string>
+    <string name="to">" vers"</string>
+    <string name="successfully_moved">"déplacé avec succès"</string>
+    <string name="successfully_copied">"docpié avec succès"</string>
+    <string name="successfully_created_new_folder">Nouveau dossier créé avec succès</string>
+    <string name="successfully_renamed_file">Fichier renommé avec succès</string>
+
+    <string name="pick_photo">Pick Photo</string>
+    <string name="pick_photos">Pick Photos</string>
+
+    <string name="item">"élément"</string>
+    <string name="items">"éléments"</string>
+    <string name="files">Fichiers</string>
+    <string name="file">Fichier</string>
+
+    <string name="loading">Chargement...</string>
+    <string name="loading_failed">Échec du chargement</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Annuler</string>
+    <string name="no">Non</string>
+
+    <string name="undo">Annuler</string>
+    <string name="done">Fait</string>
+    <string name="retry">Réessayer</string>
+
+    <string name="error">Erreur</string>
+
+    <string name="photo">Photo</string>
+
+    <string name="no_files">AUCUN FICHIER</string>
+    <string name="storage">Stockage</string>
+
+    <string name="exclude">Exclure</string>
+    <string name="excluded">Exclu</string>
+
+    <string name="appearance">Apparence</string>
+    <string name="theme">Thème</string>
+    <string name="style">Style</string>
+    <string name="column_count">Nombre de colonnes</string>
+    <string name="other">Autres</string>
+
+    <string name="media_retriever">MediaRetriever</string>
+    <string name="media_retriever_summary">Rechercher manuellement des medias sur le stockage au lieu d\'utiliser l'API MediaStore.
+        Ceci peut aider si des fichiers sont manquants.</string>
+
+    <string name="use_8_bit_color">Couleurs 8-Bit</string>
+    <string name="use_8_bit_color_summary">Utiliser des couleurs 8-Bit lors de l\'affichage des images.
+        Les images peuvent mettre plus de temps à charger. Cela accroît également la quantité de mémoire lorsque l\'application est utilisée.</string>
+
+    <string name="camera_shortcut">Raccourci Appareil photo</string>
+
+    <string name="warning">Avertissement !</string>
+    <string name="file_explorer_warning_message">Le gestionnaire de fichiers est une fonctionnalité
+        <b>expérimentale</b>.
+        <br />
+        Le développeur ne prend aucune responsabilité quant à l'éventuelle perte de données ou de fichiers.
+        <br />
+        <b>À utiliser à vos risques et périls.</b>
+    </string>
+
+    <string name="edit_space">"Modifier "</string>
+    <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
+    <string name="exif_editor">Éditeur Exif</string>
+    <string name="edit_exif">Modifier Exif</string>
+    <string name="save">Enregistré</string>
+    <string name="changes_saved">Modifications enregistrées</string>
+
+    <!--ImageView ContentDescription-->
+    <string name="image">Image</string>
+    <string name="indicator">Indicateur</string>
+
+    <string name="video_indicator">Indicateur vidéo</string>
+    <string name="hidden_folder_indicator">Cacher l\'indicateur vidéo</string>
+
+    <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
+    <string name="minus">Moins</string>
+    <string name="plus">Plus</string>
+    <string name="by_name">Nome</string>
+    <string name="by_size">Taille</string>
+    <string name="by_date">Date</string><!--Last Modified-->
+    <string name="folder_name">Nom dossier</string>
+    <string name="pin_album">Épingler album</string>
+    <string name="grant_removable_storage_permission">Accorder la permission Stockage amovible</string>
+    <string name="grant_removable_storage_permission_message">Veuillez sélectionner la racine du dossier de votre
+        appareil de stockage amovible (ex : SD Card) sur le prochain écran.
+    </string>
+    <string name="open_with">Ouvrir avec...</string>
+</resources>
