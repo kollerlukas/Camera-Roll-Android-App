@@ -430,18 +430,20 @@ public class AlbumActivity extends ThemeableActivity
         if (data != null) {
             Bundle tmpReenterState = new Bundle(data.getExtras());
             sharedElementReturnPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-            album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
-            if (recyclerView.getAdapter().getItemCount() > 0) {
-                postponeEnterTransition();
-                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int l, int t, int r, int b,
-                                               int oL, int oT, int oR, int oB) {
-                        recyclerView.removeOnLayoutChangeListener(this);
-                        startPostponedEnterTransition();
-                    }
-                });
-                recyclerView.scrollToPosition(sharedElementReturnPosition);
+            if (sharedElementReturnPosition != -1) {
+                album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
+                if (recyclerView.getAdapter().getItemCount() > 0) {
+                    postponeEnterTransition();
+                    recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(View v, int l, int t, int r, int b,
+                                                   int oL, int oT, int oR, int oB) {
+                            recyclerView.removeOnLayoutChangeListener(this);
+                            startPostponedEnterTransition();
+                        }
+                    });
+                    recyclerView.scrollToPosition(sharedElementReturnPosition);
+                }
             }
         }
     }
