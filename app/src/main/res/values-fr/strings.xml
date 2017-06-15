@@ -88,13 +88,13 @@
     <string name="hidden_folders">Dossiers cachés</string>
     <string name="file_explorer">Gestionnaire de fichiers</string>
     <string name="about">À propos</string>
-    <string name="settings">Pramètres</string>
+    <string name="settings">Paramètres</string>
 
     <string name="set_as">Définir en tant que…</string>
     <string name="info">Info</string>
     <string name="share">Partager</string>
     <string name="share_photo">Partager Photo</string>
-    <string name="edit">Mdifier</string>
+    <string name="edit">Modifier</string>
     <string name="print">Imprimer</string>
 
     <string name="delete">Supprimer</string>
@@ -108,7 +108,7 @@
     <string name="new_folder">Nouveau dossier</string>
     <string name="rename">Renommer</string>
     <string name="paste">Coller</string>
-    <string name="to">" vers"</string>
+    <string name="to">"vers"</string>
     <string name="successfully_moved">"déplacé avec succès"</string>
     <string name="successfully_copied">"docpié avec succès"</string>
     <string name="successfully_created_new_folder">Nouveau dossier créé avec succès</string>
