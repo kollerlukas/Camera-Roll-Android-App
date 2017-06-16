@@ -114,8 +114,8 @@
     <string name="successfully_created_new_folder">Nouveau dossier créé avec succès</string>
     <string name="successfully_renamed_file">Fichier renommé avec succès</string>
 
-    <string name="pick_photo">Pick Photo</string>
-    <string name="pick_photos">Pick Photos</string>
+    <string name="pick_photo">Prendre une image</string>
+    <string name="pick_photos">Prendre des images</string>
 
     <string name="item">"élément"</string>
     <string name="items">"éléments"</string>
