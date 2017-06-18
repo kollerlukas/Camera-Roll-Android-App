@@ -72,12 +72,27 @@ public class MediaType {
         return false;
     }
 
+    public static boolean isRAWImage(Context context, String path) {
+        /*if (path != null) {
+            if (path.startsWith("content")) {
+                //performance
+                String mimeType = getMimeType(context, path);
+                if (mimeType != null) {
+                    return checkRAWExtension(mimeType);
+                }
+            }
+            return checkRAWExtension(path);
+        }*/
+        return false;
+    }
+
 
     //checking via extension
     private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp"};
     private static String[] videoExtensions = {"mp4", "mkv", "webm", "avi"};
     private static String[] gifExtension = {"gif"};
-    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "bmp"};
+    private static String[] rawExtension = {"dng"};
+    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "bmp", "dng"};
 
     public static boolean doesSupportExif(String path) {
         return checkExtension(path, exifExtensions);
@@ -93,6 +108,10 @@ public class MediaType {
 
     private static boolean checkGifExtension(String path) {
         return checkExtension(path, gifExtension);
+    }
+
+    private static boolean checkRAWExtension(String path) {
+        return checkExtension(path, rawExtension);
     }
 
     private static boolean checkExtension(String path, String[] extensions) {

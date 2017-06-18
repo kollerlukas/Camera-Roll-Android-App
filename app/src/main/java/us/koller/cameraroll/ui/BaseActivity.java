@@ -14,8 +14,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
-
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
@@ -41,20 +39,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (defaultBroadcastReceiver != null) {
             registerLocalBroadcastReceiver(defaultBroadcastReceiver);
         }
-    }
-
-    //for RobotoMono font
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        if (useCalligraphyContextWrapper()) {
-            super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-        } else {
-            super.attachBaseContext(newBase);
-        }
-    }
-
-    public boolean useCalligraphyContextWrapper() {
-        return true;
     }
 
     @Override

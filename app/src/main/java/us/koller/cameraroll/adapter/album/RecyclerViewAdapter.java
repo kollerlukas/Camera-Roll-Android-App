@@ -22,6 +22,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.RAWImage;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.ui.MainActivity;
@@ -82,7 +83,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         AlbumItem albumItem = album.getAlbumItems().get(position);
-        if (albumItem instanceof Photo) {
+        if (albumItem instanceof Photo || albumItem instanceof RAWImage) {
             return VIEW_TYPE_PHOTO;
         } else if (albumItem instanceof Gif) {
             return VIEW_TYPE_GIF;
@@ -124,9 +125,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             public void onClick(View view) {
                 if (getSelectorMode()) {
                     onItemSelected((AlbumItemHolder) holder);
-                } else if ((albumItem instanceof Photo
-                        || albumItem instanceof Gif
-                        || albumItem instanceof Video) && !albumItem.error) {
+                } else {
                     Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
                     //intent.putExtra(ItemActivity.ALBUM, getAlbum());

@@ -8,11 +8,13 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.item.ViewHolder.RAWImageViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.VideoViewHolder;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
+import us.koller.cameraroll.data.RAWImage;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 
@@ -57,6 +59,8 @@ public class ViewPagerAdapter extends PagerAdapter {
             viewHolder = new VideoViewHolder(albumItem, position);
         } else if (albumItem instanceof Gif) {
             viewHolder = new GifViewHolder(albumItem, position);
+        } else if (albumItem instanceof RAWImage) {
+            viewHolder = new RAWImageViewHolder(albumItem, position);
         } else {
             viewHolder = new PhotoViewHolder(albumItem, position);
         }

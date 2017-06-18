@@ -32,7 +32,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,7 +42,6 @@ import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -161,12 +159,12 @@ public class AlbumActivity extends ThemeableActivity
         int sort_by = Settings.getInstance(this).sortAlbumBy();
         SortUtil.sort(album.getAlbumItems(), sort_by);
 
-        final ViewGroup swipeBackView = (ViewGroup) findViewById(R.id.swipeBackView);
+        final ViewGroup swipeBackView = findViewById(R.id.swipeBackView);
         if (swipeBackView instanceof SwipeBackCoordinatorLayout) {
             ((SwipeBackCoordinatorLayout) swipeBackView).setOnSwipeListener(this);
         }
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (!pick_photos) {
@@ -217,7 +215,7 @@ public class AlbumActivity extends ThemeableActivity
             }
         });
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         final int columnCount = Settings.getInstance(this).getColumnCount(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -267,7 +265,7 @@ public class AlbumActivity extends ThemeableActivity
             }
         });
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Drawable d = ContextCompat.getDrawable(this,
@@ -290,7 +288,7 @@ public class AlbumActivity extends ThemeableActivity
         fab.setScaleX(0.0f);
         fab.setScaleY(0.0f);
 
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
@@ -383,14 +381,6 @@ public class AlbumActivity extends ThemeableActivity
                     });
 
         }
-
-
-        long[] dateAddedTimeStamps = new long[album.getAlbumItems().size()];
-        for (int i = 0; i < dateAddedTimeStamps.length; i++) {
-            AlbumItem albumItem = album.getAlbumItems().get(i);
-            dateAddedTimeStamps[i] = albumItem.getDateTaken();
-        }
-        Log.d("AlbumActivity", "onCreate: " + Arrays.toString(dateAddedTimeStamps));
     }
 
     @Override
@@ -416,7 +406,7 @@ public class AlbumActivity extends ThemeableActivity
                     String path = getIntent().getStringExtra(ALBUM_PATH);
                     album = MediaProvider.loadAlbum(path);
                     recyclerView.getAdapter().notifyDataSetChanged();
-                    final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                    final Toolbar toolbar = findViewById(R.id.toolbar);
                     toolbar.setTitle(album.getName());
                 }
                 break;
@@ -771,7 +761,7 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onSelectorModeEnter() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
@@ -837,7 +827,7 @@ public class AlbumActivity extends ThemeableActivity
             return;
         }
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
 
         if (isLightBaseTheme(THEME)) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
@@ -893,7 +883,7 @@ public class AlbumActivity extends ThemeableActivity
         if (selectedItemCount != 0) {
             final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
                     getString(R.string.items) : getString(R.string.item));
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
 
             ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor,
                     new ColorFade.ToolbarTitleFadeCallback() {
@@ -934,7 +924,7 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     public void animateFab(final boolean show, boolean click) {
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
 
         if ((fab.getScaleX() == 1.0f && show)
                 || (fab.getScaleX() == 0.0f && !show)) {
@@ -1054,11 +1044,11 @@ public class AlbumActivity extends ThemeableActivity
             return;
         }
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(toolbarColor);
         toolbar.setTitleTextColor(textColor);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
 
         if (lightBaseTheme) {

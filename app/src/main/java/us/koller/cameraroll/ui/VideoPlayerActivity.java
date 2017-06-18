@@ -93,8 +93,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
         player = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
 
         // Bind the player to the view.
-        SimpleExoPlayerView simpleExoPlayerView
-                = (SimpleExoPlayerView) findViewById(R.id.simpleExoPlayerView);
+        SimpleExoPlayerView simpleExoPlayerView = findViewById(R.id.simpleExoPlayerView);
         simpleExoPlayerView.setPlayer(player);
 
         // Prepare the player with the source.
@@ -111,7 +110,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
         showOrHideSystemUi(true);
 
         //init Play pause button
-        final ImageButton playPause = (ImageButton) findViewById(R.id.play_pause);
+        final ImageButton playPause = findViewById(R.id.play_pause);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             playPause.setImageResource(R.drawable.pause_to_play_avd);
         } else {
@@ -126,7 +125,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
         });
 
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -236,15 +235,10 @@ public class VideoPlayerActivity extends ThemeableActivity {
         setWindowInsets();
     }
 
-    @Override
-    public boolean useCalligraphyContextWrapper() {
-        return false;
-    }
-
     public void setWindowInsets() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         final View bottomBarControls = findViewById(R.id.controls);
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
@@ -360,7 +354,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
     @Override
     public void onThemeApplied(boolean lightBaseTheme) {
         if (lightBaseTheme) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
 
             int white = ContextCompat.getColor(this, R.color.white);
 

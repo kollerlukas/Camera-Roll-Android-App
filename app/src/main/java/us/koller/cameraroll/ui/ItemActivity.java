@@ -77,6 +77,7 @@ import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.RAWImage;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.ExifUtil;
@@ -111,7 +112,7 @@ public class ItemActivity extends ThemeableActivity {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             if (isReturning) {
-                ViewGroup v = (ViewGroup) viewPager.findViewWithTag(albumItem.getPath());
+                ViewGroup v = viewPager.findViewWithTag(albumItem.getPath());
                 View sharedElement = v.findViewById(R.id.image);
                 if (sharedElement == null) {
                     names.clear();
@@ -225,7 +226,7 @@ public class ItemActivity extends ThemeableActivity {
             return;
         }
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
@@ -235,7 +236,7 @@ public class ItemActivity extends ThemeableActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(new ViewPagerAdapter(album));
         viewPager.setCurrentItem(album.getAlbumItems().indexOf(albumItem), false);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -263,7 +264,7 @@ public class ItemActivity extends ThemeableActivity {
         //viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         bottomBar = findViewById(R.id.bottom_bar);
-        ImageView delete_button = (ImageView) bottomBar.findViewById(R.id.delete_button);
+        ImageView delete_button = bottomBar.findViewById(R.id.delete_button);
         if (!view_only) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Drawable d = ContextCompat.getDrawable(this, R.drawable.ic_delete_avd);
@@ -275,7 +276,7 @@ public class ItemActivity extends ThemeableActivity {
             ((View) delete_button.getParent()).setVisibility(View.GONE);
         }
 
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
@@ -717,22 +718,24 @@ public class ItemActivity extends ThemeableActivity {
                         final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
                         final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
 
-                        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+                        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemActivity.this);
                         recyclerView.setLayoutManager(linearLayoutManager);
                         recyclerView.setAdapter(new InfoRecyclerViewAdapter(values,
-                                (albumItem instanceof Photo || albumItem instanceof Gif) && !view_only));
+                                (albumItem instanceof Photo
+                                        || albumItem instanceof RAWImage
+                                        || albumItem instanceof Gif) && !view_only));
 
                         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                             @Override
                             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                                 super.onScrolled(recyclerView, dx, dy);
                                 scrollIndicatorTop.setVisibility(
-                                        ViewCompat.canScrollVertically(recyclerView, -1) ?
+                                        recyclerView.canScrollVertically(-1) ?
                                                 View.VISIBLE : View.INVISIBLE);
 
                                 scrollIndicatorBottom.setVisibility(
-                                        ViewCompat.canScrollVertically(recyclerView, 1) ?
+                                        recyclerView.canScrollVertically(1) ?
                                                 View.VISIBLE : View.INVISIBLE);
                             }
                         });
@@ -1035,9 +1038,9 @@ public class ItemActivity extends ThemeableActivity {
                 position--;
             }
 
-            TextView type = (TextView) holder.itemView.findViewById(R.id.tag);
+            TextView type = holder.itemView.findViewById(R.id.tag);
             type.setText(types[position]);
-            TextView value = (TextView) holder.itemView.findViewById(R.id.value);
+            TextView value = holder.itemView.findViewById(R.id.value);
             value.setText(values[position]);
         }
 

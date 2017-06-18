@@ -24,10 +24,10 @@
 
         <TextView
             android:id="@+id/column_count"
-            fontPath="fonts/roboto_mono_regular.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:fontFamily="@font/roboto_mono_regular"
             android:textSize="20sp"
             tools:ignore="MissingPrefix" />
 

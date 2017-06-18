@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -40,17 +41,20 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
     }
 
     private void initialize() {
+        Log.d("SwipeBackCoordLay", "initialize()");
         SWIPE_TRIGGER = (float) (getResources().getDisplayMetrics().heightPixels / 5.0);
     }
 
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+        Log.d("SwipeBackCoordLay", "onStartNestedScroll()");
         return super.onStartNestedScroll(child, target, nestedScrollAxes)
                 || ((nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0);
     }
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
+        Log.d("SwipeBackCoordLay", "onNestedPreScroll()");
         int dyConsumed = 0;
         if (swipeDistance != 0) {
             dyConsumed = onPreScroll(dy);
@@ -66,6 +70,7 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed,
                                int dxUnconsumed, int dyUnconsumed) {
+        Log.d("SwipeBackCoordLay", "onNestedScroll()");
         int newDyConsumed = dyConsumed;
         int newDyUnconsumed = dyUnconsumed;
         if (swipeDistance == 0) {
@@ -82,6 +87,7 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
 
     @Override
     public void onStopNestedScroll(View child) {
+        Log.d("SwipeBackCoordLay", "onStopNestedScroll()");
         super.onStopNestedScroll(child);
         if (Math.abs(swipeDistance) >= SWIPE_TRIGGER) {
             swipeBack();
@@ -143,7 +149,7 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
     }
 
     public static boolean canSwipeBackForThisView(View v, int dir) {
-        return !ViewCompat.canScrollVertically(v, dir);
+        return !v.canScrollVertically(dir);
     }
 
     private class ResetAnimation extends Animation {

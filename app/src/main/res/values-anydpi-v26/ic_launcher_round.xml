@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--so that round icon masks use the regular adaptive icon-->
+    <item name="ic_launcher_round" type="mipmap">@mipmap/ic_launcher</item>
+</resources>

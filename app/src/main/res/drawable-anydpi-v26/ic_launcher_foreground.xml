@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportHeight="108"
+    android:viewportWidth="108">
+
+    <!--film strip-->
+    <group
+        android:translateX="37.5"
+        android:translateY="34.5">
+        <path
+            android:fillColor="@color/film_strip_gradient"
+            android:fillType="evenOdd"
+            android:pathData="M 0 39L 35.25 39C 37.7353 39 39.75 36.9853 39.75 34.5L 39.75 4.5C 39.75
+              2.01472 37.7353 0 35.25 0L 0 0L 0 39ZM 3.75 5.25L 8.25 5.25L 8.25 9.75L 3.75 9.75L 3.75
+              5.25ZM 17.25 5.25L 12.75 5.25L 12.75 9.75L 17.25 9.75L 17.25 5.25ZM 21.75 5.25L 26.25 5.25L
+              26.25 9.75L 21.75 9.75L 21.75 5.25ZM 35.25 5.25L 30.75 5.25L 30.75 9.75L 35.25 9.75L 35.25
+              5.25ZM 3.75 29.25L 8.25 29.25L 8.25 33.75L 3.75 33.75L 3.75 29.25ZM 17.25 29.25L 12.75 29.25L
+              12.75 33.75L 17.25 33.75L 17.25 29.25ZM 21.75 29.25L 26.25 29.25L 26.25 33.75L 21.75 33.75L
+              21.75 29.25ZM 35.25 29.25L 30.75 29.25L 30.75 33.75L 35.25 33.75L 35.25 29.25Z" />
+
+        <group
+            android:translateX="3.75"
+            android:translateY="12.75">
+
+            <path
+                android:fillColor="#4CB71C1C"
+                android:pathData="M 0 0L 13.5 0L 13.5 13.5L 0 13.5L 0 0Z" />
+
+            <group android:translateX="18.25">
+                <path
+                    android:fillColor="#4CB71C1C"
+                    android:pathData="M 0 0L 13.5 0L 13.5 13.5L 0 13.5L 0 0Z" />
+            </group>
+        </group>
+
+
+        <!--tinted edges-->
+        <!--top tinted edges-->
+        <group>
+            <!--top tinted edges for the holes-->
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 35.25 0C 37.7353 0 39.75 2.01472 39.75 4.5L 39.75 4.88C 39.75 2.39472 37.7353
+                0.380005 35.25 0.380005L 0 0.380005L 0 0L 35.25 0Z" />
+            <!--individual tinted edges for the holes-->
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 8.25 5.25L 3.75 5.25L 3.75 5.63L 8.25 5.63L 8.25 5.25Z" />
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 12.75 5.25L 17.25 5.25L 17.25 5.63L 12.75 5.63L 12.75 5.25Z" />
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 26.25 5.25L 21.75 5.25L 21.75 5.63L 26.25 5.63L 26.25 5.25Z" />
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 30.75 5.25L 35.25 5.25L 35.25 5.63L 30.75 5.63L 30.75 5.25Z" />
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 30.75 29.25L 35.25 29.25L 35.25 29.63L 30.75 29.63L 30.75 29.25Z" />
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 26.25 29.25L 21.75 29.25L 21.75 29.63L 26.25 29.63L 26.25 29.25Z" />
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 12.75 29.25L 17.25 29.25L 17.25 29.63L 12.75 29.63L 12.75 29.25Z" />
+            <path
+                android:fillColor="#33ffffff"
+                android:pathData="M 8.25 29.25L 3.75 29.25L 3.75 29.63L 8.25 29.63L 8.25 29.25Z" />
+        </group>
+
+        <!--lower tinted edges-->
+        <group android:translateY="9.28">
+            <!--individual tinted edges for the holes-->
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 3.75 0.38L 8.25 0.38L 8.25 0L 3.75 0L 3.75 0.38Z" />
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 17.25 0.38L 12.75 0.38L 12.75 0L 17.25 0L 17.25 0.38Z" />
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 21.75 0.38L 26.25 0.38L 26.25 0L 21.75 0L 21.75 0.38Z" />
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 35.25 0.38L 30.75 0.38L 30.75 0L 35.25 0L 35.25 0.38Z" />
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 35.25 24.38L 30.75 24.38L 30.75 24L 35.25 24L 35.25 24.38Z" />
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 21.75 24.38L 26.25 24.38L 26.25 24L 21.75 24L 21.75 24.38Z" />
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 17.25 24.38L 12.75 24.38L 12.75 24L 17.25 24L 17.25 24.38Z" />
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 3.75 24.38L 8.25 24.38L 8.25 24L 3.75 24L 3.75 24.38Z" />
+            <!--bottom tinted edges for the holes-->
+            <path
+                android:fillColor="#33212121"
+                android:pathData="M 35.25 29.63L 0 29.63L 0 29.25L 35.25 29.25C 37.7353 29.25 39.75 27.2353 39.75
+                24.75L 39.75 25.13C 39.75 27.6153 37.7353 29.63 35.25 29.63Z" />
+        </group>
+    </group>
+
+    <!--camera roll front layer shadow-->
+    <path
+        android:fillColor="@color/roll_front_layer_shadow"
+        android:fillAlpha="0.2"
+        android:pathData="M 39.5 0 L 41 0 L 41 108 L 0 108 Z" />
+
+    <!--camera roll front layer-->
+    <path
+        android:fillColor="#303030"
+        android:pathData="M 0 0 L 39.5 0 L 39.5 108 L 0 108 Z" />
+
+    <!--finish-->
+    <path
+        android:fillColor="@color/finish"
+        android:fillAlpha="0.1"
+        android:pathData="M 0 0L 108 0L 108 108L 0 108L 0 0Z" />
+</vector>

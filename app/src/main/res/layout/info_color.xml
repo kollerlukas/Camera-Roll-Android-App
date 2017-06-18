@@ -20,10 +20,10 @@
 
             <TextView
                 android:id="@+id/vibrant_text"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
         </android.support.v7.widget.CardView>
@@ -38,10 +38,10 @@
 
             <TextView
                 android:id="@+id/vibrant_dark_text"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
         </android.support.v7.widget.CardView>
@@ -56,10 +56,10 @@
 
             <TextView
                 android:id="@+id/vibrant_light_text"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
         </android.support.v7.widget.CardView>
@@ -74,10 +74,10 @@
 
             <TextView
                 android:id="@+id/muted_text"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
         </android.support.v7.widget.CardView>
@@ -92,10 +92,10 @@
 
             <TextView
                 android:id="@+id/muted_dark_text"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
         </android.support.v7.widget.CardView>
@@ -110,10 +110,10 @@
 
             <TextView
                 android:id="@+id/muted_light_text"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textSize="18sp"
                 tools:ignore="MissingPrefix" />
         </android.support.v7.widget.CardView>

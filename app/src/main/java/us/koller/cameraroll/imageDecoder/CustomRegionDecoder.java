@@ -26,7 +26,6 @@ public class CustomRegionDecoder implements ImageRegionDecoder {
     public Point init(Context context, Uri uri) throws Exception {
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         this.decoder = BitmapRegionDecoder.newInstance(inputStream, false);
-
         return new Point(this.decoder.getWidth(), this.decoder.getHeight());
     }
 

@@ -11,7 +11,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -21,8 +23,10 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
+import us.koller.cameraroll.adapter.item.ViewHolder.RAWImageViewHolder;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Settings;
 
 public class ItemViewUtil {
 
@@ -34,6 +38,11 @@ public class ItemViewUtil {
     public static ViewGroup inflateVideoView(ViewGroup container) {
         return (ViewGroup) LayoutInflater.from(container.getContext())
                 .inflate(R.layout.video_view, container, false);
+    }
+
+    public static ViewGroup inflateRAWPhotoView(ViewGroup container) {
+        return (ViewGroup) LayoutInflater.from(container.getContext())
+                .inflate(R.layout.raw_photo_view, container, false);
     }
 
     public static void bindSubsamplingImageView(SubsamplingScaleImageView imageView,
@@ -57,27 +66,6 @@ public class ItemViewUtil {
 
     public static void bindTransitionView(final ImageView imageView,
                                           final AlbumItem albumItem) {
-        /*int[] imageDimens = albumItem.getImageDimens(imageView.getContext());
-        if (imageView.getWidth() > 0) {
-            //trying to scale image to half of the imageView with --> lower res faster animations
-            int imageViewWidth = imageView.getWidth();
-            float scale = ((float) imageViewWidth/2) / (float) imageDimens[0];
-            scale = scale > 1.0f ? 1.0f : scale == 0.0f ? 1.0f : scale;
-            imageDimens[0] =
-                    (int) (imageDimens[0] * scale * 0.5f) > 0
-                            ? (int) (imageDimens[0] * scale * 0.5f) : 1;
-            imageDimens[1] =
-                    (int) (imageDimens[1] * scale * 0.5f) > 0
-                            ? (int) (imageDimens[1] * scale * 0.5f) : 1;
-        } else {
-            imageDimens[0] = imageDimens[0] / 2;
-            imageDimens[1] = imageDimens[1] / 2;
-        }
-
-        if (imageDimens[0] <= 1 || imageDimens[1] <= 1) {
-            return;
-        }*/
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(albumItem.getPath());
         }
@@ -99,10 +87,6 @@ public class ItemViewUtil {
         BitmapRequestBuilder<String, Bitmap> requestBuilder = Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
                 .asBitmap();
-        /*if (!(albumItem instanceof Gif)) {
-            //not overriding image size for a gif --> OOM
-            requestBuilder = requestBuilder.override(imageDimens[0], imageDimens[1]);
-        }*/
         requestBuilder.error(R.drawable.error_placeholder_tinted)
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
@@ -164,5 +148,22 @@ public class ItemViewUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(albumItem.getPath());
         }
+    }
+
+    public static void bindRAWImage(ImageView imageView,
+                                    AlbumItem albumItem,
+                                    RequestListener<String, Bitmap> requestListener) {
+        int[] imageDimens = albumItem.getImageDimens(imageView.getContext());
+        boolean use8BitColor = Settings.getInstance(imageView.getContext()).use8BitColor();
+        Glide.with(imageView.getContext())
+                .load(albumItem.getPath())
+                .asBitmap()
+                .override(imageDimens[0], imageDimens[1])
+                .format(use8BitColor ? DecodeFormat.PREFER_ARGB_8888 : DecodeFormat.DEFAULT)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(R.drawable.error_placeholder_tinted)
+                .listener(requestListener)
+                .into(imageView);
     }
 }

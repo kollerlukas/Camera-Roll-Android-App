@@ -36,11 +36,11 @@
 
             <TextView
                 android:id="@id/exo_position"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textColor="@color/white_translucent1"
                 tools:ignore="MissingPrefix" />
 
@@ -53,11 +53,11 @@
 
             <TextView
                 android:id="@id/exo_duration"
-                fontPath="fonts/roboto_mono_regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
+                android:fontFamily="@font/roboto_mono_regular"
                 android:textColor="@color/white_translucent1"
                 tools:ignore="MissingPrefix" />
         </LinearLayout>

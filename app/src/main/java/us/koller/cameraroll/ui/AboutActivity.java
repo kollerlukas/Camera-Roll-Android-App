@@ -43,11 +43,10 @@ public class AboutActivity extends ThemeableActivity
             getWindow().setReturnTransition(new Slide(Gravity.BOTTOM));
         }
 
-        SwipeBackCoordinatorLayout swipeBackView
-                = (SwipeBackCoordinatorLayout) findViewById(R.id.swipeBackView);
+        SwipeBackCoordinatorLayout swipeBackView = findViewById(R.id.swipeBackView);
         swipeBackView.setOnSwipeListener(this);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -55,13 +54,13 @@ public class AboutActivity extends ThemeableActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        ImageView headerImage = (ImageView) findViewById(R.id.header_image);
+        ImageView headerImage = findViewById(R.id.header_image);
         Glide.with(this)
                 .load("https://raw.githubusercontent.com/kollerlukas/Camera-Roll-Android-App/master/camera_roll_logo.png")
                 .error(R.drawable.error_placeholder)
                 .into(headerImage);
 
-        TextView version = (TextView) findViewById(R.id.version);
+        TextView version = findViewById(R.id.version);
         try {
             String versionName = getPackageManager()
                     .getPackageInfo(getPackageName(), 0).versionName;
@@ -80,7 +79,7 @@ public class AboutActivity extends ThemeableActivity
             e.printStackTrace();
         }
 
-        final TextView aboutText = (TextView) findViewById(R.id.about_text);
+        final TextView aboutText = findViewById(R.id.about_text);
         //noinspection deprecation
         aboutText.setText(Html.fromHtml(getString(R.string.about_text)));
         aboutText.setMovementMethod(new LinkMovementMethod());

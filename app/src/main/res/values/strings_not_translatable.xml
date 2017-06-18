@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_text" translatable="false">
+        <![CDATA[
+            © 2017 Lukas Koller, Munich, Germany<br/>
+            <br/>
+            <a href=\"https://github.com/kollerlukas/Camera-Roll-Android-App\">Source Code</a> for this App<br/>
+            <br/>
+            <br/>
+            <b>Licenses:</b><br/>
+            <br/>
+            Libraries:<br/>
+            <br>
+                <a href=\"https://github.com/bumptech/glide\">Glide</a><br/>
+                An image loading and caching library for Android focused on smooth scrolling.<br/>
+                <a href=\"https://github.com/bumptech/glide/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view\">Subsampling Scale Image View</a><br/>
+                Highly configurable, easily extendable view with pan and zoom gestures for displaying huge images without loss of detail. Perfect for photo galleries, maps, building plans etc.<br/>
+                <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/chrisbanes/PhotoView\">PhotoView</a></b><br/>
+                Implementation of ImageView for Android that supports zooming, by various touch gestures.<br/>
+                <a href=\"https://github.com/chrisbanes/PhotoView/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/MFlisar/DragSelectRecyclerView\">DragSelectRecyclerView</a></b><br/>
+                TouchListener that can be attached to any RecyclerView and handles multi selection for you.<br/>
+                <a href=\"https://github.com/MFlisar/DragSelectRecyclerView/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/google/ExoPlayer\">ExoPlayer</a></b><br/>
+                An extensible media player for Android.<br/>
+                <a href=\"https://github.com/google/ExoPlayer/blob/release-v2/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br>
+                <b><a href=\"https://github.com/DavidPacioianu/InkPageIndicator\">InkPageIndicator</a></b><br/>
+                InkPageIndicator created by @nickbutcher for Plaid https://github.com/nickbutcher/plaid and backported by me for API 14+ (4.0+)<br/>
+                <a href=\"https://github.com/DavidPacioianu/InkPageIndicator/blob/master/LICENSE\">LICENSE</a>
+            <br>
+            <br/>
+            <br/>
+            Icons:<br/>
+            <br>
+                <b><a href=\"https://material.io/icons/\">Material Design Icons</a></b>, by Google<br/>
+            <br>
+            <br/>
+            Fonts:<br/>
+            <br>
+                <b><a href=\"https://fonts.google.com/specimen/Roboto+Mono?selection.family=Roboto+Mono\">Roboto Mono Font</a></b>, by Christian Robertson
+            <br>
+        ]]>
+    </string>
+    <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
+
+    <!--Preference Keys-->
+    <string name="pref_key_theme" translatable="false">KEY_THEME</string>
+    <string name="pref_key_media_retriever" translatable="false">KEY_MEDIA_RETRIEVER</string>
+    <string name="pref_key_style" translatable="false">KEY_STYLE</string>
+    <string name="pref_key_style_column_count" translatable="false">KEY_STYLE_COLUMN_COUNT</string>
+    <string name="pref_key_column_count" translatable="false">KEY_COLUMN_COUNT</string>
+    <string name="pref_key_sort_albums" translatable="false">KEY_SORT_ALBUMS</string>
+    <string name="pref_key_sort_album" translatable="false">KEY_SORT_ALBUM</string>
+    <string name="pref_key_8_bit_color" translatable="false">KEY_8_BIT_COLOR</string>
+    <string name="pref_key_camera_shortcut" translatable="false">KEY_CAMERA_SHORTCUT</string>
+</resources>

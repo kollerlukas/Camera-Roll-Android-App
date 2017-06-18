@@ -21,7 +21,7 @@
             android:id="@+id/indicator"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:alpha="0.7"
+            android:alpha="0.8"
             android:contentDescription="@string/indicator"
             app:layout_heightPercent="35%"
             app:layout_widthPercent="50%" />

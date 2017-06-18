@@ -5,21 +5,20 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
@@ -66,7 +65,7 @@ public abstract class ThemeableActivity extends BaseActivity {
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        ViewGroup rootView = findViewById(R.id.root_view);
 
         checkTags(rootView);
 
@@ -246,8 +245,14 @@ public abstract class ThemeableActivity extends BaseActivity {
         int colorRes = isLightBaseTheme(THEME) ? R.color.colorPrimary_light : R.color.colorPrimary;
         int color = ContextCompat.getColor(this, colorRes);
 
-        Bitmap overviewIcon = BitmapFactory.decodeResource(getResources(),
-                R.mipmap.ic_launcher);
+        //getting the app icon as a bitmap
+        Drawable icon = getApplicationInfo().loadIcon(getPackageManager());
+        Bitmap overviewIcon = Bitmap.createBitmap(icon.getIntrinsicWidth(),
+                icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(overviewIcon);
+        icon.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        icon.draw(canvas);
+
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
                 overviewIcon, color));
         overviewIcon.recycle();

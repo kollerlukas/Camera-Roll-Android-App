@@ -36,6 +36,13 @@ public abstract class ViewHolder {
         return v;
     }
 
+    ViewGroup inflateRAWPhotoView(ViewGroup container) {
+        ViewGroup v = ItemViewUtil.inflateRAWPhotoView(container);
+        v.setTag(albumItem.getPath());
+        this.itemView = v;
+        return v;
+    }
+
     void imageOnClick(View view) {
         try {
             ((ItemActivity) view.getContext()).imageOnClick();

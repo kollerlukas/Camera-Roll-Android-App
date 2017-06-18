@@ -7,7 +7,6 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import java.io.File;
-import java.util.Arrays;
 
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
@@ -19,6 +18,7 @@ public abstract class AlbumItem
     private static final int PHOTO = 1;
     private static final int GIF = 2;
     private static final int VIDEO = 3;
+    private static final int RAW = 4;
 
     private String name;
     private String path;
@@ -39,6 +39,9 @@ public abstract class AlbumItem
         AlbumItem albumItem = null;
         if (MediaType.isGif(context, path)) {
             albumItem = new Gif();
+        }
+        if (MediaType.isRAWImage(context, path)) {
+            albumItem = new RAWImage();
         } else if (MediaType.isImage(context, path)) {
             albumItem = new Photo();
         } else if (MediaType.isVideo(context, path)) {
@@ -173,12 +176,14 @@ public abstract class AlbumItem
         @Override
         public AlbumItem createFromParcel(Parcel parcel) {
             switch (parcel.readInt()) {
-                case PHOTO:
-                    return new Photo(parcel);
+                case VIDEO:
+                    return new Video(parcel);
                 case GIF:
                     return new Gif(parcel);
+                case RAW:
+                    return new RAWImage(parcel);
                 default:
-                    return new Video(parcel);
+                    return new Photo(parcel);
             }
         }
 

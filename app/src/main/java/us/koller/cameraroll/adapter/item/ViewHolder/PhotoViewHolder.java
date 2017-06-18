@@ -68,10 +68,10 @@ public class PhotoViewHolder extends ViewHolder {
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) view;
 
-        if (Settings.getInstance(view.getContext()).use8BitColor()) {
-            imageView.setBitmapDecoderClass(GlideImageDecoder.class);
-            imageView.setRegionDecoderClass(CustomRegionDecoder.class);
-        }
+        // use custom decoders
+        imageView.setBitmapDecoderClass(GlideImageDecoder.class);
+        imageView.setRegionDecoderClass(CustomRegionDecoder.class);
+
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),

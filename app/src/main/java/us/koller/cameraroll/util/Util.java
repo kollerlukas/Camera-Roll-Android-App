@@ -76,7 +76,7 @@ public class Util {
         return new int[]{1, 1};
     }
 
-    private static final String robotoMonoPath = "fonts/roboto_mono_regular.ttf";
+    private static final String robotoMonoPath = "font/roboto_mono_regular.ttf";
 
     @SuppressWarnings("inlineValue")
     public static TextView setToolbarTypeface(Toolbar toolbar) {
@@ -128,7 +128,7 @@ public class Util {
 
     public static void showSnackbar(Snackbar snackbar) {
         snackbar.show();
-        TextView textView = (TextView) (snackbar.getView())
+        TextView textView = snackbar.getView()
                 .findViewById(android.support.design.R.id.snackbar_text);
         textView.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
     }

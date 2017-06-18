@@ -21,7 +21,7 @@
 
         <TextView
             android:id="@+id/empty_state_text"
-            fontPath="fonts/roboto_mono_regular.ttf"
+            android:fontFamily="@font/roboto_mono_regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
