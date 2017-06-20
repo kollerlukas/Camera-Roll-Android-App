@@ -61,8 +61,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
@@ -707,6 +710,11 @@ public class ItemActivity extends ThemeableActivity {
                     int[] imageDimens = albumItem.getImageDimens(ItemActivity.this);
                     height = String.valueOf(imageDimens[1]);
                     width = String.valueOf(imageDimens[0]);
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        Locale locale = getResources().getConfiguration().getLocales().get(0);
+                        date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale)
+                                .format(new Date(albumItem.getDate()));
+                    }
                 }
 
                 final String[] values = {name, path, size, width + " x " + height,
