@@ -16,6 +16,7 @@ import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -76,8 +77,6 @@ public class Util {
         return new int[]{1, 1};
     }
 
-    private static final String robotoMonoPath = "font/roboto_mono_regular.ttf";
-
     @SuppressWarnings("inlineValue")
     public static TextView setToolbarTypeface(Toolbar toolbar) {
         for (int i = 0; i < toolbar.getChildCount(); i++) {
@@ -85,8 +84,9 @@ public class Util {
             if (view instanceof TextView) {
                 TextView textView = (TextView) view;
                 if (textView.getText().equals(toolbar.getTitle())) {
-                    textView.setTypeface(Typeface.createFromAsset(
-                            toolbar.getContext().getAssets(), robotoMonoPath));
+                    Typeface typeface = ResourcesCompat.getFont(toolbar.getContext(),
+                            R.font.roboto_mono_regular);
+                    textView.setTypeface(typeface);
                     return textView;
                 }
             }

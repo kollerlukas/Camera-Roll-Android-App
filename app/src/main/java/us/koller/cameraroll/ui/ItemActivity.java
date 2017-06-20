@@ -29,7 +29,6 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.print.PrintHelper;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -81,6 +80,7 @@ import us.koller.cameraroll.data.RAWImage;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.ExifUtil;
+import us.koller.cameraroll.util.ZoomOutPageTransformer;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
@@ -261,7 +261,7 @@ public class ItemActivity extends ThemeableActivity {
             }
         });
 
-        //viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         bottomBar = findViewById(R.id.bottom_bar);
         ImageView delete_button = bottomBar.findViewById(R.id.delete_button);

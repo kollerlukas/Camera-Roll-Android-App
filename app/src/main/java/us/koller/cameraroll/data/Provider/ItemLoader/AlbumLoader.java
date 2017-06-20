@@ -1,10 +1,7 @@
 package us.koller.cameraroll.data.Provider.ItemLoader;
 
 import android.app.Activity;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.File;
@@ -12,9 +9,13 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.ui.MainActivity;
+import us.koller.cameraroll.util.DateTakenRetriever;
 import us.koller.cameraroll.util.MediaType;
 
 public class AlbumLoader extends ItemLoader {
+
+    private DateTakenRetriever dateRetriever;
 
     private ArrayList<Album> albums;
 
@@ -24,9 +25,26 @@ public class AlbumLoader extends ItemLoader {
         albums = new ArrayList<>();
     }
 
+    public void setDateRetriever(DateTakenRetriever dateRetriever) {
+        this.dateRetriever = dateRetriever;
+    }
+
     @Override
-    public void onNewDir(Activity context, File dir) {
+    public void onNewDir(final Activity context, File dir) {
         currentAlbum = new Album().setPath(dir.getPath());
+
+        //loading dateTaken timeStamps asynchronously
+        if (dateRetriever != null && dateRetriever.getCallback() == null) {
+            dateRetriever.setCallback(new DateTakenRetriever.Callback() {
+                @Override
+                public void done() {
+                    Log.d("AlbumLoader", "done: ");
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.setAction(MainActivity.RESORT);
+                    context.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
@@ -35,7 +53,9 @@ public class AlbumLoader extends ItemLoader {
             final AlbumItem albumItem
                     = AlbumItem.getInstance(context, file.getPath());
             if (albumItem != null) {
-                //tryToLoadDateTakenFromMediaStore(context, albumItem);
+                if (dateRetriever != null) {
+                    dateRetriever.retrieveDate(context, albumItem);
+                }
                 currentAlbum.getAlbumItems().add(albumItem);
             }
         }
@@ -55,35 +75,5 @@ public class AlbumLoader extends ItemLoader {
         result.albums = albums;
         albums = new ArrayList<>();
         return result;
-    }
-
-    //synchronous
-    public static void tryToLoadDateTakenFromMediaStore(final Context context, final AlbumItem albumItem) {
-        String[] projection = {MediaStore.Images.ImageColumns.DATE_TAKEN};
-
-        String selection = MediaStore.Images.Media.DATA + " = ?";
-
-        Uri queryUri = MediaStore.Files.getContentUri("external");
-
-        final Cursor cursor = context.getContentResolver()
-                .query(queryUri,
-                        projection,
-                        selection,
-                        new String[]{albumItem.getPath()},
-                        null);
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
-                long dateTaken = cursor.getLong(dateAddedColumn);
-                Log.d("AlbumLoader", "dateTaken = " + String.valueOf(dateTaken));
-                albumItem.setDate(dateTaken);
-            } else {
-                Log.d("AlbumLoader", "cursor.moveToFirst() = false");
-            }
-            cursor.close();
-        } else {
-            Log.d("AlbumLoader", "cursor = null");
-        }
     }
 }

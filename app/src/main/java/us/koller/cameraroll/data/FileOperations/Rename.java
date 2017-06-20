@@ -18,9 +18,9 @@ import java.util.Collections;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
 import us.koller.cameraroll.ui.BaseActivity;
 import us.koller.cameraroll.ui.ThemeableActivity;
+import us.koller.cameraroll.util.DateTakenRetriever;
 
 public class Rename extends FileOperation {
 
@@ -87,7 +87,7 @@ public class Rename extends FileOperation {
                 dateAddedTimeStamps[i] = -1;
             } else {
                 AlbumItem albumItem = AlbumItem.getInstance(context, oldPaths[i - oldPaths.length]);
-                AlbumLoader.tryToLoadDateTakenFromMediaStore(context, albumItem);
+                DateTakenRetriever.tryToRetrieveDateTaken(context, albumItem);
                 dateAddedTimeStamps[i] = albumItem.getDateTaken();
             }
         }
@@ -131,7 +131,7 @@ public class Rename extends FileOperation {
             View dialogLayout = LayoutInflater.from(actvity).inflate(R.layout.input_dialog_layout,
                     (ViewGroup) actvity.findViewById(R.id.root_view), false);
 
-            final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
+            final EditText editText = dialogLayout.findViewById(R.id.edit_text);
             String name = file.getName();
             int index = name.lastIndexOf(".");
             name = name.substring(0, index != -1 ? index : name.length());

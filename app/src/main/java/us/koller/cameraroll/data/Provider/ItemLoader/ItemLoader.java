@@ -18,9 +18,7 @@ public abstract class ItemLoader {
     public static ItemLoader getInstance(Class c) {
         if (c.equals(AlbumLoader.class)) {
             return new AlbumLoader();
-        }
-
-        if (c.equals(FileLoader.class)) {
+        } else if (c.equals(FileLoader.class)) {
             return new FileLoader();
         }
 

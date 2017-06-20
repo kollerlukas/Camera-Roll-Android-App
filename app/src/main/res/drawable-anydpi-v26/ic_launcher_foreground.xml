@@ -114,7 +114,7 @@
 
     <!--camera roll front layer-->
     <path
-        android:fillColor="#303030"
+        android:fillColor="#424242"
         android:pathData="M 0 0 L 39.5 0 L 39.5 108 L 0 108 Z" />
 
     <!--finish-->

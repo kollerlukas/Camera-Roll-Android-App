@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.io.File;
 
+import us.koller.cameraroll.util.DateTakenRetriever;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;

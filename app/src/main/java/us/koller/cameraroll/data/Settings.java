@@ -115,7 +115,7 @@ public class Settings {
     public int getStyleColumnCount(Context context, boolean pick_photos) {
         Resources res = context.getResources();
         boolean landscape = res.getBoolean(R.bool.landscape);
-        if (pick_photos) {
+        if (pick_photos && getStyle() == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
             int styleColumnCount = getDefaultStyleColumnCount(context,
                     res.getInteger(R.integer.STYLE_CARDS_VALUE));
             return landscape ? styleColumnCount + 1 : styleColumnCount;
@@ -130,7 +130,8 @@ public class Settings {
 
     public int getStyleGridSpacing(Context context, boolean pick_photos) {
         Resources res = context.getResources();
-        if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE) || pick_photos) {
+        if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
+                pick_photos && getStyle() == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
         } else if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
             return (int) res.getDimension(R.dimen.album_grid_spacing);

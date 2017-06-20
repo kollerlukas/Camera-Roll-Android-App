@@ -2,13 +2,11 @@ package us.koller.cameraroll.ui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,12 +21,10 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,7 +45,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
+import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
@@ -59,6 +55,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     //public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
     public static final String PICK_PHOTOS = "PICK_PHOTOS";
+    public static final String RESORT = "RESORT";
 
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
     public static final int REFRESH_PHOTOS_REQUEST_CODE = 7;
@@ -141,7 +138,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             refreshPhotos();
         }
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(!pick_photos ? toolbarColor : accentColor);
         toolbar.setTitleTextColor(!pick_photos ? textColor : accentTextColor);
@@ -175,16 +172,19 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             }
         }
 
-        //Util.setToolbarTypeface(toolbar);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         int columnCount = settings.getStyleColumnCount(this, pick_photos);
         recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
         recyclerViewAdapter = new RecyclerViewAdapter(this, pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.addItemDecoration(new EqualSpacesItemDecoration(
-                settings.getStyleGridSpacing(this, pick_photos), columnCount, false));
+
+        int spacing = settings.getStyleGridSpacing(this, pick_photos);
+        recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
+        recyclerView.setPadding(recyclerView.getPaddingStart() + spacing / 2,
+                recyclerView.getPaddingTop() + spacing / 2,
+                recyclerView.getPaddingEnd() + spacing / 2,
+                recyclerView.getPaddingBottom() + spacing / 2);
 
         //disable default change animation
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
@@ -239,7 +239,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             }
         });
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
                     R.drawable.ic_camera_lens_avd);
@@ -261,7 +261,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         }
 
         //setting window insets manually
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
@@ -429,6 +429,9 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         switch (intent.getAction()) {
             case REFRESH_MEDIA:
                 refreshPhotos();
+                break;
+            case RESORT:
+                resortAlbums();
                 break;
         }
     }
@@ -732,7 +735,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         }
 
         if (lightBaseTheme) {
-            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            final Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setActivated(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -14,7 +14,7 @@ import java.util.Collections;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
+import us.koller.cameraroll.util.DateTakenRetriever;
 
 public class Move extends FileOperation {
 
@@ -90,7 +90,7 @@ public class Move extends FileOperation {
                 dateAddedTimeStamps[i] = -1;
             } else {
                 AlbumItem albumItem = AlbumItem.getInstance(context, oldPaths[i - oldPaths.length]);
-                AlbumLoader.tryToLoadDateTakenFromMediaStore(context, albumItem);
+                DateTakenRetriever.tryToRetrieveDateTaken(context, albumItem);
                 dateAddedTimeStamps[i] = albumItem.getDateTaken();
             }
         }

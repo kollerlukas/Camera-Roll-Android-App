@@ -217,7 +217,7 @@ public abstract class ThemeableActivity extends BaseActivity {
     }
 
     public boolean isLightBaseTheme(int style) {
-        return !baseThemes[style];
+        return style != UNDEFINED && !baseThemes[style];
     }
 
     public int getThemeRes(int style) {
@@ -293,11 +293,17 @@ public abstract class ThemeableActivity extends BaseActivity {
 
     public static class ColorManager {
 
+        @SuppressWarnings("WeakerAccess")
         public static final int BG_COLOR = 0;
+        @SuppressWarnings("WeakerAccess")
         public static final int TOOLBAR_COLOR = 1;
+        @SuppressWarnings("WeakerAccess")
         public static final int TEXT_COLOR = 2;
+        @SuppressWarnings("WeakerAccess")
         public static final int TEXT_COLOR_SEC = 3;
+        @SuppressWarnings("WeakerAccess")
         public static final int ACCENT_COLOR = 4;
+        @SuppressWarnings("WeakerAccess")
         public static final int ACCENT_TEXT_COLOR = 5;
 
         private int[] colors;
