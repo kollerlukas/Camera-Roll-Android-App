@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
@@ -19,7 +18,7 @@ public class VideoViewHolder extends AlbumItemHolder {
 
     public VideoViewHolder(View itemView) {
         super(itemView);
-        ImageView indicator = (ImageView) itemView.findViewById(R.id.indicator);
+        ImageView indicator = itemView.findViewById(R.id.indicator);
         indicator.setImageResource(R.drawable.video_indicator);
     }
 

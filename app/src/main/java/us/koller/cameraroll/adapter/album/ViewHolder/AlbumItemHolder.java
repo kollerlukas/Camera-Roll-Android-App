@@ -32,7 +32,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
         }
 
         this.albumItem = albumItem;
-        ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
+        ImageView imageView = itemView.findViewById(R.id.image);
         loadImage(imageView, albumItem);
     }
 

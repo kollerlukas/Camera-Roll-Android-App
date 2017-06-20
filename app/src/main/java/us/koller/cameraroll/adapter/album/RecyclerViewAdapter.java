@@ -23,7 +23,6 @@ import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.RAWImage;
-import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.ui.MainActivity;
 
