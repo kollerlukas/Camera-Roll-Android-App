@@ -5,7 +5,7 @@ import android.os.Parcel;
 
 import us.koller.cameraroll.util.Util;
 
-public class RAWImage extends AlbumItem {
+public class RAWImage extends Photo {
 
     RAWImage() {
 

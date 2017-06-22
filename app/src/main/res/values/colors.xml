@@ -18,6 +18,8 @@
     <!--accent color-->
     <color name="colorAccent">#69F0AE</color>
     <color name="colorAccent_translucent">#8A69F0AE</color>
+    <!--<color name="colorAccent">#1DE9B6</color>
+    <color name="colorAccent_translucent">#8A1DE9B6</color>-->
     <color name="colorAccent_text">#8A212121</color>
     <bool name="colorAccent_dark_icons">true</bool>
 

@@ -79,7 +79,6 @@ import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Provider.MediaProvider;
-import us.koller.cameraroll.data.RAWImage;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.ExifUtil;
@@ -731,7 +730,6 @@ public class ItemActivity extends ThemeableActivity {
                         recyclerView.setLayoutManager(linearLayoutManager);
                         recyclerView.setAdapter(new InfoRecyclerViewAdapter(values,
                                 (albumItem instanceof Photo
-                                        || albumItem instanceof RAWImage
                                         || albumItem instanceof Gif) && !view_only));
 
                         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

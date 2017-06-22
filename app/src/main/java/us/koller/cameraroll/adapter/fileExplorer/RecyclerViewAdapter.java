@@ -3,6 +3,7 @@ package us.koller.cameraroll.adapter.fileExplorer;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import us.koller.cameraroll.adapter.fileExplorer.ViewHolder.FileHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.FileExplorerActivity;
 import us.koller.cameraroll.ui.ItemActivity;
@@ -84,6 +84,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 if (mode == SELECTOR_MODE) {
                     onItemSelect(file);
                 } else if (file.isMedia) {
+                    Log.d("FileExplorer.RVA", "onClick: file.isMedia");
 
                     int index = file.getPath().lastIndexOf("/");
                     String path = file.getPath().substring(0, index);
@@ -95,7 +96,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                         album.getAlbumItems().add(albumItem);
                     }
 
-                    if (album != null && albumItem != null) {
+                    if (albumItem != null) {
                         //create intent
                         Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class)
                                 .putExtra(ItemActivity.ALBUM_ITEM, albumItem)

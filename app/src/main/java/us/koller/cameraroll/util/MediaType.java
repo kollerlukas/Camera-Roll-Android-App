@@ -73,7 +73,7 @@ public class MediaType {
     }
 
     public static boolean isRAWImage(Context context, String path) {
-        /*if (path != null) {
+        if (path != null) {
             if (path.startsWith("content")) {
                 //performance
                 String mimeType = getMimeType(context, path);
@@ -82,7 +82,7 @@ public class MediaType {
                 }
             }
             return checkRAWExtension(path);
-        }*/
+        }
         return false;
     }
 

@@ -8,11 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.davemorrissey.labs.subscaleview.decoder.ImageDecoder;
+import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
 import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
 import us.koller.cameraroll.ui.ItemActivity;
@@ -69,9 +70,8 @@ public class PhotoViewHolder extends ViewHolder {
                 = (SubsamplingScaleImageView) view;
 
         // use custom decoders
-        imageView.setBitmapDecoderClass(GlideImageDecoder.class);
-        imageView.setRegionDecoderClass(CustomRegionDecoder.class);
-
+        imageView.setBitmapDecoderClass(getImageDecoderClass());
+        imageView.setRegionDecoderClass(getBitmapRegionDecoderClass());
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),
@@ -104,8 +104,7 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     private void scaleDown(final ItemActivity.Callback callback) {
-        final SubsamplingScaleImageView imageView
-                = (SubsamplingScaleImageView) itemView.findViewById(R.id.subsampling);
+        final SubsamplingScaleImageView imageView = itemView.findViewById(R.id.subsampling);
         if (imageView != null) {
             try {
                 imageView.animateScale(0.0f)
@@ -146,12 +145,21 @@ public class PhotoViewHolder extends ViewHolder {
 
     @Override
     public void onDestroy() {
-        final SubsamplingScaleImageView imageView
-                = (SubsamplingScaleImageView) itemView.findViewById(R.id.subsampling);
+        final SubsamplingScaleImageView imageView = itemView.findViewById(R.id.subsampling);
         if (imageView != null) {
             imageView.recycle();
         }
 
         super.onDestroy();
+    }
+
+
+    @SuppressWarnings("WeakerAccess")
+    public Class<? extends ImageDecoder> getImageDecoderClass() {
+        return GlideImageDecoder.class;
+    }
+
+    public Class<? extends ImageRegionDecoder> getBitmapRegionDecoderClass() {
+        return CustomRegionDecoder.class;
     }
 }

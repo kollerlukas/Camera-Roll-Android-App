@@ -13,7 +13,6 @@ import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.ui.VideoPlayerActivity;
-import us.koller.cameraroll.util.Util;
 
 public class IntentReceiver extends AppCompatActivity {
 
@@ -60,8 +59,6 @@ public class IntentReceiver extends AppCompatActivity {
                     .setData(uri);
             startActivity(view_video);
         } else {
-            Util.printIntentFlags(intent);
-
             Intent view_photo = new Intent(this, ItemActivity.class)
                     .setData(uri)
                     .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
