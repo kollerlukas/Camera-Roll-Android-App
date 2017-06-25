@@ -8,6 +8,7 @@ public class MediaType {
 
     public static boolean isMedia(String path) {
         return checkImageExtension(path) ||
+                checkRAWExtension(path) ||
                 checkGifExtension(path) ||
                 checkVideoExtension(path);
     }

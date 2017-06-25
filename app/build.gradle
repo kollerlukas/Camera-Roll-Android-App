@@ -55,4 +55,6 @@ dependencies {
     compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
 
     compile 'com.pacioianu.david:ink-page-indicator:1.2.0'
+
+    compile 'com.github.pluscubed:recycler-fast-scroll:0.3.2@aar'
 }

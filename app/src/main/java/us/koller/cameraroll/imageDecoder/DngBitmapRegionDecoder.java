@@ -4,10 +4,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.util.Log;
 
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
@@ -20,8 +20,8 @@ import us.koller.cameraroll.util.Util;
 public class DngBitmapRegionDecoder implements ImageRegionDecoder {
 
     private InputStream inputStream;
-    private boolean ready = false;
     private final Object decoderLock = new Object();
+    private boolean ready = false;
 
     @Override
     public Point init(Context context, Uri uri) throws Exception {
@@ -40,10 +40,10 @@ public class DngBitmapRegionDecoder implements ImageRegionDecoder {
 
     @Override
     public Bitmap decodeRegion(Rect rect, int sampleSize) {
-        Log.d("DngBitmapRegionDecoder", "decodeRegion() called with: rect = [" + rect + "], sampleSize = [" + sampleSize + "]");
         synchronized (this.decoderLock) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = sampleSize;
+            options.inJustDecodeBounds = false;
             return BitmapFactory.decodeStream(inputStream, rect, options);
         }
     }

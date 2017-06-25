@@ -1,6 +1,7 @@
 package us.koller.cameraroll.adapter.item;
 
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -64,6 +65,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         } else {
             viewHolder = new PhotoViewHolder(albumItem, position);
         }
+        Log.d("AlbumItem", "instantiateItem: " + albumItem.getType() + ", " + viewHolder);
         viewHolders.add(viewHolder);
 
         View v = viewHolder.getView(container);

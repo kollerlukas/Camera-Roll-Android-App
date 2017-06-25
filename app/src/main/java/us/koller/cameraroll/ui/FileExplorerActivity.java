@@ -104,7 +104,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     .setInterpolator(new AccelerateDecelerateInterpolator()));
         }
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
 
         toolbar.setBackgroundColor(toolbarColor);
         toolbar.setTitleTextColor(textColor);
@@ -142,12 +142,12 @@ public class FileExplorerActivity extends ThemeableActivity
             titleTextView.setEllipsize(TextUtils.TruncateAt.START);
         }
 
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.swipeBackView);
+        final ViewGroup rootView = findViewById(R.id.swipeBackView);
         if (rootView instanceof SwipeBackCoordinatorLayout) {
             ((SwipeBackCoordinatorLayout) rootView).setOnSwipeListener(this);
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new RecyclerViewAdapter(
@@ -163,21 +163,8 @@ public class FileExplorerActivity extends ThemeableActivity
         recyclerViewAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        /*recyclerView.addOnScrollListener(
-                new RecyclerView.OnScrollListener() {
-                    private float scrollY = 0.0f;
-
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        scrollY += dy;
-                        Util.animateToolbarElevation(toolbar, scrollY);
-                    }
-                });*/
-
         //setup fab
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_create_new_folder_white_24dp);
         Drawable d = fab.getDrawable();
         d = DrawableCompat.wrap(d);
@@ -529,7 +516,7 @@ public class FileExplorerActivity extends ThemeableActivity
         View dialogLayout = LayoutInflater.from(this).inflate(R.layout.input_dialog_layout,
                 (ViewGroup) findViewById(R.id.root_view), false);
 
-        final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
+        final EditText editText = dialogLayout.findViewById(R.id.edit_text);
 
         new AlertDialog.Builder(this, getDialogThemeRes())
                 .setTitle(R.string.new_folder)
@@ -561,7 +548,7 @@ public class FileExplorerActivity extends ThemeableActivity
     }
 
     public void animateFab(final boolean show) {
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
 
         if ((fab.getScaleX() == 1.0f && show)
                 || (fab.getScaleX() == 0.0f && !show)) {
@@ -660,7 +647,7 @@ public class FileExplorerActivity extends ThemeableActivity
     public void onSelectorModeEnter() {
         fileOpIntent = null;
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
@@ -756,7 +743,7 @@ public class FileExplorerActivity extends ThemeableActivity
     @Override
     public void onItemSelected(int count) {
         if (count != 0) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             final String title = String.valueOf(count) + (count > 1 ?
                     getString(R.string.items) : getString(R.string.item));
 
@@ -772,7 +759,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
     @Override
     public void onPickTargetModeEnter() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         if (fileOpIntent != null) {
             final int count = FileOperation.getFiles(fileOpIntent).length;
 
@@ -829,7 +816,7 @@ public class FileExplorerActivity extends ThemeableActivity
                 .start();
 
         if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
-            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            final Toolbar toolbar = findViewById(R.id.toolbar);
 
             ColorFade.fadeToolbarTitleColor(toolbar, textColor,
                     new ColorFade.ToolbarTitleFadeCallback() {
@@ -847,7 +834,7 @@ public class FileExplorerActivity extends ThemeableActivity
     }
 
     public void resetToolbar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
 
         if (isLightBaseTheme(THEME)) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
@@ -915,11 +902,11 @@ public class FileExplorerActivity extends ThemeableActivity
 
     @Override
     public void onThemeApplied(boolean lightBaseTheme) {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
 
         if (lightBaseTheme) {
-            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            final Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setActivated(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

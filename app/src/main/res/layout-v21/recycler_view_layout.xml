@@ -5,12 +5,20 @@
     android:layout_height="match_parent"
     android:tag="@string/theme_bg_color">
 
-    <android.support.v7.widget.RecyclerView
+    <us.koller.cameraroll.ui.widget.FastScrollerRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="?android:attr/actionBarSize"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:paddingTop="?android:attr/actionBarSize" />
+
+    <com.pluscubed.recyclerfastscroll.RecyclerFastScroller
+        android:id="@+id/fastScroller"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

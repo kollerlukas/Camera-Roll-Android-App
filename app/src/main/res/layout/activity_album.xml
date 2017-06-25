@@ -5,14 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/root_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="@string/theme_bg_color">
-
-        <include layout="@layout/recycler_view_layout" />
-    </FrameLayout>
+    <include layout="@layout/recycler_view_layout" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

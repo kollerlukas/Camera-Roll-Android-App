@@ -8,7 +8,6 @@ import android.util.Log;
 
 import java.io.File;
 
-import us.koller.cameraroll.util.DateTakenRetriever;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;
@@ -40,8 +39,7 @@ public abstract class AlbumItem
         AlbumItem albumItem = null;
         if (MediaType.isGif(context, path)) {
             albumItem = new Gif();
-        }
-        if (MediaType.isRAWImage(context, path)) {
+        } else if (MediaType.isRAWImage(context, path)) {
             albumItem = new RAWImage();
         } else if (MediaType.isImage(context, path)) {
             albumItem = new Photo();
@@ -52,6 +50,8 @@ public abstract class AlbumItem
         if (albumItem != null) {
             albumItem.setPath(path)
                     .setName(new File(path).getName());
+
+            Log.d("AlbumItem", "getInstance: " + albumItem.getType());
 
             if (path.startsWith("content")) {
                 albumItem.contentUri = true;
@@ -158,12 +158,14 @@ public abstract class AlbumItem
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         int k;
-        if (this instanceof Photo) {
-            k = PHOTO;
+        if (this instanceof RAWImage) {
+            k = RAW;
         } else if (this instanceof Gif) {
             k = GIF;
-        } else {
+        } else if (this instanceof Video) {
             k = VIDEO;
+        } else {
+            k = PHOTO;
         }
         parcel.writeInt(k);
         parcel.writeString(name);
