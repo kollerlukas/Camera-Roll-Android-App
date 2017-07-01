@@ -10,8 +10,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/photo"
-            android:foreground="@drawable/albumitem_foreground"
             android:scaleType="centerCrop" />
+    <!--android:foreground="@drawable/albumitem_foreground"-->
 
     <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"

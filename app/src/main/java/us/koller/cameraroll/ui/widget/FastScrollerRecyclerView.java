@@ -45,12 +45,11 @@ public class FastScrollerRecyclerView extends RecyclerView {
     public void setPadding(int left, int top, int right, int bottom) {
         super.setPadding(left, top, right, bottom);
 
-        //handle fastScroller padding top
+        //handle fastScroller padding
         if (fastScroller != null) {
-            fastScroller.setPadding(fastScroller.getPaddingStart(),
-                    fastScroller.getPaddingTop() + top,
-                    fastScroller.getPaddingEnd(),
-                    fastScroller.getPaddingBottom() + bottom);
+            fastScroller.setPadding(
+                    fastScroller.getPaddingStart(), getPaddingTop(),
+                    fastScroller.getPaddingEnd(), getPaddingBottom());
 
             //pass padding top to Handle as translationY
             View mHandle = fastScroller.getChildAt(1);

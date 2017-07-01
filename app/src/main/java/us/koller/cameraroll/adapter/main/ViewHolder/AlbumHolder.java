@@ -58,16 +58,14 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
             excluded = false;
         }
 
-        ImageView hiddenFolderIndicator = (ImageView)
-                itemView.findViewById(R.id.hidden_folder_indicator);
+        ImageView hiddenFolderIndicator = itemView.findViewById(R.id.hidden_folder_indicator);
         if (hiddenFolderIndicator != null) {
             hiddenFolderIndicator
                     .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ImageView removableStorageIndicator = (ImageView)
-                    itemView.findViewById(R.id.removable_storage_indicator);
+            ImageView removableStorageIndicator = itemView.findViewById(R.id.removable_storage_indicator);
             if (removableStorageIndicator != null) {
                 try {
                     boolean removable = Environment

@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
 
 import us.koller.cameraroll.R;
@@ -38,6 +40,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private boolean pick_photos;
 
     private SelectorModeManager manager;
+
+    private RequestManager glideRequestManager;
 
     private DragSelectTouchListener dragSelectTouchListener;
 
@@ -73,6 +77,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     });
             recyclerView.addOnItemTouchListener(dragSelectTouchListener);
         }
+
+        glideRequestManager = Glide.with(recyclerView.getContext());
     }
 
     public void setSelectorModeManager(SelectorModeManager manager) {
@@ -82,7 +88,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         AlbumItem albumItem = album.getAlbumItems().get(position);
-        if (albumItem instanceof Photo || albumItem instanceof RAWImage) {
+        if (albumItem instanceof Photo) {
             return VIEW_TYPE_PHOTO;
         } else if (albumItem instanceof Gif) {
             return VIEW_TYPE_GIF;
@@ -97,11 +103,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 .inflate(R.layout.albumitem_cover, parent, false);
         switch (viewType) {
             case VIEW_TYPE_VIDEO:
-                return new VideoViewHolder(v);
+                return new VideoViewHolder(v, glideRequestManager);
             case VIEW_TYPE_GIF:
-                return new GifViewHolder(v);
+                return new GifViewHolder(v, glideRequestManager);
             default:
-                return new PhotoViewHolder(v);
+                return new PhotoViewHolder(v, glideRequestManager);
         }
     }
 

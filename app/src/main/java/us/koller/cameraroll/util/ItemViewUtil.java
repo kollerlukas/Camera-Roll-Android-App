@@ -81,7 +81,7 @@ public class ItemViewUtil {
                     ((AppCompatActivity) imageView.getContext())
                             .startPostponedEnterTransition();
                 }
-            }, 300);
+            }, 100);
         }
 
         BitmapRequestBuilder<String, Bitmap> requestBuilder = Glide.with(imageView.getContext())
@@ -148,22 +148,5 @@ public class ItemViewUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(albumItem.getPath());
         }
-    }
-
-    public static void bindRAWImage(ImageView imageView,
-                                    AlbumItem albumItem,
-                                    RequestListener<String, Bitmap> requestListener) {
-        int[] imageDimens = albumItem.getImageDimens(imageView.getContext());
-        boolean use8BitColor = Settings.getInstance(imageView.getContext()).use8BitColor();
-        Glide.with(imageView.getContext())
-                .load(albumItem.getPath())
-                .asBitmap()
-                .override(imageDimens[0], imageDimens[1])
-                .format(use8BitColor ? DecodeFormat.PREFER_ARGB_8888 : DecodeFormat.DEFAULT)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(R.drawable.error_placeholder_tinted)
-                .listener(requestListener)
-                .into(imageView);
     }
 }
