@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.io.File;
 
@@ -50,8 +49,6 @@ public abstract class AlbumItem
         if (albumItem != null) {
             albumItem.setPath(path)
                     .setName(new File(path).getName());
-
-            Log.d("AlbumItem", "getInstance: " + albumItem.getType());
 
             if (path.startsWith("content")) {
                 albumItem.contentUri = true;

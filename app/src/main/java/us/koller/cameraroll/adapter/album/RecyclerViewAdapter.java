@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
 
@@ -24,7 +23,6 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.data.RAWImage;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.ui.MainActivity;
 
@@ -40,8 +38,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private boolean pick_photos;
 
     private SelectorModeManager manager;
-
-    private RequestManager glideRequestManager;
 
     private DragSelectTouchListener dragSelectTouchListener;
 
@@ -77,8 +73,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     });
             recyclerView.addOnItemTouchListener(dragSelectTouchListener);
         }
-
-        glideRequestManager = Glide.with(recyclerView.getContext());
     }
 
     public void setSelectorModeManager(SelectorModeManager manager) {
@@ -103,11 +97,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 .inflate(R.layout.albumitem_cover, parent, false);
         switch (viewType) {
             case VIEW_TYPE_VIDEO:
-                return new VideoViewHolder(v, glideRequestManager);
+                return new VideoViewHolder(v);
             case VIEW_TYPE_GIF:
-                return new GifViewHolder(v, glideRequestManager);
+                return new GifViewHolder(v);
             default:
-                return new PhotoViewHolder(v, glideRequestManager);
+                return new PhotoViewHolder(v);
         }
     }
 
@@ -259,6 +253,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     public Album getAlbum() {
         return album;
+    }
+
+    public void setAlbum(Album album) {
+        this.album = album;
     }
 
     private SelectorModeManager getManager() {

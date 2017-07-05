@@ -47,22 +47,33 @@ public class StorageUtil {
     }
 
     public static DocumentFile parseDocumentFile(Context context, Uri treeUri, String path) {
-        DocumentFile treeRoot = DocumentFile.fromTreeUri(context, treeUri);
-        path = path.replace("/storage/", "");
-        String[] pathParts = path.split("/");
-        Log.d("StorageUtil", "pathParts: " + Arrays.toString(pathParts));
-
-        DocumentFile file = treeRoot;
-        for (int i = 1; i < pathParts.length; i++) {
-            Log.d("StorageUtil", "pathParts[i]: " + pathParts[i]);
-            if (file != null) {
-                file = file.findFile(pathParts[i]);
-            } else {
-                Log.d("StorageUtil", "could find file: " + pathParts[i]);
-                break;
-            }
+        DocumentFile treeRoot;
+        try {
+            treeRoot = DocumentFile.fromTreeUri(context, treeUri);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return null;
         }
-        return file;
+
+        if (treeRoot != null) {
+            treeRoot = DocumentFile.fromTreeUri(context, treeUri);
+            path = path.replace("/storage/", "");
+            String[] pathParts = path.split("/");
+            Log.d("StorageUtil", "pathParts: " + Arrays.toString(pathParts));
+
+            DocumentFile file = treeRoot;
+            for (int i = 1; i < pathParts.length; i++) {
+                Log.d("StorageUtil", "pathParts[i]: " + pathParts[i]);
+                if (file != null) {
+                    file = file.findFile(pathParts[i]);
+                } else {
+                    Log.d("StorageUtil", "could find file: " + pathParts[i]);
+                    break;
+                }
+            }
+            return file;
+        }
+        return null;
     }
 
     public static DocumentFile createDocumentFile(Context context, Uri treeUri, String path, String mimeType) {

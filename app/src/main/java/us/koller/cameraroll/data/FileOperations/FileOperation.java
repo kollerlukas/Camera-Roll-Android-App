@@ -15,6 +15,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -25,7 +26,9 @@ import java.util.Arrays;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.util.MediaType;
+import us.koller.cameraroll.util.StorageUtil;
 
 public abstract class FileOperation extends IntentService implements Parcelable {
 
@@ -70,12 +73,29 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     abstract void execute(Intent workIntent);
 
-    Uri getTreeUri(Intent workIntent) {
+    Uri getTreeUri(Intent workIntent, String path) {
+        Log.d("FileOperation", "getTreeUri");
+        Uri treeUri;
         String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
         if (treeUriExtra != null) {
-            return Uri.parse(treeUriExtra);
+            treeUri = Uri.parse(treeUriExtra);
+        } else {
+            Settings s = Settings.getInstance(getApplicationContext());
+            treeUri = s.getRemovableStorageTreeUri();
         }
-        requestPermissionForRemovableStorageBroadcast(workIntent);
+
+        if (path != null) {
+            //check if path is child of the treeUri
+            DocumentFile file = StorageUtil.parseDocumentFile(getApplicationContext(), treeUri, path);
+            Log.d("FileOperation", "DocumentFile: " + file);
+            if (file != null) {
+                return treeUri;
+            } else {
+                requestPermissionForRemovableStorageBroadcast(workIntent);
+            }
+        } else {
+            return treeUri;
+        }
         return null;
     }
 

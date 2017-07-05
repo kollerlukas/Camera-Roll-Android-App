@@ -77,7 +77,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             final View rootView = ((Activity) nestedRecyclerView.getContext())
                     .findViewById(R.id.root_view);
 
-            final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+            final Toolbar toolbar = rootView.findViewById(R.id.toolbar);
 
             toolbar.setActivated(false);
 
@@ -130,7 +130,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     .findViewById(R.id.root_view);
 
             //find selector-toolbar
-            final Toolbar selectorToolbar = (Toolbar) rootView
+            final Toolbar selectorToolbar = rootView
                     .findViewWithTag(SelectorModeUtil.SELECTOR_TOOLBAR_TAG);
 
             //animate selector-toolbar
@@ -141,7 +141,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
 
-                            Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+                            Toolbar toolbar = rootView.findViewById(R.id.toolbar);
                             Context c = getContext();
                             if (c instanceof ThemeableActivity) {
                                 ThemeableActivity themeableActivity = (ThemeableActivity) c;
@@ -164,7 +164,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             final View rootView = ((Activity) nestedRecyclerView.getContext())
                     .findViewById(R.id.root_view);
 
-            final Toolbar toolbar = (Toolbar) rootView
+            final Toolbar toolbar = rootView
                     .findViewWithTag(SelectorModeUtil.SELECTOR_TOOLBAR_TAG);
 
             final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
@@ -184,7 +184,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
     public NestedRecyclerViewAlbumHolder(View itemView) {
         super(itemView);
 
-        nestedRecyclerView = (RecyclerView) itemView.findViewById(R.id.nestedRecyclerView);
+        nestedRecyclerView = itemView.findViewById(R.id.nestedRecyclerView);
         if (nestedRecyclerView != null) {
             itemDecoration = new EqualSpacesItemDecoration(
                     (int) getContext().getResources().getDimension(R.dimen.album_grid_spacing), 2, true);
@@ -250,10 +250,17 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         }
         nestedRecyclerView.setLayoutManager(layoutManager);
 
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(callback,
-                nestedRecyclerView, album, false);
-        adapter.setSelectorModeManager(manager);
-        nestedRecyclerView.setAdapter(adapter);
+        if (nestedRecyclerView.getAdapter() != null) {
+            RecyclerViewAdapter adapter = (RecyclerViewAdapter) nestedRecyclerView.getAdapter();
+            adapter.setAlbum(album);
+            adapter.setSelectorModeManager(manager);
+            adapter.notifyDataSetChanged();
+        } else {
+            RecyclerViewAdapter adapter = new RecyclerViewAdapter(callback,
+                    nestedRecyclerView, album, false);
+            adapter.setSelectorModeManager(manager);
+            nestedRecyclerView.setAdapter(adapter);
+        }
     }
 
     public interface StartSharedElementTransitionCallback {
@@ -271,7 +278,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     @Override
                     public void onGlobalLayout() {
                         nestedRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
                         nestedRecyclerView.scrollToPosition(sharedElementReturnPosition);
                     }
                 });
@@ -383,20 +389,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         for (int i = 0; i < filesToDelete.length; i++) {
             filesToDelete[i] = new File_POJO(paths[i], true);
         }
-
-        /*FileOperation fileOp = new Delete();
-        fileOp.setCallback(new FileOperation.Callback() {
-            @Override
-            public void done() {
-                a.startActivity(new Intent(a, MainActivity.class)
-                        .setAction(MainActivity.REFRESH_MEDIA));
-            }
-
-            @Override
-            public void failed(String path) {
-
-            }
-        });*/
         getContext().startService(FileOperation
                 .getDefaultIntent(getContext(), FileOperation.DELETE, filesToDelete));
     }

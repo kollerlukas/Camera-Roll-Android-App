@@ -3,7 +3,7 @@ package us.koller.cameraroll.adapter.album.ViewHolder;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -17,10 +17,6 @@ public class GifViewHolder extends AlbumItemHolder {
         super(itemView);
     }
 
-    public GifViewHolder(View itemView, RequestManager glideRequestManager) {
-        super(itemView, glideRequestManager);
-    }
-
     @Override
     int getIndicatorDrawableResource() {
         return R.drawable.gif_indicator;
@@ -30,9 +26,7 @@ public class GifViewHolder extends AlbumItemHolder {
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
         super.loadImage(imageView, albumItem);
 
-        //Context context = imageView.getContext();
-
-        getGlideRequestManager()
+        Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
                 .asGif()
                 .listener(new RequestListener<String, GifDrawable>() {

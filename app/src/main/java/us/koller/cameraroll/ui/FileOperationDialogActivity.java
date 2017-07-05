@@ -7,11 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -48,7 +46,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     private String action;
 
     private boolean creatingNewFolder = false;
-    private boolean needRemovableStoragePermission = false;
 
     private AlertDialog dialog;
 
@@ -100,8 +97,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     }
 
     public void onDialogDismiss() {
-        if (!(needRemovableStoragePermission || creatingNewFolder ||
-                isChangingConfigurations())) {
+        if (!(creatingNewFolder || isChangingConfigurations())) {
             setResult(RESULT_CANCELED, null);
             finish();
         }
@@ -122,7 +118,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         (ViewGroup) findViewById(R.id.root_view),
                         false);
 
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(
                 this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.addItemDecoration(new GridMarginDecoration(
@@ -185,7 +181,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         View dialogLayout = LayoutInflater.from(this).inflate(R.layout.input_dialog_layout,
                 (ViewGroup) findViewById(R.id.root_view), false);
 
-        final EditText editText = (EditText) dialogLayout.findViewById(R.id.edit_text);
+        final EditText editText = dialogLayout.findViewById(R.id.edit_text);
 
         dialog = new AlertDialog.Builder(this, getDialogThemeRes())
                 .setTitle(R.string.new_folder)
@@ -244,18 +240,15 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
     public void executeAction(File_POJO[] files, String target) {
         int action = this.action.equals(ACTION_COPY) ? FileOperation.COPY : FileOperation.MOVE;
-        Intent workIntent = FileOperation.getDefaultIntent(this, action, files);
+        final Intent workIntent = FileOperation.getDefaultIntent(this, action, files);
         workIntent.putExtra(FileOperation.TARGET, new File_POJO(target, false));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                Environment.isExternalStorageRemovable(new File(target))) {
-            needRemovableStoragePermission = true;
-            Intent intent = new Intent(FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION);
-            intent.putExtra(FileOperation.WORK_INTENT, workIntent);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        } else {
-            startService(workIntent);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startService(workIntent);
+            }
+        }, 100);
     }
 
     @Override
@@ -263,7 +256,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE:
-                needRemovableStoragePermission = false;
                 onDialogDismiss();
                 break;
         }
@@ -277,6 +269,11 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     @Override
     public int getLightThemeRes() {
         return R.style.Theme_CameraRoll_Translucent_Light_FileOperationDialog;
+    }
+
+    @Override
+    public BroadcastReceiver getRemovableStoragePermissionRequestBroadcastReceiver() {
+        return null;
     }
 
     @Override

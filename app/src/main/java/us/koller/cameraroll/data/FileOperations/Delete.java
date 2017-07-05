@@ -36,7 +36,7 @@ public class Delete extends FileOperation {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                     Environment.isExternalStorageRemovable(new File(files[i].getPath()))) {
                 //file is on removable storage
-                Uri treeUri = getTreeUri(workIntent);
+                Uri treeUri = getTreeUri(workIntent, files[i].getPath());
                 if (treeUri == null) {
                     return;
                 }

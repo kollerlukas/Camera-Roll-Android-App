@@ -40,7 +40,7 @@ public class Move extends FileOperation {
 
         Uri treeUri = null;
         if (movingOntoRemovableStorage) {
-            treeUri = getTreeUri(workIntent);
+            treeUri = getTreeUri(workIntent, target.getPath());
             if (treeUri == null) {
                 return;
             }
@@ -52,7 +52,7 @@ public class Move extends FileOperation {
                             Environment.isExternalStorageRemovable(new File(files[i].getPath()));
 
             if (treeUri == null && movingFromRemovableStorage) {
-                treeUri = getTreeUri(workIntent);
+                treeUri = getTreeUri(workIntent, files[i].getPath());
                 if (treeUri == null) {
                     return;
                 }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.Settings;
 
 //simple BaseActivity that handles LocalBroadcastReceivers, need for communication with FileOperationServices
 public abstract class BaseActivity extends AppCompatActivity {
@@ -47,11 +48,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         //registering RemovableStorage...Receiver here so only the visible activity receives the broadcast
         removableStoragePermissionRequestBroadcastReceiver
                 = getRemovableStoragePermissionRequestBroadcastReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION);
-        broadcastReceivers.add(removableStoragePermissionRequestBroadcastReceiver);
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(removableStoragePermissionRequestBroadcastReceiver, filter);
+        if (removableStoragePermissionRequestBroadcastReceiver != null) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION);
+            broadcastReceivers.add(removableStoragePermissionRequestBroadcastReceiver);
+            LocalBroadcastManager.getInstance(this)
+                    .registerReceiver(removableStoragePermissionRequestBroadcastReceiver, filter);
+        }
     }
 
     @Override
@@ -69,8 +72,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK && workIntent != null) {
                     Uri treeUri = data.getData();
                     Log.d("BaseActivity", "treeUri: " + treeUri);
-                    getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                    getContentResolver().takePersistableUriPermission(treeUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION |
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    Settings.getInstance(this).setRemovableStorageTreeUri(this, treeUri);
 
                     workIntent.putExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI, treeUri.toString());
                     workIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -101,9 +106,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void unregisterLocalBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
-        broadcastReceivers.remove(broadcastReceiver);
-        LocalBroadcastManager.getInstance(this)
-                .unregisterReceiver(broadcastReceiver);
+        if (broadcastReceiver != null) {
+            broadcastReceivers.remove(broadcastReceiver);
+            LocalBroadcastManager.getInstance(this)
+                    .unregisterReceiver(broadcastReceiver);
+        }
     }
 
     public BroadcastReceiver getDefaultLocalBroadcastReceiver() {

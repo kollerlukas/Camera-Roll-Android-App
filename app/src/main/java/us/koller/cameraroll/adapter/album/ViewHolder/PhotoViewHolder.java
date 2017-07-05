@@ -6,7 +6,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
@@ -20,10 +20,6 @@ public class PhotoViewHolder extends AlbumItemHolder {
         super(itemView);
     }
 
-    public PhotoViewHolder(View itemView, RequestManager glideRequestManager) {
-        super(itemView, glideRequestManager);
-    }
-
     @Override
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
         super.loadImage(imageView, albumItem);
@@ -35,7 +31,7 @@ public class PhotoViewHolder extends AlbumItemHolder {
             indicator.setImageDrawable(null);
         }
 
-        getGlideRequestManager()
+        Glide.with(imageView.getContext())
                 .load(albumItem.getPath())
                 .asBitmap()
                 .thumbnail(0.1f)

@@ -76,4 +76,5 @@
     <string name="pref_key_sort_album" translatable="false">KEY_SORT_ALBUM</string>
     <string name="pref_key_8_bit_color" translatable="false">KEY_8_BIT_COLOR</string>
     <string name="pref_key_camera_shortcut" translatable="false">KEY_CAMERA_SHORTCUT</string>
+    <string name="pref_key_removable_storage_treeUri" translatable="false">KEY_REMOVABLE_STORAGE_TREE_URI</string>
 </resources>

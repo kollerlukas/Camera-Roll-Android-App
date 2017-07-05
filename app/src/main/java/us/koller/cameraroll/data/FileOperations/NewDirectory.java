@@ -27,7 +27,7 @@ public class NewDirectory extends FileOperation {
 
             Uri treeUri = null;
             if (writingOntoRemovableStorage) {
-                treeUri = getTreeUri(workIntent);
+                treeUri = getTreeUri(workIntent, null);
                 if (treeUri == null) {
                     return;
                 }

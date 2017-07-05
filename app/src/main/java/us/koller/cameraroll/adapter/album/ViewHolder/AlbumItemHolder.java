@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
@@ -17,22 +16,11 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
 
     public AlbumItem albumItem;
 
-    private RequestManager glideRequestManager;
-
     private boolean selected = false;
 
     AlbumItemHolder(View itemView) {
         super(itemView);
         addIndicatorDrawable(itemView);
-
-        glideRequestManager = Glide.with(itemView.getContext());
-    }
-
-    AlbumItemHolder(View itemView, RequestManager glideRequestManager) {
-        super(itemView);
-        addIndicatorDrawable(itemView);
-
-        this.glideRequestManager = glideRequestManager;
     }
 
     public AlbumItem getAlbumItem() {
@@ -64,10 +52,6 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
 
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
         Glide.clear(imageView);
-    }
-
-    RequestManager getGlideRequestManager() {
-        return glideRequestManager;
     }
 
     void fadeIn() {

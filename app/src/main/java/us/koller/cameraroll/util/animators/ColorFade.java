@@ -76,12 +76,21 @@ public class ColorFade {
         saturation.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
                 imageView.clearColorFilter();
                 imageView.setHasTransientState(false);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                super.onAnimationCancel(animation);
+                imageView.clearColorFilter();
+                imageView.setHasTransientState(false);
+            }
+
+            @Override
+            public void onAnimationPause(Animator animation) {
+                super.onAnimationPause(animation);
                 imageView.clearColorFilter();
                 imageView.setHasTransientState(false);
             }

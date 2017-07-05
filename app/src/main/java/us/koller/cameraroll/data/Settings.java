@@ -3,7 +3,9 @@ package us.koller.cameraroll.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.Arrays;
 
@@ -25,6 +27,7 @@ public class Settings {
     private boolean hiddenFolders;
     private boolean use8BitColor;
     private boolean cameraShortcut;
+    private Uri removableStorageTreeUri;
 
     private static Settings instance;
 
@@ -76,6 +79,10 @@ public class Settings {
         cameraShortcut = sharedPreferences.getBoolean(
                 context.getString(R.string.pref_key_camera_shortcut),
                 false);
+
+        removableStorageTreeUri = Uri.parse(sharedPreferences.getString(
+                context.getString(R.string.pref_key_removable_storage_treeUri),
+                ""));
     }
 
     /*Getter & Setter*/
@@ -221,6 +228,17 @@ public class Settings {
         this.cameraShortcut = cameraShortcut;
     }
 
+    public Uri getRemovableStorageTreeUri() {
+        Log.d("Settings", "getRemovableStorageTreeUri: " + removableStorageTreeUri);
+        return removableStorageTreeUri;
+    }
+
+    public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {
+        this.removableStorageTreeUri = removableStorageTreeUri;
+        saveString(context,
+                context.getString(R.string.pref_key_removable_storage_treeUri),
+                removableStorageTreeUri.toString());
+    }
 
     private static void saveInt(Context context, String key, int value) {
         SharedPreferences sharedPreferences
@@ -237,6 +255,15 @@ public class Settings {
         sharedPreferences
                 .edit()
                 .putBoolean(key, value)
+                .apply();
+    }
+
+    private static void saveString(Context context, String key, String value) {
+        SharedPreferences sharedPreferences
+                = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences
+                .edit()
+                .putString(key, value)
                 .apply();
     }
 

@@ -46,7 +46,7 @@ public class Copy extends FileOperation {
 
         Uri treeUri = null;
         if (copyingOntoRemovableStorage) {
-            treeUri = getTreeUri(workIntent);
+            treeUri = getTreeUri(workIntent, target.getPath());
             if (treeUri == null) {
                 return;
             }
