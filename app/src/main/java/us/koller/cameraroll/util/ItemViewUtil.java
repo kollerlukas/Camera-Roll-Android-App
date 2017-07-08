@@ -54,7 +54,7 @@ public class ItemViewUtil {
             photo.putImageViewSavedState(null);
         }
 
-        imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
+        /*imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);*/
         imageView.setMinimumDpi(80);
 
         imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);

@@ -16,9 +16,7 @@
         android:id="@+id/fastScroller"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:paddingBottom="16dp"
-        android:paddingTop="16dp" />
+        android:layout_gravity="end" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

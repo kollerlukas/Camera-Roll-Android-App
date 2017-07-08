@@ -249,6 +249,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     LinearLayoutManager.HORIZONTAL, false);
         }
         nestedRecyclerView.setLayoutManager(layoutManager);
+        nestedRecyclerView.setHasFixedSize(true);
 
         if (nestedRecyclerView.getAdapter() != null) {
             RecyclerViewAdapter adapter = (RecyclerViewAdapter) nestedRecyclerView.getAdapter();

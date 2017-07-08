@@ -113,6 +113,11 @@
 
     <style name="Theme.CameraRoll.Translucent.Light.About" parent="Theme.CameraRoll.Light.Translucent" />
 
+    <!--ExifEditor Theme-->
+    <style name="Theme.CameraRoll.EditImage" parent="Theme.CameraRoll" />
+
+    <style name="Theme.CameraRoll.Light.EditImage" parent="Theme.CameraRoll.Light" />
+
     <!--Dialog Style-->
     <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>

@@ -72,6 +72,11 @@
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.CameraRoll.ExifEditor" />
 
+        <activity
+            android:name=".ui.EditImageActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.CameraRoll.EditImage" />
+
         <activity android:name=".IntentReceiver">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
@@ -93,6 +98,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
                 <data android:mimeType="video/*" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
 

@@ -5,10 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.ui.EditImageActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.MainActivity;
@@ -30,6 +32,9 @@ public class IntentReceiver extends AppCompatActivity {
                 break;
             case Intent.ACTION_GET_CONTENT:
                 pick(getIntent());
+                break;
+            case Intent.ACTION_EDIT:
+                edit(getIntent());
                 break;
         }
     }
@@ -79,6 +84,21 @@ public class IntentReceiver extends AppCompatActivity {
                 .setAction(MainActivity.PICK_PHOTOS);
 
         startActivityForResult(pick_photos, MainActivity.PICK_PHOTOS_REQUEST_CODE);
+    }
+
+    public void edit(Intent intent) {
+        String path = intent.getStringExtra(EditImageActivity.IMAGE_PATH);
+
+        Intent edit = new Intent(this, EditImageActivity.class)
+                .setAction(Intent.ACTION_EDIT)
+                .putExtra(EditImageActivity.IMAGE_URI, intent.getData().toString());
+
+        if (path != null) {
+            edit.putExtra(EditImageActivity.IMAGE_PATH, path);
+        }
+
+        startActivity(edit);
+        this.finish();
     }
 
     @Override

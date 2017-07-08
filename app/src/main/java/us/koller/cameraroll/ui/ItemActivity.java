@@ -533,9 +533,10 @@ public class ItemActivity extends ThemeableActivity {
         Uri uri = albumItem.getUri(this);
         Log.d("ItemActivity", "editPhoto(): " + uri);
 
-        Intent intent = new Intent(Intent.ACTION_EDIT);
-        intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Intent intent = new Intent(Intent.ACTION_EDIT)
+                .setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()))
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putExtra(EditImageActivity.IMAGE_PATH, albumItem.getPath());
 
         try {
             if (intent.resolveActivity(getPackageManager()) != null) {
