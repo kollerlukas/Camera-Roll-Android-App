@@ -1,12 +1,18 @@
 package us.koller.cameraroll.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,8 +29,6 @@ import android.widget.Toast;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
 public class EditImageActivity extends AppCompatActivity {
@@ -166,6 +170,12 @@ public class EditImageActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.image_edit, menu);
+        MenuItem rotate = menu.findItem(R.id.rotate);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AnimatedVectorDrawable avd = (AnimatedVectorDrawable)
+                    ContextCompat.getDrawable(this, R.drawable.rotate_90_avd);
+            rotate.setIcon(avd);
+        }
         return true;
     }
 
@@ -176,12 +186,51 @@ public class EditImageActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.rotate:
-                CropImageView cropImageView = findViewById(R.id.cropImageView);
+                Drawable d = item.getIcon();
+                if (d instanceof Animatable && !((Animatable) d).isRunning()) {
+                    ((Animatable) d).start();
+                }
+                final CropImageView cropImageView = findViewById(R.id.cropImageView);
                 int degree = cropImageView.getRotatedDegrees();
                 degree = (degree + 90) % 360;
                 cropImageView.setRotatedDegrees(degree);
+                /*animate90DegreeRotation();*/
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("unused")
+    private void animate90DegreeRotation() {
+        final CropImageView cropImageView = findViewById(R.id.cropImageView);
+        final int oldDegree = cropImageView.getRotatedDegrees();
+        int newDegree = oldDegree + 90;
+        if (newDegree > 360) {
+            newDegree = newDegree % 360;
+        }
+        ValueAnimator animator = ValueAnimator.ofInt(oldDegree, newDegree);
+        animator.setDuration(600);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int degree = (int) valueAnimator.getAnimatedValue();
+                cropImageView.setRotatedDegrees(degree);
+            }
+        });
+        animator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        super.onAnimationStart(animation);
+                        cropImageView.setShowCropOverlay(false);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        cropImageView.setShowCropOverlay(true);
+                    }
+                });
+        animator.start();
     }
 }
