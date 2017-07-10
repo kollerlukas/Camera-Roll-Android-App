@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.bumptech.glide.load.Key;
+import com.bumptech.glide.signature.StringSignature;
+
 import java.io.File;
 
 import us.koller.cameraroll.util.MediaType;
@@ -134,6 +137,12 @@ public abstract class AlbumItem
     }
 
     abstract int[] retrieveImageDimens(Context context);
+
+    public Key getGlideSignature() {
+        File file = new File(getPath());
+        String lastModified = String.valueOf(file.lastModified());
+        return new StringSignature(lastModified);
+    }
 
     AlbumItem(Parcel parcel) {
         this.name = parcel.readString();

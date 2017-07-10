@@ -122,6 +122,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                     }
 
                 })
+                .signature(coverImage.getGlideSignature())
                 .into(image);
     }
 

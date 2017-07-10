@@ -175,7 +175,8 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         int columnCount = settings.getStyleColumnCount(this, pick_photos);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, columnCount);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerViewAdapter = new RecyclerViewAdapter(this, pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
 

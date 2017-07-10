@@ -11,9 +11,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -23,10 +21,8 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
-import us.koller.cameraroll.adapter.item.ViewHolder.RAWImageViewHolder;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.data.Settings;
 
 public class ItemViewUtil {
 
@@ -116,6 +112,7 @@ public class ItemViewUtil {
                         return false;
                     }
                 })
+                .signature(albumItem.getGlideSignature())
                 .into(imageView);
     }
 
@@ -144,6 +141,7 @@ public class ItemViewUtil {
                         return false;
                     }
                 })
+                .signature(albumItem.getGlideSignature())
                 .into(imageView);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(albumItem.getPath());

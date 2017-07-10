@@ -62,6 +62,7 @@ public class PhotoViewHolder extends AlbumItemHolder {
                     }
                 })
                 .error(R.drawable.error_placeholder_tinted)
+                .signature(albumItem.getGlideSignature())
                 .into(imageView);
     }
 }

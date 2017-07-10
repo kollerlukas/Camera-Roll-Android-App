@@ -113,10 +113,10 @@
 
     <style name="Theme.CameraRoll.Translucent.Light.About" parent="Theme.CameraRoll.Light.Translucent" />
 
-    <!--ExifEditor Theme-->
-    <style name="Theme.CameraRoll.EditImage" parent="Theme.CameraRoll" />
-
-    <style name="Theme.CameraRoll.Light.EditImage" parent="Theme.CameraRoll.Light" />
+    <!--EditImage Theme-->
+    <style name="Theme.CameraRoll.EditImage" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
 
     <!--Dialog Style-->
     <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">

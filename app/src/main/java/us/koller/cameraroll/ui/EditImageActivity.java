@@ -6,7 +6,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -18,15 +23,14 @@ import android.widget.Toast;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
 public class EditImageActivity extends AppCompatActivity {
 
     public static final String IMAGE_URI = "IMAGE_URI";
     public static final String IMAGE_PATH = "IMAGE_PATH";
-
-    private AlbumItem albumItem;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,20 +42,22 @@ public class EditImageActivity extends AppCompatActivity {
             return;
         }
 
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle("");
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         final CropImageView cropImageView = findViewById(R.id.cropImageView);
 
         Uri uri;
-        if (intent.getStringExtra(IMAGE_PATH) != null) {
-            String path = intent.getStringExtra(IMAGE_PATH);
-            albumItem = AlbumItem.getInstance(this, path);
-            uri = albumItem.getUri(this);
+        String uriString = intent.getStringExtra(IMAGE_URI);
+        if (uriString != null) {
+            uri = Uri.parse(uriString);
         } else {
-            String uriString = intent.getStringExtra(IMAGE_URI);
-            if (uriString != null) {
-                uri = Uri.parse(uriString);
-            } else {
-                return;
-            }
+            return;
         }
         cropImageView.setImageUriAsync(uri);
 
@@ -93,6 +99,11 @@ public class EditImageActivity extends AppCompatActivity {
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
 
+                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingBottom());
+
                     actionArea.setPadding(actionArea.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             actionArea.getPaddingTop(),
                             actionArea.getPaddingEnd() + insets.getSystemWindowInsetRight(),
@@ -118,6 +129,11 @@ public class EditImageActivity extends AppCompatActivity {
                                             Math.abs(screenSize[2] - rootView.getRight()),
                                             Math.abs(screenSize[3] - rootView.getBottom())};
 
+                                    toolbar.setPadding(toolbar.getPaddingStart(),
+                                            toolbar.getPaddingTop() + windowInsets[1],
+                                            toolbar.getPaddingEnd(),
+                                            toolbar.getPaddingBottom());
+
                                     actionArea.setPadding(actionArea.getPaddingStart() + windowInsets[0],
                                             actionArea.getPaddingTop(),
                                             actionArea.getPaddingEnd() + windowInsets[2],
@@ -125,6 +141,13 @@ public class EditImageActivity extends AppCompatActivity {
                                 }
                             });
         }
+
+        //needed to achieve transparent navBar
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
     public void done(View v) {
@@ -133,11 +156,32 @@ public class EditImageActivity extends AppCompatActivity {
             @Override
             public void onCropImageComplete(CropImageView view, CropImageView.CropResult result) {
                 Toast.makeText(EditImageActivity.this, "Success!", Toast.LENGTH_SHORT).show();
-
-                //TODO invalidate Glide cached image
                 finish();
             }
         });
         cropImageView.saveCroppedImageAsync(cropImageView.getImageUri());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.image_edit, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.rotate:
+                CropImageView cropImageView = findViewById(R.id.cropImageView);
+                int degree = cropImageView.getRotatedDegrees();
+                degree = (degree + 90) % 360;
+                cropImageView.setRotatedDegrees(degree);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
