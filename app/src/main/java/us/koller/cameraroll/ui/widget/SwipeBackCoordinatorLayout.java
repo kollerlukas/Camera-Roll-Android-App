@@ -42,36 +42,34 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
     }
 
     private void initialize() {
-        Log.d("SwipeBackCoordLay", "initialize()");
         SWIPE_TRIGGER = (float) (getResources().getDisplayMetrics().heightPixels / 5.0);
     }
 
     @Override
-    public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
-        Log.d("SwipeBackCoordLay", "onStartNestedScroll()");
-        return super.onStartNestedScroll(child, target, nestedScrollAxes)
-                || ((nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0);
+    public boolean onStartNestedScroll(View child, View target, int axes, int type) {
+        if (type == ViewCompat.TYPE_TOUCH) {
+            return super.onStartNestedScroll(child, target, axes, type)
+                    || ((axes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0);
+        }
+        return super.onStartNestedScroll(child, target, axes, type);
     }
 
     @Override
-    public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
-        Log.d("SwipeBackCoordLay", "onNestedPreScroll()");
+    public void onNestedPreScroll(View target, int dx, int dy, int[] consumed, int type) {
         int dyConsumed = 0;
         if (swipeDistance != 0) {
             dyConsumed = onPreScroll(dy);
         }
 
         int[] newConsumed = new int[]{0, 0};
-        super.onNestedPreScroll(target, dx, dy - dyConsumed, newConsumed);
+        super.onNestedPreScroll(target, dx, dy - dyConsumed, newConsumed, type);
 
         consumed[0] = newConsumed[0];
         consumed[1] = newConsumed[1] + dyConsumed;
     }
 
     @Override
-    public void onNestedScroll(View target, int dxConsumed, int dyConsumed,
-                               int dxUnconsumed, int dyUnconsumed) {
-        Log.d("SwipeBackCoordLay", "onNestedScroll()");
+    public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
         int newDyConsumed = dyConsumed;
         int newDyUnconsumed = dyUnconsumed;
         if (swipeDistance == 0) {
@@ -83,13 +81,12 @@ public class SwipeBackCoordinatorLayout extends CoordinatorLayout {
             }
         }
 
-        super.onNestedScroll(target, dxConsumed, newDyConsumed, dxUnconsumed, newDyUnconsumed);
+        super.onNestedScroll(target, dxConsumed, newDyConsumed, dxUnconsumed, newDyUnconsumed, type);
     }
 
     @Override
-    public void onStopNestedScroll(View child) {
-        Log.d("SwipeBackCoordLay", "onStopNestedScroll()");
-        super.onStopNestedScroll(child);
+    public void onStopNestedScroll(View child, int type) {
+        super.onStopNestedScroll(child, type);
         if (Math.abs(swipeDistance) >= SWIPE_TRIGGER) {
             swipeBack();
         } else {

@@ -65,7 +65,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         } else {
             viewHolder = new PhotoViewHolder(albumItem, position);
         }
-        Log.d("AlbumItem", "instantiateItem: " + albumItem.getType() + ", " + viewHolder);
         viewHolders.add(viewHolder);
 
         View v = viewHolder.getView(container);

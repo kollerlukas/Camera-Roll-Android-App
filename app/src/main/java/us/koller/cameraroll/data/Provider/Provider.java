@@ -32,6 +32,10 @@ public abstract class Provider {
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES).getPath()};
 
+    // by default pinned folders:
+    private static final String[] defaultPinnedPaths = {
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath()};
+
     Retriever retriever;
 
     private Callback callback;
@@ -79,7 +83,16 @@ public abstract class Provider {
         if (pinnedPaths == null) {
             return false;
         }
-        return pinnedPaths.contains(albumPath);
+        if (pinnedPaths.contains(albumPath)) {
+            return true;
+        } else {
+            for (int i = 0; i < pinnedPaths.size(); i++) {
+                if (albumPath.contains(pinnedPaths.get(i))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static void pinPath(Context context, String path) {
@@ -107,6 +120,7 @@ public abstract class Provider {
             pinnedPaths = loadPathsArrayList(context, PINNED_PATHS_NAME);
         } catch (IOException e) {
             // no file found
+            pinnedPaths.addAll(Arrays.asList(defaultPinnedPaths));
         }
 
         return excludedPaths;
@@ -240,44 +254,6 @@ public abstract class Provider {
             e.printStackTrace();
         }
     }
-
-    /*public static ArrayList<String> loadExcludedPaths(Context context) {
-        excludedPaths = new ArrayList<>();
-
-        //read file
-        try {
-            FileInputStream fis = context.openFileInput(EXCLUDED_PATHS_NAME);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                excludedPaths.add(line);
-            }
-            fis.close();
-        } catch (IOException e) {
-            // no file found
-            excludedPaths.addAll(Arrays.asList(defaultExcludedPaths));
-        }
-
-        return excludedPaths;
-    }
-
-    public static void saveExcludedPaths(Context context) {
-        if (excludedPaths == null) {
-            return;
-        }
-
-        //write to file
-        try {
-            FileOutputStream fos
-                    = context.openFileOutput(EXCLUDED_PATHS_NAME, Context.MODE_PRIVATE);
-            for (int i = 0; i < excludedPaths.size(); i++) {
-                fos.write((excludedPaths.get(i) + '\n').getBytes());
-            }
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     private static ArrayList<String> loadPathsArrayList(Context context, String filename) throws IOException {
         ArrayList<String> paths = new ArrayList<>();

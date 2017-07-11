@@ -68,10 +68,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE:
-                Log.d("BaseActivity", "onActivityResult: REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE");
                 if (resultCode == RESULT_OK && workIntent != null) {
                     Uri treeUri = data.getData();
-                    Log.d("BaseActivity", "treeUri: " + treeUri);
                     getContentResolver().takePersistableUriPermission(treeUri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION |
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -88,6 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        Log.d("BaseActivity", "onDestroy() called " + this);
         //unregister LocalBroadcastReceivers
         for (int i = 0; i < broadcastReceivers.size(); i++) {
             BroadcastReceiver broadcastReceiver = broadcastReceivers.get(i);
