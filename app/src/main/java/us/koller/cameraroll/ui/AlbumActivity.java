@@ -221,7 +221,9 @@ public class AlbumActivity extends ThemeableActivity
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new GridMarginDecoration((int)
                 getResources().getDimension(R.dimen.album_grid_spacing)));
-        recyclerView.setAdapter(new RecyclerViewAdapter(this, recyclerView, album, pick_photos));
+
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, recyclerView, album, pick_photos);
+        recyclerView.setAdapter(adapter);
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {
             recyclerView.getLayoutManager().onRestoreInstanceState(
@@ -365,7 +367,6 @@ public class AlbumActivity extends ThemeableActivity
 
         //restore Selector mode, when needed
         if (savedInstanceState != null) {
-            final RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
             final SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
             manager.addCallback(this);
             adapter.setSelectorModeManager(manager);

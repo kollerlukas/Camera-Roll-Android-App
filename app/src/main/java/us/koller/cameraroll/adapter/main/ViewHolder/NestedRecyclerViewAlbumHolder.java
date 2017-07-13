@@ -229,27 +229,31 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         //noinspection deprecation
         ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
+        int oldHeight = nestedRecyclerView.getHeight();
+
         //make RecyclerView either single ore double lined, depending on the album size
         int lineCount = album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT ? 2 : 1;
-        int lineHeight = (int) getContext().getResources()
+        int height = (int) getContext().getResources()
                 .getDimension(R.dimen.nested_recyclerView_line_height) * lineCount;
 
-        LinearLayout.LayoutParams params
-                = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, lineHeight);
-        nestedRecyclerView.setLayoutParams(params);
+        if (oldHeight != height) {
+            LinearLayout.LayoutParams params
+                    = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+            nestedRecyclerView.setLayoutParams(params);
 
-        itemDecoration.setSpanCount(lineCount);
+            itemDecoration.setSpanCount(lineCount);
 
-        RecyclerView.LayoutManager layoutManager;
-        if (album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT) {
-            layoutManager = new GridLayoutManager(getContext(), lineCount,
-                    GridLayoutManager.HORIZONTAL, false);
-        } else {
-            layoutManager = new LinearLayoutManager(getContext(),
-                    LinearLayoutManager.HORIZONTAL, false);
+            RecyclerView.LayoutManager layoutManager;
+            if (album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT) {
+                layoutManager = new GridLayoutManager(getContext(), lineCount,
+                        GridLayoutManager.HORIZONTAL, false);
+            } else {
+                layoutManager = new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.HORIZONTAL, false);
+            }
+            nestedRecyclerView.setLayoutManager(layoutManager);
+            nestedRecyclerView.setHasFixedSize(true);
         }
-        nestedRecyclerView.setLayoutManager(layoutManager);
-        nestedRecyclerView.setHasFixedSize(true);
 
         if (nestedRecyclerView.getAdapter() != null) {
             RecyclerViewAdapter adapter = (RecyclerViewAdapter) nestedRecyclerView.getAdapter();

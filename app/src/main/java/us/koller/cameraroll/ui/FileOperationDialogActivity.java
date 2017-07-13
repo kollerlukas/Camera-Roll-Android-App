@@ -22,12 +22,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Provider.MediaProvider;
@@ -353,9 +355,16 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             ((ViewHolder) holder).setSelected(selected);
 
             if (album.getAlbumItems().size() > 0) {
-                Glide.with(holder.itemView.getContext())
-                        .load(album.getAlbumItems().get(0).getPath())
+
+                AlbumItem albumItem = album.getAlbumItems().get(0);
+
+                RequestOptions options = new RequestOptions()
                         .error(R.drawable.error_placeholder_tinted)
+                        .signature(albumItem.getGlideSignature());
+
+                Glide.with(holder.itemView.getContext())
+                        .load(albumItem.getPath())
+                        .apply(options)
                         .into((ImageView) holder.itemView.findViewById(R.id.image));
             }
 

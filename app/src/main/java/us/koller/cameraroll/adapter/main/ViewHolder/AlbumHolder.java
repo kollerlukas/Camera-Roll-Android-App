@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,7 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
@@ -90,14 +94,17 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
         final AlbumItem coverImage = album.getAlbumItems().get(0);
 
-        Glide.with(getContext())
-                .load(coverImage.getPath())
-                .asBitmap()
+        RequestOptions options = new RequestOptions()
                 .error(R.drawable.error_placeholder_tinted)
-                .listener(new RequestListener<String, Bitmap>() {
+                .signature(coverImage.getGlideSignature());
+
+        Glide.with(getContext())
+                .asBitmap()
+                .load(coverImage.getPath())
+                .listener(new RequestListener<Bitmap>() {
                     @Override
-                    public boolean onException(Exception e, String model,
-                                               Target<Bitmap> target, boolean isFirstResource) {
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Bitmap> target, boolean isFirstResource) {
                         coverImage.error = true;
 
                         if (image instanceof ParallaxImageView) {
@@ -107,9 +114,8 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                     }
 
                     @Override
-                    public boolean onResourceReady(Bitmap resource, String model,
-                                                   Target<Bitmap> target, boolean isFromMemoryCache,
-                                                   boolean isFirstResource) {
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
                         if (!coverImage.hasFadedIn) {
                             coverImage.hasFadedIn = true;
                             ColorFade.fadeSaturation(image);
@@ -120,9 +126,8 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                         }
                         return false;
                     }
-
                 })
-                .signature(coverImage.getGlideSignature())
+                .apply(options)
                 .into(image);
     }
 

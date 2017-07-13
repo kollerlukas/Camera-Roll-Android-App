@@ -1,11 +1,20 @@
 package us.koller.cameraroll.adapter.album.ViewHolder;
 
+import android.graphics.Bitmap;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
@@ -43,7 +52,6 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
             ImageView indicator = itemView.findViewById(R.id.indicator);
             indicator.setImageResource(indicatorRes);
         }
-
     }
 
     int getIndicatorDrawableResource() {
@@ -51,7 +59,33 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
     }
 
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
-        Glide.clear(imageView);
+        RequestOptions options = new RequestOptions()
+                .error(R.drawable.error_placeholder_tinted)
+                .signature(albumItem.getGlideSignature());
+
+        Glide.with(imageView.getContext())
+                .asBitmap()
+                .load(albumItem.getPath())
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+                        if (!albumItem.hasFadedIn) {
+                            fadeIn();
+                        } else {
+                            imageView.clearColorFilter();
+                        }
+                        return false;
+                    }
+                })
+                .apply(options)
+                .into(imageView);
     }
 
     void fadeIn() {
@@ -60,9 +94,11 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
     }
 
     public void setSelected(boolean selected) {
+        boolean animate = this.selected != selected;
         this.selected = selected;
-
-        animateSelected();
+        if (animate) {
+            animateSelected();
+        }
     }
 
     private void animateSelected() {

@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!--android:background="@color/black_translucent1"-->
 
     <ImageView
             android:id="@+id/image"
@@ -11,7 +10,6 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/photo"
             android:scaleType="centerCrop" />
-    <!--android:foreground="@drawable/albumitem_foreground"-->
 
     <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"

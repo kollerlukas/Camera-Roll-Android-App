@@ -52,7 +52,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -942,12 +941,12 @@ public class ItemActivity extends ThemeableActivity {
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_Translucent_PhotoView;
+        return R.style.Theme_CameraRoll_PhotoView;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Light_Translucent_PhotoView;
+        return R.style.Theme_CameraRoll_Light_PhotoView;
     }
 
     @Override
@@ -1103,11 +1102,12 @@ public class ItemActivity extends ThemeableActivity {
                     return;
                 }
                 Glide.with(itemView.getContext())
-                        .load(uri)
                         .asBitmap()
-                        .into(new SimpleTarget<Bitmap>(1000, 1000) {
+                        .load(uri)
+                        .into(new SimpleTarget<Bitmap>() {
                             @Override
-                            public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
+                            public void onResourceReady(Bitmap bitmap, com.bumptech.glide.request
+                                    .transition.Transition<? super Bitmap> transition) {
                                 // Do something with bitmap here.
                                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                                     @Override

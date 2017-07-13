@@ -6,7 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.bumptech.glide.load.Key;
-import com.bumptech.glide.signature.StringSignature;
+import com.bumptech.glide.signature.ObjectKey;
 
 import java.io.File;
 
@@ -141,7 +141,7 @@ public abstract class AlbumItem
     public Key getGlideSignature() {
         File file = new File(getPath());
         String lastModified = String.valueOf(file.lastModified());
-        return new StringSignature(lastModified);
+        return new ObjectKey(lastModified);
     }
 
     AlbumItem(Parcel parcel) {

@@ -103,15 +103,20 @@ public class EditImageActivity extends AppCompatActivity {
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
 
-                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             toolbar.getPaddingBottom());
 
                     actionArea.setPadding(actionArea.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             actionArea.getPaddingTop(),
                             actionArea.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             actionArea.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+
+                    /*cropImageView.setPadding(cropImageView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                            cropImageView.getPaddingTop(),
+                            cropImageView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            cropImageView.getPaddingBottom());*/
 
                     return insets.consumeSystemWindowInsets();
                 }
@@ -133,18 +138,36 @@ public class EditImageActivity extends AppCompatActivity {
                                             Math.abs(screenSize[2] - rootView.getRight()),
                                             Math.abs(screenSize[3] - rootView.getBottom())};
 
-                                    toolbar.setPadding(toolbar.getPaddingStart(),
+                                    toolbar.setPadding(toolbar.getPaddingStart() + windowInsets[0],
                                             toolbar.getPaddingTop() + windowInsets[1],
-                                            toolbar.getPaddingEnd(),
+                                            toolbar.getPaddingEnd() + windowInsets[2],
                                             toolbar.getPaddingBottom());
 
                                     actionArea.setPadding(actionArea.getPaddingStart() + windowInsets[0],
                                             actionArea.getPaddingTop(),
                                             actionArea.getPaddingEnd() + windowInsets[2],
                                             actionArea.getPaddingBottom() + windowInsets[3]);
+
+                                    /*cropImageView.setPadding(cropImageView.getPaddingStart() + windowInsets[0],
+                                            cropImageView.getPaddingTop(),
+                                            cropImageView.getPaddingEnd() + windowInsets[2],
+                                            cropImageView.getPaddingBottom());*/
                                 }
                             });
         }
+
+        /*rootView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                        cropImageView.setPadding(cropImageView.getPaddingStart(),
+                                cropImageView.getPaddingTop() + toolbar.getHeight(),
+                                cropImageView.getPaddingEnd(),
+                                cropImageView.getPaddingBottom() + actionArea.getHeight());
+                    }
+                });*/
 
         //needed to achieve transparent navBar
         getWindow().getDecorView().setSystemUiVisibility(

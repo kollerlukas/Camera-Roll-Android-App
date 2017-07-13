@@ -69,8 +69,6 @@ public class PhotoViewHolder extends ViewHolder {
         final SubsamplingScaleImageView imageView
                 = (SubsamplingScaleImageView) view;
 
-        /*imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);*/
-
         // use custom decoders
         imageView.setBitmapDecoderClass(getImageDecoderClass());
         imageView.setRegionDecoderClass(getBitmapRegionDecoderClass());

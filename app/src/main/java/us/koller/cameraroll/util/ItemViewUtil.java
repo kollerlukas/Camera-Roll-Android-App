@@ -3,17 +3,19 @@ package us.koller.cameraroll.util;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
@@ -50,7 +52,6 @@ public class ItemViewUtil {
             photo.putImageViewSavedState(null);
         }
 
-        /*imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);*/
         imageView.setMinimumDpi(80);
 
         imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
@@ -80,15 +81,17 @@ public class ItemViewUtil {
             }, 100);
         }
 
-        BitmapRequestBuilder<String, Bitmap> requestBuilder = Glide.with(imageView.getContext())
+        RequestOptions options = new RequestOptions()
+                .error(R.drawable.error_placeholder_tinted)
+                .signature(albumItem.getGlideSignature());
+
+        Glide.with(imageView.getContext())
+                .asBitmap()
                 .load(albumItem.getPath())
-                .asBitmap();
-        requestBuilder.error(R.drawable.error_placeholder_tinted)
-                .listener(new RequestListener<String, Bitmap>() {
+                .listener(new RequestListener<Bitmap>() {
                     @Override
-                    public boolean onException(Exception e, String model,
-                                               Target<Bitmap> target,
-                                               boolean isFirstResource) {
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Bitmap> target, boolean isFirstResource) {
                         if (albumItem.isSharedElement
                                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
@@ -99,49 +102,48 @@ public class ItemViewUtil {
                     }
 
                     @Override
-                    public boolean onResourceReady(Bitmap resource, String model,
-                                                   Target<Bitmap> target, boolean isFromMemoryCache,
-                                                   boolean isFirstResource) {
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
                         if (albumItem.isSharedElement
                                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
                             ((AppCompatActivity) imageView.getContext())
                                     .startPostponedEnterTransition();
                         }
-
                         return false;
                     }
                 })
-                .signature(albumItem.getGlideSignature())
+                .apply(options)
                 .into(imageView);
     }
 
     public static void bindGif(final GifViewHolder gifViewHolder,
                                final ImageView imageView,
                                final AlbumItem albumItem) {
-        Glide.with(imageView.getContext())
-                .load(albumItem.getPath())
-                .asGif()
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+
+        RequestOptions options = new RequestOptions()
                 .error(R.drawable.error_placeholder_tinted)
-                .listener(new RequestListener<String, GifDrawable>() {
+                .signature(albumItem.getGlideSignature());
+
+        Glide.with(imageView.getContext())
+                .asGif()
+                .load(albumItem.getPath())
+                .listener(new RequestListener<GifDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model,
-                                               Target<GifDrawable> target,
-                                               boolean isFirstResource) {
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<GifDrawable> target, boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GifDrawable resource, String model,
-                                                   Target<GifDrawable> target, boolean isFromMemoryCache,
-                                                   boolean isFirstResource) {
+                    public boolean onResourceReady(GifDrawable resource, Object model, Target<GifDrawable> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
                         resource.start();
                         gifViewHolder.setAttacher(imageView);
                         return false;
                     }
                 })
-                .signature(albumItem.getGlideSignature())
+                .apply(options)
                 .into(imageView);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(albumItem.getPath());

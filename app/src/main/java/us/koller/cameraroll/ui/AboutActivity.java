@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
@@ -55,9 +56,13 @@ public class AboutActivity extends ThemeableActivity
         }
 
         ImageView headerImage = findViewById(R.id.header_image);
+
+        RequestOptions options = new RequestOptions()
+                .error(R.drawable.error_placeholder_tinted);
+
         Glide.with(this)
                 .load("https://raw.githubusercontent.com/kollerlukas/Camera-Roll-Android-App/master/camera_roll_logo.png")
-                .error(R.drawable.error_placeholder)
+                .apply(options)
                 .into(headerImage);
 
         TextView version = findViewById(R.id.version);

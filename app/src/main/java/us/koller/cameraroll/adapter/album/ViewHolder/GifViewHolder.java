@@ -1,11 +1,15 @@
 package us.koller.cameraroll.adapter.album.ViewHolder;
 
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
@@ -24,22 +28,25 @@ public class GifViewHolder extends AlbumItemHolder {
 
     @Override
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
-        super.loadImage(imageView, albumItem);
+        //super.loadImage(imageView, albumItem);
+
+        RequestOptions options = new RequestOptions()
+                .error(R.drawable.error_placeholder_tinted)
+                .signature(albumItem.getGlideSignature());
 
         Glide.with(imageView.getContext())
-                .load(albumItem.getPath())
                 .asGif()
-                .listener(new RequestListener<String, GifDrawable>() {
+                .load(albumItem.getPath())
+                .listener(new RequestListener<GifDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model,
-                                               Target<GifDrawable> target, boolean isFirstResource) {
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<GifDrawable> target, boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GifDrawable resource, String model,
-                                                   Target<GifDrawable> target, boolean isFromMemoryCache,
-                                                   boolean isFirstResource) {
+                    public boolean onResourceReady(GifDrawable resource, Object model, Target<GifDrawable> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
                         if (!albumItem.hasFadedIn) {
                             fadeIn();
                         } else {
@@ -49,8 +56,7 @@ public class GifViewHolder extends AlbumItemHolder {
                         return false;
                     }
                 })
-                .error(R.drawable.error_placeholder_tinted)
-                .signature(albumItem.getGlideSignature())
+                .apply(options)
                 .into(imageView);
     }
 }
