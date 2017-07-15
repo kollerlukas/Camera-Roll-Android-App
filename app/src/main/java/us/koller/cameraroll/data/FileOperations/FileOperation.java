@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
@@ -288,6 +290,16 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                 return DELETE;
             }
             return EMPTY;
+        }
+
+        static boolean isOnRemovableStorage(String path) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                File file = new File(path);
+                if (file.exists() && Environment.isExternalStorageRemovable(file)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         static String[] getAllChildPaths(ArrayList<String> paths, String path) {

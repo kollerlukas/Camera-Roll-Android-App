@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -387,15 +388,19 @@ public class AlbumActivity extends ThemeableActivity
                 final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
 
                 int k = album.getAlbumItems().indexOf(albumItem);
-                for (int i = 0; i < album.getAlbumItems().size(); i++) {
-                    if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
-                        k = i;
-                        break;
+                if (k >= 0 && k < album.getAlbumItems().size()) {
+                    for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                        if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
+                            k = i;
+                            break;
+                        }
                     }
+                    final int index = k;
+                    album.getAlbumItems().remove(index);
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
                 }
-                final int index = k;
-                album.getAlbumItems().remove(index);
-                recyclerView.getAdapter().notifyDataSetChanged();
                 break;
             case VIEW_ALBUM:
                 if (!pick_photos) {

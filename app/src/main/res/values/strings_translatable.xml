@@ -125,4 +125,6 @@
     </string>
     <string name="open_with">Open with…</string>
     <string name="rotate">Rotate</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="set_wallpaper">Set Wallpaper</string>
 </resources>

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,9 +33,7 @@ public class Move extends FileOperation {
         onProgress(s, success_count, files.length);
 
         //check if file is on removable storage
-        boolean movingOntoRemovableStorage =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                        Environment.isExternalStorageRemovable(new File(target.getPath()));
+        boolean movingOntoRemovableStorage = Util.isOnRemovableStorage(target.getPath());
 
         Uri treeUri = null;
         if (movingOntoRemovableStorage) {
@@ -47,9 +44,7 @@ public class Move extends FileOperation {
         }
 
         for (int i = files.length - 1; i >= 0; i--) {
-            boolean movingFromRemovableStorage =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                            Environment.isExternalStorageRemovable(new File(files[i].getPath()));
+            boolean movingFromRemovableStorage = Util.isOnRemovableStorage(files[i].getPath());
 
             if (treeUri == null && movingFromRemovableStorage) {
                 treeUri = getTreeUri(workIntent, files[i].getPath());
@@ -103,8 +98,8 @@ public class Move extends FileOperation {
 
         boolean success;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (!Environment.isExternalStorageRemovable(file)
-                    && !Environment.isExternalStorageRemovable(newFile)) {
+            if (!Util.isOnRemovableStorage(file.getPath())
+                    && !Util.isOnRemovableStorage(newFile.getPath())) {
                 success = renameFile(file, newFile);
             } else {
                 success = renameFileRemovableStorage(context, treeUri, file, newFile);

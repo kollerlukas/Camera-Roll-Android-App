@@ -74,6 +74,13 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <!--SetWallpaper Theme-->
+    <style name="Theme.CameraRoll.SetWallpaper" parent="Theme.CameraRoll">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
     <!--SettingsActivity Theme-->
     <style name="Theme.CameraRoll.Settings" parent="Theme.CameraRoll">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>

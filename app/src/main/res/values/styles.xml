@@ -118,6 +118,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <!--SetWallpaper Theme-->
+    <style name="Theme.CameraRoll.SetWallpaper" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
     <!--Dialog Style-->
     <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>

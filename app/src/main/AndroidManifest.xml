@@ -3,9 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="us.koller.cameraroll">
 
+    <!--to read & write images ...-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--download images (e.g. logo in About section)-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--to set Wallpaper-->
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
         android:allowBackup="true"
@@ -77,6 +81,20 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.CameraRoll.EditImage" />
 
+        <activity
+            android:name=".ui.SetWallpaperActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:label="@string/wallpaper"
+            android:theme="@style/Theme.CameraRoll.SetWallpaper">
+
+            <intent-filter>
+                <action android:name="android.intent.action.ATTACH_DATA" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".IntentReceiver">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
@@ -104,6 +122,14 @@
                 <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.android.camera.action.REVIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
 

@@ -18,13 +18,6 @@
             android:layout_height="200dp"
             android:contentDescription="@string/image"
             android:scaleType="centerCrop" />
-
-        <!--<us.koller.cameraroll.ui.widget.SquareRelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="200dp">
-
-            
-        </us.koller.cameraroll.ui.widget.SquareRelativeLayout>-->
     </android.support.v7.widget.CardView>
 
     <LinearLayout

@@ -4,8 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 
 import java.io.File;
@@ -39,10 +37,7 @@ public class Copy extends FileOperation {
 
         onProgress(s, success_count, files.length);
 
-        //check if file is on removable storage
-        boolean copyingOntoRemovableStorage =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                        Environment.isExternalStorageRemovable(new File(target.getPath()));
+        boolean copyingOntoRemovableStorage = Util.isOnRemovableStorage(target.getPath());
 
         Uri treeUri = null;
         if (copyingOntoRemovableStorage) {

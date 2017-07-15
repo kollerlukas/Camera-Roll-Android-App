@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import us.koller.cameraroll.data.AlbumItem;
@@ -16,6 +15,7 @@ import us.koller.cameraroll.ui.EditImageActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.MainActivity;
+import us.koller.cameraroll.ui.SetWallpaperActivity;
 import us.koller.cameraroll.ui.VideoPlayerActivity;
 
 public class IntentReceiver extends AppCompatActivity {
@@ -25,6 +25,7 @@ public class IntentReceiver extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         switch (getIntent().getAction()) {
+            case "com.android.camera.action.REVIEW":
             case Intent.ACTION_VIEW:
                 view(getIntent());
                 this.finish();
@@ -38,10 +39,13 @@ public class IntentReceiver extends AppCompatActivity {
             case Intent.ACTION_EDIT:
                 edit(getIntent());
                 break;
+            case Intent.ACTION_ATTACH_DATA:
+                setAs(getIntent());
+                break;
         }
     }
 
-    public void view(Intent intent) {
+    private void view(Intent intent) {
         Uri uri = intent.getData();
         if (uri == null) {
             Toast.makeText(this, getString(R.string.error) + ": Uri = null", Toast.LENGTH_SHORT).show();
@@ -91,7 +95,7 @@ public class IntentReceiver extends AppCompatActivity {
         }
     }
 
-    public void pick(Intent intent) {
+    private void pick(Intent intent) {
         setIntent(new Intent("ACTIVITY_ALREADY_LAUNCHED"));
 
         Intent pick_photos = new Intent(this, MainActivity.class)
@@ -101,16 +105,26 @@ public class IntentReceiver extends AppCompatActivity {
         startActivityForResult(pick_photos, MainActivity.PICK_PHOTOS_REQUEST_CODE);
     }
 
-    public void edit(Intent intent) {
+    private void edit(Intent intent) {
         String path = intent.getStringExtra(EditImageActivity.IMAGE_PATH);
 
         Intent edit = new Intent(this, EditImageActivity.class)
                 .setAction(Intent.ACTION_EDIT)
+                .setData(intent.getData())
                 .putExtra(EditImageActivity.IMAGE_URI, intent.getData().toString());
 
         if (path != null) {
             edit.putExtra(EditImageActivity.IMAGE_PATH, path);
         }
+
+        startActivity(edit);
+        this.finish();
+    }
+
+    private void setAs(Intent intent) {
+        Intent edit = new Intent(this, SetWallpaperActivity.class)
+                .setAction(Intent.ACTION_ATTACH_DATA)
+                .setData(intent.getData());
 
         startActivity(edit);
         this.finish();
