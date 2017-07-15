@@ -7,9 +7,11 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.util.Arrays;
-
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.BlackTheme;
+import us.koller.cameraroll.themes.DarkTheme;
+import us.koller.cameraroll.themes.LightTheme;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.SortUtil;
 
 public class Settings {
@@ -86,17 +88,20 @@ public class Settings {
     }
 
     /*Getter & Setter*/
-    public String getThemeValue() {
+    public String getTheme() {
         return theme;
     }
 
-    //storing the theme as a string: easier with switchPreference
-    //using theme as integer in code: easier comparision
-    public int getTheme(Context context) {
-        String[] themeValues = context.getResources().getStringArray(R.array.theme_values);
-        int[] themes = context.getResources().getIntArray(R.array.themes);
-        int index = Arrays.asList(themeValues).indexOf(theme);
-        return themes[index];
+    public Theme getThemeInstance(Context context) {
+        String theme = getTheme();
+        Resources res = context.getResources();
+        if (theme.equals(res.getString(R.string.LIGHT_THEME_VALUE))) {
+            return new LightTheme();
+        } else if (theme.equals(res.getString(R.string.BLACK_THEME_VALUE))) {
+            return new BlackTheme();
+        } else {
+            return new DarkTheme();
+        }
     }
 
     public void setTheme(String theme) {

@@ -14,8 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.ui.ThemeableActivity;
 
 public class ColumnCountPreferenceDialogFragment
         extends DialogFragment implements DialogInterface.OnClickListener {
@@ -44,7 +44,7 @@ public class ColumnCountPreferenceDialogFragment
         @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext())
                 .inflate(R.layout.pref_dialog_column_count, null);
 
-        final TextView textView = (TextView) view.findViewById(R.id.column_count);
+        final TextView textView = view.findViewById(R.id.column_count);
         textView.setText(String.valueOf(columnCount));
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -61,14 +61,14 @@ public class ColumnCountPreferenceDialogFragment
             }
         };
 
-        ThemeableActivity.ColorManager colorManager = ThemeableActivity.getColorManager();
-        int textColorSec = colorManager.getColor(ThemeableActivity.ColorManager.TEXT_COLOR_SEC);
+        Theme theme = Settings.getInstance(getContext()).getThemeInstance(getContext());
+        int textColorSec = theme.getTextColorSecondary(getContext());
 
-        ImageButton minus = (ImageButton) view.findViewById(R.id.minus);
+        ImageButton minus = view.findViewById(R.id.minus);
         minus.setColorFilter(textColorSec);
         minus.setOnClickListener(onClickListener);
 
-        ImageButton plus = (ImageButton) view.findViewById(R.id.plus);
+        ImageButton plus = view.findViewById(R.id.plus);
         plus.setColorFilter(textColorSec);
         plus.setOnClickListener(onClickListener);
 

@@ -1,8 +1,10 @@
 package us.koller.cameraroll;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -57,6 +59,19 @@ public class IntentReceiver extends AppCompatActivity {
             this.finish();
             return;
         }
+
+        //retrieve file name
+        Cursor cursor = getContentResolver().query(uri,
+                null, null, null, null);
+        if (cursor != null) {
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            cursor.moveToFirst();
+            albumItem.setName(cursor.getString(nameIndex));
+            cursor.close();
+        } else {
+            albumItem.setName("");
+        }
+
         album.getAlbumItems().add(albumItem);
 
         if (albumItem instanceof Video) {

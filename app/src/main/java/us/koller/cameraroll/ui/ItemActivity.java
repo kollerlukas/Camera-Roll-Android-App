@@ -10,11 +10,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.provider.OpenableColumns;
 import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -27,7 +29,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.print.PrintHelper;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -68,6 +69,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
@@ -232,8 +234,7 @@ public class ItemActivity extends ThemeableActivity {
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(albumItem.getName() != null
-                    && !view_only ? albumItem.getName() : "");
+            actionBar.setTitle(albumItem.getName());
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -552,7 +553,7 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     public void showDeleteDialog() {
-        new AlertDialog.Builder(this, getDialogThemeRes())
+        new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(getString(R.string.delete) + " " + albumItem.getType() + "?")
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
@@ -633,7 +634,7 @@ public class ItemActivity extends ThemeableActivity {
         dialogLayout.setVisibility(View.GONE);
 
         AlertDialog.Builder builder
-                = new AlertDialog.Builder(this, getDialogThemeRes())
+                = new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(getString(R.string.info))
                 .setView(rootView)
                 .setPositiveButton(R.string.done, null)
@@ -665,9 +666,24 @@ public class ItemActivity extends ThemeableActivity {
             public void run() {
                 File file = new File(albumItem.getPath());
 
-                String name = file.getName();
+                String name = albumItem.getName();
                 String path = file.getPath();
-                String size = getFileSize(file);
+                String size;
+                if (view_only) {
+                    size = getFileSize(file.length());
+                } else {
+                    Cursor cursor = getContentResolver().query(albumItem.getUri(ItemActivity.this),
+                            null, null, null, null);
+                    if (cursor != null) {
+                        int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                        cursor.moveToFirst();
+                        size = Long.toString(cursor.getLong(sizeIndex));
+                        cursor.close();
+                    } else {
+                        size = "0";
+                    }
+                }
+
 
                 String height = NO_DATA,
                         width = NO_DATA,
@@ -950,8 +966,8 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onThemeApplied(boolean lightBaseTheme) {
-        if (lightBaseTheme) {
+    public void onThemeApplied(Theme theme) {
+        /*if (theme.isBaseLight()) {
             int white = ContextCompat.getColor(this, R.color.white);
 
             Drawable d = toolbar.getNavigationIcon();
@@ -964,7 +980,7 @@ public class ItemActivity extends ThemeableActivity {
             toolbar.setTitleTextColor(white);
 
             Util.colorToolbarOverflowMenuIcon(toolbar, white);
-        }
+        }*/
     }
 
     @Override
@@ -972,8 +988,8 @@ public class ItemActivity extends ThemeableActivity {
         return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
     }
 
-    public String getFileSize(File file) {
-        long file_bytes = file.length() / 1000 * 1000;
+    public String getFileSize(long fileLength) {
+        long file_bytes = fileLength / 1000 * 1000;
         float size = file_bytes;
         int i = 0;
         while (size > 1000) {

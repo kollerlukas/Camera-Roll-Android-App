@@ -36,7 +36,7 @@
         <aapt:attr name="android:animation">
             <set>
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="pathData"
                     android:valueFrom="M 6.48 0 L 0 6.49 L 6.49 12.97 L 12.98 6.49 L 6.48 0 Z M 2.83 6.49 L 6.49 2.83 L 10.14 6.49 L 6.48 10.15 L 2.83 6.49 Z"
@@ -44,10 +44,10 @@
                     android:valueType="pathType" />
 
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="pathData"
-                    android:startOffset="600"
+                    android:startOffset="300"
                     android:valueFrom="M 8.986 0 L 0 9.007 L 9 18 L 18 9.007 L 8.986 0 Z M 3.925 9.007 L 9 3.928 L 14.062 9.007 L 8.986 14.086 L 3.925 9.007 Z"
                     android:valueTo="M 6.48 0 L 0 6.49 L 6.49 12.97 L 12.98 6.49 L 6.48 0 Z M 2.83 6.49 L 6.49 2.83 L 10.14 6.49 L 6.48 10.15 L 2.83 6.49 Z"
                     android:valueType="pathType" />
@@ -59,7 +59,7 @@
         <aapt:attr name="android:animation">
             <set>
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="translateX"
                     android:valueFrom="0.86"
@@ -67,7 +67,7 @@
                     android:valueType="floatType" />
 
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="translateY"
                     android:valueFrom="6.41"
@@ -75,28 +75,28 @@
                     android:valueType="floatType" />
 
                 <objectAnimator
-                    android:duration="400"
+                    android:duration="200"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="rotation"
-                    android:startOffset="200"
+                    android:startOffset="100"
                     android:valueFrom="0"
                     android:valueTo="90"
                     android:valueType="floatType" />
 
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="translateX"
-                    android:startOffset="600"
+                    android:startOffset="300"
                     android:valueFrom="3"
                     android:valueTo="-3.86"
                     android:valueType="floatType" />
 
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="translateY"
-                    android:startOffset="600"
+                    android:startOffset="300"
                     android:valueFrom="3"
                     android:valueTo="6.41"
                     android:valueType="floatType" />
@@ -108,7 +108,7 @@
         <aapt:attr name="android:animation">
             <set>
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="fillAlpha"
                     android:valueFrom="1"
@@ -116,10 +116,10 @@
                     android:valueType="floatType" />
 
                 <objectAnimator
-                    android:duration="200"
+                    android:duration="100"
                     android:interpolator="@android:anim/accelerate_decelerate_interpolator"
                     android:propertyName="fillAlpha"
-                    android:startOffset="600"
+                    android:startOffset="300"
                     android:valueFrom="0"
                     android:valueTo="1"
                     android:valueType="floatType" />

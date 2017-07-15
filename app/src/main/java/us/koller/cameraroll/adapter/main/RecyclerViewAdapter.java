@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.ViewHolder.AlbumHolder;
 import us.koller.cameraroll.adapter.main.ViewHolder.CardAlbumHolder;
@@ -110,7 +111,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         }
 
         if (viewHolder != null) {
-            ThemeableActivity.checkTags((ViewGroup) viewHolder.itemView);
+            Context context = viewHolder.itemView.getContext();
+            Theme theme = Settings.getInstance(context).getThemeInstance(context);
+            ThemeableActivity.checkTags((ViewGroup) viewHolder.itemView, theme);
         }
 
         return viewHolder;

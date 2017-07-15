@@ -43,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
 import us.koller.cameraroll.data.FileOperations.Copy;
 import us.koller.cameraroll.data.FileOperations.Delete;
@@ -107,7 +108,7 @@ public class FileExplorerActivity extends ThemeableActivity
         final Toolbar toolbar = findViewById(R.id.toolbar);
 
         toolbar.setBackgroundColor(toolbarColor);
-        toolbar.setTitleTextColor(textColor);
+        toolbar.setTitleTextColor(textColorPrimary);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
@@ -122,7 +123,7 @@ public class FileExplorerActivity extends ThemeableActivity
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon != null) {
             navIcon = DrawableCompat.wrap(navIcon);
-            DrawableCompat.setTint(navIcon.mutate(), textColorSec);
+            DrawableCompat.setTint(navIcon.mutate(), textColorSecondary);
             toolbar.setNavigationIcon(navIcon);
         }
 
@@ -133,10 +134,10 @@ public class FileExplorerActivity extends ThemeableActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        Util.colorToolbarOverflowMenuIcon(toolbar, textColorSec);
+        Util.colorToolbarOverflowMenuIcon(toolbar, textColorSecondary);
 
         //need to be called after setTitle(), to ensure, that mTitleTextView exists
-        TextView titleTextView = Util.setToolbarTypeface(toolbar
+        final TextView titleTextView = Util.setToolbarTypeface(toolbar
         );
         if (titleTextView != null) {
             titleTextView.setEllipsize(TextUtils.TruncateAt.START);
@@ -518,7 +519,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
         final EditText editText = dialogLayout.findViewById(R.id.edit_text);
 
-        new AlertDialog.Builder(this, getDialogThemeRes())
+        new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(R.string.new_folder)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -651,7 +652,7 @@ public class FileExplorerActivity extends ThemeableActivity
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
-        if (colorAccentDarkIcons()) {
+        if (theme.darkStatusBarIconsInSelectorMode()) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         } else {
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
@@ -663,13 +664,13 @@ public class FileExplorerActivity extends ThemeableActivity
 
         //fade overflow menu icon
         ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
-                textColorSec, accentTextColor);
+                textColorSecondary, accentTextColor);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
             ColorFade.fadeIconColor(navIcon,
-                    textColorSec, accentTextColor);
+                    textColorSecondary, accentTextColor);
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -716,7 +717,7 @@ public class FileExplorerActivity extends ThemeableActivity
                             + " " + (selected_items.length > 1 ?
                             getString(R.string.files) : getString(R.string.file));
 
-                    new AlertDialog.Builder(this, getDialogThemeRes())
+                    new AlertDialog.Builder(this, theme.getDialogThemeRes())
                             .setTitle(title)
                             .setNegativeButton(getString(R.string.no), null)
                             .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
@@ -818,7 +819,7 @@ public class FileExplorerActivity extends ThemeableActivity
         if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
             final Toolbar toolbar = findViewById(R.id.toolbar);
 
-            ColorFade.fadeToolbarTitleColor(toolbar, textColor,
+            ColorFade.fadeToolbarTitleColor(toolbar, textColorPrimary,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
@@ -836,15 +837,16 @@ public class FileExplorerActivity extends ThemeableActivity
     public void resetToolbar() {
         final Toolbar toolbar = findViewById(R.id.toolbar);
 
-        if (isLightBaseTheme(THEME)) {
+        if (theme.darkStatusBarIcons()) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         } else {
-            toolbar.setActivated(false);
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
+        toolbar.setActivated(theme.elevatedToolbar());
+
         ColorFade.fadeBackgroundColor(toolbar, accentColor, toolbarColor);
-        ColorFade.fadeToolbarTitleColor(toolbar, textColor,
+        ColorFade.fadeToolbarTitleColor(toolbar, textColorPrimary,
                 new ColorFade.ToolbarTitleFadeCallback() {
                     @Override
                     public void setTitle(Toolbar toolbar) {
@@ -853,12 +855,12 @@ public class FileExplorerActivity extends ThemeableActivity
                 });
 
         //fade overflow menu icon
-        ColorFade.fadeIconColor(toolbar.getOverflowIcon(), accentTextColor, textColor);
+        ColorFade.fadeIconColor(toolbar.getOverflowIcon(), accentTextColor, textColorPrimary);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
-            ColorFade.fadeIconColor(navIcon, accentTextColor, textColorSec);
+            ColorFade.fadeIconColor(navIcon, accentTextColor, textColorSecondary);
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -874,7 +876,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     d = ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
-                DrawableCompat.setTint(d.mutate(), textColorSec);
+                DrawableCompat.setTint(d.mutate(), textColorSecondary);
                 toolbar.setNavigationIcon(d);
 
                 //hide menu items
@@ -901,26 +903,18 @@ public class FileExplorerActivity extends ThemeableActivity
     }
 
     @Override
-    public void onThemeApplied(boolean lightBaseTheme) {
+    public void onThemeApplied(Theme theme) {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
 
-        if (lightBaseTheme) {
-            final Toolbar toolbar = findViewById(R.id.toolbar);
-            toolbar.setActivated(true);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            }
-
-            /*toolbar.getViewTreeObserver().addOnGlobalLayoutListener(
-                    new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            addStatusBarOverlay(toolbar, -1, toolbar.getPaddingTop());
-                        }
-                    });*/
+        if (theme.darkStatusBarIcons()) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        } else {
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
+
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setActivated(theme.elevatedToolbar());
     }
 
     @Override

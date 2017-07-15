@@ -25,6 +25,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.adapter.main.ViewHolder.NestedRecyclerViewAlbumHolder;
@@ -60,6 +62,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     public static final int PICK_PHOTOS_REQUEST_CODE = 6;
     public static final int REFRESH_PHOTOS_REQUEST_CODE = 7;
     public static final int REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE = 8;
+    public static final int SETTINGS_REQUEST_CODE = 9;
 
     //needed for sharedElement-Transition in Nested RecyclerView Style
     private NestedRecyclerViewAlbumHolder sharedElementViewHolder;
@@ -141,7 +144,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(!pick_photos ? toolbarColor : accentColor);
-        toolbar.setTitleTextColor(!pick_photos ? textColor : accentTextColor);
+        toolbar.setTitleTextColor(!pick_photos ? textColorPrimary : accentTextColor);
 
         if (pick_photos) {
             ActionBar actionBar = getSupportActionBar();
@@ -164,12 +167,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             });
 
             Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
-
-            if (colorAccentDarkIcons()) {
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            } else {
-                Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-            }
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -222,7 +220,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 if (!((RecyclerViewAdapter) recyclerView.getAdapter())
                         .getSelectorManager().isSelectorModeActive()) {
                     //only animate statusBar icons color, when not in selectorMode
-                    if (isLightBaseTheme(THEME)) {
+                    if (theme.isBaseLight()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             float animatedValue = (-translationY) / toolbar.getHeight();
                             if (animatedValue > 0.9f) {
@@ -554,7 +552,8 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                         ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivityForResult(new Intent(this, SettingsActivity.class),
+                        SETTINGS_REQUEST_CODE);
                 break;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class),
@@ -689,6 +688,14 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                     refreshPhotos();
                 }
                 break;
+            case SETTINGS_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    Log.d("MainActivity", "onActivityResult: RESULT_OK");
+                    this.recreate();
+                } else {
+                    Log.d("MainActivity", "onActivityResult: RESULT_Cancel");
+                }
+                break;
         }
     }
 
@@ -730,28 +737,17 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     }
 
     @Override
-    public void onThemeApplied(boolean lightBaseTheme) {
+    public void onThemeApplied(Theme theme) {
         if (pick_photos) {
             return;
         }
 
-        if (lightBaseTheme) {
-            final Toolbar toolbar = findViewById(R.id.toolbar);
-            toolbar.setActivated(true);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setActivated(theme.elevatedToolbar());
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            }
-
-            /*if (!pick_photos) {
-                toolbar.getViewTreeObserver().addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                addStatusBarOverlay(toolbar, -1, toolbar.getPaddingTop());
-                            }
-                        });
-            }*/
+        if (theme.darkStatusBarIcons() &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
     }
 

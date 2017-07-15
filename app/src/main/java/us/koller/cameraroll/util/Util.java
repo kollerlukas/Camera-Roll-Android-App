@@ -11,7 +11,6 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.media.ExifInterface;
@@ -19,7 +18,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,13 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.ui.ThemeableActivity;
+import us.koller.cameraroll.themes.Theme;
+import us.koller.cameraroll.data.Settings;
 
 public class Util {
 
     public static int[] getImageDimensions(Context context, Uri uri) {
-        long startTime = System.currentTimeMillis();
-
         int[] dimensions = new int[]{0, 0};
 
         try {
@@ -192,8 +189,11 @@ public class Util {
             selectorOverlay = ContextCompat.getDrawable(context,
                     R.drawable.albumitem_selected_indicator);
         }
-        ThemeableActivity.ColorManager colorManager = ThemeableActivity.getColorManager();
-        int tintColor = colorManager.getColor(ThemeableActivity.ColorManager.ACCENT_COLOR);
+
+        Settings s = Settings.getInstance(context);
+        Theme theme = s.getThemeInstance(context);
+
+        int tintColor = theme.getAccentColor(context);
         selectorOverlay = DrawableCompat.wrap(selectorOverlay);
         DrawableCompat.setTint(selectorOverlay, tintColor);
         return selectorOverlay;
@@ -216,7 +216,7 @@ public class Util {
             // Animations are disabled in power save mode, so just show a toast instead.
             return 0.0f;
         }
-        return Settings.Global.getFloat(context.getContentResolver(),
-                Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+        return android.provider.Settings.Global.getFloat(context.getContentResolver(),
+                android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
     }
 }

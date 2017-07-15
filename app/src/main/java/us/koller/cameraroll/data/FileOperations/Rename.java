@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.BaseActivity;
-import us.koller.cameraroll.ui.ThemeableActivity;
 import us.koller.cameraroll.util.DateTakenRetriever;
 
 public class Rename extends FileOperation {
@@ -124,12 +125,12 @@ public class Rename extends FileOperation {
 
     public static class Util {
 
-        public static AlertDialog getRenameDialog(final BaseActivity actvity,
+        public static AlertDialog getRenameDialog(final BaseActivity activity,
                                                   final File_POJO file,
                                                   final BroadcastReceiver broadcastReceiver) {
 
-            View dialogLayout = LayoutInflater.from(actvity).inflate(R.layout.input_dialog_layout,
-                    (ViewGroup) actvity.findViewById(R.id.root_view), false);
+            View dialogLayout = LayoutInflater.from(activity).inflate(R.layout.input_dialog_layout,
+                    (ViewGroup) activity.findViewById(R.id.root_view), false);
 
             final EditText editText = dialogLayout.findViewById(R.id.edit_text);
             String name = file.getName();
@@ -138,7 +139,9 @@ public class Rename extends FileOperation {
             editText.setText(name);
             editText.setSelection(name.length());
 
-            return new android.support.v7.app.AlertDialog.Builder(actvity, ThemeableActivity.getDialogThemeRes())
+            Theme theme = Settings.getInstance(activity).getThemeInstance(activity);
+
+            return new android.support.v7.app.AlertDialog.Builder(activity, theme.getDialogThemeRes())
                     .setTitle(R.string.rename)
                     .setView(dialogLayout)
                     .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
@@ -147,10 +150,10 @@ public class Rename extends FileOperation {
                             final String newFileName = editText.getText().toString();
 
                             if (broadcastReceiver != null) {
-                                actvity.registerLocalBroadcastReceiver(new BroadcastReceiver() {
+                                activity.registerLocalBroadcastReceiver(new BroadcastReceiver() {
                                     @Override
                                     public void onReceive(Context context, Intent intent) {
-                                        actvity.unregisterLocalBroadcastReceiver(this);
+                                        activity.unregisterLocalBroadcastReceiver(this);
                                         broadcastReceiver.onReceive(context, intent);
                                     }
                                 });
@@ -158,12 +161,12 @@ public class Rename extends FileOperation {
 
                             final File_POJO[] files = new File_POJO[]{file};
                             Intent intent =
-                                    FileOperation.getDefaultIntent(actvity, FileOperation.RENAME, files)
+                                    FileOperation.getDefaultIntent(activity, FileOperation.RENAME, files)
                                             .putExtra(FileOperation.NEW_FILE_NAME, newFileName);
-                            actvity.startService(intent);
+                            activity.startService(intent);
                         }
                     })
-                    .setNegativeButton(actvity.getString(R.string.cancel), null)
+                    .setNegativeButton(R.string.cancel, null)
                     .create();
         }
     }

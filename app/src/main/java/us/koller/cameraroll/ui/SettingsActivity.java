@@ -22,6 +22,7 @@ import android.view.WindowInsets;
 import java.util.Arrays;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.preferences.ColumnCountPreference;
 import us.koller.cameraroll.preferences.ColumnCountPreferenceDialogFragment;
@@ -31,12 +32,14 @@ import us.koller.cameraroll.util.Util;
 
 public class SettingsActivity extends ThemeableActivity {
 
+    private static boolean recreated = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -116,6 +119,13 @@ public class SettingsActivity extends ThemeableActivity {
                 .replace(R.id.preference_fragment_container, fragment)
                 .commit();
 
+        fragment.setCallback(new SettingsFragment.OnSettingChangedCallback() {
+            @Override
+            public void onSettingChanged() {
+                setResult(RESULT_OK);
+            }
+        });
+
         //needed to achieve transparent statusBar in landscape; don't ask me why, but its working
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -126,9 +136,6 @@ public class SettingsActivity extends ThemeableActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        //so other activities are recreated
-        ThemeableActivity.THEME = ThemeableActivity.UNDEFINED;
     }
 
     @Override
@@ -142,6 +149,22 @@ public class SettingsActivity extends ThemeableActivity {
     }
 
     @Override
+    public void recreate() {
+        recreated = true;
+
+        super.recreate();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (recreated) {
+            setResult(RESULT_OK);
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
     public int getDarkThemeRes() {
         return R.style.Theme_CameraRoll_Settings;
     }
@@ -152,19 +175,18 @@ public class SettingsActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onThemeApplied(boolean lightBaseTheme) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    public void onThemeApplied(Theme theme) {
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(toolbarColor);
-        toolbar.setTitleTextColor(textColor);
+        toolbar.setTitleTextColor(textColorPrimary);
 
-        if (lightBaseTheme) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            }
+        if (theme.darkStatusBarIcons() &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int statusBarColor = getStatusBarColor(toolbarColor);
+            int statusBarColor = getStatusBarColor();
             getWindow().setStatusBarColor(statusBarColor);
         }
     }
@@ -180,7 +202,13 @@ public class SettingsActivity extends ThemeableActivity {
         private static final int STYLE_DIALOG_FRAGMENT = 1;
         private static final int COLUMN_COUNT_DIALOG_FRAGMENT = 2;
 
+        interface OnSettingChangedCallback {
+            void onSettingChanged();
+        }
+
         private int shownDialogFragment = NONE;
+
+        private OnSettingChangedCallback callback;
 
 
         @Override
@@ -189,7 +217,7 @@ public class SettingsActivity extends ThemeableActivity {
 
             Settings settings = Settings.getInstance(getContext());
 
-            initThemePref(settings.getThemeValue());
+            initThemePref(settings.getTheme());
             initStylePref(settings.getStyle());
             initColumnCountPref(settings.getColumnCount(getContext()));
             initMediaRetrieverPref(settings.useStorageRetriever());
@@ -312,15 +340,19 @@ public class SettingsActivity extends ThemeableActivity {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
+            if (callback != null) {
+                callback.onSettingChanged();
+            }
+
             Settings settings = Settings.getInstance(getActivity());
             if (preference.getKey().equals(getString(R.string.pref_key_theme))) {
-                settings.setTheme((String) o);
+                String themeValue = (String) o;
+                settings.setTheme(themeValue);
 
-                String theme_name = Settings.Utils.getThemeName(getActivity(), (String) o);
+                String theme_name = Settings.Utils.getThemeName(getActivity(), themeValue);
                 preference.setSummary(theme_name);
 
                 //update Activities
-                ThemeableActivity.THEME = ThemeableActivity.UNDEFINED;
                 getActivity().recreate();
             } else if (preference.getKey().equals(getString(R.string.pref_key_style))) {
                 settings.setStyle((int) o);
@@ -343,6 +375,10 @@ public class SettingsActivity extends ThemeableActivity {
                 settings.setCameraShortcut((boolean) o);
             }
             return true;
+        }
+
+        void setCallback(OnSettingChangedCallback callback) {
+            this.callback = callback;
         }
     }
 }

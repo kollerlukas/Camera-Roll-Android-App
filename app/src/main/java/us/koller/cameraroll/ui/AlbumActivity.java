@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
@@ -184,7 +185,7 @@ public class AlbumActivity extends ThemeableActivity
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
-                DrawableCompat.setTint(navIcon.mutate(), textColorSec);
+                DrawableCompat.setTint(navIcon.mutate(), textColorSecondary);
                 toolbar.setNavigationIcon(navIcon);
             }
         } else {
@@ -250,18 +251,12 @@ public class AlbumActivity extends ThemeableActivity
                 toolbar.setTranslationY(translationY);
 
                 //animate statusBarIcon color
-                if (isLightBaseTheme(THEME)) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        float animatedValue = (-translationY) / toolbar.getHeight();
-                        if (animatedValue > 0.9f) {
-                            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                        } else {
-                            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-                        }
-
-                        //animate Toolbar elevation
-                        //scrollY += dy;
-                        //Util.animateToolbarElevation(toolbar, scrollY);
+                if (theme.darkStatusBarIcons()) {
+                    float animatedValue = (-translationY) / toolbar.getHeight();
+                    if (animatedValue > 0.9f) {
+                        Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                    } else {
+                        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
                     }
                 }
             }
@@ -766,7 +761,7 @@ public class AlbumActivity extends ThemeableActivity
         toolbar.setActivated(true);
         toolbar.animate().translationY(0.0f).start();
 
-        if (colorAccentDarkIcons()) {
+        if (theme.darkStatusBarIconsInSelectorMode()) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         } else {
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
@@ -787,12 +782,12 @@ public class AlbumActivity extends ThemeableActivity
             ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor, null);
 
             //fade overflow menu icon
-            ColorFade.fadeIconColor(toolbar.getOverflowIcon(), textColorSec, accentTextColor);
+            ColorFade.fadeIconColor(toolbar.getOverflowIcon(), textColorSecondary, accentTextColor);
 
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon instanceof Animatable) {
                 ((Animatable) navIcon).start();
-                ColorFade.fadeIconColor(navIcon, textColorSec, accentTextColor);
+                ColorFade.fadeIconColor(navIcon, textColorSecondary, accentTextColor);
             }
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -829,17 +824,17 @@ public class AlbumActivity extends ThemeableActivity
         }
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setActivated(theme.elevatedToolbar());
 
-        if (isLightBaseTheme(THEME)) {
+        if (theme.darkStatusBarIcons()) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         } else {
-            toolbar.setActivated(false);
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
         ColorFade.fadeBackgroundColor(toolbar, accentColor, toolbarColor);
 
-        ColorFade.fadeToolbarTitleColor(toolbar, textColor,
+        ColorFade.fadeToolbarTitleColor(toolbar, textColorPrimary,
                 new ColorFade.ToolbarTitleFadeCallback() {
                     @Override
                     public void setTitle(Toolbar toolbar) {
@@ -848,12 +843,12 @@ public class AlbumActivity extends ThemeableActivity
                 });
 
         //fade overflow menu icon
-        ColorFade.fadeIconColor(toolbar.getOverflowIcon(), accentTextColor, textColorSec);
+        ColorFade.fadeIconColor(toolbar.getOverflowIcon(), accentTextColor, textColorSecondary);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
-            ColorFade.fadeIconColor(navIcon, accentTextColor, textColorSec);
+            ColorFade.fadeIconColor(navIcon, accentTextColor, textColorSecondary);
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -869,7 +864,7 @@ public class AlbumActivity extends ThemeableActivity
                     d = ContextCompat.getDrawable(AlbumActivity.this, R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
-                DrawableCompat.setTint(d.mutate(), textColorSec);
+                DrawableCompat.setTint(d.mutate(), textColorSecondary);
                 toolbar.setNavigationIcon(d);
 
                 handleMenuVisibilityForSelectorMode(false);
@@ -1040,37 +1035,23 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     @Override
-    public void onThemeApplied(boolean lightBaseTheme) {
+    public void onThemeApplied(Theme theme) {
         if (pick_photos) {
             return;
         }
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(toolbarColor);
-        toolbar.setTitleTextColor(textColor);
+        toolbar.setTitleTextColor(textColorPrimary);
+        toolbar.setActivated(theme.elevatedToolbar());
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
 
-        if (lightBaseTheme) {
-            toolbar.setActivated(true);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(ContextCompat.getColor(this,
-                        R.color.black_translucent1));
-            }
-
-            /*if (!pick_photos) {
-                toolbar.getViewTreeObserver().addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                addStatusBarOverlay(toolbar, -1, toolbar.getPaddingTop());
-                            }
-                        });
-            }*/
+        if (theme.darkStatusBarIcons()) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        } else {
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
     }
 

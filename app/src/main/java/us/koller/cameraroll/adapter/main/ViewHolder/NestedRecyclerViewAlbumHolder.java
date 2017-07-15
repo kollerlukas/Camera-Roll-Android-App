@@ -29,14 +29,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.FileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.FileOperationDialogActivity;
-import us.koller.cameraroll.ui.MainActivity;
-import us.koller.cameraroll.ui.ThemeableActivity;
 import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
@@ -49,6 +49,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
     @SuppressWarnings("FieldCanBeLocal")
     private static int SINGLE_LINE_MAX_ITEM_COUNT = 4;
 
+    private Theme theme;
+
     public RecyclerView nestedRecyclerView;
 
     public Album album;
@@ -58,6 +60,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
     private EqualSpacesItemDecoration itemDecoration;
 
     private SelectorModeManager manager;
+
 
     private SelectorModeManager.OnBackPressedCallback onBackPressedCallback
             = new SelectorModeManager.OnBackPressedCallback() {
@@ -81,7 +84,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
             toolbar.setActivated(false);
 
-            if (getContext().getResources().getBoolean(R.bool.colorAccent_dark_icons)) {
+            if (theme.darkStatusBarIconsInSelectorMode()) {
                 Util.setDarkStatusBarIcons(rootView);
             } else {
                 Util.setLightStatusBarIcons(rootView);
@@ -142,15 +145,11 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                             super.onAnimationEnd(animation);
 
                             Toolbar toolbar = rootView.findViewById(R.id.toolbar);
-                            Context c = getContext();
-                            if (c instanceof ThemeableActivity) {
-                                ThemeableActivity themeableActivity = (ThemeableActivity) c;
-                                if (themeableActivity.isLightBaseTheme(ThemeableActivity.THEME)) {
-                                    toolbar.setActivated(true);
-                                    Util.setDarkStatusBarIcons(rootView);
-                                } else {
-                                    Util.setLightStatusBarIcons(rootView);
-                                }
+                            toolbar.setActivated(theme.elevatedToolbar());
+                            if (theme.darkStatusBarIcons()) {
+                                Util.setDarkStatusBarIcons(rootView);
+                            } else {
+                                Util.setLightStatusBarIcons(rootView);
                             }
 
                             //remove selector-toolbar
@@ -171,7 +170,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     getContext().getString(R.string.items) : getContext().getString(R.string.item));
 
             ColorFade.fadeToolbarTitleColor(toolbar,
-                    ThemeableActivity.getColorManager().getColor(ThemeableActivity.ColorManager.ACCENT_TEXT_COLOR),
+                    theme.getAccentTextColor(getContext()),
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
@@ -183,6 +182,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     public NestedRecyclerViewAlbumHolder(View itemView) {
         super(itemView);
+
+        theme = Settings.getInstance(getContext()).getThemeInstance(getContext());
 
         nestedRecyclerView = itemView.findViewById(R.id.nestedRecyclerView);
         if (nestedRecyclerView != null) {
@@ -351,7 +352,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         + " " + (paths.length > 1 ?
                         c.getString(R.string.files) : c.getString(R.string.file));
 
-                new AlertDialog.Builder(c, MainActivity.getDialogThemeRes())
+                new AlertDialog.Builder(c, theme.getDialogThemeRes())
                         .setTitle(title)
                         .setNegativeButton(c.getString(R.string.no), null)
                         .setPositiveButton(c.getString(R.string.delete), new DialogInterface.OnClickListener() {
@@ -422,9 +423,9 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             final Toolbar toolbar = new Toolbar(context);
             toolbar.setTag(SELECTOR_TOOLBAR_TAG);
 
-            ThemeableActivity.ColorManager colorManager = ThemeableActivity.getColorManager();
-            int accentColor = colorManager.getColor(ThemeableActivity.ColorManager.ACCENT_COLOR);
-            int accentTextColor = colorManager.getColor(ThemeableActivity.ColorManager.ACCENT_TEXT_COLOR);
+            Theme theme = Settings.getInstance(context).getThemeInstance(context);
+            int accentColor = theme.getAccentColor(context);
+            int accentTextColor = theme.getAccentTextColor(context);
 
             toolbar.setBackgroundColor(accentColor);
 

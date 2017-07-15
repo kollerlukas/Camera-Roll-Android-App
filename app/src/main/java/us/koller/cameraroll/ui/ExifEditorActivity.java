@@ -9,7 +9,6 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.media.ExifInterface;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;
@@ -87,14 +87,14 @@ public class ExifEditorActivity extends ThemeableActivity {
             return;
         }
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new RecyclerViewAdapter(exifInterface,
                 new RecyclerViewAdapter.OnEditCallback() {
@@ -145,7 +145,7 @@ public class ExifEditorActivity extends ThemeableActivity {
                     }
                 }));
 
-        final ViewGroup rootView = (ViewGroup) findViewById(R.id.root_view);
+        final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
@@ -213,7 +213,7 @@ public class ExifEditorActivity extends ThemeableActivity {
         MenuItem save = menu.findItem(R.id.save);
         Drawable d = save.getIcon();
         DrawableCompat.wrap(d);
-        DrawableCompat.setTint(d, textColorSec);
+        DrawableCompat.setTint(d, textColorSecondary);
         save.setIcon(d);
 
         save.setVisible(editedItems.size() > 0);
@@ -288,19 +288,18 @@ public class ExifEditorActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onThemeApplied(boolean lightBaseTheme) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    public void onThemeApplied(Theme theme) {
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(toolbarColor);
-        toolbar.setTitleTextColor(textColor);
+        toolbar.setTitleTextColor(textColorPrimary);
 
-        if (lightBaseTheme) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-            }
+        if (theme.darkStatusBarIcons() &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int statusBarColor = getStatusBarColor(toolbarColor);
+            int statusBarColor = getStatusBarColor();
             getWindow().setStatusBarColor(statusBarColor);
         }
     }
@@ -396,10 +395,10 @@ public class ExifEditorActivity extends ThemeableActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final String tag = ExifUtil.getExifTags()[position];
 
-            TextView tagTV = (TextView) holder.itemView.findViewById(R.id.tag);
+            TextView tagTV = holder.itemView.findViewById(R.id.tag);
             tagTV.setText(tag);
 
-            final EditText value = (EditText) holder.itemView.findViewById(R.id.value);
+            final EditText value = holder.itemView.findViewById(R.id.value);
             EditedItem editedItem = callback.getEditedItem(tag);
 
             value.removeTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
