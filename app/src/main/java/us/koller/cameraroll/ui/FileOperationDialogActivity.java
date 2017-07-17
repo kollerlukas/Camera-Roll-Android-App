@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -294,9 +295,11 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             void setSelected(boolean selected) {
                 final View imageView = itemView.findViewById(R.id.image);
 
-                final Drawable selectorOverlay = Util
-                        .getAlbumItemSelectorOverlay(imageView.getContext());
+                Log.d("FileOperationDialog", "setSelected: " + selected);
+
                 if (selected) {
+                    final Drawable selectorOverlay = Util
+                            .getAlbumItemSelectorOverlay(imageView.getContext());
                     imageView.post(new Runnable() {
                         @Override
                         public void run() {

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -35,9 +36,11 @@ public class EditImageActivity extends AppCompatActivity {
 
     public static final String IMAGE_URI = "IMAGE_URI";
     public static final String IMAGE_PATH = "IMAGE_PATH";
+    private static final String CROP_RECT = "CROP_RECT";
+    private static final String ROTATED_DEGREES = "ROTATED_DEGREES";
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_image);
 
@@ -56,14 +59,22 @@ public class EditImageActivity extends AppCompatActivity {
 
         final CropImageView cropImageView = findViewById(R.id.cropImageView);
 
-        Uri uri;
-        String uriString = intent.getStringExtra(IMAGE_URI);
-        if (uriString != null) {
-            uri = Uri.parse(uriString);
-        } else {
-            return;
+        Uri uri = intent.getData();
+        if (uri == null) {
+            finish();
         }
         cropImageView.setImageUriAsync(uri);
+        //restore cropImageViewState
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(CROP_RECT)
+                && savedInstanceState.containsKey(ROTATED_DEGREES)) {
+            Rect cropRect = savedInstanceState.getParcelable(CROP_RECT);
+            cropImageView.setCropRect(cropRect);
+            int rotatedDegrees = savedInstanceState.getInt(ROTATED_DEGREES);
+            //setRotatedDegrees() not working ???
+            cropImageView.setRotatedDegrees(rotatedDegrees);
+        }
+
 
         SeekBar seekbar = findViewById(R.id.seekbar);
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -255,5 +266,14 @@ public class EditImageActivity extends AppCompatActivity {
                     }
                 });
         animator.start();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        CropImageView cropImageView = findViewById(R.id.cropImageView);
+        outState.putParcelable(CROP_RECT, cropImageView.getCropRect());
+        outState.putInt(ROTATED_DEGREES, cropImageView.getRotatedDegrees());
     }
 }

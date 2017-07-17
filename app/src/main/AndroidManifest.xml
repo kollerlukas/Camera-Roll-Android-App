@@ -79,6 +79,7 @@
         <activity
             android:name=".ui.EditImageActivity"
             android:launchMode="singleTop"
+            android:label="@string/edit"
             android:theme="@style/Theme.CameraRoll.EditImage" />
 
         <activity
@@ -119,17 +120,16 @@
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.EDIT" />
+                <action android:name="com.android.camera.action.REVIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
             </intent-filter>
 
             <intent-filter>
-                <action android:name="com.android.camera.action.REVIEW" />
+                <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
 

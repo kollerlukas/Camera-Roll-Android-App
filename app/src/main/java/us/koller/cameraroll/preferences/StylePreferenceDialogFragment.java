@@ -52,7 +52,7 @@ public class StylePreferenceDialogFragment
         @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext())
                 .inflate(R.layout.pref_dialog_style, null);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        ViewPager viewPager = view.findViewById(R.id.view_pager);
         viewPager.setAdapter(new ViewPagerAdapter());
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -72,8 +72,7 @@ public class StylePreferenceDialogFragment
 
         viewPager.setCurrentItem(currentItem);
 
-        InkPageIndicator inkPageIndicator
-                = (InkPageIndicator) view.findViewById(R.id.indicator);
+        InkPageIndicator inkPageIndicator = view.findViewById(R.id.indicator);
         inkPageIndicator.setViewPager(viewPager);
 
         return new AlertDialog.Builder(getContext())
@@ -126,10 +125,10 @@ public class StylePreferenceDialogFragment
             View view = LayoutInflater.from(container.getContext())
                     .inflate(R.layout.pref_dialog_style_item, container, false);
 
-            TextView textView = (TextView) view.findViewById(R.id.name);
+            TextView textView = view.findViewById(R.id.name);
             textView.setText(nameRess[position]);
 
-            ImageView imageView = (ImageView) view.findViewById(R.id.image);
+            ImageView imageView = view.findViewById(R.id.image);
             Glide.with(imageView.getContext())
                     .load(imageRess[position])
                     .into(imageView);

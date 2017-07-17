@@ -292,6 +292,10 @@ public class SettingsActivity extends ThemeableActivity {
 
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
+            if (callback != null) {
+                callback.onSettingChanged();
+            }
+
             DialogFragment dialogFragment = null;
             if (preference instanceof StylePreference) {
                 dialogFragment

@@ -468,7 +468,7 @@ public class ItemActivity extends ThemeableActivity {
             startActivityForResult(Intent.createChooser(intent,
                     getString(R.string.set_as)), 13);
         } catch (SecurityException se) {
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "No App found to set your photo", Toast.LENGTH_SHORT).show();
@@ -487,7 +487,7 @@ public class ItemActivity extends ThemeableActivity {
             startActivityForResult(Intent.createChooser(intent,
                     getString(R.string.set_as)), 13);
         } catch (SecurityException se) {
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "No App found to view your " + albumItem.getType(), Toast.LENGTH_SHORT).show();
@@ -507,7 +507,7 @@ public class ItemActivity extends ThemeableActivity {
         if (shareIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_photo)));
         } else {
-            Log.d("ItemActivity", "sharePhoto: else {}");
+            Toast.makeText(this, "No App found to share your " + albumItem.getType(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -524,14 +524,14 @@ public class ItemActivity extends ThemeableActivity {
             photoPrinter.printBitmap(albumItem.getPath(),
                     albumItem.getUri(this));
         } catch (FileNotFoundException e) {
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error (FileNotFoundException)", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
 
     public void editPhoto() {
         Uri uri = albumItem.getUri(this);
-        Log.d("ItemActivity", "editPhoto(): " + uri);
+        Log.d("ItemActivity", "editPhoto(): " + uri + "; MimeType: " + MediaType.getMimeType(this, albumItem.getPath()));
 
         Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()))
@@ -547,7 +547,7 @@ public class ItemActivity extends ThemeableActivity {
                         + albumItem.getType(), Toast.LENGTH_SHORT).show();
             }
         } catch (SecurityException se) {
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
         }
     }

@@ -18,15 +18,14 @@ public class MediaType {
     }
 
     public static String getMimeType(Context context, String path) {
+        Uri uri = StorageUtil.getContentUriFromFilePath(context, path);
+        String mimeType = context.getContentResolver().getType(uri);
+        if (mimeType != null) {
+            return mimeType;
+        }
+        //try fileExtension
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(path);
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
-        if (mimeType == null) {
-            mimeType = context.getContentResolver().getType(Uri.parse(path));
-        }
-        if (mimeType == null) {
-            mimeType = checkImageExtension(path) || checkGifExtension(path) ? "image/*" :
-                    checkVideoExtension(path) ? "video/*" : "error";
-        }
+        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
         return mimeType;
     }
 

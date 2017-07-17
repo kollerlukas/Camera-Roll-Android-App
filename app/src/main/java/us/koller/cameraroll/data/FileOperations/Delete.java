@@ -38,8 +38,10 @@ public class Delete extends FileOperation {
                     return;
                 }
                 result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
+                Log.d("Delete", "execute: deleteFileOnRemovableStorage()");
             } else {
                 result = deleteFile(getApplicationContext(), files[i].getPath());
+                Log.d("Delete", "execute: deleteFile()");
             }
 
             if (result) {
@@ -93,8 +95,9 @@ public class Delete extends FileOperation {
                     deleteFile(context, files[i].getPath());
                 }
             }
-            success = file.exists() && file.delete();
+            success = file.delete();
         }
+        FileOperation.Util.scanPaths(context, new String[]{path}, new long[]{-1}, null);
         return success;
     }
 

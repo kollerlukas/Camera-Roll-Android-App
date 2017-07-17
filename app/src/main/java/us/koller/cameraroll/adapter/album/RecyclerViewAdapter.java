@@ -17,11 +17,14 @@ import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.ViewHolder.AlbumItemHolder;
 import us.koller.cameraroll.adapter.album.ViewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.album.ViewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.album.ViewHolder.RAWImageHolder;
 import us.koller.cameraroll.adapter.album.ViewHolder.VideoViewHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.RAWImage;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.ui.MainActivity;
 
@@ -31,6 +34,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private final int VIEW_TYPE_PHOTO = 1;
     private final int VIEW_TYPE_GIF = 2;
     private final int VIEW_TYPE_VIDEO = 3;
+    private final int VIEW_TYPE_RAW = 4;
 
     private Album album;
 
@@ -81,13 +85,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         AlbumItem albumItem = album.getAlbumItems().get(position);
-        if (albumItem instanceof Photo) {
-            return VIEW_TYPE_PHOTO;
+        if (albumItem instanceof RAWImage) {
+            return VIEW_TYPE_RAW;
         } else if (albumItem instanceof Gif) {
             return VIEW_TYPE_GIF;
-        } else {
+        } else if (albumItem instanceof Photo) {
+            return VIEW_TYPE_PHOTO;
+        } else if (albumItem instanceof Video) {
             return VIEW_TYPE_VIDEO;
         }
+        return -1;
     }
 
     @Override
@@ -95,13 +102,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.albumitem_cover, parent, false);
         switch (viewType) {
-            case VIEW_TYPE_VIDEO:
-                return new VideoViewHolder(v);
+            case VIEW_TYPE_RAW:
+                return new RAWImageHolder(v);
             case VIEW_TYPE_GIF:
                 return new GifViewHolder(v);
-            default:
+            case VIEW_TYPE_PHOTO:
                 return new PhotoViewHolder(v);
+            case VIEW_TYPE_VIDEO:
+                return new VideoViewHolder(v);
         }
+        return null;
     }
 
     @Override

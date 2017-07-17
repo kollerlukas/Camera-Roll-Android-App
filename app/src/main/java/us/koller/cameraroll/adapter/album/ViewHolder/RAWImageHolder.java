@@ -5,16 +5,20 @@ import android.widget.ImageView;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.RAWImage;
 
-public class PhotoViewHolder extends AlbumItemHolder {
+public class RAWImageHolder extends AlbumItemHolder {
 
-    public PhotoViewHolder(View itemView) {
+    public RAWImageHolder(View itemView) {
         super(itemView);
     }
 
     @Override
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
         super.loadImage(imageView, albumItem);
+    }
+
+    @Override
+    int getIndicatorDrawableResource() {
+        return R.drawable.raw_indicator;
     }
 }

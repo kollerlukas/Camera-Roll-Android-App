@@ -1,10 +1,9 @@
 package us.koller.cameraroll.adapter.album.ViewHolder;
 
 import android.graphics.Bitmap;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,8 +23,8 @@ import us.koller.cameraroll.util.animators.ColorFade;
 public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
 
     public AlbumItem albumItem;
-
     private boolean selected = false;
+    private Drawable selectorOverlay;
 
     AlbumItemHolder(View itemView) {
         super(itemView);
@@ -49,8 +48,22 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
     private void addIndicatorDrawable(View itemView) {
         int indicatorRes = getIndicatorDrawableResource();
         if (indicatorRes != -1) {
-            ImageView indicator = itemView.findViewById(R.id.indicator);
-            indicator.setImageResource(indicatorRes);
+            final ImageView imageView = itemView.findViewById(R.id.image);
+            final Drawable indicatorOverlay
+                    = ContextCompat.getDrawable(itemView.getContext(), indicatorRes);
+            imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    final int overlayPadding = (int) (imageView.getWidth() * 0.05f);
+                    final int overlayDimens = (int) (imageView.getWidth() * 0.3f);
+                    indicatorOverlay.setBounds(
+                            imageView.getWidth() - overlayDimens - overlayPadding,
+                            imageView.getHeight() - overlayDimens,
+                            imageView.getWidth() - overlayPadding,
+                            imageView.getHeight());
+                    imageView.getOverlay().add(indicatorOverlay);
+                }
+            });
         }
     }
 
@@ -110,13 +123,14 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
                 .scaleY(scale)
                 .start();
 
-        final Drawable selectorOverlay = Util
-                .getAlbumItemSelectorOverlay(imageView.getContext());
+        if (selectorOverlay == null) {
+            selectorOverlay = Util.getAlbumItemSelectorOverlay(imageView.getContext());
+        }
         if (selected) {
             imageView.post(new Runnable() {
                 @Override
                 public void run() {
-                    imageView.getOverlay().clear();
+                    imageView.getOverlay().remove(selectorOverlay);
                     selectorOverlay.setBounds(0, 0,
                             imageView.getWidth(),
                             imageView.getHeight());
@@ -127,7 +141,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
             imageView.post(new Runnable() {
                 @Override
                 public void run() {
-                    imageView.getOverlay().clear();
+                    imageView.getOverlay().remove(selectorOverlay);
                 }
             });
         }

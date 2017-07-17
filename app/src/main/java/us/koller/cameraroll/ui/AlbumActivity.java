@@ -32,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,7 +41,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -386,6 +386,7 @@ public class AlbumActivity extends ThemeableActivity
         switch (intent.getAction()) {
             case ALBUM_ITEM_DELETED:
                 final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
+                Log.d("AlbumActivity", "ALBUM_ITEM_DELETED: " + albumItem.getPath());
 
                 int k = album.getAlbumItems().indexOf(albumItem);
                 if (k >= 0 && k < album.getAlbumItems().size()) {
@@ -398,8 +399,6 @@ public class AlbumActivity extends ThemeableActivity
                     final int index = k;
                     album.getAlbumItems().remove(index);
                     recyclerView.getAdapter().notifyDataSetChanged();
-                } else {
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
                 }
                 break;
             case VIEW_ALBUM:

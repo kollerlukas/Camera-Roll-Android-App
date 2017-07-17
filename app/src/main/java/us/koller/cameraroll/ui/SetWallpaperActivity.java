@@ -64,6 +64,7 @@ public class SetWallpaperActivity extends AppCompatActivity {
         }
         imageView.setImage(ImageSource.uri(imageUri), imageViewState);
         imageView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
+
         // use custom decoders
         imageView.setBitmapDecoderClass(GlideImageDecoder.class);
         imageView.setRegionDecoderClass(CustomRegionDecoder.class);

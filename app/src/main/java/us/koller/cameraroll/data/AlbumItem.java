@@ -123,8 +123,7 @@ public abstract class AlbumItem
                        .getContentUriFromFilePath(context, getPath());
             }*/
 
-            return StorageUtil
-                    .getContentUriFromFilePath(context, getPath());
+            return StorageUtil.getContentUriFromFilePath(context, getPath());
         }
         return Uri.parse(getPath());
     }
