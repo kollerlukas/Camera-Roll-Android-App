@@ -1,9 +1,11 @@
 package us.koller.cameraroll.data;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.OpenableColumns;
 
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.signature.ObjectKey;
@@ -24,40 +26,71 @@ public abstract class AlbumItem
 
     private String name;
     private String path;
+    private Uri uri;
     private long dateTaken;
     private int[] imageDimens;
 
     public boolean error = false;
-    public boolean contentUri = false;
     public boolean isSharedElement = false;
     public boolean hasFadedIn = false;
 
     //factory method
-    public static AlbumItem getInstance(final Context context, String path) {
+    public static AlbumItem getInstance(String path) {
         if (path == null) {
             return null;
         }
 
         AlbumItem albumItem = null;
-        if (MediaType.isGif(context, path)) {
+        if (MediaType.isGif(path)) {
             albumItem = new Gif();
-        } else if (MediaType.isRAWImage(context, path)) {
+        } else if (MediaType.isRAWImage(path)) {
             albumItem = new RAWImage();
-        } else if (MediaType.isImage(context, path)) {
+        } else if (MediaType.isImage(path)) {
             albumItem = new Photo();
-        } else if (MediaType.isVideo(context, path)) {
+        } else if (MediaType.isVideo(path)) {
             albumItem = new Video();
         }
 
         if (albumItem != null) {
             albumItem.setPath(path)
                     .setName(new File(path).getName());
-
-            if (path.startsWith("content")) {
-                albumItem.contentUri = true;
-            }
         }
 
+        return albumItem;
+    }
+
+    public static AlbumItem getInstance(final Context context, Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+
+        AlbumItem albumItem = null;
+        if (MediaType.isGif(context, uri)) {
+            albumItem = new Gif();
+        } else if (MediaType.isRAWImage(context, uri)) {
+            albumItem = new RAWImage();
+        } else if (MediaType.isImage(context, uri)) {
+            albumItem = new Photo();
+        } else if (MediaType.isVideo(context, uri)) {
+            albumItem = new Video();
+        }
+
+        if (albumItem != null) {
+            albumItem.setPath("N/A");
+            albumItem.setUri(uri);
+
+            //retrieve file name
+            Cursor cursor = context.getContentResolver().query(uri,
+                    null, null, null, null);
+            if (cursor != null) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                cursor.moveToFirst();
+                albumItem.setName(cursor.getString(nameIndex));
+                cursor.close();
+            } else {
+                albumItem.setName("");
+            }
+        }
         return albumItem;
     }
 
@@ -108,24 +141,25 @@ public abstract class AlbumItem
         return false;
     }
 
+    private void setUri(Uri uri) {
+        this.uri = uri;
+    }
+
     public Uri getUri(Context context) {
-        if (!contentUri) {
+        if (uri == null) {
             //my file provider isn't working with Google Photos ?!
             /*try {
                 File file = new File(getPath());
-                return FileProvider.getUriForFile(context,
+                uri =  FileProvider.getUriForFile(context,
                         context.getApplicationContext().getPackageName() + ".provider", file);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-
-                //file is probably on removable storage
-                return StorageUtil
-                       .getContentUriFromFilePath(context, getPath());
+                uri = StorageUtil.getContentUriFromFilePath(context, getPath());
             }*/
 
-            return StorageUtil.getContentUriFromFilePath(context, getPath());
+            uri = StorageUtil.getContentUriFromFilePath(context, getPath());
         }
-        return Uri.parse(getPath());
+        return uri;
     }
 
     public int[] getImageDimens(Context context) {
@@ -147,7 +181,7 @@ public abstract class AlbumItem
         this.name = parcel.readString();
         this.path = parcel.readString();
         this.error = Boolean.parseBoolean(parcel.readString());
-        this.contentUri = Boolean.parseBoolean(parcel.readString());
+        this.uri = Uri.parse(parcel.readString());
     }
 
     @Override
@@ -176,7 +210,7 @@ public abstract class AlbumItem
         parcel.writeString(name);
         parcel.writeString(path);
         parcel.writeString(String.valueOf(error));
-        parcel.writeString(String.valueOf(contentUri));
+        parcel.writeString(String.valueOf(uri));
     }
 
     @SuppressWarnings("WeakerAccess")

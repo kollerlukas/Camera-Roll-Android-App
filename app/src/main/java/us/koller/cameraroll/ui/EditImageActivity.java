@@ -34,8 +34,6 @@ import us.koller.cameraroll.util.Util;
 
 public class EditImageActivity extends AppCompatActivity {
 
-    public static final String IMAGE_URI = "IMAGE_URI";
-    public static final String IMAGE_PATH = "IMAGE_PATH";
     private static final String CROP_RECT = "CROP_RECT";
     private static final String ROTATED_DEGREES = "ROTATED_DEGREES";
 

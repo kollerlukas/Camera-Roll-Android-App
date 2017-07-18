@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:background="@color/black_translucent2">
+        android:background="@drawable/transparent_to_dark_gradient">
 
         <SeekBar
             android:id="@+id/seekbar"

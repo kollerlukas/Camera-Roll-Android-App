@@ -103,7 +103,7 @@ public class Copy extends FileOperation {
             }
 
             if (!file.isDirectory()) {
-                AlbumItem oldAlbumItem = AlbumItem.getInstance(context, path);
+                AlbumItem oldAlbumItem = AlbumItem.getInstance(path);
                 DateTakenRetriever.tryToRetrieveDateTaken(context, oldAlbumItem);
                 long dateAdded = oldAlbumItem.getDateTaken();
 

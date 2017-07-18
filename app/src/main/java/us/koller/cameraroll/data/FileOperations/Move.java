@@ -84,7 +84,7 @@ public class Move extends FileOperation {
             if (i < oldPaths.length) {
                 dateAddedTimeStamps[i] = -1;
             } else {
-                AlbumItem albumItem = AlbumItem.getInstance(context, oldPaths[i - oldPaths.length]);
+                AlbumItem albumItem = AlbumItem.getInstance(oldPaths[i - oldPaths.length]);
                 DateTakenRetriever.tryToRetrieveDateTaken(context, albumItem);
                 dateAddedTimeStamps[i] = albumItem.getDateTaken();
             }

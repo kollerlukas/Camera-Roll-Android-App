@@ -37,7 +37,7 @@ public class FileHolder extends RecyclerView.ViewHolder {
             } else {
                 folderIndicator.setImageResource(R.drawable.ic_folder_white_24dp);
             }
-        } else if (MediaType.isVideo(folderIndicator.getContext(), file.getPath())) {
+        } else if (MediaType.isVideo(file.getPath())) {
             folderIndicator.setImageResource(R.drawable.ic_videocam_white_24dp);
         } else {
             folderIndicator.setImageResource(R.drawable.ic_photo_white_24dp);

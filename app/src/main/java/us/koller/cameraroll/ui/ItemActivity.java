@@ -39,7 +39,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,7 +68,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
@@ -461,7 +459,7 @@ public class ItemActivity extends ThemeableActivity {
         Uri uri = albumItem.getUri(this);
 
         Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-        intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
+        intent.setDataAndType(uri, MediaType.getMimeType(this, uri));
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
@@ -480,7 +478,7 @@ public class ItemActivity extends ThemeableActivity {
         Uri uri = albumItem.getUri(this);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()));
+        intent.setDataAndType(uri, MediaType.getMimeType(this, uri));
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
@@ -500,7 +498,7 @@ public class ItemActivity extends ThemeableActivity {
 
         Intent shareIntent = ShareCompat.IntentBuilder.from(this)
                 .addStream(uri)
-                .setType(MediaType.getMimeType(this, albumItem.getPath()))
+                .setType(MediaType.getMimeType(this, uri))
                 .getIntent();
 
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -521,7 +519,8 @@ public class ItemActivity extends ThemeableActivity {
         PrintHelper photoPrinter = new PrintHelper(this);
         photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
         try {
-            photoPrinter.printBitmap(albumItem.getPath(),
+            photoPrinter.printBitmap(
+                    albumItem.getPath(),
                     albumItem.getUri(this));
         } catch (FileNotFoundException e) {
             Toast.makeText(this, "Error (FileNotFoundException)", Toast.LENGTH_SHORT).show();
@@ -531,12 +530,10 @@ public class ItemActivity extends ThemeableActivity {
 
     public void editPhoto() {
         Uri uri = albumItem.getUri(this);
-        Log.d("ItemActivity", "editPhoto(): " + uri + "; MimeType: " + MediaType.getMimeType(this, albumItem.getPath()));
 
         Intent intent = new Intent(Intent.ACTION_EDIT)
-                .setDataAndType(uri, MediaType.getMimeType(this, albumItem.getPath()))
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .putExtra(EditImageActivity.IMAGE_PATH, albumItem.getPath());
+                .setDataAndType(uri, MediaType.getMimeType(this, uri))
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
             if (intent.resolveActivity(getPackageManager()) != null) {
@@ -619,10 +616,6 @@ public class ItemActivity extends ThemeableActivity {
         }
 
         boolean exifSupported = exif != null;
-        if (!albumItem.contentUri) {
-            exifSupported = exifSupported &&
-                    MediaType.doesSupportExif(albumItem.getPath());
-        }
 
         final View rootView = LayoutInflater.from(this)
                 .inflate(R.layout.info_dialog_layout,
@@ -669,19 +662,16 @@ public class ItemActivity extends ThemeableActivity {
                 String name = albumItem.getName();
                 String path = file.getPath();
                 String size;
-                if (view_only) {
-                    size = getFileSize(file.length());
+                //retrieve fileSoze form MediaStore
+                Cursor cursor = getContentResolver().query(albumItem.getUri(ItemActivity.this),
+                        null, null, null, null);
+                if (cursor != null) {
+                    int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                    cursor.moveToFirst();
+                    size = getFileSize(cursor.getLong(sizeIndex));
+                    cursor.close();
                 } else {
-                    Cursor cursor = getContentResolver().query(albumItem.getUri(ItemActivity.this),
-                            null, null, null, null);
-                    if (cursor != null) {
-                        int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
-                        cursor.moveToFirst();
-                        size = Long.toString(cursor.getLong(sizeIndex));
-                        cursor.close();
-                    } else {
-                        size = "0";
-                    }
+                    size = getFileSize(0);
                 }
 
 
@@ -914,11 +904,12 @@ public class ItemActivity extends ThemeableActivity {
     @Override
     public void onBackPressed() {
         if (view_only) {
-            if (getIntent().getBooleanExtra(FINISH_AFTER, false)) {
+            /*if (getIntent().getBooleanExtra(FINISH_AFTER, false)) {
                 this.finishAffinity();
             } else {
                 this.finish();
-            }
+            }*/
+            this.finish();
         } else {
             showUI(false);
             ViewHolder viewHolder = ((ViewPagerAdapter)
@@ -963,24 +954,6 @@ public class ItemActivity extends ThemeableActivity {
     @Override
     public int getLightThemeRes() {
         return R.style.Theme_CameraRoll_Light_PhotoView;
-    }
-
-    @Override
-    public void onThemeApplied(Theme theme) {
-        /*if (theme.isBaseLight()) {
-            int white = ContextCompat.getColor(this, R.color.white);
-
-            Drawable d = toolbar.getNavigationIcon();
-            if (d != null) {
-                DrawableCompat.wrap(d);
-                DrawableCompat.setTint(d.mutate(), white);
-                toolbar.setNavigationIcon(d);
-            }
-
-            toolbar.setTitleTextColor(white);
-
-            Util.colorToolbarOverflowMenuIcon(toolbar, white);
-        }*/
     }
 
     @Override
@@ -1103,8 +1076,7 @@ public class ItemActivity extends ThemeableActivity {
             ColorHolder(View itemView, String path) {
                 super(itemView);
 
-                AlbumItem albumItem
-                        = AlbumItem.getInstance(itemView.getContext(), path);
+                AlbumItem albumItem = AlbumItem.getInstance(path);
 
                 if (albumItem instanceof Photo || albumItem instanceof Gif) {
                     uri = albumItem.getUri(itemView.getContext());

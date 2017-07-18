@@ -51,7 +51,7 @@ public class AlbumLoader extends ItemLoader {
     public void onFile(final Activity context, File file) {
         if (MediaType.isMedia(file.getPath())) {
             final AlbumItem albumItem
-                    = AlbumItem.getInstance(context, file.getPath());
+                    = AlbumItem.getInstance(file.getPath());
             if (albumItem != null) {
                 if (dateRetriever != null) {
                     dateRetriever.retrieveDate(context, albumItem);

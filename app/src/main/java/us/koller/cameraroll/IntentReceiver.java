@@ -1,10 +1,8 @@
 package us.koller.cameraroll;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -49,27 +47,12 @@ public class IntentReceiver extends AppCompatActivity {
             return;
         }
 
-        String path = uri.toString();
-        int index = path.lastIndexOf("/");
-
-        Album album = new Album().setPath(path.substring(0, index));
-        AlbumItem albumItem = AlbumItem.getInstance(this, path);
+        Album album = new Album().setPath("");
+        AlbumItem albumItem = AlbumItem.getInstance(this, uri);
         if (albumItem == null) {
             Toast.makeText(this, getString(R.string.error), Toast.LENGTH_SHORT).show();
             this.finish();
             return;
-        }
-
-        //retrieve file name
-        Cursor cursor = getContentResolver().query(uri,
-                null, null, null, null);
-        if (cursor != null) {
-            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-            cursor.moveToFirst();
-            albumItem.setName(cursor.getString(nameIndex));
-            cursor.close();
-        } else {
-            albumItem.setName("");
         }
 
         album.getAlbumItems().add(albumItem);
@@ -102,15 +85,9 @@ public class IntentReceiver extends AppCompatActivity {
     }
 
     private void edit(Intent intent) {
-        String path = intent.getStringExtra(EditImageActivity.IMAGE_PATH);
-
         Intent edit = new Intent(this, EditImageActivity.class)
                 .setAction(Intent.ACTION_EDIT)
                 .setData(intent.getData());
-
-        if (path != null) {
-            edit.putExtra(EditImageActivity.IMAGE_PATH, path);
-        }
 
         startActivity(edit);
         this.finish();

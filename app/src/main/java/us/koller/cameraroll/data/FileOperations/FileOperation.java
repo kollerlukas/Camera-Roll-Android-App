@@ -336,7 +336,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         public void onScanCompleted(String path, Uri uri) {
                             pathsScanned++;
 
-                            if (MediaType.isMedia_MimeType(context, path)) {
+                            if (MediaType.isMedia(path)) {
                                 ContentResolver resolver = context.getContentResolver();
                                 if (new File(path).exists()) {
                                     //add File to media store
@@ -358,14 +358,14 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
                                     ContentValues values = new ContentValues();
                                     values.put(MediaStore.MediaColumns.DATA, path);
-                                    if (MediaType.isImage(context, path)) {
+                                    if (MediaType.isImage(path)) {
                                         //add image
                                         values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(context, path));
                                         if (dateTaken != -1) {
                                             values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
                                         }
                                         resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                                    } else if (MediaType.isVideo(context, path)) {
+                                    } else if (MediaType.isVideo(path)) {
                                         //add video
                                         values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(context, path));
                                         if (dateTaken != -1) {

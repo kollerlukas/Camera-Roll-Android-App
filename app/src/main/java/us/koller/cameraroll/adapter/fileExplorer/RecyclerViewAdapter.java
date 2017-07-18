@@ -91,7 +91,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                     //load Album
                     final Album album = new Album().setPath(path);
-                    AlbumItem albumItem = AlbumItem.getInstance(holder.itemView.getContext(), file.getPath());
+                    AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
                     if (albumItem != null) {
                         album.getAlbumItems().add(albumItem);
                     }

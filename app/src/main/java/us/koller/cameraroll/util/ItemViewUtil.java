@@ -1,5 +1,6 @@
 package us.koller.cameraroll.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
@@ -54,7 +55,9 @@ public class ItemViewUtil {
 
         imageView.setMinimumDpi(80);
 
-        imageView.setImage(ImageSource.uri(photo.getPath()), imageViewState);
+        imageView.setImage(
+                ImageSource.uri(photo.getUri(imageView.getContext())),
+                imageViewState);
 
         if (onImageEventListener != null) {
             imageView.setOnImageEventListener(onImageEventListener);
@@ -85,9 +88,11 @@ public class ItemViewUtil {
                 .error(R.drawable.error_placeholder_tinted)
                 .signature(albumItem.getGlideSignature());
 
-        Glide.with(imageView.getContext())
+        Context context = imageView.getContext();
+
+        Glide.with(context)
                 .asBitmap()
-                .load(albumItem.getPath())
+                .load(albumItem.getUri(context))
                 .listener(new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
@@ -125,9 +130,11 @@ public class ItemViewUtil {
                 .error(R.drawable.error_placeholder_tinted)
                 .signature(albumItem.getGlideSignature());
 
-        Glide.with(imageView.getContext())
+        Context context = imageView.getContext();
+
+        Glide.with(context)
                 .asGif()
-                .load(albumItem.getPath())
+                .load(albumItem.getUri(context))
                 .listener(new RequestListener<GifDrawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,

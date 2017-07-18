@@ -13,13 +13,9 @@ public class MediaType {
                 checkVideoExtension(path);
     }
 
-    public static boolean isMedia_MimeType(Context context, String path) {
-        return isImage(context, path) || isVideo(context, path) || isGif(context, path);
-    }
-
     public static String getMimeType(Context context, String path) {
         Uri uri = StorageUtil.getContentUriFromFilePath(context, path);
-        String mimeType = context.getContentResolver().getType(uri);
+        String mimeType = getMimeType(context, uri);
         if (mimeType != null) {
             return mimeType;
         }
@@ -29,59 +25,63 @@ public class MediaType {
         return mimeType;
     }
 
+    public static String getMimeType(Context context, Uri uri) {
+        return context.getContentResolver().getType(uri);
+    }
+
     //trying to check via mimeType
-    public static boolean isImage(Context context, String path) {
-        if (path != null) {
-            if (path.startsWith("content")) {
-                //performance
-                String mimeType = getMimeType(context, path);
-                if (mimeType != null) {
-                    return mimeType.contains("image");
-                }
+    public static boolean isImage(String path) {
+        return path != null && checkImageExtension(path);
+    }
+
+    public static boolean isImage(Context context, Uri uri) {
+        if (uri != null) {
+            String mimeType = getMimeType(context, uri);
+            if (mimeType != null) {
+                return mimeType.contains("image");
             }
-            return checkImageExtension(path);
         }
         return false;
     }
 
-    public static boolean isVideo(Context context, String path) {
-        if (path != null) {
-            if (path.startsWith("content")) {
-                //performance
-                String mimeType = getMimeType(context, path);
-                if (mimeType != null) {
-                    return mimeType.contains("video");
-                }
+    public static boolean isVideo(String path) {
+        return path != null && checkVideoExtension(path);
+    }
+
+    public static boolean isVideo(Context context, Uri uri) {
+        if (uri != null) {
+            String mimeType = getMimeType(context, uri);
+            if (mimeType != null) {
+                return mimeType.contains("video");
             }
-            return checkVideoExtension(path);
         }
         return false;
     }
 
-    public static boolean isGif(Context context, String path) {
-        if (path != null) {
-            if (path.startsWith("content")) {
-                //performance
-                String mimeType = getMimeType(context, path);
-                if (mimeType != null) {
-                    return mimeType.contains("gif");
-                }
+    public static boolean isGif(String path) {
+        return path != null && checkGifExtension(path);
+    }
+
+    public static boolean isGif(Context context, Uri uri) {
+        if (uri != null) {
+            String mimeType = getMimeType(context, uri);
+            if (mimeType != null) {
+                return checkGifExtension(mimeType);
             }
-            return checkGifExtension(path);
         }
         return false;
     }
 
-    public static boolean isRAWImage(Context context, String path) {
-        if (path != null) {
-            if (path.startsWith("content")) {
-                //performance
-                String mimeType = getMimeType(context, path);
-                if (mimeType != null) {
-                    return checkRAWExtension(mimeType);
-                }
+    public static boolean isRAWImage(String path) {
+        return path != null && checkRAWExtension(path);
+    }
+
+    public static boolean isRAWImage(Context context, Uri uri) {
+        if (uri != null) {
+            String mimeType = getMimeType(context, uri);
+            if (mimeType != null) {
+                return checkRAWExtension(mimeType);
             }
-            return checkRAWExtension(path);
         }
         return false;
     }

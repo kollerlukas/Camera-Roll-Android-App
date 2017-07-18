@@ -192,7 +192,7 @@ public class SelectorModeManager {
     private static AlbumItem[] createAlbumItemArray(Context c, ArrayList<String> arr) {
         AlbumItem[] albumItems = new AlbumItem[arr.size()];
         for (int i = 0; i < arr.size(); i++) {
-            albumItems[i] = AlbumItem.getInstance(c, arr.get(i));
+            albumItems[i] = AlbumItem.getInstance(arr.get(i));
         }
         return albumItems;
     }
@@ -208,7 +208,7 @@ public class SelectorModeManager {
     private static ArrayList<String> sortStringArray(Activity context, ArrayList<String> paths) {
         ArrayList<AlbumItem> albumItems = new ArrayList<>();
         for (int i = 0; i < paths.size(); i++) {
-            albumItems.add(AlbumItem.getInstance(context, paths.get(i)));
+            albumItems.add(AlbumItem.getInstance(paths.get(i)));
         }
         int sortBy = Settings.getInstance(context).sortAlbumBy();
         SortUtil.sort(albumItems, sortBy);

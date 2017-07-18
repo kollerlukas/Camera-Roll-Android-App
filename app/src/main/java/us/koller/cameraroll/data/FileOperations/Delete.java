@@ -71,7 +71,7 @@ public class Delete extends FileOperation {
 
     private static boolean deleteFile(final Context context, String path) {
         boolean success;
-        if (MediaType.isMedia_MimeType(context, path)) {
+        if (MediaType.isMedia(path)) {
             Log.d("Delete", "deleteFile: ContentResolver");
             ContentResolver resolver = context.getContentResolver();
 
