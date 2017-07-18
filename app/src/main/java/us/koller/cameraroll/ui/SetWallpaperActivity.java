@@ -178,16 +178,7 @@ public class SetWallpaperActivity extends AppCompatActivity {
         SubsamplingScaleImageView imageView = findViewById(R.id.imageView);
         PointF center = imageView.getCenter();
         int left = (int) (center.x - imageView.getWidth() / 2);
-
         return new Rect(left, 0, imageView.getSWidth(), imageView.getSHeight());
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        SubsamplingScaleImageView imageView = findViewById(R.id.imageView);
-        imageView.recycle();
     }
 
     @Override

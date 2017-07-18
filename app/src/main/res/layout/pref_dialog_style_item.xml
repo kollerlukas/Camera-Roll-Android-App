@@ -13,8 +13,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
         android:fontFamily="@font/roboto_mono_regular"
-        android:textSize="18sp"
-        tools:ignore="MissingPrefix" />
+        android:textSize="18sp" />
 
     <ImageView
         android:id="@+id/image"

@@ -3,21 +3,13 @@ package us.koller.cameraroll.ui;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.provider.OpenableColumns;
-import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,8 +25,6 @@ import android.support.v4.print.PrintHelper;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -48,26 +38,18 @@ import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.item.InfoRecyclerViewAdapter;
 import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
@@ -80,7 +62,6 @@ import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
-import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.ZoomOutPageTransformer;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
@@ -104,7 +85,6 @@ public class ItemActivity extends ThemeableActivity {
     private static final String WAS_SYSTEM_UI_HIDDEN = "WAS_SYSTEM_UI_HIDDEN";
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
-    private static final String NO_DATA = "Unknown";
     public static final String SHARED_ELEMENT_RETURN_TRANSITION = "SHARED_ELEMENT_RETURN_TRANSITION";
 
     private boolean isReturning;
@@ -599,23 +579,8 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     public void showInfoDialog() {
-        ExifInterface exif = null;
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri uri = albumItem.getUri(this);
-                InputStream is = getContentResolver().openInputStream(uri);
-                if (is != null) {
-                    exif = new ExifInterface(is);
-                }
-
-            } else {
-                exif = new ExifInterface(albumItem.getPath());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        boolean exifSupported = exif != null;
+        final InfoRecyclerViewAdapter adapter = new InfoRecyclerViewAdapter();
+        boolean exifSupported = adapter.exifSupported(this, albumItem);
 
         final View rootView = LayoutInflater.from(this)
                 .inflate(R.layout.info_dialog_layout,
@@ -652,112 +617,47 @@ public class ItemActivity extends ThemeableActivity {
         infoDialog = builder.create();
         infoDialog.show();
 
-        final boolean finalExifSupported = exifSupported;
-        final ExifInterface finalExif = exif;
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                File file = new File(albumItem.getPath());
-
-                String name = albumItem.getName();
-                String path = file.getPath();
-                String size;
-                //retrieve fileSoze form MediaStore
-                Cursor cursor = getContentResolver().query(albumItem.getUri(ItemActivity.this),
-                        null, null, null, null);
-                if (cursor != null) {
-                    int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
-                    cursor.moveToFirst();
-                    size = getFileSize(cursor.getLong(sizeIndex));
-                    cursor.close();
-                } else {
-                    size = getFileSize(0);
-                }
-
-
-                String height = NO_DATA,
-                        width = NO_DATA,
-                        date = NO_DATA,
-                        focal_length = NO_DATA,
-                        exposure = NO_DATA,
-                        model = NO_DATA,
-                        aperture = NO_DATA,
-                        iso = NO_DATA;
-
-                if (finalExifSupported) {
-                    if (finalExif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
-                        height = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_IMAGE_LENGTH));
-                    }
-                    if (finalExif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) != null) {
-                        width = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_IMAGE_WIDTH));
-                    }
-                    if (finalExif.getAttribute(ExifInterface.TAG_DATETIME) != null) {
-                        date = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_DATETIME));
-                    }
-
-                    focal_length = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_FOCAL_LENGTH));
-                    exposure = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_EXPOSURE_TIME));
-                    exposure = parseExposureTime(exposure);
-                    if (finalExif.getAttribute(ExifInterface.TAG_MAKE) != null) {
-                        model = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_MAKE)) + " "
-                                + String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_MODEL));
-                    }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        if (finalExif.getAttribute(ExifInterface.TAG_F_NUMBER) != null) {
-                            aperture = "f/" + String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_F_NUMBER));
-                        }
-                        if (finalExif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) != null) {
-                            iso = String.valueOf(ExifUtil.getCastValue(finalExif, ExifInterface.TAG_ISO_SPEED_RATINGS));
-                        }
-                    }
-                } else {
-                    int[] imageDimens = albumItem.getImageDimens(ItemActivity.this);
-                    height = String.valueOf(imageDimens[1]);
-                    width = String.valueOf(imageDimens[0]);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                        Locale locale = getResources().getConfiguration().getLocales().get(0);
-                        date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale)
-                                .format(new Date(albumItem.getDate()));
-                    }
-                }
-
-                final String[] values = {name, path, size, width + " x " + height,
-                        date, model, focal_length, exposure, aperture, iso};
-
-                ItemActivity.this.runOnUiThread(new Runnable() {
+        boolean showColors = (albumItem instanceof Photo || albumItem instanceof Gif) && !view_only;
+        adapter.retrieveData(albumItem, showColors,
+                new InfoRecyclerViewAdapter.OnDataRetrievedCallback() {
                     @Override
-                    public void run() {
-                        final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
-                        final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
-
-                        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemActivity.this);
-                        recyclerView.setLayoutManager(linearLayoutManager);
-                        recyclerView.setAdapter(new InfoRecyclerViewAdapter(values,
-                                (albumItem instanceof Photo
-                                        || albumItem instanceof Gif) && !view_only));
-
-                        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    public void onDataRetrieved() {
+                        ItemActivity.this.runOnUiThread(new Runnable() {
                             @Override
-                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
-                                scrollIndicatorTop.setVisibility(
-                                        recyclerView.canScrollVertically(-1) ?
-                                                View.VISIBLE : View.INVISIBLE);
+                            public void run() {
+                                final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
+                                final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
 
-                                scrollIndicatorBottom.setVisibility(
-                                        recyclerView.canScrollVertically(1) ?
-                                                View.VISIBLE : View.INVISIBLE);
+                                RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemActivity.this);
+                                recyclerView.setLayoutManager(linearLayoutManager);
+                                recyclerView.setAdapter(adapter);
+
+                                recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                                    @Override
+                                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                        super.onScrolled(recyclerView, dx, dy);
+                                        scrollIndicatorTop.setVisibility(
+                                                recyclerView.canScrollVertically(-1) ?
+                                                        View.VISIBLE : View.INVISIBLE);
+
+                                        scrollIndicatorBottom.setVisibility(
+                                                recyclerView.canScrollVertically(1) ?
+                                                        View.VISIBLE : View.INVISIBLE);
+                                    }
+                                });
+
+                                loadingBar.setVisibility(View.GONE);
+                                dialogLayout.setVisibility(View.VISIBLE);
                             }
                         });
+                    }
 
-                        loadingBar.setVisibility(View.GONE);
-                        dialogLayout.setVisibility(View.VISIBLE);
+                    @Override
+                    public Context getContext() {
+                        return ItemActivity.this;
                     }
                 });
-            }
-        });
     }
 
     public void bottomBarOnClick(View v) {
@@ -959,221 +859,5 @@ public class ItemActivity extends ThemeableActivity {
     @Override
     public IntentFilter getBroadcastIntentFilter() {
         return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
-    }
-
-    public String getFileSize(long fileLength) {
-        long file_bytes = fileLength / 1000 * 1000;
-        float size = file_bytes;
-        int i = 0;
-        while (size > 1000) {
-            size = size / 1000;
-            i++;
-        }
-        switch (i) {
-            case 1:
-                return size + " KB";
-            case 2:
-                return size + " MB";
-            case 3:
-                return size + " GB";
-        }
-        return file_bytes + " Bytes";
-    }
-
-    public String parseExposureTime(String input) {
-        if (input == null || input.equals("null")) {
-            return NO_DATA;
-        }
-        float f = Float.valueOf(input);
-        try {
-            int i = Math.round(1 / f);
-            return String.valueOf(1 + "/" + i) + " sec";
-        } catch (NumberFormatException e) {
-            return input;
-        }
-    }
-
-    private static class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
-        private static final int INFO_VIEW_TYPE = 0;
-        private static final int COLOR_VIEW_TYPE = 1;
-
-        private static String[] types = {"Filename: ", "Filepath: ", "Size: ",
-                "Dimensions: ", "Date: ", "Camera model: ", "Focal length: ",
-                "Exposure: ", "Aperture: ", "ISO: "};
-        private String[] values;
-
-        private boolean showColors;
-
-        InfoRecyclerViewAdapter(String[] values, boolean showColors) {
-            this.values = values;
-            this.showColors = showColors;
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (getItemCount() > types.length) {
-                return position != 0 ? INFO_VIEW_TYPE : COLOR_VIEW_TYPE;
-            }
-            return INFO_VIEW_TYPE;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            int layoutRes = viewType == INFO_VIEW_TYPE ? R.layout.info_item : R.layout.info_color;
-            View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
-            return viewType == INFO_VIEW_TYPE ? new InfoHolder(v) : new ColorHolder(v, values[1]);
-        }
-
-        @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-            if (showColors && position == 0) {
-                ((ColorHolder) holder).setColors();
-                return;
-            } else if (showColors) {
-                position--;
-            }
-
-            TextView type = holder.itemView.findViewById(R.id.tag);
-            type.setText(types[position]);
-            TextView value = holder.itemView.findViewById(R.id.value);
-            value.setText(values[position]);
-        }
-
-        @Override
-        public int getItemCount() {
-            return showColors ? types.length + 1 : types.length;
-        }
-
-        static class InfoHolder extends RecyclerView.ViewHolder {
-            InfoHolder(View itemView) {
-                super(itemView);
-            }
-        }
-
-        static class ColorHolder extends RecyclerView.ViewHolder {
-
-            private Palette p;
-            private Uri uri;
-
-            private View.OnClickListener onClickListener
-                    = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String color = (String) view.getTag();
-                    if (color != null) {
-                        ClipboardManager clipboard = (ClipboardManager) view.getContext()
-                                .getSystemService(CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("label", color);
-                        clipboard.setPrimaryClip(clip);
-
-                        Toast.makeText(view.getContext(),
-                                R.string.copied_to_clipboard,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-            };
-
-            ColorHolder(View itemView, String path) {
-                super(itemView);
-
-                AlbumItem albumItem = AlbumItem.getInstance(path);
-
-                if (albumItem instanceof Photo || albumItem instanceof Gif) {
-                    uri = albumItem.getUri(itemView.getContext());
-                } else {
-                    itemView.setVisibility(View.GONE);
-                }
-            }
-
-            private void retrieveColors(final Uri uri) {
-                if (uri == null) {
-                    return;
-                }
-                Glide.with(itemView.getContext())
-                        .asBitmap()
-                        .load(uri)
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(Bitmap bitmap, com.bumptech.glide.request
-                                    .transition.Transition<? super Bitmap> transition) {
-                                // Do something with bitmap here.
-                                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(Palette palette) {
-                                        p = palette;
-                                        setColors();
-                                    }
-                                });
-                            }
-                        });
-            }
-
-            private void setColors() {
-                if (p == null) {
-                    retrieveColors(uri);
-                    return;
-                }
-
-                int defaultColor = Color.argb(0, 0, 0, 0);
-
-                /*Vibrant color*/
-                setColor((CardView) itemView.findViewById(R.id.vibrant_card),
-                        (TextView) itemView.findViewById(R.id.vibrant_text),
-                        p.getVibrantColor(defaultColor));
-
-                /*Vibrant Dark color*/
-                setColor((CardView) itemView.findViewById(R.id.vibrant_dark_card),
-                        (TextView) itemView.findViewById(R.id.vibrant_dark_text),
-                        p.getDarkVibrantColor(defaultColor));
-
-                /*Vibrant Light color*/
-                setColor((CardView) itemView.findViewById(R.id.vibrant_light_card),
-                        (TextView) itemView.findViewById(R.id.vibrant_light_text),
-                        p.getLightVibrantColor(defaultColor));
-
-                /*Muted color*/
-                setColor((CardView) itemView.findViewById(R.id.muted_card),
-                        (TextView) itemView.findViewById(R.id.muted_text),
-                        p.getMutedColor(defaultColor));
-
-                /*Muted Dark color*/
-                setColor((CardView) itemView.findViewById(R.id.muted_dark_card),
-                        (TextView) itemView.findViewById(R.id.muted_dark_text),
-                        p.getDarkMutedColor(defaultColor));
-
-                /*Muted Light color*/
-                setColor((CardView) itemView.findViewById(R.id.muted_light_card),
-                        (TextView) itemView.findViewById(R.id.muted_light_text),
-                        p.getLightMutedColor(defaultColor));
-            }
-
-            private void setColor(CardView card, TextView text, int color) {
-                if (Color.alpha(color) == 0) {
-                    //color not found
-                    int transparent = ContextCompat.getColor(card.getContext(),
-                            android.R.color.transparent);
-                    card.setCardBackgroundColor(transparent);
-                    text.setText("N/A");
-                    return;
-                }
-
-                card.setCardBackgroundColor(color);
-                text.setTextColor(getTextColor(text.getContext(), color));
-                String colorHex = String.format("#%06X", (0xFFFFFF & color));
-                text.setText(colorHex);
-
-                card.setTag(colorHex);
-                card.setOnClickListener(onClickListener);
-            }
-
-            private static int getTextColor(Context context, int backgroundColor) {
-                if ((Color.red(backgroundColor) +
-                        Color.green(backgroundColor) +
-                        Color.blue(backgroundColor)) / 3 < 100) {
-                    return ContextCompat.getColor(context, R.color.white_translucent1);
-                }
-                return ContextCompat.getColor(context, R.color.grey_900_translucent);
-            }
-        }
     }
 }

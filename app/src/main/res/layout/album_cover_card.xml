@@ -54,8 +54,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_mono_regular"
                 android:tag="@string/theme_text_color_secondary"
-                android:textSize="12sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <ImageView

@@ -45,8 +45,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_mono_regular"
                 android:textColor="@color/white_translucent1"
-                android:textSize="12sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <ImageView

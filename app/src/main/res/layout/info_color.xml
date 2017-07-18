@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -24,8 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="18sp" />
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Dark color-->
@@ -42,8 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="18sp" />
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Light color-->
@@ -60,8 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="18sp" />
         </android.support.v7.widget.CardView>
 
         <!--Muted color-->
@@ -78,8 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="18sp" />
         </android.support.v7.widget.CardView>
 
         <!--Muted Dark color-->
@@ -96,8 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="18sp" />
         </android.support.v7.widget.CardView>
 
         <!--Muted Light color-->
@@ -114,8 +108,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp"
-                tools:ignore="MissingPrefix" />
+                android:textSize="18sp" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </HorizontalScrollView>

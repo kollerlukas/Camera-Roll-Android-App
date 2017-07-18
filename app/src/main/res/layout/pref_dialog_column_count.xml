@@ -28,8 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:fontFamily="@font/roboto_mono_regular"
-            android:textSize="20sp"
-            tools:ignore="MissingPrefix" />
+            android:textSize="20sp" />
 
         <ImageButton
             android:id="@+id/plus"

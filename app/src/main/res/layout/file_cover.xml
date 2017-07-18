@@ -24,6 +24,5 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:fontFamily="@font/roboto_mono_regular"
-        android:textSize="18sp"
-        tools:ignore="MissingPrefix" />
+        android:textSize="18sp" />
 </LinearLayout>

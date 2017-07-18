@@ -39,11 +39,6 @@ public class ItemViewUtil {
                 .inflate(R.layout.video_view, container, false);
     }
 
-    public static ViewGroup inflateRAWPhotoView(ViewGroup container) {
-        return (ViewGroup) LayoutInflater.from(container.getContext())
-                .inflate(R.layout.raw_photo_view, container, false);
-    }
-
     public static void bindSubsamplingImageView(SubsamplingScaleImageView imageView,
                                                 Photo photo,
                                                 SubsamplingScaleImageView.DefaultOnImageEventListener onImageEventListener) {

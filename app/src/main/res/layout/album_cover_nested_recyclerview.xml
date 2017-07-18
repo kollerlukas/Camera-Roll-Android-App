@@ -66,8 +66,7 @@
             android:fontFamily="@font/roboto_mono_regular"
             android:tag="@string/theme_text_color_secondary"
             android:textColor="@color/white_translucent1"
-            android:textSize="12sp"
-            tools:ignore="MissingPrefix" />
+            android:textSize="12sp" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

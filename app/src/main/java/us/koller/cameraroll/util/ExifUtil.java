@@ -9,6 +9,8 @@ import java.util.List;
 
 public class ExifUtil {
 
+    public static final String NO_DATA = "Unknown";
+
     private static final int TYPE_UNDEFINED = -1;
     private static final int TYPE_STRING = 0;
     private static final int TYPE_INT = 1;
@@ -63,12 +65,7 @@ public class ExifUtil {
                 castValue = Double.valueOf(value);
                 break;
             case ExifUtil.TYPE_RATIONAL:
-                if (android.os.Build.VERSION.SDK_INT >=
-                        android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    castValue = Rational.parseRational(value);
-                } else {
-                    castValue = value;
-                }
+                castValue = value;
                 break;
         }
         return castValue == null ? value : castValue;
