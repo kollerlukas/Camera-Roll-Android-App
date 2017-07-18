@@ -117,4 +117,5 @@
         appareil de stockage amovible (ex : SD Card) sur le prochain écran.
     </string>
     <string name="open_with">Ouvrir avec…</string>
+    <string name="rotate">tourner</string>
 </resources>
