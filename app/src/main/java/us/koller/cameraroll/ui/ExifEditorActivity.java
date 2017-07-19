@@ -62,7 +62,13 @@ public class ExifEditorActivity extends ThemeableActivity {
             editedItems = new ArrayList<>();
         }
 
-        if (albumItem == null || !MediaType.doesSupportExif(albumItem.getPath())) {
+        if (albumItem == null) {
+            this.finish();
+            return;
+        }
+
+        String mimeType = MediaType.getMimeType(this, albumItem.getUri(this));
+        if (!MediaType.doesSupportExif_MimeType(mimeType)) {
             this.finish();
             return;
         }

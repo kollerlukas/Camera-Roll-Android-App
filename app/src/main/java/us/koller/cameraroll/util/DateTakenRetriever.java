@@ -75,7 +75,8 @@ public class DateTakenRetriever {
 
     //synchronous
     public static void tryToRetrieveDateTaken(final Context context, final AlbumItem albumItem) {
-        if (MediaType.doesSupportExif(albumItem.getPath())) {
+        String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
+        if (MediaType.doesSupportExif_MimeType(mimeType)) {
             ExifInterface exif = null;
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -92,10 +93,15 @@ public class DateTakenRetriever {
                 e.printStackTrace();
             }
 
-            if (exif != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            if (exif != null) {
                 String dateTakenString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
                 if (dateTakenString != null && !dateTakenString.equals("null")) {
-                    Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+                    Locale locale;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        locale = context.getResources().getConfiguration().getLocales().get(0);
+                    } else {
+                        locale = context.getResources().getConfiguration().locale;
+                    }
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale);
                     try {
                         Date dateTaken = sdf.parse(dateTakenString);

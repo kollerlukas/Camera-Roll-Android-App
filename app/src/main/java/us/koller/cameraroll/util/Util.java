@@ -8,6 +8,8 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
@@ -218,5 +220,14 @@ public class Util {
         }
         return android.provider.Settings.Global.getFloat(context.getContentResolver(),
                 android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+    }
+
+    public static boolean hasWifiConnection(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
     }
 }

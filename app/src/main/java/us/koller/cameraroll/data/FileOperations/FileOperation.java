@@ -2,8 +2,6 @@ package us.koller.cameraroll.data.FileOperations;
 
 import android.annotation.SuppressLint;
 import android.app.IntentService;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,7 +13,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
@@ -23,13 +20,11 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
 
 public abstract class FileOperation extends IntentService implements Parcelable {
@@ -323,9 +318,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             void onAllPathsScanned();
         }
 
-        static void scanPaths(final Context context, final String[] paths,
-                              final long[] dateTakenTimeStamps, final MediaScannerCallback callback) {
-            Log.d("FileOperation", "scanPaths(), paths = [" + Arrays.toString(paths) + "]");
+        static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback) {
             MediaScannerConnection.scanFile(context.getApplicationContext(),
                     paths,
                     null,
@@ -335,54 +328,6 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
                             pathsScanned++;
-
-                            if (MediaType.isMedia(path)) {
-                                ContentResolver resolver = context.getContentResolver();
-                                if (new File(path).exists()) {
-                                    //add File to media store
-                                    Log.d("FileOperation", "add File to media store: " + path);
-
-                                    //trying to transfer dateTakenTimeStamp from old media (when file was copied or moved)
-                                    int index = -1;
-                                    for (int i = 0; i < paths.length; i++) {
-                                        if (path.equals(paths[i])) {
-                                            index = i;
-                                            break;
-                                        }
-                                    }
-
-                                    long dateTaken = -1;
-                                    if (index != -1) {
-                                        dateTaken = dateTakenTimeStamps[index];
-                                    }
-
-                                    ContentValues values = new ContentValues();
-                                    values.put(MediaStore.MediaColumns.DATA, path);
-                                    if (MediaType.isImage(path)) {
-                                        //add image
-                                        values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(context, path));
-                                        if (dateTaken != -1) {
-                                            values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
-                                        }
-                                        resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                                    } else if (MediaType.isVideo(path)) {
-                                        //add video
-                                        values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(context, path));
-                                        if (dateTaken != -1) {
-                                            values.put(MediaStore.Video.Media.DATE_TAKEN, dateTaken);
-                                        }
-                                        resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-                                    }
-                                } else {
-                                    Log.d("FileOperation", "remove File to media store: " + path);
-                                    //remove file from media store
-                                    String where = MediaStore.MediaColumns.DATA + "=?";
-                                    String[] selectionArgs = new String[]{path};
-
-                                    resolver.delete(MediaStore.Files.getContentUri("external"), where, selectionArgs);
-                                }
-                            }
-
                             if (callback != null && pathsScanned == paths.length) {
                                 callback.onAllPathsScanned();
                             }

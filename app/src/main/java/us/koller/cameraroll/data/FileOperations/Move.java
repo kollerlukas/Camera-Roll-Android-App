@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.util.DateTakenRetriever;
 
 public class Move extends FileOperation {
 
@@ -76,26 +74,12 @@ public class Move extends FileOperation {
     private static boolean moveFile(final FileOperation fileOperation, Uri treeUri, String path, String destination) {
         String[] oldPaths = Util.getAllChildPaths(new ArrayList<String>(), path);
 
-        //try to get dateAdded TimeStamps for MediaStore
         Context context = fileOperation.getApplicationContext();
-        //old paths are being removed --> no point in figuring out the timeStamps
-        long[] dateAddedTimeStamps = new long[oldPaths.length * 2];
-        for (int i = 0; i < oldPaths.length; i++) {
-            if (i < oldPaths.length) {
-                dateAddedTimeStamps[i] = -1;
-            } else {
-                AlbumItem albumItem = AlbumItem.getInstance(oldPaths[i - oldPaths.length]);
-                DateTakenRetriever.tryToRetrieveDateTaken(context, albumItem);
-                dateAddedTimeStamps[i] = albumItem.getDateTaken();
-            }
-        }
 
         File file = new File(path);
         File newFile = new File(destination, file.getName());
 
         //moving file
-        /*boolean success = file.renameTo(newFile);*/
-
         boolean success;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (!Util.isOnRemovableStorage(file.getPath())
@@ -118,8 +102,7 @@ public class Move extends FileOperation {
         String[] paths = new String[pathsList.size()];
         pathsList.toArray(paths);
 
-        Util.scanPaths(fileOperation.getApplicationContext(), paths,
-                dateAddedTimeStamps, new Util.MediaScannerCallback() {
+        Util.scanPaths(context, paths, new Util.MediaScannerCallback() {
             @Override
             public void onAllPathsScanned() {
                 fileOperation.sendDoneBroadcast();

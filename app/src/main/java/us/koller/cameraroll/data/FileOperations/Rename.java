@@ -111,7 +111,7 @@ public class Rename extends FileOperation {
         pathsList.toArray(paths);
 
         FileOperation.Util.scanPaths(fileOperation.getApplicationContext(), paths,
-                dateAddedTimeStamps, new FileOperation.Util.MediaScannerCallback() {
+                new FileOperation.Util.MediaScannerCallback() {
                     @Override
                     public void onAllPathsScanned() {
                         Intent intent = fileOperation.getDoneIntent();

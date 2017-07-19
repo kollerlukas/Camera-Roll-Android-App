@@ -38,7 +38,8 @@ public class MediaType {
         if (uri != null) {
             String mimeType = getMimeType(context, uri);
             if (mimeType != null) {
-                return mimeType.contains("image");
+                /*return mimeType.contains("image");*/
+                return checkImageMimeType(mimeType);
             }
         }
         return false;
@@ -52,7 +53,8 @@ public class MediaType {
         if (uri != null) {
             String mimeType = getMimeType(context, uri);
             if (mimeType != null) {
-                return mimeType.contains("video");
+                /*return mimeType.contains("video");*/
+                return checkVideoMimeType(mimeType);
             }
         }
         return false;
@@ -66,7 +68,8 @@ public class MediaType {
         if (uri != null) {
             String mimeType = getMimeType(context, uri);
             if (mimeType != null) {
-                return checkGifExtension(mimeType);
+                /*return checkGifExtension(mimeType);*/
+                return checkGifMimeType(mimeType);
             }
         }
         return false;
@@ -80,7 +83,8 @@ public class MediaType {
         if (uri != null) {
             String mimeType = getMimeType(context, uri);
             if (mimeType != null) {
-                return checkRAWExtension(mimeType);
+                /*return checkRAWExtension(mimeType);*/
+                return checkRAWMimeType(mimeType);
             }
         }
         return false;
@@ -90,11 +94,39 @@ public class MediaType {
     //checking via extension
     private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp"};
     private static String[] videoExtensions = {"mp4", "mkv", "webm", "avi"};
-    private static String[] gifExtension = {"gif"};
-    private static String[] rawExtension = {"dng"};
+    private static String[] gifExtensions = {"gif"};
+    private static String[] rawExtensions = {"dng"};
     private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "bmp", "dng"};
 
-    public static boolean doesSupportExif(String path) {
+    private static String[] imageMimeTypes = {"image/jpeg", "image/png", "image/bmp"};
+    private static String[] videoMimeTypes = {"video/mp4", "video/x-matroska", "video/webm", "video/avi"};
+    private static String[] gifMimeTypes = {"image/gif"};
+    private static String[] rawMimeTypes = {"image/x-adobe-dng"};
+    private static String[] exifMimeTypes = {"image/jpeg", "image/x-adobe-dng"};
+
+    /*check mimeTypes*/
+    public static boolean doesSupportExif_MimeType(String mimeType) {
+        return checkExtension(mimeType, exifMimeTypes);
+    }
+
+    private static boolean checkImageMimeType(String mimeType) {
+        return checkExtension(mimeType, imageMimeTypes);
+    }
+
+    private static boolean checkVideoMimeType(String mimeType) {
+        return checkExtension(mimeType, videoMimeTypes);
+    }
+
+    private static boolean checkGifMimeType(String mimeType) {
+        return checkExtension(mimeType, gifMimeTypes);
+    }
+
+    private static boolean checkRAWMimeType(String mimeType) {
+        return checkExtension(mimeType, rawMimeTypes);
+    }
+
+    /*check fileExtensions*/
+    public static boolean doesSupportExif_fileExtension(String path) {
         return checkExtension(path, exifExtensions);
     }
 
@@ -107,12 +139,13 @@ public class MediaType {
     }
 
     private static boolean checkGifExtension(String path) {
-        return checkExtension(path, gifExtension);
+        return checkExtension(path, gifExtensions);
     }
 
     private static boolean checkRAWExtension(String path) {
-        return checkExtension(path, rawExtension);
+        return checkExtension(path, rawExtensions);
     }
+
 
     private static boolean checkExtension(String path, String[] extensions) {
         for (int i = 0; i < extensions.length; i++) {

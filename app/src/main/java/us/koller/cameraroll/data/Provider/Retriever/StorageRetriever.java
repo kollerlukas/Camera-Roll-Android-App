@@ -24,7 +24,6 @@ import us.koller.cameraroll.data.Provider.ItemLoader.ItemLoader;
 import us.koller.cameraroll.data.Provider.MediaProvider;
 import us.koller.cameraroll.data.Provider.Provider;
 import us.koller.cameraroll.data.StorageRoot;
-import us.koller.cameraroll.util.DateTakenRetriever;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 
@@ -66,7 +65,7 @@ public class StorageRetriever extends Retriever {
 
         final ArrayList<Album> albums = new ArrayList<>();
 
-        //handle timeout after 5 seconds
+        //handle timeout after 10 seconds
         handler = new Handler();
         timeout = new Runnable() {
             @Override
@@ -78,7 +77,7 @@ public class StorageRetriever extends Retriever {
                 }
             }
         };
-        handler.postDelayed(timeout, 5000);
+        handler.postDelayed(timeout, 10000);
 
         //load media from storage
         AsyncTask.execute(new Runnable() {

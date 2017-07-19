@@ -97,7 +97,7 @@ public class Delete extends FileOperation {
             }
             success = file.delete();
         }
-        FileOperation.Util.scanPaths(context, new String[]{path}, new long[]{-1}, null);
+        FileOperation.Util.scanPaths(context, new String[]{path}, null);
         return success;
     }
 
@@ -112,7 +112,7 @@ public class Delete extends FileOperation {
         }
 
         //remove from MediaStore
-        FileOperation.Util.scanPaths(context, new String[]{path}, new long[]{-1}, null);
+        FileOperation.Util.scanPaths(context, new String[]{path}, null);
         return success;
     }
 }

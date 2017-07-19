@@ -30,6 +30,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +42,9 @@ import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.util.ExifUtil;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Rational;
+import us.koller.cameraroll.util.Util;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
@@ -86,8 +89,18 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     private static class LocationItem extends InfoItem {
 
+        private Address address;
+
         LocationItem(String type, String value) {
             super(type, value);
+        }
+
+        void setAddress(Address address) {
+            this.address = address;
+        }
+
+        Address getAddress() {
+            return address;
         }
     }
 
@@ -96,28 +109,14 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     private ArrayList<InfoItem> infoItems;
 
     public boolean exifSupported(Context context, AlbumItem albumItem) {
-        Uri uri = albumItem.getUri(context);
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                InputStream is = context.getContentResolver().openInputStream(uri);
-                if (is != null) {
-                    exif = new ExifInterface(is);
-                }
-
-            } else {
-                exif = new ExifInterface(albumItem.getPath());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return exif != null;
+        String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
+        return MediaType.doesSupportExif_MimeType(mimeType);
     }
 
     public void retrieveData(final AlbumItem albumItem, final boolean showColors, final OnDataRetrievedCallback callback) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-
                 infoItems = new ArrayList<>();
                 if (showColors) {
                     infoItems.add(new ColorsItem(albumItem.getPath()));
@@ -149,7 +148,15 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 }
                 infoItems.add(new InfoItem(context.getString(R.string.info_size), size));
 
-                if (exif == null) {
+                /*locale needed for date formatting*/
+                Locale locale;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    locale = context.getResources().getConfiguration().getLocales().get(0);
+                } else {
+                    locale = context.getResources().getConfiguration().locale;
+                }
+
+                if (exifSupported(context, albumItem)) {
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             InputStream is = context.getContentResolver().openInputStream(uri);
@@ -163,33 +170,55 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
 
-                if (exif != null) {
                     /*Dimensions*/
                     String height = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_LENGTH));
                     String width = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_WIDTH));
                     infoItems.add(new InfoItem(context.getString(R.string.info_dimensions), width + " x " + height));
 
                     /*Date*/
-                    Object date = ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME);
-                    infoItems.add(new InfoItem(context.getString(R.string.info_date), date != null ? String.valueOf(date) : ExifUtil.NO_DATA));
+                    String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
+                    try {
+                        Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
+                        String formattedDate = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale).format(date);
+                        infoItems.add(new InfoItem(context.getString(R.string.info_date), formattedDate));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        String formattedDate = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale)
+                                .format(new Date(albumItem.getDate()));
+                        infoItems.add(new InfoItem(context.getString(R.string.info_date), formattedDate));
+                    }
 
                     /*Location*/
-                    Object latitude = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE);
-                    Object longitude = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE);
-                    String location;
-                    if (latitude != null && longitude != null) {
+                    LocationItem locationItem;
+                    Object latitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE);
+                    Object longitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE);
+                    if (latitudeObject != null && longitudeObject != null) {
                         boolean positiveLat = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE_REF).equals("N");
-                        latitude = parseGPSLongOrLat(String.valueOf(latitude), positiveLat);
+                        double latitude = Double.parseDouble(parseGPSLongOrLat(String.valueOf(latitudeObject), positiveLat));
 
                         boolean positiveLong = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE_REF).equals("E");
-                        longitude = parseGPSLongOrLat(String.valueOf(longitude), positiveLong);
-                        location = latitude + "," + longitude;
+                        double longitude = Double.parseDouble(parseGPSLongOrLat(String.valueOf(longitudeObject), positiveLong));
+                        String locationString = latitude + "," + longitude;
+
+                        locationItem = new LocationItem(context.getString(R.string.info_location), locationString);
+
+                        /*retrieve the address*/
+                        if (Util.hasWifiConnection(context)) {
+                            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                            try {
+                                List<Address> addresses = geocoder
+                                        .getFromLocation(latitude, longitude, 1);
+                                Address address = addresses.get(0);
+                                locationItem.setAddress(address);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     } else {
-                        location = ExifUtil.NO_DATA;
+                        locationItem = new LocationItem(context.getString(R.string.info_location), ExifUtil.NO_DATA);
                     }
-                    infoItems.add(new LocationItem(context.getString(R.string.info_location), location));
+                    infoItems.add(locationItem);
 
                     /*Focal Length*/
                     Object focalLengthObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_FOCAL_LENGTH);
@@ -244,18 +273,14 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                         infoItems.add(new InfoItem(context.getString(R.string.info_iso), iso));
                     }
                 } else {
+                    /*Exif not supported/working for this image*/
                     int[] imageDimens = albumItem.getImageDimens(context);
                     String height = String.valueOf(imageDimens[1]);
                     String width = String.valueOf(imageDimens[0]);
                     infoItems.add(new InfoItem(context.getString(R.string.info_dimensions), width + " x " + height));
 
-                    Locale locale;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                        locale = context.getResources().getConfiguration().getLocales().get(0);
-                    } else {
-                        locale = context.getResources().getConfiguration().locale;
-                    }
-                    String date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).format(new Date(albumItem.getDate()));
+                    String date = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale)
+                            .format(new Date(albumItem.getDate()));
                     infoItems.add(new InfoItem(context.getString(R.string.info_date), date));
                 }
 
@@ -379,8 +404,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     static class LocationHolder extends InfoHolder {
 
-        private double[] location;
-        private String featureName;
+        private LocationItem locationItem;
 
         LocationHolder(View itemView) {
             super(itemView);
@@ -389,27 +413,29 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         @Override
         void bind(InfoItem infoItem) {
             type.setText(infoItem.getType());
-            String[] parts = infoItem.getValue().split(",");
-            try {
-                location = new double[]{
-                        Double.parseDouble(parts[0]),
-                        Double.parseDouble(parts[1])};
-                String address = getAddress(type.getContext(), location[0], location[1]);
-                value.setText(address);
+            if (infoItem instanceof LocationItem) {
+                locationItem = (LocationItem) infoItem;
+                Address address = locationItem.getAddress();
+                if (address != null) {
+                    String addressString = /*address.getFeatureName() + ", " +*/ address.getLocality() + ", " + address.getAdminArea();
+                    value.setText(addressString);
+                } else {
+                    value.setText(locationItem.getValue());
+                }
+
                 value.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         launchLocation();
                     }
                 });
-            } catch (NumberFormatException e) {
-                value.setText(infoItem.getValue());
             }
         }
 
         private void launchLocation() {
-            String locationValue = String.valueOf(location[0] + "," + location[1]);
-            Uri gmUri = Uri.parse("geo:0,0?q=" + locationValue + "(" + featureName + ")");
+            String featureName = locationItem.getAddress() != null ?
+                    locationItem.getAddress().getFeatureName() : null;
+            Uri gmUri = Uri.parse("geo:0,0?q=" + locationItem.getValue() + "(" + featureName + ")");
             Intent intent = new Intent(Intent.ACTION_VIEW)
                     .setData(gmUri)
                     .setPackage("com.google.android.apps.maps");
@@ -417,21 +443,6 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             Context context = itemView.getContext();
             if (intent.resolveActivity(context.getPackageManager()) != null) {
                 context.startActivity(intent);
-            }
-        }
-
-        String getAddress(Context context, double lat, double lng) {
-            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            try {
-                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-                Address obj = addresses.get(0);
-                featureName = obj.getFeatureName();
-                return obj.getFeatureName() + ", "
-                        + obj.getLocality() + ", "
-                        + obj.getAdminArea();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return context.getString(R.string.error);
             }
         }
     }

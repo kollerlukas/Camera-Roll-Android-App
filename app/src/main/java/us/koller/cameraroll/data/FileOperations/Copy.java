@@ -14,9 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.util.DateTakenRetriever;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
 
@@ -103,13 +101,7 @@ public class Copy extends FileOperation {
             }
 
             if (!file.isDirectory()) {
-                AlbumItem oldAlbumItem = AlbumItem.getInstance(path);
-                DateTakenRetriever.tryToRetrieveDateTaken(context, oldAlbumItem);
-                long dateAdded = oldAlbumItem.getDateTaken();
-
-                FileOperation.Util.scanPaths(context,
-                        new String[]{path, destinationFileName},
-                        new long[]{-1, dateAdded}, null);
+                FileOperation.Util.scanPaths(context, new String[]{destinationFileName}, null);
             }
         } catch (IOException e) {
             e.printStackTrace();
