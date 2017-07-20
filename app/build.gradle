@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "us.koller.cameraroll"
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 21
         versionName "v1.5.2 Beta"
         vectorDrawables.useSupportLibrary = true

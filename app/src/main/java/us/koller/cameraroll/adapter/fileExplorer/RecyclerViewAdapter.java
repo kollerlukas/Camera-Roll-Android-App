@@ -3,11 +3,11 @@ package us.koller.cameraroll.adapter.fileExplorer;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import us.koller.cameraroll.IntentReceiver;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.fileExplorer.ViewHolder.FileHolder;
 import us.koller.cameraroll.data.Album;
@@ -15,7 +15,6 @@ import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.FileExplorerActivity;
-import us.koller.cameraroll.ui.ItemActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
@@ -84,8 +83,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 if (mode == SELECTOR_MODE) {
                     onItemSelect(file);
                 } else if (file.isMedia) {
-                    Log.d("FileExplorer.RVA", "onClick: file.isMedia");
-
                     int index = file.getPath().lastIndexOf("/");
                     String path = file.getPath().substring(0, index);
 
@@ -98,14 +95,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                     if (albumItem != null) {
                         //create intent
-                        Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class)
-                                .putExtra(ItemActivity.ALBUM_ITEM, albumItem)
-                                .putExtra(ItemActivity.ALBUM, album)
-                                .putExtra(ItemActivity.ALBUM_PATH, album.getPath())
-                                .putExtra(ItemActivity.VIEW_ONLY, true)
-                                .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
-                                .putExtra(ItemActivity.FINISH_AFTER, false);
-
+                        Intent intent = new Intent(holder.itemView.getContext(), IntentReceiver.class)
+                                .setAction(Intent.ACTION_VIEW)
+                                .setData(albumItem.getUri(holder.itemView.getContext()));
                         holder.itemView.getContext().startActivity(intent);
                     }
                 } else {

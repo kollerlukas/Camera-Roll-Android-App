@@ -96,7 +96,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     public boolean exifSupported(Context context, AlbumItem albumItem) {
         String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
-        return MediaType.doesSupportExif_MimeType(mimeType);
+        return mimeType != null && MediaType.doesSupportExif_MimeType(mimeType);
     }
 
     public void retrieveData(final AlbumItem albumItem, final boolean showColors, final OnDataRetrievedCallback callback) {
@@ -346,19 +346,28 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
-
+                    String valueText = locationItem.getValue();
                     String[] parts = locationString.split(",");
-                    double lat = Double.parseDouble(parts[0]);
-                    double lng = Double.parseDouble(parts[1]);
+                    try {
+                        double lat = Double.parseDouble(parts[0]);
+                        double lng = Double.parseDouble(parts[1]);
 
-                    Address address = InfoUtil.retrieveAddredd(context, lat, lng);
-                    if (address != null) {
-                        featureName = address.getFeatureName();
-                        String addressString = /*address.getFeatureName() + ", " +*/ address.getLocality() + ", " + address.getAdminArea();
-                        value.setText(addressString);
-                    } else {
-                        value.setText(locationItem.getValue());
+                        Address address = InfoUtil.retrieveAddredd(context, lat, lng);
+                        if (address != null) {
+                            featureName = address.getFeatureName();
+                            valueText = address.getLocality() + ", " + address.getAdminArea();
+                        }
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
                     }
+
+                    final String finalValueText = valueText;
+                    value.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            value.setText(finalValueText);
+                        }
+                    });
                 }
             });
         }
