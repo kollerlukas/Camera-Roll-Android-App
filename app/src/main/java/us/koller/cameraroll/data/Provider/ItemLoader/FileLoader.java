@@ -1,6 +1,6 @@
 package us.koller.cameraroll.data.Provider.ItemLoader;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Environment;
 
 import java.io.File;
@@ -21,20 +21,20 @@ public class FileLoader extends ItemLoader {
     }
 
     @Override
-    public void onNewDir(Activity context, File dir) {
+    public void onNewDir(Context context, File dir) {
         dir_pojo = new File_POJO(dir.getPath(),
                 MediaType.isMedia(dir.getPath()));
     }
 
     @Override
-    public void onFile(Activity context, File file) {
+    public void onFile(Context context, File file) {
         File_POJO file_pojo = new File_POJO(file.getPath(),
                 MediaType.isMedia(file.getPath()));
         dir_pojo.addChild(file_pojo);
     }
 
     @Override
-    public void onDirDone(Activity context) {
+    public void onDirDone(Context context) {
         addFiles(allFiles, dir_pojo);
     }
 

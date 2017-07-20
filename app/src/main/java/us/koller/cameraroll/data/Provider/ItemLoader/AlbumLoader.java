@@ -1,6 +1,6 @@
 package us.koller.cameraroll.data.Provider.ItemLoader;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -30,7 +30,7 @@ public class AlbumLoader extends ItemLoader {
     }
 
     @Override
-    public void onNewDir(final Activity context, File dir) {
+    public void onNewDir(final Context context, File dir) {
         currentAlbum = new Album().setPath(dir.getPath());
 
         //loading dateTaken timeStamps asynchronously
@@ -48,7 +48,7 @@ public class AlbumLoader extends ItemLoader {
     }
 
     @Override
-    public void onFile(final Activity context, File file) {
+    public void onFile(final Context context, File file) {
         if (MediaType.isMedia(file.getPath())) {
             final AlbumItem albumItem
                     = AlbumItem.getInstance(file.getPath());
@@ -62,7 +62,7 @@ public class AlbumLoader extends ItemLoader {
     }
 
     @Override
-    public void onDirDone(Activity context) {
+    public void onDirDone(Context context) {
         if (currentAlbum != null && currentAlbum.getAlbumItems().size() > 0) {
             albums.add(currentAlbum);
             currentAlbum = null;

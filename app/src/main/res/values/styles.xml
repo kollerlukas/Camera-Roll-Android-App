@@ -123,6 +123,15 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <!--MuzeiSettings Theme-->
+    <style name="Theme.CameraRoll.MuzeiSettings" parent="Theme.CameraRoll">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="Theme.CameraRoll.Light.MuzeiSettings" parent="Theme.CameraRoll.Light">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
     <!--Dialog Style-->
     <style name="Theme.CameraRoll.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>

@@ -1,6 +1,7 @@
 package us.koller.cameraroll.data.Provider.ItemLoader;
 
 import android.app.Activity;
+import android.content.Context;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,11 +30,11 @@ public abstract class ItemLoader {
 
     }
 
-    public abstract void onNewDir(Activity context, File dir);
+    public abstract void onNewDir(Context context, File dir);
 
-    public abstract void onFile(Activity context, File file);
+    public abstract void onFile(Context context, File file);
 
-    public abstract void onDirDone(Activity context);
+    public abstract void onDirDone(Context context);
 
     public abstract Result getResult();
 }

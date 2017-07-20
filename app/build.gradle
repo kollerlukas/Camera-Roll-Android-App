@@ -60,4 +60,7 @@ dependencies {
     compile 'com.github.pluscubed:recycler-fast-scroll:0.3.2@aar'
 
     compile 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
+
+    /*Muzei api*/
+    compile 'com.google.android.apps.muzei:muzei-api:2.0'
 }

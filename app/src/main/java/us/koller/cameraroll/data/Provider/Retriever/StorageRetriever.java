@@ -394,7 +394,7 @@ public class StorageRetriever extends Retriever {
         return threadDirs;
     }
 
-    private static abstract class AbstractThread extends java.lang.Thread {
+    static abstract class AbstractThread extends java.lang.Thread {
 
         ItemLoader itemLoader;
 
@@ -405,18 +405,18 @@ public class StorageRetriever extends Retriever {
         abstract void cancel();
     }
 
-    private static class Thread extends AbstractThread {
+    public static class Thread extends AbstractThread {
 
-        interface Callback {
+        public interface Callback {
             void done(Thread thread, ItemLoader.Result result);
         }
 
-        private Activity context;
+        private Context context;
         private Callback callback;
 
         private File[] dirs;
 
-        Thread(Activity context, File[] dirs, Callback callback, Class itemLoaderClass) {
+        public Thread(Context context, File[] dirs, Callback callback, Class itemLoaderClass) {
             super(itemLoaderClass);
             this.context = context;
             this.callback = callback;
@@ -438,7 +438,7 @@ public class StorageRetriever extends Retriever {
             }
         }
 
-        private void recursivelySearchStorage(final Activity context,
+        private void recursivelySearchStorage(final Context context,
                                               final File file) {
             if (interrupted() || file == null) {
                 return;

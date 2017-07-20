@@ -12,9 +12,11 @@ import com.bumptech.glide.signature.ObjectKey;
 
 import java.io.File;
 
+import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;
+import us.koller.cameraroll.util.Util;
 
 public abstract class AlbumItem
         implements Parcelable, SortUtil.Sortable {
@@ -80,16 +82,8 @@ public abstract class AlbumItem
             albumItem.setUri(uri);
 
             //retrieve file name
-            Cursor cursor = context.getContentResolver().query(uri,
-                    null, null, null, null);
-            if (cursor != null) {
-                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                cursor.moveToFirst();
-                albumItem.setName(cursor.getString(nameIndex));
-                cursor.close();
-            } else {
-                albumItem.setName("");
-            }
+            String filename = InfoUtil.retrieveFileName(context, uri);
+            albumItem.setName(filename != null ? filename : "");
         }
         return albumItem;
     }

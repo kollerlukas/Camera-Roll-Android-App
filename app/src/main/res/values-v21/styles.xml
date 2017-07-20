@@ -91,4 +91,9 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:windowTranslucentNavigation">false</item>
     </style>
+
+    <!--MuzeiSettings Theme-->
+    <style name="Theme.CameraRoll.MuzeiSettings" parent="Theme.CameraRoll" />
+
+    <style name="Theme.CameraRoll.Light.MuzeiSettings" parent="Theme.CameraRoll.Light" />
 </resources>
