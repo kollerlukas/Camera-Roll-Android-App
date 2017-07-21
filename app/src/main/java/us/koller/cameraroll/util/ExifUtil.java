@@ -1,11 +1,17 @@
 package us.koller.cameraroll.util;
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.support.media.ExifInterface;
 import android.util.Rational;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+
+import us.koller.cameraroll.data.AlbumItem;
 
 public class ExifUtil {
 
@@ -16,6 +22,25 @@ public class ExifUtil {
     private static final int TYPE_INT = 1;
     private static final int TYPE_DOUBLE = 2;
     private static final int TYPE_RATIONAL = 3;
+
+    public static ExifInterface getExifInterface(Context context, AlbumItem albumItem) {
+        ExifInterface exif = null;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Uri uri = albumItem.getUri(context);
+                InputStream is = context.getContentResolver().openInputStream(uri);
+                if (is != null) {
+                    exif = new ExifInterface(is);
+                }
+
+            } else {
+                exif = new ExifInterface(albumItem.getPath());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return exif;
+    }
 
     private static int getTypeForTag(String tag) {
         int type;

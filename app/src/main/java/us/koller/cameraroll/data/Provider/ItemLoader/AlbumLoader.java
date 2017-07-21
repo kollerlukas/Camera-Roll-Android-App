@@ -21,7 +21,7 @@ public class AlbumLoader extends ItemLoader {
 
     private Album currentAlbum;
 
-    AlbumLoader() {
+    public AlbumLoader() {
         albums = new ArrayList<>();
     }
 
@@ -38,7 +38,6 @@ public class AlbumLoader extends ItemLoader {
             dateRetriever.setCallback(new DateTakenRetriever.Callback() {
                 @Override
                 public void done() {
-                    Log.d("AlbumLoader", "done: ");
                     Intent intent = new Intent(context, MainActivity.class);
                     intent.setAction(MainActivity.RESORT);
                     context.startActivity(intent);
@@ -49,15 +48,12 @@ public class AlbumLoader extends ItemLoader {
 
     @Override
     public void onFile(final Context context, File file) {
-        if (MediaType.isMedia(file.getPath())) {
-            final AlbumItem albumItem
-                    = AlbumItem.getInstance(file.getPath());
-            if (albumItem != null) {
-                if (dateRetriever != null) {
-                    dateRetriever.retrieveDate(context, albumItem);
-                }
-                currentAlbum.getAlbumItems().add(albumItem);
+        final AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
+        if (albumItem != null) {
+            if (dateRetriever != null) {
+                dateRetriever.retrieveDate(context, albumItem);
             }
+            currentAlbum.getAlbumItems().add(albumItem);
         }
     }
 

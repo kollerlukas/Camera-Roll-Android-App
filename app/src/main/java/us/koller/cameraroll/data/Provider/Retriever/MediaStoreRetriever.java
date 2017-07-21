@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.media.ExifInterface;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
 
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.util.DateTakenRetriever;
+import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
@@ -79,6 +82,7 @@ public class MediaStoreRetriever extends Retriever {
                         AlbumItem albumItem = AlbumItem.getInstance(path);
                         if (albumItem != null) {
                             albumItem.setDate(dateTaken);
+
                             //search bucket
                             boolean foundBucket = false;
                             for (int i = 0; i < albums.size(); i++) {

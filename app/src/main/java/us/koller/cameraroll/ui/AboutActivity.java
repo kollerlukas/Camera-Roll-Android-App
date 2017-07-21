@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.transition.Slide;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -90,6 +92,24 @@ public class AboutActivity extends ThemeableActivity
         aboutText.setMovementMethod(new LinkMovementMethod());
 
         final View rootView = findViewById(R.id.root_view);
+
+        if (!theme.darkStatusBarIcons()) {
+            final View header = findViewById(R.id.header);
+            final NestedScrollView scrollView = findViewById(R.id.scroll_view);
+            scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY,
+                                           int oldScrollX, int oldScrollY) {
+                    int statusBarHeight = toolbar.getPaddingTop();
+                    if (scrollY > header.getHeight() - statusBarHeight / 2) {
+                        Util.setLightStatusBarIcons(rootView);
+                    } else {
+                        Util.setDarkStatusBarIcons(rootView);
+                    }
+                }
+            });
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
@@ -192,6 +212,18 @@ public class AboutActivity extends ThemeableActivity
     @Override
     public void onSwipeProcess(float percent) {
         getWindow().getDecorView().setBackgroundColor(SwipeBackCoordinatorLayout.getBackgroundColor(percent));
+        if (!theme.darkStatusBarIcons()) {
+            SwipeBackCoordinatorLayout layout = findViewById(R.id.swipeBackView);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            View rootView = findViewById(R.id.root_view);
+            int translationY = (int) layout.getTranslationY();
+            int statusBarHeight = toolbar.getPaddingTop();
+            if (translationY > statusBarHeight * 0.5) {
+                Util.setLightStatusBarIcons(rootView);
+            } else {
+                Util.setDarkStatusBarIcons(rootView);
+            }
+        }
     }
 
     @Override

@@ -1,9 +1,11 @@
 package us.koller.cameraroll.ui.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
 
@@ -14,6 +16,7 @@ import us.koller.cameraroll.R;
 public class FastScrollerRecyclerView extends RecyclerView {
 
     private RecyclerFastScroller fastScroller;
+    private boolean fastScrolling = false;
 
     public FastScrollerRecyclerView(Context context) {
         super(context);
@@ -47,9 +50,10 @@ public class FastScrollerRecyclerView extends RecyclerView {
 
         //handle fastScroller padding
         if (fastScroller != null) {
-            fastScroller.setPadding(
-                    fastScroller.getPaddingStart(), getPaddingTop(),
-                    fastScroller.getPaddingEnd(), getPaddingBottom());
+            MarginLayoutParams params = (MarginLayoutParams) fastScroller.getLayoutParams();
+            params.topMargin = getPaddingTop();
+            params.bottomMargin = getPaddingBottom();
+            fastScroller.setLayoutParams(params);
 
             //pass padding top to Handle as translationY
             View mHandle = fastScroller.getChildAt(1);
@@ -57,7 +61,34 @@ public class FastScrollerRecyclerView extends RecyclerView {
                 mHandle.setTranslationY(fastScroller.getPaddingTop());
             }
 
+            fastScroller.setOnHandleTouchListener(new OnTouchListener() {
+                @Override
+                @SuppressLint("ClickableViewAccessibility")
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            fastScrolling = true;
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            fastScrolling = false;
+                            break;
+                    }
+                    return false;
+                }
+            });
+
             fastScroller.requestLayout();
         }
+    }
+
+    /*So that fastScroller doesn't trigger SwipeBack*/
+    @Override
+    public boolean canScrollVertically(int direction) {
+        return fastScrolling || super.canScrollVertically(direction);
+    }
+
+    @Override
+    public int computeVerticalScrollRange() {
+        return super.computeVerticalScrollRange() - getPaddingBottom();
     }
 }

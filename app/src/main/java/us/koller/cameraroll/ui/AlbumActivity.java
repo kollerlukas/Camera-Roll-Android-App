@@ -202,7 +202,6 @@ public class AlbumActivity extends ThemeableActivity
                 toolbar.setNavigationIcon(navIcon);
             }
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-
             Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
         }
 
@@ -1011,6 +1010,19 @@ public class AlbumActivity extends ThemeableActivity
     public void onSwipeProcess(float percent) {
         getWindow().getDecorView().setBackgroundColor(
                 SwipeBackCoordinatorLayout.getBackgroundColor(percent));
+        boolean selectorModeActive = ((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive();
+        if (!theme.darkStatusBarIcons() && selectorModeActive) {
+            SwipeBackCoordinatorLayout layout = findViewById(R.id.swipeBackView);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            View rootView = findViewById(R.id.root_view);
+            int translationY = (int) layout.getTranslationY();
+            int statusBarHeight = toolbar.getPaddingTop();
+            if (translationY > statusBarHeight * 0.5) {
+                Util.setLightStatusBarIcons(rootView);
+            } else {
+                Util.setDarkStatusBarIcons(rootView);
+            }
+        }
     }
 
     @Override

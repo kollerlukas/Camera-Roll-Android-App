@@ -1,11 +1,9 @@
 package us.koller.cameraroll.data;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.provider.OpenableColumns;
 
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.signature.ObjectKey;
@@ -16,7 +14,6 @@ import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;
-import us.koller.cameraroll.util.Util;
 
 public abstract class AlbumItem
         implements Parcelable, SortUtil.Sortable {
@@ -38,10 +35,6 @@ public abstract class AlbumItem
 
     //factory method
     public static AlbumItem getInstance(String path) {
-        if (path == null) {
-            return null;
-        }
-
         AlbumItem albumItem = null;
         if (MediaType.isGif(path)) {
             albumItem = new Gif();
@@ -54,10 +47,8 @@ public abstract class AlbumItem
         }
 
         if (albumItem != null) {
-            albumItem.setPath(path)
-                    .setName(new File(path).getName());
+            albumItem.setPath(path).setName(new File(path).getName());
         }
-
         return albumItem;
     }
 
@@ -66,14 +57,23 @@ public abstract class AlbumItem
             return null;
         }
 
+        String mimeType = MediaType.getMimeType(context, uri);
+        return getInstance(context, uri, mimeType);
+    }
+
+    public static AlbumItem getInstance(final Context context, Uri uri, String mimeType) {
+        if (uri == null) {
+            return null;
+        }
+
         AlbumItem albumItem = null;
-        if (MediaType.isGif(context, uri)) {
+        if (MediaType.checkGifMimeType(mimeType)) {
             albumItem = new Gif();
-        } else if (MediaType.isRAWImage(context, uri)) {
+        } else if (MediaType.checkRAWMimeType(mimeType)) {
             albumItem = new RAWImage();
-        } else if (MediaType.isImage(context, uri)) {
+        } else if (MediaType.checkImageMimeType(mimeType)) {
             albumItem = new Photo();
-        } else if (MediaType.isVideo(context, uri)) {
+        } else if (MediaType.checkVideoMimeType(mimeType)) {
             albumItem = new Video();
         }
 

@@ -42,8 +42,6 @@ public class ParallaxImageView extends android.support.v7.widget.AppCompatImageV
 
         attached = true;
 
-        setParallaxTranslation();
-
         View view = getRootView().findViewWithTag(RECYCLER_VIEW_TAG);
         if (view instanceof RecyclerView) {
             ((RecyclerView) view).addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -92,7 +90,6 @@ public class ParallaxImageView extends android.support.v7.widget.AppCompatImageV
         float dy = (float) (location[1] - recyclerView_location[1]);
 
         float translationY = MAX_PARALLAX_OFFSET * dy / ((float) recyclerView_height);
-
         setTranslationY(-translationY);
     }
 }

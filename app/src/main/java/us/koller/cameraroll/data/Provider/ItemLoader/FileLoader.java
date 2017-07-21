@@ -14,7 +14,7 @@ public class FileLoader extends ItemLoader {
 
     private File_POJO dir_pojo;
 
-    FileLoader() {
+    public FileLoader() {
         if (allFiles == null) {
             allFiles = new File_POJO(Environment.getExternalStorageDirectory().getPath(), false);
         }

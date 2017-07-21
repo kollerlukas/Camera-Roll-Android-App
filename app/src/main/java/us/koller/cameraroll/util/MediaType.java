@@ -34,60 +34,16 @@ public class MediaType {
         return path != null && checkImageExtension(path);
     }
 
-    public static boolean isImage(Context context, Uri uri) {
-        if (uri != null) {
-            String mimeType = getMimeType(context, uri);
-            if (mimeType != null) {
-                /*return mimeType.contains("image");*/
-                return checkImageMimeType(mimeType);
-            }
-        }
-        return false;
-    }
-
     public static boolean isVideo(String path) {
         return path != null && checkVideoExtension(path);
-    }
-
-    public static boolean isVideo(Context context, Uri uri) {
-        if (uri != null) {
-            String mimeType = getMimeType(context, uri);
-            if (mimeType != null) {
-                /*return mimeType.contains("video");*/
-                return checkVideoMimeType(mimeType);
-            }
-        }
-        return false;
     }
 
     public static boolean isGif(String path) {
         return path != null && checkGifExtension(path);
     }
 
-    public static boolean isGif(Context context, Uri uri) {
-        if (uri != null) {
-            String mimeType = getMimeType(context, uri);
-            if (mimeType != null) {
-                /*return checkGifExtension(mimeType);*/
-                return checkGifMimeType(mimeType);
-            }
-        }
-        return false;
-    }
-
     public static boolean isRAWImage(String path) {
         return path != null && checkRAWExtension(path);
-    }
-
-    public static boolean isRAWImage(Context context, Uri uri) {
-        if (uri != null) {
-            String mimeType = getMimeType(context, uri);
-            if (mimeType != null) {
-                /*return checkRAWExtension(mimeType);*/
-                return checkRAWMimeType(mimeType);
-            }
-        }
-        return false;
     }
 
 
@@ -109,19 +65,19 @@ public class MediaType {
         return checkExtension(mimeType, exifMimeTypes);
     }
 
-    private static boolean checkImageMimeType(String mimeType) {
+    public static boolean checkImageMimeType(String mimeType) {
         return checkExtension(mimeType, imageMimeTypes);
     }
 
-    private static boolean checkVideoMimeType(String mimeType) {
+    public static boolean checkVideoMimeType(String mimeType) {
         return checkExtension(mimeType, videoMimeTypes);
     }
 
-    private static boolean checkGifMimeType(String mimeType) {
+    public static boolean checkGifMimeType(String mimeType) {
         return checkExtension(mimeType, gifMimeTypes);
     }
 
-    private static boolean checkRAWMimeType(String mimeType) {
+    public static boolean checkRAWMimeType(String mimeType) {
         return checkExtension(mimeType, rawMimeTypes);
     }
 

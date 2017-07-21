@@ -25,8 +25,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -90,8 +88,6 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private ExifInterface exif;
-
     private ArrayList<InfoItem> infoItems;
 
     public boolean exifSupported(Context context, AlbumItem albumItem) {
@@ -129,19 +125,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 Locale locale = Util.getLocale(context);
 
                 if (exifSupported(context, albumItem)) {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            InputStream is = context.getContentResolver().openInputStream(uri);
-                            if (is != null) {
-                                exif = new ExifInterface(is);
-                            }
-
-                        } else {
-                            exif = new ExifInterface(albumItem.getPath());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    ExifInterface exif = ExifUtil.getExifInterface(context, albumItem);
 
                     /*Dimensions*/
                     String height = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_LENGTH));

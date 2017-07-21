@@ -1,6 +1,5 @@
 package us.koller.cameraroll.data.Provider.ItemLoader;
 
-import android.app.Activity;
 import android.content.Context;
 
 import java.io.File;
@@ -14,16 +13,6 @@ public abstract class ItemLoader {
     public class Result {
         public ArrayList<Album> albums;
         public File_POJO files;
-    }
-
-    public static ItemLoader getInstance(Class c) {
-        if (c.equals(AlbumLoader.class)) {
-            return new AlbumLoader();
-        } else if (c.equals(FileLoader.class)) {
-            return new FileLoader();
-        }
-
-        return null;
     }
 
     ItemLoader() {

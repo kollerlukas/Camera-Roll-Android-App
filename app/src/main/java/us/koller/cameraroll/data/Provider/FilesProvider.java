@@ -31,7 +31,7 @@ public class FilesProvider extends Provider {
 
         setCallback(callback);
 
-        ((StorageRetriever) retriever).loadDir(context, dirPath,
+        ((StorageRetriever) retriever).loadFilesForDir(context, dirPath,
                 new Callback() {
                     @Override
                     public void onDirLoaded(File_POJO dir) {

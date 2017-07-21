@@ -75,48 +75,36 @@ public class DateTakenRetriever {
 
     //synchronous
     public static void tryToRetrieveDateTaken(final Context context, final AlbumItem albumItem) {
+        long dateTaken = getExifDateTaken(context, albumItem);
+        if (dateTaken != -1) {
+            albumItem.setDate(dateTaken);
+            return;
+        }
+
+        //exif didn't work try MediaStore
+        tryToLoadDateTakenFromMediaStore(context, albumItem);
+    }
+
+    public static long getExifDateTaken(Context context, AlbumItem albumItem) {
         String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
         if (MediaType.doesSupportExif_MimeType(mimeType)) {
-            ExifInterface exif = null;
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Uri uri = albumItem.getUri(context);
-                    InputStream is = context.getContentResolver().openInputStream(uri);
-                    if (is != null) {
-                        exif = new ExifInterface(is);
-                    }
-
-                } else {
-                    exif = new ExifInterface(albumItem.getPath());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            ExifInterface exif = ExifUtil.getExifInterface(context, albumItem);
 
             if (exif != null) {
                 String dateTakenString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
                 if (dateTakenString != null && !dateTakenString.equals("null")) {
-                    Locale locale;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                        locale = context.getResources().getConfiguration().getLocales().get(0);
-                    } else {
-                        locale = context.getResources().getConfiguration().locale;
-                    }
+                    Locale locale = Util.getLocale(context);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale);
                     try {
                         Date dateTaken = sdf.parse(dateTakenString);
-                        long dateTakenTimeStamp = dateTaken.getTime();
-                        albumItem.setDate(dateTakenTimeStamp);
-                        return;
+                        return dateTaken.getTime();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }
-
-        //exif didn't work try MediaStore
-        tryToLoadDateTakenFromMediaStore(context, albumItem);
+        return -1;
     }
 
     private static void tryToLoadDateTakenFromMediaStore(final Context context, final AlbumItem albumItem) {

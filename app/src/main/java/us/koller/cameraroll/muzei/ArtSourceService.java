@@ -95,7 +95,8 @@ public class ArtSourceService extends MuzeiArtSource {
                 };
 
         StorageRetriever.Thread thread =
-                new StorageRetriever.Thread(getApplicationContext(), files, callback, AlbumLoader.class);
+                new StorageRetriever.Thread(getApplicationContext(), files, new AlbumLoader())
+                        .setCallback(callback);
         thread.start();
     }
 
