@@ -501,13 +501,12 @@ public class AlbumActivity extends ThemeableActivity
 
                 ArrayList<Uri> uris = new ArrayList<>();
                 for (int i = 0; i < selected_items_paths.length; i++) {
-                    uris.add(StorageUtil.getContentUriFromMediaStore(
-                            this, selected_items_paths[i]));
+                    uris.add(StorageUtil.getContentUri(this, selected_items_paths[i]));
                 }
 
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE)
-                        .setType(MediaType.getMimeType(this, selected_items_paths[0]))
+                        .setType(MediaType.getMimeType(selected_items_paths[0]))
                         .putExtra(Intent.EXTRA_STREAM, uris);
 
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -704,10 +703,8 @@ public class AlbumActivity extends ThemeableActivity
                         String path = intent.getStringExtra(FileOperation.FILES);
                         for (int i = 0; i < selected_items.length; i++) {
                             if (selected_items[i].getPath().equals(path)) {
-                                album.getAlbumItems().add(indices[i],
-                                        selected_items[i]);
-                                recyclerView.getAdapter()
-                                        .notifyItemInserted(indices[i]);
+                                album.getAlbumItems().add(indices[i], selected_items[i]);
+                                recyclerView.getAdapter().notifyItemInserted(indices[i]);
                                 break;
                             }
                         }
@@ -724,7 +721,7 @@ public class AlbumActivity extends ThemeableActivity
     private ClipData createClipData(AlbumItem[] items) {
         String[] mimeTypes = new String[items.length];
         for (int i = 0; i < items.length; i++) {
-            mimeTypes[i] = MediaType.getMimeType(this, items[i].getPath());
+            mimeTypes[i] = MediaType.getMimeType(items[i].getPath());
         }
 
         ClipData clipData =

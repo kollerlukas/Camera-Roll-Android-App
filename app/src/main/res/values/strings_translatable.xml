@@ -140,6 +140,7 @@
     <string name="info_camera_model">Camera model: </string>
     <string name="info_aperture">Aperture: </string>
     <string name="info_iso">ISO: </string>
+    <string name="info_frame_rate">Frame rate: </string>
 
     <!--Muzei description-->
     <string name="muzei_description">Random pictures taken by you</string>

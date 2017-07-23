@@ -126,22 +126,18 @@ public abstract class AlbumItem
         return new File(getPath()).lastModified();
     }
 
-    public long getDateTaken() {
-        return dateTaken;
-    }
-
     @Override
     public boolean pinned() {
         return false;
     }
 
-    private void setUri(Uri uri) {
+    void setUri(Uri uri) {
         this.uri = uri;
     }
 
     public Uri getUri(Context context) {
         if (uri == null) {
-            uri = StorageUtil.getContentUriFromMediaStore(context, getPath());
+            uri = StorageUtil.getContentUri(context, this);
         }
         return uri;
     }

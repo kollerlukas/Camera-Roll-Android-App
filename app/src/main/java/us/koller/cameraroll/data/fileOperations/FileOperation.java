@@ -226,7 +226,6 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         if (path != null) {
             //check if path is child of the treeUri
             DocumentFile file = StorageUtil.parseDocumentFile(getApplicationContext(), treeUri, path);
-            Log.d("FileOperation", "DocumentFile: " + file);
             if (file != null) {
                 return treeUri;
             } else {

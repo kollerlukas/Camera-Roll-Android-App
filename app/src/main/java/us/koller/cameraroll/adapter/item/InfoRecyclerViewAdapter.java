@@ -35,6 +35,7 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
@@ -225,6 +226,13 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                     String date = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale)
                             .format(new Date(albumItem.getDate()));
                     infoItems.add(new InfoItem(context.getString(R.string.info_date), date));
+                }
+
+                if (albumItem instanceof Video) {
+                    int frameRate = ((Video) albumItem).retrieveFrameRate();
+                    if (frameRate != -1) {
+                        infoItems.add(new InfoItem(context.getString(R.string.info_frame_rate), String.valueOf(frameRate) + " fps"));
+                    }
                 }
 
                 callback.onDataRetrieved();

@@ -2,6 +2,7 @@ package us.koller.cameraroll.adapter.item.viewHolder;
 
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,7 +21,6 @@ public class VideoViewHolder extends ViewHolder {
     @Override
     public View inflateView(ViewGroup container) {
         ViewGroup v = super.inflateVideoView(container);
-
         final View view = itemView.findViewById(R.id.image);
 
         ItemViewUtil.bindTransitionView((ImageView) view, albumItem);

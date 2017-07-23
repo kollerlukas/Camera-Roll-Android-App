@@ -13,13 +13,27 @@ import android.util.Log;
 
 import java.util.Arrays;
 
+import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Video;
+
 //workarounds to handle removable storage
 
 //heavily inspired by:
 //https://github.com/arpitkh96/AmazeFileManager/blob/master/src/main/java/com/amaze/filemanager/filesystem/MediaStoreHack.java
 public class StorageUtil {
 
-    public static Uri getContentUriFromMediaStore(Context context, String path) {
+    public static Uri getContentUri(Context context, String path) {
+        return getContentUri(context, AlbumItem.getInstance(path));
+    }
+
+    public static Uri getContentUri(Context context, AlbumItem albumItem) {
+        if (albumItem instanceof Video) {
+            return getContentUriForVideoFromMediaStore(context, albumItem.getPath());
+        }
+        return getContentUriForImageFromMediaStore(context, albumItem.getPath());
+    }
+
+    private static Uri getContentUriForImageFromMediaStore(Context context, String path) {
         ContentResolver resolver = context.getContentResolver();
 
         Cursor cursor = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -36,10 +50,36 @@ public class StorageUtil {
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DATA, path);
             resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            return getContentUriFromMediaStore(context, path);
+            return getContentUriForImageFromMediaStore(context, path);
         } else {
             int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
             Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId);
+            cursor.close();
+            return uri;
+        }
+    }
+
+    private static Uri getContentUriForVideoFromMediaStore(Context context, String path) {
+        ContentResolver resolver = context.getContentResolver();
+
+        Cursor cursor = resolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                new String[]{BaseColumns._ID}, MediaStore.MediaColumns.DATA + " = ?",
+                new String[]{path}, MediaStore.MediaColumns.DATE_ADDED + " desc");
+
+        if (cursor == null) {
+            return Uri.parse(path);
+        }
+        cursor.moveToFirst();
+
+        if (cursor.isAfterLast()) {
+            cursor.close();
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DATA, path);
+            resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+            return getContentUriForVideoFromMediaStore(context, path);
+        } else {
+            int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
+            Uri uri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, imageId);
             cursor.close();
             return uri;
         }

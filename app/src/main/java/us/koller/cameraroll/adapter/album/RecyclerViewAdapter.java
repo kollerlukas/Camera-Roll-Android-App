@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,8 +139,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
                     //intent.putExtra(ItemActivity.ALBUM, getAlbum());
                     intent.putExtra(ItemActivity.ALBUM_PATH, album.getPath());
-                    intent.putExtra(ItemActivity.ITEM_POSITION,
-                            album.getAlbumItems().indexOf(albumItem));
+                    intent.putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
 
                     ActivityOptionsCompat options =
                             ActivityOptionsCompat.makeSceneTransitionAnimation(

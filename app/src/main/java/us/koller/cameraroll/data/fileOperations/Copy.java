@@ -138,7 +138,7 @@ public class Copy extends FileOperation {
     //for files on removable storage
     static boolean copyFileOntoRemovableStorage(Context context, Uri treeUri,
                                                 String path, String destination) throws IOException {
-        String mimeType = MediaType.getMimeType(context, path);
+        String mimeType = MediaType.getMimeType(path);
         DocumentFile file = DocumentFile.fromFile(new File(destination));
         if (file.exists()) {
             int index = destination.lastIndexOf(".");

@@ -13,16 +13,9 @@ public class MediaType {
                 checkVideoExtension(path);
     }
 
-    public static String getMimeType(Context context, String path) {
-        Uri uri = StorageUtil.getContentUriFromMediaStore(context, path);
-        String mimeType = getMimeType(context, uri);
-        if (mimeType != null) {
-            return mimeType;
-        }
-        //try fileExtension
+    public static String getMimeType(String path) {
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(path);
-        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
-        return mimeType;
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
     }
 
     public static String getMimeType(Context context, Uri uri) {
@@ -54,8 +47,8 @@ public class MediaType {
     private static String[] rawExtensions = {"dng"};
     private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "bmp", "dng"};
 
-    private static String[] imageMimeTypes = {"image/jpeg", "image/png", "image/bmp"};
-    private static String[] videoMimeTypes = {"video/mp4", "video/x-matroska", "video/webm", "video/avi"};
+    private static String[] imageMimeTypes = {"image/*", "image/jpeg", "image/png", "image/bmp"};
+    private static String[] videoMimeTypes = {"video/*", "video/mp4", "video/x-matroska", "video/webm", "video/avi"};
     private static String[] gifMimeTypes = {"image/gif"};
     private static String[] rawMimeTypes = {"image/x-adobe-dng"};
     private static String[] exifMimeTypes = {"image/jpeg", "image/x-adobe-dng"};

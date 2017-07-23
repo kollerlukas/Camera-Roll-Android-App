@@ -107,8 +107,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void unregisterLocalBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
         if (broadcastReceiver != null) {
             broadcastReceivers.remove(broadcastReceiver);
-            LocalBroadcastManager.getInstance(this)
-                    .unregisterReceiver(broadcastReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         }
     }
 

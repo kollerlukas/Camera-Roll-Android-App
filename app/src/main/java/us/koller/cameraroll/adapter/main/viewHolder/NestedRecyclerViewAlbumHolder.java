@@ -318,13 +318,12 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 //share multiple items
                 ArrayList<Uri> uris = new ArrayList<>();
                 for (int i = 0; i < paths.length; i++) {
-                    uris.add(StorageUtil
-                            .getContentUriFromMediaStore(getContext(), paths[i]));
+                    uris.add(StorageUtil.getContentUri(getContext(), paths[i]));
                 }
 
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE)
-                        .setType(MediaType.getMimeType(getContext(), paths[0]))
+                        .setType(MediaType.getMimeType(paths[0]))
                         .putExtra(Intent.EXTRA_STREAM, uris);
 
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION

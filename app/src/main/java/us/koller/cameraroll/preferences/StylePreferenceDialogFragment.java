@@ -46,11 +46,10 @@ public class StylePreferenceDialogFragment
             selectedStyle = ((StylePreference) preference).getStyle();
         }
 
-        styles = getContext().getResources()
-                .getIntArray(R.array.style_values);
+        styles = getContext().getResources().getIntArray(R.array.style_values);
 
-        @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext())
-                .inflate(R.layout.pref_dialog_style, null);
+        @SuppressLint("InflateParams")
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.pref_dialog_style, null);
 
         ViewPager viewPager = view.findViewById(R.id.view_pager);
         viewPager.setAdapter(new ViewPagerAdapter());
@@ -132,9 +131,7 @@ public class StylePreferenceDialogFragment
             Glide.with(imageView.getContext())
                     .load(imageRess[position])
                     .into(imageView);
-
-            imageView.setColorFilter(ContextCompat
-                    .getColor(container.getContext(), R.color.colorAccent));
+            imageView.setColorFilter(ContextCompat.getColor(container.getContext(), R.color.colorAccent));
 
             container.addView(view);
             return view;

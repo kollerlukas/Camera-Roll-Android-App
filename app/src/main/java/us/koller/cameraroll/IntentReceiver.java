@@ -15,7 +15,6 @@ import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.ui.VideoPlayerActivity;
-import us.koller.cameraroll.util.MediaType;
 
 public class IntentReceiver extends AppCompatActivity {
 

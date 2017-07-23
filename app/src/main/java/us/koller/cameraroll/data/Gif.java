@@ -1,9 +1,11 @@
 package us.koller.cameraroll.data;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.Util;
 
 public class Gif extends AlbumItem implements Parcelable {

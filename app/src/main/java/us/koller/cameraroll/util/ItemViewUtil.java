@@ -39,8 +39,7 @@ public class ItemViewUtil {
                 .inflate(R.layout.video_view, container, false);
     }
 
-    public static void bindSubsamplingImageView(SubsamplingScaleImageView imageView,
-                                                Photo photo,
+    public static void bindSubsamplingImageView(SubsamplingScaleImageView imageView, Photo photo,
                                                 SubsamplingScaleImageView.DefaultOnImageEventListener onImageEventListener) {
         ImageViewState imageViewState = null;
         if (photo.getImageViewSavedState() != null) {
@@ -57,8 +56,12 @@ public class ItemViewUtil {
         }
     }
 
-    public static void bindTransitionView(final ImageView imageView,
-                                          final AlbumItem albumItem) {
+    public static void bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
+        /*if (albumItem instanceof Video) {
+            bindVideoTransitionView(imageView, albumItem);
+            return;
+        }*/
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(albumItem.getPath());
         }

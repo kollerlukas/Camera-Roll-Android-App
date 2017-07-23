@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,10 @@ import us.koller.cameraroll.util.Util;
 
 public class FileOperationDialogActivity extends ThemeableActivity {
 
+    private interface OnDestroyListener {
+        void onDestroy();
+    }
+
     public static String ACTION_COPY = "ACTION_COPY";
     public static String ACTION_MOVE = "ACTION_MOVE";
 
@@ -50,6 +53,10 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     private boolean creatingNewFolder = false;
 
     private AlertDialog dialog;
+
+    // need to start FileOperation, when this activity is destroyed
+    // otherwise running into issue with the removable storage permission broadcast not being received
+    private OnDestroyListener onDestroyListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,6 +119,10 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         if (dialog != null) {
             dialog.dismiss();
         }
+
+        if (onDestroyListener != null) {
+            onDestroyListener.onDestroy();
+        }
     }
 
     public void showFolderSelectorDialog(final File_POJO[] files) {
@@ -139,10 +150,15 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                String path = recyclerViewAdapter.getSelectedPath();
-                                if (path != null) {
-                                    executeAction(files, path);
-                                }
+                                onDestroyListener = new OnDestroyListener() {
+                                    @Override
+                                    public void onDestroy() {
+                                        String path = recyclerViewAdapter.getSelectedPath();
+                                        if (path != null) {
+                                            executeAction(files, path);
+                                        }
+                                    }
+                                };
                             }
                         })
                 .setNeutralButton(getString(R.string.new_folder), new DialogInterface.OnClickListener() {
@@ -202,16 +218,13 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                             @Override
                             public void onReceive(Context context, Intent intent) {
                                 unregisterLocalBroadcastReceiver(this);
-                                Log.d("FileOpDialod", "onReceive: ");
                                 switch (intent.getAction()) {
                                     case FileOperation.RESULT_DONE:
-                                        Log.d("FileOpDialod", "RESULT_DONE: ");
                                         creatingNewFolder = false;
                                         callback.newFolderCreated(newFolder.getPath());
                                         break;
                                     case FileOperation.FAILED:
                                         creatingNewFolder = false;
-                                        Log.d("FileOpDialod", "FAILED: ");
                                         callback.failed();
                                         break;
                                 }
@@ -259,6 +272,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         }
     }
 
+
     @Override
     public int getDarkThemeRes() {
         return R.style.Theme_CameraRoll_Translucent_FileOperationDialog;
@@ -267,11 +281,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     @Override
     public int getLightThemeRes() {
         return R.style.Theme_CameraRoll_Translucent_Light_FileOperationDialog;
-    }
-
-    @Override
-    public BroadcastReceiver getRemovableStoragePermissionRequestBroadcastReceiver() {
-        return null;
     }
 
     @Override
@@ -289,8 +298,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
             void setSelected(boolean selected) {
                 final View imageView = itemView.findViewById(R.id.image);
-
-                Log.d("FileOperationDialog", "setSelected: " + selected);
 
                 if (selected) {
                     final Drawable selectorOverlay = Util
