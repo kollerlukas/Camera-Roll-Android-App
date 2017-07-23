@@ -48,8 +48,6 @@ public class ItemViewUtil {
             photo.putImageViewSavedState(null);
         }
 
-        imageView.setMinimumDpi(80);
-
         imageView.setImage(
                 ImageSource.uri(photo.getUri(imageView.getContext())),
                 imageViewState);

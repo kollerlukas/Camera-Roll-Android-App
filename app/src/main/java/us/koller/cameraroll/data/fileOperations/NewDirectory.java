@@ -42,8 +42,7 @@ public class NewDirectory extends FileOperation {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), getString(R.string.successfully_created_new_folder),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.successfully_created_new_folder), Toast.LENGTH_SHORT).show();
                     }
                 });
             }

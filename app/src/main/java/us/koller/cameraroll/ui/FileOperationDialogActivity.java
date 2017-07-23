@@ -202,14 +202,16 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                             @Override
                             public void onReceive(Context context, Intent intent) {
                                 unregisterLocalBroadcastReceiver(this);
-
+                                Log.d("FileOpDialod", "onReceive: ");
                                 switch (intent.getAction()) {
                                     case FileOperation.RESULT_DONE:
+                                        Log.d("FileOpDialod", "RESULT_DONE: ");
                                         creatingNewFolder = false;
                                         callback.newFolderCreated(newFolder.getPath());
                                         break;
                                     case FileOperation.FAILED:
                                         creatingNewFolder = false;
+                                        Log.d("FileOpDialod", "FAILED: ");
                                         callback.failed();
                                         break;
                                 }

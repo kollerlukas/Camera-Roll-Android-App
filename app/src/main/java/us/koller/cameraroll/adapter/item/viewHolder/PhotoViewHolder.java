@@ -74,6 +74,9 @@ public class PhotoViewHolder extends ViewHolder {
         imageView.setRegionDecoderClass(getBitmapRegionDecoderClass());
 
         imageView.setMinimumTileDpi(196);
+        imageView.setMinimumDpi(80);
+
+        imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),
