@@ -28,7 +28,7 @@ public class Photo extends AlbumItem implements Parcelable {
     }
 
     @Override
-    int[] retrieveImageDimens(Context context) {
+    public int[] retrieveImageDimens(Context context) {
         return Util.getImageDimensions(context, getUri(context));
     }
 

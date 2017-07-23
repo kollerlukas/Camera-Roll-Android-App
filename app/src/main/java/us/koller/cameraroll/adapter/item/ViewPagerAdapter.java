@@ -1,17 +1,16 @@
 package us.koller.cameraroll.adapter.item;
 
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
-import us.koller.cameraroll.adapter.item.ViewHolder.PhotoViewHolder;
-import us.koller.cameraroll.adapter.item.ViewHolder.RAWImageViewHolder;
-import us.koller.cameraroll.adapter.item.ViewHolder.VideoViewHolder;
-import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
+import us.koller.cameraroll.adapter.item.viewHolder.GifViewHolder;
+import us.koller.cameraroll.adapter.item.viewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.item.viewHolder.RAWImageViewHolder;
+import us.koller.cameraroll.adapter.item.viewHolder.VideoViewHolder;
+import us.koller.cameraroll.adapter.item.viewHolder.ViewHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;

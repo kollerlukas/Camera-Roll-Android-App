@@ -51,7 +51,9 @@ public class FastScrollerRecyclerView extends RecyclerView {
         //handle fastScroller padding
         if (fastScroller != null) {
             MarginLayoutParams params = (MarginLayoutParams) fastScroller.getLayoutParams();
+            params.leftMargin = getPaddingLeft();
             params.topMargin = getPaddingTop();
+            params.rightMargin = getPaddingRight();
             params.bottomMargin = getPaddingBottom();
             fastScroller.setLayoutParams(params);
 

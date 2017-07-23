@@ -88,7 +88,7 @@ public abstract class AlbumItem
         return albumItem;
     }
 
-    AlbumItem() {
+    public AlbumItem() {
         name = "";
         path = "";
         dateTaken = -1;
@@ -141,17 +141,7 @@ public abstract class AlbumItem
 
     public Uri getUri(Context context) {
         if (uri == null) {
-            //my file provider isn't working with Google Photos ?!
-            /*try {
-                File file = new File(getPath());
-                uri =  FileProvider.getUriForFile(context,
-                        context.getApplicationContext().getPackageName() + ".provider", file);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                uri = StorageUtil.getContentUriFromFilePath(context, getPath());
-            }*/
-
-            uri = StorageUtil.getContentUriFromFilePath(context, getPath());
+            uri = StorageUtil.getContentUriFromMediaStore(context, getPath());
         }
         return uri;
     }
@@ -163,7 +153,7 @@ public abstract class AlbumItem
         return new int[]{this.imageDimens[0], this.imageDimens[1]};
     }
 
-    abstract int[] retrieveImageDimens(Context context);
+    public abstract int[] retrieveImageDimens(Context context);
 
     public Key getGlideSignature() {
         File file = new File(getPath());

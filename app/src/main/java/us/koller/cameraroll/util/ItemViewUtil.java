@@ -23,7 +23,7 @@ import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.item.ViewHolder.GifViewHolder;
+import us.koller.cameraroll.adapter.item.viewHolder.GifViewHolder;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Photo;
 

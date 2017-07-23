@@ -16,7 +16,7 @@ public class RAWImage extends Photo {
     }
 
     @Override
-    int[] retrieveImageDimens(Context context) {
+    public int[] retrieveImageDimens(Context context) {
         return Util.getImageDimensions(context, getUri(context));
     }
 

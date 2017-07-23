@@ -14,7 +14,7 @@ public class MediaType {
     }
 
     public static String getMimeType(Context context, String path) {
-        Uri uri = StorageUtil.getContentUriFromFilePath(context, path);
+        Uri uri = StorageUtil.getContentUriFromMediaStore(context, path);
         String mimeType = getMimeType(context, uri);
         if (mimeType != null) {
             return mimeType;

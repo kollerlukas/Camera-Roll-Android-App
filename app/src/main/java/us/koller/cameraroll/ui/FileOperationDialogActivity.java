@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,9 +30,9 @@ import java.util.Objects;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -245,13 +244,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         int action = this.action.equals(ACTION_COPY) ? FileOperation.COPY : FileOperation.MOVE;
         final Intent workIntent = FileOperation.getDefaultIntent(this, action, files);
         workIntent.putExtra(FileOperation.TARGET, new File_POJO(target, false));
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startService(workIntent);
-            }
-        }, 100);
+        startService(workIntent);
     }
 
     @Override

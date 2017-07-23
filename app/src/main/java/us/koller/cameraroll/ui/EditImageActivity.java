@@ -28,14 +28,14 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.theartofdev.edmodo.cropper.CropOverlayView;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.Util;
 
 public class EditImageActivity extends AppCompatActivity {
 
-    private static final String CROP_RECT = "CROP_RECT";
-    private static final String ROTATED_DEGREES = "ROTATED_DEGREES";
+    private boolean animating90DegreeRotation = false;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -61,18 +61,10 @@ public class EditImageActivity extends AppCompatActivity {
         if (uri == null) {
             finish();
         }
-        cropImageView.setImageUriAsync(uri);
-        //restore cropImageViewState
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(CROP_RECT)
-                && savedInstanceState.containsKey(ROTATED_DEGREES)) {
-            Rect cropRect = savedInstanceState.getParcelable(CROP_RECT);
-            cropImageView.setCropRect(cropRect);
-            int rotatedDegrees = savedInstanceState.getInt(ROTATED_DEGREES);
-            //setRotatedDegrees() not working ???
-            cropImageView.setRotatedDegrees(rotatedDegrees);
-        }
 
+        if (savedInstanceState == null) {
+            cropImageView.setImageUriAsync(uri);
+        }
 
         SeekBar seekbar = findViewById(R.id.seekbar);
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -218,15 +210,13 @@ public class EditImageActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.rotate:
-                Drawable d = item.getIcon();
-                if (d instanceof Animatable && !((Animatable) d).isRunning()) {
-                    ((Animatable) d).start();
+                if (!animating90DegreeRotation) {
+                    Drawable d = item.getIcon();
+                    if (d instanceof Animatable && !((Animatable) d).isRunning()) {
+                        ((Animatable) d).start();
+                    }
+                    animate90DegreeRotation();
                 }
-                final CropImageView cropImageView = findViewById(R.id.cropImageView);
-                int degree = cropImageView.getRotatedDegrees();
-                degree = (degree + 90) % 360;
-                cropImageView.setRotatedDegrees(degree);
-                /*animate90DegreeRotation();*/
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -240,6 +230,7 @@ public class EditImageActivity extends AppCompatActivity {
         if (newDegree > 360) {
             newDegree = newDegree % 360;
         }
+
         ValueAnimator animator = ValueAnimator.ofInt(oldDegree, newDegree);
         animator.setDuration(600);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -249,29 +240,27 @@ public class EditImageActivity extends AppCompatActivity {
                 cropImageView.setRotatedDegrees(degree);
             }
         });
+
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
                         super.onAnimationStart(animation);
+                        animating90DegreeRotation = true;
+
+                        cropImageView.setFixedAspectRatio(true);
                         cropImageView.setShowCropOverlay(false);
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
+                        animating90DegreeRotation = false;
+
+                        cropImageView.setFixedAspectRatio(false);
                         cropImageView.setShowCropOverlay(true);
                     }
                 });
         animator.start();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        CropImageView cropImageView = findViewById(R.id.cropImageView);
-        outState.putParcelable(CROP_RECT, cropImageView.getCropRect());
-        outState.putInt(ROTATED_DEGREES, cropImageView.getRotatedDegrees());
     }
 }

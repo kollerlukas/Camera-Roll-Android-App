@@ -19,7 +19,7 @@ public class Video extends AlbumItem implements Parcelable {
     }
 
     @Override
-    int[] retrieveImageDimens(Context context) {
+    public int[] retrieveImageDimens(Context context) {
         try {
             return Util.getVideoDimensions(getPath());
         } catch (FileNotFoundException e) {

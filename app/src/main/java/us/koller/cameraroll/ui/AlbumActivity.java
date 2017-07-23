@@ -52,11 +52,11 @@ import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.FileOperations.FileOperation;
-import us.koller.cameraroll.data.FileOperations.Rename;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.fileOperations.Rename;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Provider.MediaProvider;
-import us.koller.cameraroll.data.Provider.Provider;
+import us.koller.cameraroll.data.provider.MediaProvider;
+import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
@@ -387,15 +387,14 @@ public class AlbumActivity extends ThemeableActivity
                 final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
                 Log.d("AlbumActivity", "ALBUM_ITEM_DELETED: " + albumItem.getPath());
 
-                int k = album.getAlbumItems().indexOf(albumItem);
-                if (k >= 0 && k < album.getAlbumItems().size()) {
-                    for (int i = 0; i < album.getAlbumItems().size(); i++) {
-                        if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
-                            k = i;
-                            break;
-                        }
+                int index = -1;
+                for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                    if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
+                        index = i;
+                        break;
                     }
-                    final int index = k;
+                }
+                if (index > -1) {
                     album.getAlbumItems().remove(index);
                     recyclerView.getAdapter().notifyDataSetChanged();
                 }
@@ -502,7 +501,7 @@ public class AlbumActivity extends ThemeableActivity
 
                 ArrayList<Uri> uris = new ArrayList<>();
                 for (int i = 0; i < selected_items_paths.length; i++) {
-                    uris.add(StorageUtil.getContentUriFromFilePath(
+                    uris.add(StorageUtil.getContentUriFromMediaStore(
                             this, selected_items_paths[i]));
                 }
 

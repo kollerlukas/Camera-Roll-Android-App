@@ -26,12 +26,12 @@ public abstract class ThemeableActivity extends BaseActivity {
 
     Theme theme = null;
 
-    int backgroundColor,
-            toolbarColor,
-            textColorPrimary,
-            textColorSecondary,
-            accentColor,
-            accentTextColor;
+    public int backgroundColor;
+    public int toolbarColor;
+    public int textColorPrimary;
+    public int textColorSecondary;
+    public int accentColor;
+    public int accentTextColor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

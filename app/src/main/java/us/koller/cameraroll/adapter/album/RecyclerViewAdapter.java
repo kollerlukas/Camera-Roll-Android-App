@@ -14,11 +14,11 @@ import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.SelectorModeManager;
-import us.koller.cameraroll.adapter.album.ViewHolder.AlbumItemHolder;
-import us.koller.cameraroll.adapter.album.ViewHolder.GifViewHolder;
-import us.koller.cameraroll.adapter.album.ViewHolder.PhotoViewHolder;
-import us.koller.cameraroll.adapter.album.ViewHolder.RAWImageHolder;
-import us.koller.cameraroll.adapter.album.ViewHolder.VideoViewHolder;
+import us.koller.cameraroll.adapter.album.viewHolder.AlbumItemHolder;
+import us.koller.cameraroll.adapter.album.viewHolder.GifViewHolder;
+import us.koller.cameraroll.adapter.album.viewHolder.PhotoViewHolder;
+import us.koller.cameraroll.adapter.album.viewHolder.RAWImageHolder;
+import us.koller.cameraroll.adapter.album.viewHolder.VideoViewHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Gif;
@@ -106,10 +106,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 return new RAWImageHolder(v);
             case VIEW_TYPE_GIF:
                 return new GifViewHolder(v);
-            case VIEW_TYPE_PHOTO:
-                return new PhotoViewHolder(v);
             case VIEW_TYPE_VIDEO:
                 return new VideoViewHolder(v);
+            case VIEW_TYPE_PHOTO:
+                return new PhotoViewHolder(v);
         }
         return null;
     }

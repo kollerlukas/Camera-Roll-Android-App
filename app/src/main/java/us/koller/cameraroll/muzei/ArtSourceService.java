@@ -1,13 +1,15 @@
 package us.koller.cameraroll.muzei;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.media.ExifInterface;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.MuzeiArtSource;
@@ -24,18 +26,20 @@ import java.util.Random;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Provider.ItemLoader.AlbumLoader;
-import us.koller.cameraroll.data.Provider.ItemLoader.ItemLoader;
-import us.koller.cameraroll.data.Provider.Retriever.StorageRetriever;
+import us.koller.cameraroll.data.provider.itemLoader.AlbumLoader;
+import us.koller.cameraroll.data.provider.itemLoader.ItemLoader;
+import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.InfoUtil;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
+@SuppressLint("Registered")
 public class ArtSourceService extends MuzeiArtSource {
 
     private static final String NAME = "us.koller.cameraroll.muzei.ArtSourceService";
 
-    private static final long SCHEDULE_TIME_INTERVALL = 24 * 60 * 60 * 1000; //every day
+    private static final long SCHEDULE_TIME_INTERVAL = 6 * 60 * 60 * 1000; //every 6 hours
 
     private Album album;
 
@@ -44,10 +48,15 @@ public class ArtSourceService extends MuzeiArtSource {
     }
 
     @Override
-    protected void onEnabled() {
-        super.onEnabled();
+    public void onCreate() {
+        super.onCreate();
+        //set UsedCommand Next Artwork
+        setUserCommands(BUILTIN_COMMAND_ID_NEXT_ARTWORK);
+    }
 
-        scheduleUpdate(100);
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -60,19 +69,10 @@ public class ArtSourceService extends MuzeiArtSource {
 
     @Override
     protected void onUpdate(int reason) {
-        Log.d("ArtSourceService", "onUpdate() called with: reason = [" + reason + "]");
-
-        //set UsedCommand Next Artwork
-        setUserCommands(BUILTIN_COMMAND_ID_NEXT_ARTWORK);
-
-        if (reason == UPDATE_REASON_USER_NEXT) {
-            Toast.makeText(this, "Next Picture", Toast.LENGTH_SHORT).show();
-        }
-
         loadCameraImages();
 
         //schedule next update
-        scheduleUpdate(SCHEDULE_TIME_INTERVALL);
+        scheduleUpdate(System.currentTimeMillis() + SCHEDULE_TIME_INTERVAL);
     }
 
 
@@ -82,7 +82,7 @@ public class ArtSourceService extends MuzeiArtSource {
                 new StorageRetriever.Thread.Callback() {
                     @Override
                     public void done(StorageRetriever.Thread thread, ItemLoader.Result result) {
-                        thread.interrupt();
+                        thread.cancel();
 
                         album = new Album();
                         ArrayList<Album> albums = result.albums;
@@ -106,14 +106,18 @@ public class ArtSourceService extends MuzeiArtSource {
 
         AlbumItem albumItem = album.getAlbumItems().get(index);
 
-        Uri image = albumItem.getUri(getApplicationContext());
+        Uri imageUri = albumItem.getUri(getApplicationContext());
+        String mimeType = MediaType.getMimeType(getApplicationContext(), imageUri);
         String imageTitle = albumItem.getName();
         String imageData = getImageData(getApplicationContext(), albumItem);
 
+        Log.d("ArtSourceService", "publishArtwork: " + imageUri);
+
         publishArtwork(new Artwork.Builder()
-                .imageUri(image)
+                .imageUri(imageUri)
                 .title(imageTitle)
                 .byline(imageData)
+                .viewIntent(new Intent(Intent.ACTION_VIEW).setDataAndType(imageUri, mimeType))
                 .build());
     }
 
@@ -134,6 +138,27 @@ public class ArtSourceService extends MuzeiArtSource {
             e.printStackTrace();
         }
 
+        /*Location*/
+        String location = null;
+        if (exif != null) {
+            Object latitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE);
+            Object longitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE);
+            if (latitudeObject != null && longitudeObject != null) {
+                boolean positiveLat = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE_REF).equals("N");
+                double latitude = Double.parseDouble(InfoUtil.parseGPSLongOrLat(String.valueOf(latitudeObject), positiveLat));
+
+                boolean positiveLong = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE_REF).equals("E");
+                double longitude = Double.parseDouble(InfoUtil.parseGPSLongOrLat(String.valueOf(longitudeObject), positiveLong));
+                Address address = InfoUtil.retrieveAddredd(context, latitude, longitude);
+                if (address != null) {
+                    location = address.getLocality() + ", " + address.getAdminArea();
+                }
+            }
+        }
+        if (location != null) {
+            return location;
+        }
+
         String formattedDate;
         Date date = null;
         Locale locale = Util.getLocale(context);
@@ -149,24 +174,6 @@ public class ArtSourceService extends MuzeiArtSource {
             date = new Date(albumItem.getDate());
         }
         formattedDate = new SimpleDateFormat("EEE, d MMM yyyy", locale).format(date);
-
-        /*Location*/
-        String location = "";
-        if (exif != null) {
-            Object latitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE);
-            Object longitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE);
-            if (latitudeObject != null && longitudeObject != null) {
-                boolean positiveLat = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE_REF).equals("N");
-                double latitude = Double.parseDouble(InfoUtil.parseGPSLongOrLat(String.valueOf(latitudeObject), positiveLat));
-
-                boolean positiveLong = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE_REF).equals("E");
-                double longitude = Double.parseDouble(InfoUtil.parseGPSLongOrLat(String.valueOf(longitudeObject), positiveLong));
-                Address address = InfoUtil.retrieveAddredd(context, latitude, longitude);
-                if (address != null) {
-                    location = address.getLocality() + ", " + address.getAdminArea() + ", ";
-                }
-            }
-        }
-        return location + formattedDate;
+        return formattedDate;
     }
 }

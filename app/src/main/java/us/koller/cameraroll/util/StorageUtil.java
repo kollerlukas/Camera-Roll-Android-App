@@ -1,6 +1,7 @@
 package us.koller.cameraroll.util;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,29 +19,27 @@ import java.util.Arrays;
 //https://github.com/arpitkh96/AmazeFileManager/blob/master/src/main/java/com/amaze/filemanager/filesystem/MediaStoreHack.java
 public class StorageUtil {
 
-    //workaround to get content-Uri for items on removable storage
-    public static Uri getContentUriFromFilePath(Context context, String path) {
+    public static Uri getContentUriFromMediaStore(Context context, String path) {
         ContentResolver resolver = context.getContentResolver();
 
-        Cursor cursor = resolver.query(MediaStore.Files.getContentUri("external"),
+        Cursor cursor = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 new String[]{BaseColumns._ID}, MediaStore.MediaColumns.DATA + " = ?",
                 new String[]{path}, MediaStore.MediaColumns.DATE_ADDED + " desc");
 
         if (cursor == null) {
             return Uri.parse(path);
         }
-
         cursor.moveToFirst();
 
         if (cursor.isAfterLast()) {
             cursor.close();
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DATA, path);
-            return resolver.insert(MediaStore.Files.getContentUri("external"), values);
+            resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            return getContentUriFromMediaStore(context, path);
         } else {
             int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
-            Uri uri = MediaStore.Files.getContentUri("external").buildUpon().appendPath(
-                    Integer.toString(imageId)).build();
+            Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId);
             cursor.close();
             return uri;
         }

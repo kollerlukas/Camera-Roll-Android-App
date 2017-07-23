@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.io.File;
 import java.util.ArrayList;
 
-import us.koller.cameraroll.data.Provider.Provider;
+import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.util.SortUtil;
 
 //simple POJO class

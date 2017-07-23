@@ -151,46 +151,36 @@
 
 
         <service
-            android:name=".data.FileOperations.Copy"
+            android:name=".data.fileOperations.Copy"
             tools:ignore="InnerclassSeparator" />
 
         <service
-            android:name=".data.FileOperations.Delete"
+            android:name=".data.fileOperations.Delete"
             tools:ignore="InnerclassSeparator" />
 
         <service
-            android:name=".data.FileOperations.Move"
+            android:name=".data.fileOperations.Move"
             tools:ignore="InnerclassSeparator" />
 
         <service
-            android:name=".data.FileOperations.NewDirectory"
+            android:name=".data.fileOperations.NewDirectory"
             tools:ignore="InnerclassSeparator" />
 
         <service
-            android:name=".data.FileOperations.Rename"
+            android:name=".data.fileOperations.Rename"
             tools:ignore="InnerclassSeparator" />
 
-        <service
+        <!--<service
             android:name=".muzei.ArtSourceService"
             android:description="@string/muzei_description"
             android:icon="@drawable/muzei_icon"
-            android:label="@string/app_name"
-            tools:ignore="ExportedService">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
             </intent-filter>
-
             <meta-data
                 android:name="color"
                 android:value="#EF5350" />
-            <!--<meta-data
-                android:name="settingsActivity"
-                android:value=".ExampleSettingsActivity" />-->
-        </service>
-
-        <activity
-            android:name=".muzei.SettingsActivity"
-            android:exported="true"
-            android:theme="@style/Theme.CameraRoll.Translucent.FileOperationDialog" />
+        </service>-->
     </application>
 </manifest>

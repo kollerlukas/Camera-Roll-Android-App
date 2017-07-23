@@ -45,13 +45,13 @@ import android.widget.Toast;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
-import us.koller.cameraroll.data.FileOperations.Copy;
-import us.koller.cameraroll.data.FileOperations.Delete;
-import us.koller.cameraroll.data.FileOperations.FileOperation;
-import us.koller.cameraroll.data.FileOperations.Move;
+import us.koller.cameraroll.data.fileOperations.Copy;
+import us.koller.cameraroll.data.fileOperations.Delete;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.fileOperations.Move;
 import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Provider.FilesProvider;
-import us.koller.cameraroll.data.Provider.Provider;
+import us.koller.cameraroll.data.provider.FilesProvider;
+import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.StorageRoot;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
@@ -630,6 +630,19 @@ public class FileExplorerActivity extends ThemeableActivity
     public void onSwipeProcess(float percent) {
         getWindow().getDecorView().setBackgroundColor(
                 SwipeBackCoordinatorLayout.getBackgroundColor(percent));
+        boolean selectorModeActive = ((RecyclerViewAdapter) recyclerView.getAdapter()).isModeActive();
+        if (!theme.darkStatusBarIcons() && selectorModeActive) {
+            SwipeBackCoordinatorLayout layout = findViewById(R.id.swipeBackView);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            View rootView = findViewById(R.id.root_view);
+            int translationY = (int) layout.getTranslationY();
+            int statusBarHeight = toolbar.getPaddingTop();
+            if (translationY > statusBarHeight * 0.5) {
+                Util.setLightStatusBarIcons(rootView);
+            } else {
+                Util.setDarkStatusBarIcons(rootView);
+            }
+        }
     }
 
     @Override

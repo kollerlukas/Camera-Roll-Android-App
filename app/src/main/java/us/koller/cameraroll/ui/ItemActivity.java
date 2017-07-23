@@ -43,6 +43,7 @@ import android.widget.Toast;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,16 +51,16 @@ import java.util.Map;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.InfoRecyclerViewAdapter;
-import us.koller.cameraroll.adapter.item.ViewHolder.ViewHolder;
+import us.koller.cameraroll.adapter.item.viewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.FileOperations.FileOperation;
-import us.koller.cameraroll.data.FileOperations.Rename;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.fileOperations.Rename;
 import us.koller.cameraroll.data.File_POJO;
 import us.koller.cameraroll.data.Gif;
 import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.data.Provider.MediaProvider;
+import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.util.ZoomOutPageTransformer;

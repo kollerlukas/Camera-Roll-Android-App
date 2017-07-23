@@ -17,7 +17,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.FileOperations.FileOperation;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.Settings;
 
 //simple BaseActivity that handles LocalBroadcastReceivers, need for communication with FileOperationServices

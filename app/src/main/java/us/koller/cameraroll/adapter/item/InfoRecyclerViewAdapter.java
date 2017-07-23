@@ -341,8 +341,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                             featureName = address.getFeatureName();
                             valueText = address.getLocality() + ", " + address.getAdminArea();
                         }
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
+                    } catch (NumberFormatException ignored) {
                     }
 
                     final String finalValueText = valueText;

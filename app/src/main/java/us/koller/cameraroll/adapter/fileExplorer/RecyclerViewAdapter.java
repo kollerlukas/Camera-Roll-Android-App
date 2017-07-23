@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import us.koller.cameraroll.IntentReceiver;
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.fileExplorer.ViewHolder.FileHolder;
+import us.koller.cameraroll.adapter.fileExplorer.viewHolder.FileHolder;
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.File_POJO;
