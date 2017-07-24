@@ -54,7 +54,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     public boolean exifSupported(Context context, AlbumItem albumItem) {
         String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
-        return mimeType != null && MediaType.doesSupportExif_MimeType(mimeType);
+        return mimeType != null && MediaType.doesSupportExifMimeType(mimeType);
     }
 
     public void retrieveData(final AlbumItem albumItem, final boolean showColors, final OnDataRetrievedCallback callback) {

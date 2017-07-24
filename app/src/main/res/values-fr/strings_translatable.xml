@@ -92,7 +92,6 @@
     <string name="by_name">Nome</string>
     <string name="by_size">Taille</string>
     <string name="by_date">Date</string><!--Last Modified-->
-    <string name="folder_name">Nom dossier</string>
     <string name="pin_album">Épingler album</string>
     <string name="grant_removable_storage_permission">Accorder la permission Stockage amovible</string>
     <string name="grant_removable_storage_permission_message">Veuillez sélectionner la racine du dossier de votre appareil de stockage amovible (ex : SD Card) sur le prochain écran.</string>

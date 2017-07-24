@@ -84,7 +84,7 @@ public class DateTakenRetriever {
 
     private static long getExifDateTaken(Context context, AlbumItem albumItem) {
         String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
-        if (MediaType.doesSupportExif_MimeType(mimeType)) {
+        if (MediaType.doesSupportExifMimeType(mimeType)) {
             ExifInterface exif = ExifUtil.getExifInterface(context, albumItem);
 
             if (exif != null) {

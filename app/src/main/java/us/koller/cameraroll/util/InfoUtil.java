@@ -79,7 +79,7 @@ public class InfoUtil {
         if (cursor != null) {
             int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
             cursor.moveToFirst();
-            cursor.getLong(sizeIndex);
+            size = cursor.getLong(sizeIndex);
             cursor.close();
         }
         return new InfoItem(context.getString(R.string.info_size), Parser.parseFileSize(size));

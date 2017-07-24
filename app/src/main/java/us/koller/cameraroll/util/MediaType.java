@@ -55,7 +55,7 @@ public class MediaType {
     }
 
     /*check mimeTypes*/
-    public static boolean doesSupportExif_MimeType(String mimeType) {
+    public static boolean doesSupportExifMimeType(String mimeType) {
         return checkExtension(mimeType, exifMimeTypes);
     }
 
@@ -77,7 +77,7 @@ public class MediaType {
 
     /*check fileExtensions*/
     @SuppressWarnings("unused")
-    public static boolean doesSupportExif_fileExtension(String path) {
+    public static boolean doesSupportExifFileExtension(String path) {
         return checkExtension(path, exifExtensions);
     }
 

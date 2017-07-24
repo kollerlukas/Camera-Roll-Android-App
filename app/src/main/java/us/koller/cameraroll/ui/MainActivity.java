@@ -225,17 +225,15 @@ public class MainActivity extends ThemeableActivity {
                 toolbar.setTranslationY(translationY);
 
                 //animate statusBarIcon color
-                if (!((RecyclerViewAdapter) recyclerView.getAdapter())
-                        .getSelectorManager().isSelectorModeActive()) {
+                if (!((RecyclerViewAdapter) recyclerView.getAdapter()).getSelectorManager().isSelectorModeActive()
+                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                        && theme.isBaseLight()) {
                     //only animate statusBar icons color, when not in selectorMode
-                    if (theme.isBaseLight()
-                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        float animatedValue = (-translationY) / toolbar.getHeight();
-                        if (animatedValue > 0.9f) {
-                            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                        } else {
-                            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-                        }
+                    float animatedValue = (-translationY) / toolbar.getHeight();
+                    if (animatedValue > 0.9f) {
+                        Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                    } else {
+                        Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
                     }
                 }
             }

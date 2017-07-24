@@ -26,6 +26,10 @@ android {
             resValue "string", "app_name", "Camera Roll (debug)"
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {

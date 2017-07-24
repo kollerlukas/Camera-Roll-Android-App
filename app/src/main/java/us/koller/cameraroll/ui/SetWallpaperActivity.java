@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 
@@ -83,14 +82,13 @@ public class SetWallpaperActivity extends AppCompatActivity {
         }
 
         //setting window insets manually
-        final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            toolbar.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
                     // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
+                    toolbar.setOnApplyWindowInsetsListener(null);
 
                     toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
@@ -101,21 +99,21 @@ public class SetWallpaperActivity extends AppCompatActivity {
                 }
             });
         } else {
-            rootView.getViewTreeObserver()
+            toolbar.getViewTreeObserver()
                     .addOnGlobalLayoutListener(
                             new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override
                                 public void onGlobalLayout() {
-                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    toolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                     // hacky way of getting window insets on pre-Lollipop
                                     // somewhat works...
                                     int[] screenSize = Util.getScreenSize(SetWallpaperActivity.this);
 
                                     int[] windowInsets = new int[]{
-                                            Math.abs(screenSize[0] - rootView.getLeft()),
-                                            Math.abs(screenSize[1] - rootView.getTop()),
-                                            Math.abs(screenSize[2] - rootView.getRight()),
-                                            Math.abs(screenSize[3] - rootView.getBottom())};
+                                            Math.abs(screenSize[0] - toolbar.getLeft()),
+                                            Math.abs(screenSize[1] - toolbar.getTop()),
+                                            Math.abs(screenSize[2] - toolbar.getRight()),
+                                            Math.abs(0)};
 
                                     toolbar.setPadding(toolbar.getPaddingStart() + windowInsets[0],
                                             toolbar.getPaddingTop() + windowInsets[1],
