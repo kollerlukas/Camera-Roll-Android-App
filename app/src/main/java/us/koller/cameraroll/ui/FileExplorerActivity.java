@@ -277,20 +277,19 @@ public class FileExplorerActivity extends ThemeableActivity
 
                         }
                     }
-                } else if (mode == RecyclerViewAdapter.PICK_TARGET_MODE) {
-                    if (savedInstanceState.containsKey(FILE_OPERATION)) {
-                        onSelectorModeEnter();
-                        //fileOp = savedInstanceState.getParcelable(FILE_OPERATION);
+                } else if (mode == RecyclerViewAdapter.PICK_TARGET_MODE
+                        && savedInstanceState.containsKey(FILE_OPERATION)) {
+                    onSelectorModeEnter();
+                    //fileOp = savedInstanceState.getParcelable(FILE_OPERATION);
                         /*FileOperation.operation = fileOp != null ?
                                 fileOp.getType() : FileOperation.EMPTY;*/
-                        //need to call pick target after onSelectorModeEnter animation are done
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                recyclerViewAdapter.pickTarget();
-                            }
-                        }, (int) (500 * Util.getAnimatorSpeed(this)));
-                    }
+                    //need to call pick target after onSelectorModeEnter animation are done
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            recyclerViewAdapter.pickTarget();
+                        }
+                    }, (int) (500 * Util.getAnimatorSpeed(this)));
                 }
             }
 

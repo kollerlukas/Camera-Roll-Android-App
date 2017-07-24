@@ -42,12 +42,12 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
     }
 
     public void setAlbum(Album album) {
-        this.album = album;
-
         if (album == null) {
             //Error album
             album = MediaProvider.getErrorAlbum();
         }
+
+        this.album = album;
 
         ((TextView) itemView.findViewById(R.id.name)).setText(album.getName());
         //to fix ellipsize

@@ -12,9 +12,6 @@ import android.view.animation.Interpolator;
 
 class AnimUtils {
 
-    private AnimUtils() {
-    }
-
     private static Interpolator fastOutSlowIn;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

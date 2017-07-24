@@ -365,6 +365,9 @@ public class ExifEditorActivity extends ThemeableActivity {
 
     private static class RecyclerViewAdapter extends RecyclerView.Adapter {
 
+        private ExifInterface exifInterface;
+        private OnEditCallback callback;
+
         interface OnEditCallback {
             void onItemEdited(String tag, String newValue);
 
@@ -387,10 +390,6 @@ public class ExifEditorActivity extends ThemeableActivity {
                 return textWatcher;
             }
         }
-
-        private ExifInterface exifInterface;
-
-        private OnEditCallback callback;
 
         RecyclerViewAdapter(ExifInterface exifInterface, OnEditCallback callback) {
             this.exifInterface = exifInterface;

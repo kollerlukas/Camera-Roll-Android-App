@@ -21,80 +21,6 @@ public class ExifUtil {
     private static final int TYPE_DOUBLE = 2;
     private static final int TYPE_RATIONAL = 3;
 
-    public static ExifInterface getExifInterface(Context context, AlbumItem albumItem) {
-        ExifInterface exif = null;
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri uri = albumItem.getUri(context);
-                InputStream is = context.getContentResolver().openInputStream(uri);
-                if (is != null) {
-                    exif = new ExifInterface(is);
-                }
-
-            } else {
-                exif = new ExifInterface(albumItem.getPath());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return exif;
-    }
-
-    private static int getTypeForTag(String tag) {
-        int type;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            List tags = Arrays.asList(exifTags_v24);
-            int index = tags.indexOf(tag);
-            type = exifTypes_v24[index];
-        } else {
-            List tags = Arrays.asList(exifTags);
-            int index = tags.indexOf(tag);
-            type = exifTypes[index];
-        }
-        return type;
-    }
-
-    public static String[] getExifTags() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return exifTags_v24;
-        } else {
-            return exifTags;
-        }
-    }
-
-    public static Object getCastValue(ExifInterface exif, String tag)
-            throws NumberFormatException, NullPointerException {
-        String value = exif.getAttribute(tag);
-        return castValue(tag, value);
-    }
-
-    public static Object castValue(String tag, String value)
-            throws NumberFormatException, NullPointerException {
-        if (value == null || value.equals("")) {
-            return null;
-        }
-        int type = ExifUtil.getTypeForTag(tag);
-        Object castValue = null;
-        switch (type) {
-            case ExifUtil.TYPE_UNDEFINED:
-            case ExifUtil.TYPE_STRING:
-                //do nothing
-                castValue = value;
-                break;
-            case ExifUtil.TYPE_INT:
-                castValue = Integer.valueOf(value);
-                break;
-            case ExifUtil.TYPE_DOUBLE:
-                castValue = Double.valueOf(value);
-                break;
-            case ExifUtil.TYPE_RATIONAL:
-                castValue = value;
-                break;
-        }
-        return castValue == null ? value : castValue;
-    }
-
-
     //Tags
     private static final String[] exifTags_v24
             = new String[]{
@@ -419,4 +345,77 @@ public class ExifUtil {
             TYPE_STRING,
             TYPE_INT
     };
+
+    public static ExifInterface getExifInterface(Context context, AlbumItem albumItem) {
+        ExifInterface exif = null;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Uri uri = albumItem.getUri(context);
+                InputStream is = context.getContentResolver().openInputStream(uri);
+                if (is != null) {
+                    exif = new ExifInterface(is);
+                }
+
+            } else {
+                exif = new ExifInterface(albumItem.getPath());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return exif;
+    }
+
+    private static int getTypeForTag(String tag) {
+        int type;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            List tags = Arrays.asList(exifTags_v24);
+            int index = tags.indexOf(tag);
+            type = exifTypes_v24[index];
+        } else {
+            List tags = Arrays.asList(exifTags);
+            int index = tags.indexOf(tag);
+            type = exifTypes[index];
+        }
+        return type;
+    }
+
+    public static String[] getExifTags() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return exifTags_v24;
+        } else {
+            return exifTags;
+        }
+    }
+
+    static Object getCastValue(ExifInterface exif, String tag)
+            throws NumberFormatException, NullPointerException {
+        String value = exif.getAttribute(tag);
+        return castValue(tag, value);
+    }
+
+    public static Object castValue(String tag, String value)
+            throws NumberFormatException, NullPointerException {
+        if (value == null || value.equals("")) {
+            return null;
+        }
+        int type = ExifUtil.getTypeForTag(tag);
+        Object castValue = null;
+        switch (type) {
+            case ExifUtil.TYPE_UNDEFINED:
+            case ExifUtil.TYPE_STRING:
+                //do nothing
+                castValue = value;
+                break;
+            case ExifUtil.TYPE_INT:
+                castValue = Integer.valueOf(value);
+                break;
+            case ExifUtil.TYPE_DOUBLE:
+                castValue = Double.valueOf(value);
+                break;
+            case ExifUtil.TYPE_RATIONAL:
+                castValue = value;
+                break;
+        }
+        return castValue == null ? value : castValue;
+    }
 }

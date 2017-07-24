@@ -46,10 +46,6 @@ public class StorageRetriever extends Retriever {
         void done();
     }
 
-    public StorageRetriever() {
-
-    }
-
     @Override
     void loadAlbums(final Activity context, final boolean hiddenFolders) {
         final long startTime = System.currentTimeMillis();
@@ -299,10 +295,6 @@ public class StorageRetriever extends Retriever {
     //Thread classes
     static abstract class AbstractThread extends java.lang.Thread {
 
-        public interface Callback {
-            void done(Thread thread, ItemLoader.Result result);
-        }
-
         Context context;
         File[] dirs;
         ItemLoader itemLoader;
@@ -310,6 +302,10 @@ public class StorageRetriever extends Retriever {
         Callback callback;
 
         boolean searchSubDirs = true;
+
+        public interface Callback {
+            void done(Thread thread, ItemLoader.Result result);
+        }
 
         AbstractThread(Context context, File[] dirs, ItemLoader itemLoader) {
             this.context = context;
@@ -334,7 +330,7 @@ public class StorageRetriever extends Retriever {
 
     public static class Thread extends AbstractThread {
 
-        public Thread(Context context, File[] dirs, ItemLoader itemLoader) {
+        Thread(Context context, File[] dirs, ItemLoader itemLoader) {
             super(context, dirs, itemLoader);
         }
 

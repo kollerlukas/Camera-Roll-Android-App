@@ -16,6 +16,8 @@ public class ParallaxImageView extends android.support.v7.widget.AppCompatImageV
     private int recyclerView_height = -1;
     private int[] recyclerView_location = {-1, -1};
 
+    boolean attached = false;
+
     public ParallaxImageView(Context context) {
         super(context);
     }
@@ -33,8 +35,6 @@ public class ParallaxImageView extends android.support.v7.widget.AppCompatImageV
         super.onMeasure(widthMeasureSpec, heightMeasureSpec
                 + (int) getContext().getResources().getDimension(R.dimen.parallax_image_view_offset));
     }
-
-    boolean attached = false;
 
     @Override
     protected void onAttachedToWindow() {

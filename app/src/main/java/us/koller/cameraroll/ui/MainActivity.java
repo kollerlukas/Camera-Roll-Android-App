@@ -228,18 +228,13 @@ public class MainActivity extends ThemeableActivity {
                 if (!((RecyclerViewAdapter) recyclerView.getAdapter())
                         .getSelectorManager().isSelectorModeActive()) {
                     //only animate statusBar icons color, when not in selectorMode
-                    if (theme.isBaseLight()) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            float animatedValue = (-translationY) / toolbar.getHeight();
-                            if (animatedValue > 0.9f) {
-                                Util.setLightStatusBarIcons(findViewById(R.id.root_view));
-                            } else {
-                                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
-                            }
-
-                            //animate Toolbar elevation
-                            /*scrollY += dy;
-                            Util.animateToolbarElevation(toolbar, scrollY);*/
+                    if (theme.isBaseLight()
+                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        float animatedValue = (-translationY) / toolbar.getHeight();
+                        if (animatedValue > 0.9f) {
+                            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+                        } else {
+                            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
                         }
                     }
                 }
@@ -346,80 +341,78 @@ public class MainActivity extends ThemeableActivity {
     public void onActivityReenter(final int resultCode, Intent intent) {
         super.onActivityReenter(resultCode, intent);
 
-        if (intent.getAction() != null) {
-            if (intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)) {
-                //handle shared-element transition, for nested nestedRecyclerView style
-                boolean nestedRecyclerViewStyle = Settings.getInstance(this).getStyle()
-                        == getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && nestedRecyclerViewStyle) {
-                    Bundle tmpReenterState = new Bundle(intent.getExtras());
-                    if (tmpReenterState.containsKey(AlbumActivity.ALBUM_PATH)
-                            && tmpReenterState.containsKey(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION)) {
+        int nestedRecyclerViewValue = getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE);
+        if (intent.getAction() != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)
+                && Settings.getInstance(this).getStyle() == nestedRecyclerViewValue) {
+            //handle shared-element transition, for nested nestedRecyclerView style
+            Bundle tmpReenterState = new Bundle(intent.getExtras());
+            if (tmpReenterState.containsKey(AlbumActivity.ALBUM_PATH)
+                    && tmpReenterState.containsKey(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION)) {
 
-                        String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
-                        final int sharedElementReturnPosition
-                                = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
+                String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
+                final int sharedElementReturnPosition
+                        = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
 
-                        int index = -1;
+                int index = -1;
 
-                        for (int i = 0; i < albums.size(); i++) {
-                            if (albums.get(i).getPath().equals(albumPath)) {
-                                index = i;
-                                break;
-                            }
-                        }
-
-                        if (index == -1) {
-                            return;
-                        }
-
-                        //postponing transition until sharedElement is laid out
-                        postponeEnterTransition();
-
-                        setExitSharedElementCallback(mCallback);
-
-                        final NestedRecyclerViewAlbumHolder
-                                .StartSharedElementTransitionCallback callback =
-                                new NestedRecyclerViewAlbumHolder
-                                        .StartSharedElementTransitionCallback() {
-                                    @Override
-                                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                                    public void startPostponedEnterTransition() {
-                                        //sharedElement is laid out --> start transition
-                                        MainActivity.this.startPostponedEnterTransition();
-                                    }
-                                };
-
-                        final int finalIndex = index;
-
-                        recyclerView.scrollToPosition(index);
-
-                        //wait until ViewHolder is laid out
-                        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                            @Override
-                            public void onLayoutChange(View v, int l, int t, int r, int b,
-                                                       int oL, int oT, int oR, int oB) {
-                                RecyclerView.ViewHolder viewHolder
-                                        = recyclerView.findViewHolderForAdapterPosition(finalIndex);
-
-                                if (viewHolder != null) {
-                                    recyclerView.removeOnLayoutChangeListener(this);
-                                } else {
-                                    //viewHolder hasn't been laid out yet --> wait
-                                    recyclerView.scrollToPosition(finalIndex);
-                                }
-
-                                if (viewHolder instanceof NestedRecyclerViewAlbumHolder) {
-                                    //found ViewHolder
-                                    sharedElementViewHolder = (NestedRecyclerViewAlbumHolder) viewHolder;
-                                    ((NestedRecyclerViewAlbumHolder) viewHolder)
-                                            .onSharedElement(sharedElementReturnPosition, callback);
-                                }
-                            }
-                        });
+                for (int i = 0; i < albums.size(); i++) {
+                    if (albums.get(i).getPath().equals(albumPath)) {
+                        index = i;
+                        break;
                     }
                 }
+
+                if (index == -1) {
+                    return;
+                }
+
+                //postponing transition until sharedElement is laid out
+                postponeEnterTransition();
+
+                setExitSharedElementCallback(mCallback);
+
+                final NestedRecyclerViewAlbumHolder
+                        .StartSharedElementTransitionCallback callback =
+                        new NestedRecyclerViewAlbumHolder
+                                .StartSharedElementTransitionCallback() {
+                            @Override
+                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                            public void startPostponedEnterTransition() {
+                                //sharedElement is laid out --> start transition
+                                MainActivity.this.startPostponedEnterTransition();
+                            }
+                        };
+
+                final int finalIndex = index;
+
+                recyclerView.scrollToPosition(index);
+
+                //wait until ViewHolder is laid out
+                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onLayoutChange(View v, int l, int t, int r, int b,
+                                               int oL, int oT, int oR, int oB) {
+                        RecyclerView.ViewHolder viewHolder
+                                = recyclerView.findViewHolderForAdapterPosition(finalIndex);
+
+                        if (viewHolder != null) {
+                            recyclerView.removeOnLayoutChangeListener(this);
+                        } else {
+                            //viewHolder hasn't been laid out yet --> wait
+                            recyclerView.scrollToPosition(finalIndex);
+                        }
+
+                        if (viewHolder instanceof NestedRecyclerViewAlbumHolder) {
+                            //found ViewHolder
+                            sharedElementViewHolder = (NestedRecyclerViewAlbumHolder) viewHolder;
+                            ((NestedRecyclerViewAlbumHolder) viewHolder)
+                                    .onSharedElement(sharedElementReturnPosition, callback);
+                        }
+                    }
+                });
             }
         }
     }
@@ -661,11 +654,11 @@ public class MainActivity extends ThemeableActivity {
                 }
                 break;
             case REFRESH_PHOTOS_REQUEST_CODE:
-                if (data != null && data.getAction() != null) {
-                    if (data.getAction().equals(AlbumActivity.ALBUM_ITEM_DELETED)
-                            || data.getAction().equals(REFRESH_MEDIA)) {
-                        refreshPhotos();
-                    }
+                if (data != null
+                        && data.getAction() != null
+                        && (data.getAction().equals(AlbumActivity.ALBUM_ITEM_DELETED)
+                        || data.getAction().equals(REFRESH_MEDIA))) {
+                    refreshPhotos();
                 }
                 break;
             case AlbumActivity.FILE_OP_DIALOG_REQUEST:

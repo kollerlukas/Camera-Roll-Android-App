@@ -34,6 +34,14 @@ public abstract class Provider {
 
     private Callback callback;
 
+    //handle pinned albums
+    private static final String PINNED_PATHS_NAME = "pinned_paths.txt";
+    private static ArrayList<String> pinnedPaths;
+
+    //handle excluded paths
+    private static final String EXCLUDED_PATHS_NAME = "excluded_paths.txt";
+    private static ArrayList<String> excludedPaths;
+
     public interface Callback {
         void timeout();
 
@@ -69,11 +77,6 @@ public abstract class Provider {
             retriever.onDestroy();
         }
     }
-
-    //handle pinned albums
-    private static final String PINNED_PATHS_NAME = "pinned_paths.txt";
-
-    private static ArrayList<String> pinnedPaths;
 
     public static ArrayList<String> getPinnedPaths() {
         return pinnedPaths;
@@ -133,12 +136,6 @@ public abstract class Provider {
             e.printStackTrace();
         }
     }
-
-
-    //handle excluded paths
-    private static final String EXCLUDED_PATHS_NAME = "excluded_paths.txt";
-
-    private static ArrayList<String> excludedPaths;
 
     public static boolean isPathPermanentlyExcluded(String path) {
         boolean permanentlyExcluded = false;

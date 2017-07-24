@@ -36,6 +36,8 @@ import us.koller.cameraroll.data.Settings;
 
 public class Util {
 
+    private static Drawable selectorOverlay;
+
     public static int[] getImageDimensions(Context context, Uri uri) {
         int[] dimensions = new int[]{0, 0};
 
@@ -171,21 +173,6 @@ public class Util {
             toolbar.setOverflowIcon(drawable);
         }
     }
-
-    /*@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static void animateToolbarElevation(Toolbar toolbar, float scrollY) {
-        float maxToolbarElevation = toolbar.getContext().getResources()
-                .getDimension(R.dimen.toolbar_elevation);
-        float toolbarElevation = scrollY;
-        if (toolbarElevation > maxToolbarElevation) {
-            toolbarElevation = maxToolbarElevation;
-        } else if (toolbarElevation < 0) {
-            toolbarElevation = 0;
-        }
-        toolbar.setElevation(toolbarElevation);
-    }*/
-
-    private static Drawable selectorOverlay;
 
     public static Drawable getAlbumItemSelectorOverlay(Context context) {
         if (selectorOverlay == null) {

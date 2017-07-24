@@ -202,14 +202,12 @@ public class SettingsActivity extends ThemeableActivity {
         private static final int STYLE_DIALOG_FRAGMENT = 1;
         private static final int COLUMN_COUNT_DIALOG_FRAGMENT = 2;
 
+        private int shownDialogFragment = NONE;
+        private OnSettingChangedCallback callback;
+
         interface OnSettingChangedCallback {
             void onSettingChanged();
         }
-
-        private int shownDialogFragment = NONE;
-
-        private OnSettingChangedCallback callback;
-
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

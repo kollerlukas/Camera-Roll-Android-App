@@ -48,11 +48,6 @@ public class StorageUtil {
         cursor.moveToFirst();
 
         if (cursor.isAfterLast()) {
-            /*cursor.close();
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.MediaColumns.DATA, path);
-            resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            return getContentUriForImageFromMediaStore(context, path, true);*/
             return createContentUriFromFileProvider(context, path);
         } else {
             int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
@@ -75,11 +70,6 @@ public class StorageUtil {
         cursor.moveToFirst();
 
         if (cursor.isAfterLast()) {
-            /*cursor.close();
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.MediaColumns.DATA, path);
-            resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-            return getContentUriForVideoFromMediaStore(context, path);*/
             return createContentUriFromFileProvider(context, path);
         } else {
             int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));

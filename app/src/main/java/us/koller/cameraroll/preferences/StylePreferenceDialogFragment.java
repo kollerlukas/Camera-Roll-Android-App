@@ -90,14 +90,13 @@ public class StylePreferenceDialogFragment
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE) {
-            if (preference instanceof StylePreference) {
-                StylePreference stylePreference =
-                        ((StylePreference) preference);
-                stylePreference.setStyle(selectedStyle);
+        if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE
+                && preference instanceof StylePreference) {
+            StylePreference stylePreference =
+                    ((StylePreference) preference);
+            stylePreference.setStyle(selectedStyle);
 
-                Settings.getInstance(getActivity()).setStyle(selectedStyle);
-            }
+            Settings.getInstance(getActivity()).setStyle(selectedStyle);
         }
     }
 

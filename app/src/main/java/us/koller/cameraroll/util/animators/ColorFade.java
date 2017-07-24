@@ -18,6 +18,12 @@ import android.widget.TextView;
 
 public class ColorFade {
 
+    private static AnimatorSet toolbarTitleAnimSet;
+
+    public interface ToolbarTitleFadeCallback {
+        void setTitle(Toolbar toolbar);
+    }
+
     public static void fadeBackgroundColor(final View v, final int startColor, final int endColor) {
         ValueAnimator animator = getDefaultValueAnimator();
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -95,12 +101,6 @@ public class ColorFade {
         });
         saturation.start();
     }
-
-    public interface ToolbarTitleFadeCallback {
-        void setTitle(Toolbar toolbar);
-    }
-
-    private static AnimatorSet toolbarTitleAnimSet;
 
     //fade Toolbar title text change
     public static void fadeToolbarTitleColor(final Toolbar toolbar, final int color,

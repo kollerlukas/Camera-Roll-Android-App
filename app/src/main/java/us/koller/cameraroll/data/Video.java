@@ -38,13 +38,10 @@ public class Video extends AlbumItem implements Parcelable {
             //Adjust data source as per the requirement if file, URI, etc.
             extractor.setDataSource(getPath());
             int numTracks = extractor.getTrackCount();
-            for (int i = 0; i < numTracks; ++i) {
+            for (int i = 0; i < numTracks; i++) {
                 MediaFormat format = extractor.getTrackFormat(i);
-                String mime = format.getString(MediaFormat.KEY_MIME);
-                if (mime.startsWith("video/")) {
-                    if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
-                        frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE);
-                    }
+                if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
+                    frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE);
                 }
             }
         } catch (IOException e) {

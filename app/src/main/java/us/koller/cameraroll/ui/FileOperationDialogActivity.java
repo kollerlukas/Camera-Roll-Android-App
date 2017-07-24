@@ -290,6 +290,9 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
     private static class RecyclerViewAdapter extends RecyclerView.Adapter {
 
+        private ArrayList<Album> albums;
+        private int selected_position = -1;
+
         static class ViewHolder extends RecyclerView.ViewHolder {
 
             public ViewHolder(View itemView) {
@@ -322,10 +325,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                 }
             }
         }
-
-        private ArrayList<Album> albums;
-
-        private int selected_position = -1;
 
         RecyclerViewAdapter() {
             albums = MediaProvider.getAlbums();

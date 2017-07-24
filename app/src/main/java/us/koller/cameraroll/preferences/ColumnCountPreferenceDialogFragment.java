@@ -88,15 +88,14 @@ public class ColumnCountPreferenceDialogFragment
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE) {
-            if (preference instanceof ColumnCountPreference) {
-                ColumnCountPreference columnCountPreference =
-                        ((ColumnCountPreference) preference);
-                columnCountPreference.setColumnCount(columnCount);
+        if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE
+                && preference instanceof ColumnCountPreference) {
+            ColumnCountPreference columnCountPreference =
+                    ((ColumnCountPreference) preference);
+            columnCountPreference.setColumnCount(columnCount);
 
-                Settings.getInstance(getActivity())
-                        .setColumnCount(columnCount);
-            }
+            Settings.getInstance(getActivity())
+                    .setColumnCount(columnCount);
         }
     }
 

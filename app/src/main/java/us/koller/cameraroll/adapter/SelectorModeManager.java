@@ -21,31 +21,14 @@ public class SelectorModeManager {
 
     private ArrayList<Callback> callbacks;
 
-    public void onSelectorModeEnter() {
-        if (callbacks != null) {
-            for (int i = 0; i < callbacks.size(); i++) {
-                callbacks.get(i).onSelectorModeEnter();
-            }
-        }
+    //to handle backPressed in SelectorMode
+    private OnBackPressedCallback onBackPressedCallback;
+
+    //SelectorMode Callbacks
+    public interface OnBackPressedCallback {
+        void cancelSelectorMode();
     }
 
-    private void onSelectorModeExit() {
-        if (callbacks != null) {
-            for (int i = 0; i < callbacks.size(); i++) {
-                callbacks.get(i).onSelectorModeExit();
-            }
-        }
-    }
-
-    public void onItemSelected(int selectedItemCount) {
-        if (callbacks != null) {
-            for (int i = 0; i < callbacks.size(); i++) {
-                callbacks.get(i).onItemSelected(selectedItemCount);
-            }
-        }
-    }
-
-    //SelectorMode Callback
     public interface Callback {
         void onSelectorModeEnter();
 
@@ -68,6 +51,30 @@ public class SelectorModeManager {
         @Override
         public void onItemSelected(int selectedItemCount) {
 
+        }
+    }
+
+    public void onSelectorModeEnter() {
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onSelectorModeEnter();
+            }
+        }
+    }
+
+    private void onSelectorModeExit() {
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onSelectorModeExit();
+            }
+        }
+    }
+
+    public void onItemSelected(int selectedItemCount) {
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onItemSelected(selectedItemCount);
+            }
         }
     }
 
@@ -151,14 +158,6 @@ public class SelectorModeManager {
         return callbacks != null && callbacks.size() > 0;
     }
 
-
-    //to handle backPressed in SelectorMode
-    public interface OnBackPressedCallback {
-        void cancelSelectorMode();
-    }
-
-    private OnBackPressedCallback onBackPressedCallback;
-
     public void setOnBackPressedCallback(OnBackPressedCallback onBackPressedCallback) {
         this.onBackPressedCallback = onBackPressedCallback;
     }
@@ -229,11 +228,11 @@ public class SelectorModeManager {
         int sortBy = Settings.getInstance(context).sortAlbumBy();
         SortUtil.sort(albumItems, sortBy);
 
-        paths = new ArrayList<>();
+        ArrayList<String> sortedPaths = new ArrayList<>();
         for (int i = 0; i < albumItems.size(); i++) {
-            paths.add(albumItems.get(i).getPath());
+            sortedPaths.add(albumItems.get(i).getPath());
         }
 
-        return paths;
+        return sortedPaths;
     }
 }
