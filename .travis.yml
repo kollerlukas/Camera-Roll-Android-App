@@ -19,14 +19,6 @@ android:
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
 
-install: true
-
-script:
-  - ./gradlew build connectedCheck
-
-before_install:
-  - chmod +x gradlew
-
 branches:
   only:
     - master
