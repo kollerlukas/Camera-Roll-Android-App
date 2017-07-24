@@ -179,6 +179,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                 service = Rename.class;
                 actionString = Util.getActionString(context, RENAME);
                 break;
+            default:
+                break;
         }
         if (service != null) {
             return new Intent(context, service)
@@ -201,8 +203,14 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                     return new Move();
                 case COPY:
                     return new Copy();
-                default:
+                case DELETE:
                     return new Delete();
+                case NEW_DIR:
+                    return new NewDirectory();
+                case RENAME:
+                    return new Rename();
+                default:
+                    return null;
             }
         }
 
@@ -304,6 +312,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                     return context.getString(R.string.new_folder);
                 case RENAME:
                     return context.getString(R.string.rename);
+                default:
+                    break;
             }
             return "";
         }

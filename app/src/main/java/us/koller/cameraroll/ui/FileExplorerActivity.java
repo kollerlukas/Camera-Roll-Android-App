@@ -506,6 +506,8 @@ public class FileExplorerActivity extends ThemeableActivity
                         .setAction(FileOperation.Util.getActionString(this, FileOperation.DELETE));
                 recyclerViewAdapter.cancelMode();
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -745,6 +747,8 @@ public class FileExplorerActivity extends ThemeableActivity
                 case FileOperation.MOVE:
                     recyclerViewAdapter.pickTarget();
                     break;
+                default:
+                    break;
             }
         }
 
@@ -939,6 +943,8 @@ public class FileExplorerActivity extends ThemeableActivity
                         loadDirectory(currentDir.getPath());
                         break;
                     case FileOperation.FAILED:
+                        break;
+                    default:
                         break;
                 }
             }

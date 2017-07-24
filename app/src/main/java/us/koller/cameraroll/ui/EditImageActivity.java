@@ -216,6 +216,8 @@ public class EditImageActivity extends AppCompatActivity {
                     animate90DegreeRotation();
                 }
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

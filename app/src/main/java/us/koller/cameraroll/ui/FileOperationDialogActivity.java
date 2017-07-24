@@ -227,6 +227,8 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                                         creatingNewFolder = false;
                                         callback.failed();
                                         break;
+                                    default:
+                                        break;
                                 }
                             }
                         });
@@ -268,6 +270,8 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         switch (requestCode) {
             case MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE:
                 onDialogDismiss();
+                break;
+            default:
                 break;
         }
     }

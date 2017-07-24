@@ -125,6 +125,8 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 return new ColorHolder(v);
             case LOCATION_VIEW_TYPE:
                 return new LocationHolder(v);
+            default:
+                break;
         }
         return null;
     }

@@ -90,6 +90,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     workIntent = null;
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -114,6 +116,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
             }
             break;
+            default:
+                break;
         }
     }
 
@@ -181,6 +185,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                                     .create()
                                     .show();
                         }
+                        break;
+                    default:
                         break;
                 }
             }

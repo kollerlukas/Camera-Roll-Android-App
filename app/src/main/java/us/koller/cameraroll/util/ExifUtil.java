@@ -415,6 +415,8 @@ public class ExifUtil {
             case ExifUtil.TYPE_RATIONAL:
                 castValue = value;
                 break;
+            default:
+                break;
         }
         return castValue == null ? value : castValue;
     }

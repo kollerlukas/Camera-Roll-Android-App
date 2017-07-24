@@ -432,6 +432,8 @@ public class MainActivity extends ThemeableActivity {
             case RESORT:
                 resortAlbums();
                 break;
+            default:
+                break;
         }
     }
 
@@ -574,10 +576,10 @@ public class MainActivity extends ThemeableActivity {
                 }
 
                 Settings.getInstance(this).sortAlbumsBy(this, sort_by);
-
-                /*refreshPhotos();*/
                 resortAlbums();
 
+                break;
+            default:
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -671,6 +673,8 @@ public class MainActivity extends ThemeableActivity {
                     this.recreate();
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -735,6 +739,8 @@ public class MainActivity extends ThemeableActivity {
                     case FileOperation.RESULT_DONE:
                     case FileOperation.FAILED:
                         refreshPhotos();
+                        break;
+                    default:
                         break;
                 }
             }

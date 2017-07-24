@@ -149,6 +149,8 @@ public class SetWallpaperActivity extends AppCompatActivity {
             case R.id.set_wallpaper:
                 setWallpaper();
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

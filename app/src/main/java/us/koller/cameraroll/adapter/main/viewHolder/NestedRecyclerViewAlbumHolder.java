@@ -362,6 +362,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         })
                         .create().show();
                 break;
+            default:
+                break;
         }
 
         return false;

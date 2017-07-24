@@ -110,6 +110,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 return new VideoViewHolder(v);
             case VIEW_TYPE_PHOTO:
                 return new PhotoViewHolder(v);
+            default:
+                break;
         }
         return null;
     }

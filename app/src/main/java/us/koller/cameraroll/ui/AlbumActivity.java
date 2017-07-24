@@ -406,6 +406,8 @@ public class AlbumActivity extends ThemeableActivity
                     toolbar.setTitle(album.getName());
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -595,6 +597,8 @@ public class AlbumActivity extends ThemeableActivity
 
                 recyclerView.getAdapter().notifyDataSetChanged();
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -686,6 +690,8 @@ public class AlbumActivity extends ThemeableActivity
                                 break;
                             }
                         }
+                        break;
+                    default:
                         break;
                 }
             }

@@ -236,6 +236,8 @@ public class ExifEditorActivity extends ThemeableActivity {
             case R.id.save:
                 saveChanges();
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

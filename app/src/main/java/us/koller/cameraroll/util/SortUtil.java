@@ -57,6 +57,8 @@ public class SortUtil {
                     }
                 });
                 break;
+            default:
+                break;
         }
     }
 
@@ -67,6 +69,8 @@ public class SortUtil {
                 break;
             case BY_DATE:
                 sortByDate(sortables);
+                break;
+            default:
                 break;
         }
     }

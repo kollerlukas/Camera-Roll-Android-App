@@ -230,6 +230,8 @@ public class InfoUtil {
                     return size + " MB";
                 case 3:
                     return size + " GB";
+                default:
+                    break;
             }
             return file_bytes + " Bytes";
         }

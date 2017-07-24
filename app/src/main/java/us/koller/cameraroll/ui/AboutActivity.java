@@ -198,6 +198,8 @@ public class AboutActivity extends ThemeableActivity
             case android.R.id.home:
                 onBackPressed();
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

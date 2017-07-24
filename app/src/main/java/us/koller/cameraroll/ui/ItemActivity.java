@@ -414,6 +414,8 @@ public class ItemActivity extends ThemeableActivity {
             case R.id.delete:
                 showDeleteDialog();
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -568,6 +570,8 @@ public class ItemActivity extends ThemeableActivity {
                     case FileOperation.FAILED:
                         //onBackPressed();
                         break;
+                    default:
+                        break;
                 }
             }
         });
@@ -684,6 +688,8 @@ public class ItemActivity extends ThemeableActivity {
                 break;
             case R.id.delete_button:
                 showDeleteDialog();
+                break;
+            default:
                 break;
         }
     }

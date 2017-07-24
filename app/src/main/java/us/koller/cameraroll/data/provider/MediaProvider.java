@@ -68,6 +68,8 @@ public class MediaProvider extends Provider {
             case MODE_MEDIASTORE:
                 retriever = new MediaStoreRetriever();
                 break;
+            default:
+                break;
         }
 
         if (retriever != null) {

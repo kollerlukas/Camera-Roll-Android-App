@@ -288,6 +288,8 @@ public class VideoPlayerActivity extends ThemeableActivity {
             case android.R.id.home:
                 this.finish();
                 break;
+            default:
+                break;
         }
         return true;
     }

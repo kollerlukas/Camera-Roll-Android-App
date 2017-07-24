@@ -74,6 +74,8 @@ public class FastScrollerRecyclerView extends RecyclerView {
                         case MotionEvent.ACTION_UP:
                             fastScrolling = false;
                             break;
+                        default:
+                            break;
                     }
                     return false;
                 }

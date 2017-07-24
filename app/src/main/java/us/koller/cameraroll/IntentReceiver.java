@@ -36,6 +36,8 @@ public class IntentReceiver extends AppCompatActivity {
             case Intent.ACTION_EDIT:
                 edit(getIntent());
                 break;
+            default:
+                break;
         }
     }
 
@@ -111,6 +113,8 @@ public class IntentReceiver extends AppCompatActivity {
                     setResult(RESULT_OK, data);
                 }
                 this.finish();
+                break;
+            default:
                 break;
         }
     }
