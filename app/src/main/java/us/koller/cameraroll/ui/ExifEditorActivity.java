@@ -259,8 +259,15 @@ public class ExifEditorActivity extends ThemeableActivity {
 
                 try {
                     exifInterface.saveAttributes();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
+                    ExifEditorActivity.this.runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ExifEditorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                     successful = false;
                 }
                 final int stringRes = successful ? R.string.changes_saved : R.string.error;

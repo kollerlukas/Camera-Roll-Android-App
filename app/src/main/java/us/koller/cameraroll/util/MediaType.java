@@ -42,16 +42,19 @@ public class MediaType {
 
     //checking via extension
     private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp"};
-    private static String[] videoExtensions = {"mp4", "mkv", "webm", "avi"};
-    private static String[] gifExtensions = {"gif"};
-    private static String[] rawExtensions = {"dng"};
-    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "bmp", "dng"};
-
     private static String[] imageMimeTypes = {"image/*", "image/jpeg", "image/png", "image/bmp"};
+
+    private static String[] videoExtensions = {"mp4", "mkv", "webm", "avi"};
     private static String[] videoMimeTypes = {"video/*", "video/mp4", "video/x-matroska", "video/webm", "video/avi"};
+
+    private static String[] gifExtensions = {"gif"};
     private static String[] gifMimeTypes = {"image/gif"};
-    private static String[] rawMimeTypes = {"image/x-adobe-dng"};
-    private static String[] exifMimeTypes = {"image/jpeg", "image/x-adobe-dng"};
+
+    private static String[] rawExtensions = {"dng", "cr2", "arw"};
+    private static String[] rawMimeTypes = {"image/x-adobe-dng", "image/x-canon-cr2", "image/arw", "image/x-sony-arw"};
+
+    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "dng", "cr2", "arw"};
+    private static String[] exifMimeTypes = {"image/jpeg", "image/x-adobe-dng", "image/x-canon-cr2", "image/arw", "image/x-sony-arw"};
 
     /*check mimeTypes*/
     public static boolean doesSupportExif_MimeType(String mimeType) {
@@ -75,6 +78,7 @@ public class MediaType {
     }
 
     /*check fileExtensions*/
+    @SuppressWarnings("unused")
     public static boolean doesSupportExif_fileExtension(String path) {
         return checkExtension(path, exifExtensions);
     }

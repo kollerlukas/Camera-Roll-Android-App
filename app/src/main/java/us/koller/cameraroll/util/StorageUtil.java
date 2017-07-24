@@ -8,11 +8,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
+import java.io.File;
 import java.util.Arrays;
 
+import us.koller.cameraroll.BuildConfig;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Video;
 
@@ -46,11 +49,12 @@ public class StorageUtil {
         cursor.moveToFirst();
 
         if (cursor.isAfterLast()) {
-            cursor.close();
+            /*cursor.close();
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DATA, path);
             resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            return getContentUriForImageFromMediaStore(context, path);
+            return getContentUriForImageFromMediaStore(context, path, true);*/
+            return createContentUriFromFileProvider(context, path);
         } else {
             int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
             Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId);
@@ -72,17 +76,22 @@ public class StorageUtil {
         cursor.moveToFirst();
 
         if (cursor.isAfterLast()) {
-            cursor.close();
+            /*cursor.close();
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DATA, path);
             resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-            return getContentUriForVideoFromMediaStore(context, path);
+            return getContentUriForVideoFromMediaStore(context, path);*/
+            return createContentUriFromFileProvider(context, path);
         } else {
             int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
             Uri uri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, imageId);
             cursor.close();
             return uri;
         }
+    }
+
+    private static Uri createContentUriFromFileProvider(Context context, String path) {
+        return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", new File(path));
     }
 
     public static DocumentFile parseDocumentFile(Context context, Uri treeUri, String path) {
