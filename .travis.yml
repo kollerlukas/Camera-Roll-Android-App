@@ -13,13 +13,16 @@ android:
     - android-26
 
     # Additional components
+    - extra-android-support
     - extra-android-m2repository
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
 
+install: true
+
 script:
-  - ./gradlew build
+  - ./gradlew build connectedCheck
 
 before_install:
   - chmod +x gradlew
