@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="bottom"
     android:background="@android:color/transparent">
 
@@ -51,7 +52,7 @@
                 android:contentDescription="@string/share"
                 android:onClick="bottomBarOnClick"
                 android:padding="8dp"
-                android:src="@drawable/ic_share_avd" />
+                app:srcCompat="@drawable/ic_share_avd" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -89,7 +90,7 @@
                 android:contentDescription="@string/delete"
                 android:onClick="bottomBarOnClick"
                 android:padding="8dp"
-                android:src="@drawable/ic_delete_avd" />
+                app:srcCompat="@drawable/ic_delete_avd" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

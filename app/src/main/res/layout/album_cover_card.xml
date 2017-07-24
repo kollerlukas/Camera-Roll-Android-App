@@ -9,9 +9,9 @@
     <us.koller.cameraroll.ui.widget.SquareCardView
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
         android:foreground="@drawable/ripple"
-        app:cardElevation="0dp"
-        android:layout_gravity="center_horizontal">
+        app:cardElevation="0dp">
 
         <ImageView
             android:id="@+id/image"
@@ -76,9 +76,9 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="16dp"
             android:alpha="0.7"
-            android:contentDescription="@string/hidden_folder_indicator"
             android:src="@drawable/ic_eye_off_white_24dp"
             android:tag="@string/theme_text_color_primary"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 </LinearLayout>

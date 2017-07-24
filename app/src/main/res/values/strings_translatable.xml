@@ -1,15 +1,6 @@
 <resources>
     <!--translatable-->
-    <string name="read_permission_denied">Camera Roll needs the permission access your Storage to
-        depict your pictures.
-    </string>
-    <string name="write_permission_denied">Camera Roll need the permission to write to your Storage
-        in order to delete this photo.
-    </string>
-    <string name="missing_permission_title">Missing Permission</string>
-    <string name="missing_delete_permission">Camera Roll does not have Permission to delete this
-        file.
-    </string>
+    <string name="read_permission_denied">Camera Roll needs the permission access your Storage to depict your pictures.</string>
 
     <string name="refresh">Refresh</string>
     <string name="sort_by">Sort by…</string>
@@ -78,24 +69,12 @@
     <string name="other">Other</string>
 
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api.
-        This might help if you are missing some picture.</string>
+    <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api. This might help if you are missing some picture.</string>
 
     <string name="use_8_bit_color">8-Bit Color</string>
-    <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images.
-        Images might take longer to load. This also increases the amount of memory is used, when the app is running.</string>
+    <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images. Images might take longer to load. This also increases the amount of memory is used, when the app is running.</string>
 
     <string name="camera_shortcut">Camera Shortcut</string>
-
-    <string name="warning">Warning!</string>
-    <string name="file_explorer_warning_message">The File Explorer is an
-        <b>experimental</b>
-        feature.
-        <br />
-        The developer does not take any responsibility for the loss of any data or files.
-        <br />
-        <b>Use at Your own risk.</b>
-    </string>
 
     <string name="edit_space">"Edit "</string>
     <string name="copied_to_clipboard">Copied to Clipboard</string>
@@ -106,10 +85,6 @@
 
     <!--ImageView ContentDescription-->
     <string name="image">Image</string>
-    <string name="indicator">Indicator</string>
-
-    <string name="video_indicator">Video Indicator</string>
-    <string name="hidden_folder_indicator">Hidden Folder Indicator</string>
 
     <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
     <string name="minus">Minus</string>
@@ -117,12 +92,9 @@
     <string name="by_name">Name</string>
     <string name="by_size">Size</string>
     <string name="by_date">Date</string><!--Last Modified-->
-    <string name="folder_name">Folder Name</string>
     <string name="pin_album">Pin Album</string>
     <string name="grant_removable_storage_permission">Grant removable Storage Permission</string>
-    <string name="grant_removable_storage_permission_message">Please select the root folder of your
-        removable Storage device (e.g. SD Card) on the next screen.
-    </string>
+    <string name="grant_removable_storage_permission_message">Please select the root folder of your removable Storage device (e.g. SD Card) on the next screen.</string>
     <string name="open_with">Open with…</string>
     <string name="rotate">Rotate</string>
     <string name="wallpaper">Wallpaper</string>
@@ -141,7 +113,4 @@
     <string name="info_aperture">Aperture: </string>
     <string name="info_iso">ISO: </string>
     <string name="info_frame_rate">Frame rate: </string>
-
-    <!--Muzei description-->
-    <string name="muzei_description">Random pictures taken by you</string>
 </resources>

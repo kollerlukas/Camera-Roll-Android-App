@@ -1,9 +1,6 @@
 <resources>
     <!--translatable-->
     <string name="read_permission_denied">Camera Roll requiert la permission Voir le contenu de la mémoire USB pour récupérer vos photos.</string>
-    <string name="write_permission_denied">Camera Roll requiert la permission Écrire sur la mémoire USB pour pouvoir effacer cette photo.</string>
-    <string name="missing_permission_title">Permission manquante</string>
-    <string name="missing_delete_permission">Camera Roll n\'a pas la permission de supprimer ce fichier.</string>
 
     <string name="refresh">Actualiser</string>
     <string name="sort_by">Trier par…</string>
@@ -72,23 +69,12 @@
     <string name="other">Autres</string>
 
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Rechercher manuellement des medias sur le stockage au lieu d\'utiliser l\'API MediaStore.
-        Ceci peut aider si des fichiers sont manquants.</string>
+    <string name="media_retriever_summary">Rechercher manuellement des medias sur le stockage au lieu d\'utiliser l\'API MediaStore. Ceci peut aider si des fichiers sont manquants.</string>
 
     <string name="use_8_bit_color">Couleurs 8-Bit</string>
-    <string name="use_8_bit_color_summary">Utiliser des couleurs 8-Bit lors de l\'affichage des images.
-        Les images peuvent mettre plus de temps à charger. Cela accroît également la quantité de mémoire lorsque l\'application est utilisée.</string>
+    <string name="use_8_bit_color_summary">Utiliser des couleurs 8-Bit lors de l\'affichage des images. Les images peuvent mettre plus de temps à charger. Cela accroît également la quantité de mémoire lorsque l\'application est utilisée.</string>
 
     <string name="camera_shortcut">Raccourci Appareil photo</string>
-
-    <string name="warning">Avertissement !</string>
-    <string name="file_explorer_warning_message">Le gestionnaire de fichiers est une fonctionnalité
-        <b>expérimentale</b>.
-        <br />
-        Le développeur ne prend aucune responsabilité quant à l\'éventuelle perte de données ou de fichiers.
-        <br />
-        <b>À utiliser à vos risques et périls.</b>
-    </string>
 
     <string name="edit_space">"Modifier "</string>
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
@@ -99,10 +85,6 @@
 
     <!--ImageView ContentDescription-->
     <string name="image">Image</string>
-    <string name="indicator">Indicateur</string>
-
-    <string name="video_indicator">Indicateur vidéo</string>
-    <string name="hidden_folder_indicator">Cacher l\'indicateur vidéo</string>
 
     <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
     <string name="minus">Moins</string>
@@ -113,9 +95,7 @@
     <string name="folder_name">Nom dossier</string>
     <string name="pin_album">Épingler album</string>
     <string name="grant_removable_storage_permission">Accorder la permission Stockage amovible</string>
-    <string name="grant_removable_storage_permission_message">Veuillez sélectionner la racine du dossier de votre
-        appareil de stockage amovible (ex : SD Card) sur le prochain écran.
-    </string>
+    <string name="grant_removable_storage_permission_message">Veuillez sélectionner la racine du dossier de votre appareil de stockage amovible (ex : SD Card) sur le prochain écran.</string>
     <string name="open_with">Ouvrir avec…</string>
     <string name="rotate">tourner</string>
 
@@ -136,7 +116,4 @@
     <string name="info_aperture">Aperture: </string>
     <string name="info_iso">ISO: </string>
     <string name="info_frame_rate">Frame rate: </string>
-
-    <!--Muzei description-->
-    <string name="muzei_description">Random pictures taken by you</string>
 </resources>

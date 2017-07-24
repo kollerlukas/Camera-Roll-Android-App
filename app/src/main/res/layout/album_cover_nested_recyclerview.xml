@@ -37,10 +37,10 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:alpha="0.7"
-            android:contentDescription="@string/hidden_folder_indicator"
             android:src="@drawable/ic_eye_off_white_24dp"
             android:tag="@string/theme_text_color_primary"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/name"

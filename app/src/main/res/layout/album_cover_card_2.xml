@@ -66,8 +66,8 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="16dp"
             android:alpha="0.7"
-            android:contentDescription="@string/hidden_folder_indicator"
             android:src="@drawable/ic_eye_off_white_24dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 </RelativeLayout>
