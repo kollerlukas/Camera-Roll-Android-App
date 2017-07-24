@@ -24,12 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.AlbumItem;
@@ -49,47 +44,13 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     private static final int COLOR_VIEW_TYPE = 1;
     private static final int LOCATION_VIEW_TYPE = 2;
 
+    private ArrayList<InfoUtil.InfoItem> infoItems;
+
     public interface OnDataRetrievedCallback {
         void onDataRetrieved();
 
         Context getContext();
     }
-
-    private static class InfoItem {
-        private String type, value;
-
-        InfoItem(String type, String value) {
-            this.type = type;
-            this.value = value;
-        }
-
-        String getType() {
-            return type;
-        }
-
-        String getValue() {
-            return value;
-        }
-    }
-
-    private static class ColorsItem extends InfoItem {
-
-        private String path;
-
-        ColorsItem(String path) {
-            super("Colors", null);
-            this.path = path;
-        }
-    }
-
-    private static class LocationItem extends InfoItem {
-
-        LocationItem(String type, String value) {
-            super(type, value);
-        }
-    }
-
-    private ArrayList<InfoItem> infoItems;
 
     public boolean exifSupported(Context context, AlbumItem albumItem) {
         String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
@@ -102,137 +63,39 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             public void run() {
                 infoItems = new ArrayList<>();
                 if (showColors) {
-                    infoItems.add(new ColorsItem(albumItem.getPath()));
+                    infoItems.add(new InfoUtil.ColorsItem(albumItem.getPath()));
                 }
 
                 Context context = callback.getContext();
 
-                File file = new File(albumItem.getPath());
                 Uri uri = albumItem.getUri(context);
 
-                String name = albumItem.getName();
-                infoItems.add(new InfoItem(context.getString(R.string.info_filename), name));
+                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filename), albumItem.getName()));
+                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filepath), albumItem.getPath()));
+                infoItems.add(InfoUtil.retrieveFileSize(context, uri));
 
-                String path = file.getPath();
-                infoItems.add(new InfoItem(context.getString(R.string.info_filepath), path));
-
-                String size = InfoUtil.retrieveFileSize(context, uri);
-                if (size == null) {
-                    size = InfoUtil.parseFileSize(0);
-                }
-                infoItems.add(new InfoItem(context.getString(R.string.info_size), size));
-
-                /*locale needed for date formatting*/
-                Locale locale = Util.getLocale(context);
-
+                ExifInterface exif = null;
                 if (exifSupported(context, albumItem)) {
-                    ExifInterface exif = ExifUtil.getExifInterface(context, albumItem);
+                    exif = ExifUtil.getExifInterface(context, albumItem);
+                }
 
-                    /*Dimensions*/
-                    String height = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_LENGTH));
-                    String width = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_WIDTH));
-                    infoItems.add(new InfoItem(context.getString(R.string.info_dimensions), width + " x " + height));
+                infoItems.add(InfoUtil.retrieveDimensions(context, exif, albumItem));
+                infoItems.add(InfoUtil.retrieveFormattedDate(context, exif, albumItem));
 
-                    /*Date*/
-                    String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
-                    try {
-                        Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
-                        String formattedDate = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale).format(date);
-                        infoItems.add(new InfoItem(context.getString(R.string.info_date), formattedDate));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        String formattedDate = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale)
-                                .format(new Date(albumItem.getDate()));
-                        infoItems.add(new InfoItem(context.getString(R.string.info_date), formattedDate));
-                    }
-
-                    /*Location*/
-                    LocationItem locationItem;
-                    Object latitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE);
-                    Object longitudeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE);
-                    if (latitudeObject != null && longitudeObject != null) {
-                        boolean positiveLat = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LATITUDE_REF).equals("N");
-                        double latitude = Double.parseDouble(InfoUtil.parseGPSLongOrLat(String.valueOf(latitudeObject), positiveLat));
-
-                        boolean positiveLong = ExifUtil.getCastValue(exif, ExifInterface.TAG_GPS_LONGITUDE_REF).equals("E");
-                        double longitude = Double.parseDouble(InfoUtil.parseGPSLongOrLat(String.valueOf(longitudeObject), positiveLong));
-                        String locationString = latitude + "," + longitude;
-
-                        locationItem = new LocationItem(context.getString(R.string.info_location), locationString);
-                    } else {
-                        locationItem = new LocationItem(context.getString(R.string.info_location), ExifUtil.NO_DATA);
-                    }
-                    infoItems.add(locationItem);
-
-                    /*Focal Length*/
-                    Object focalLengthObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_FOCAL_LENGTH);
-                    String focalLength;
-                    if (focalLengthObject != null) {
-                        focalLength = String.valueOf(focalLengthObject);
-                    } else {
-                        focalLength = ExifUtil.NO_DATA;
-                    }
-                    infoItems.add(new InfoItem(context.getString(R.string.info_focal_length), focalLength));
-
-                    /*Exposure*/
-                    Object exposureObject = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_EXPOSURE_TIME));
-                    String exposure;
-                    if (exposureObject != null) {
-                        exposure = InfoUtil.parseExposureTime(String.valueOf(exposureObject));
-                    } else {
-                        exposure = ExifUtil.NO_DATA;
-                    }
-                    infoItems.add(new InfoItem(context.getString(R.string.info_exposure), exposure));
-
-                    /*Model & Make*/
-                    Object makeObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_MAKE);
-                    Object modelObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_MODEL);
-                    String model;
-                    if (makeObject != null && modelObject != null) {
-                        model = String.valueOf(makeObject) + " " + String.valueOf(modelObject);
-                    } else {
-                        model = ExifUtil.NO_DATA;
-                    }
-                    infoItems.add(new InfoItem(context.getString(R.string.info_camera_model), model));
+                if (exif != null) {
+                    infoItems.add(InfoUtil.retrieveLocation(context, exif));
+                    infoItems.add(InfoUtil.retrieveFocalLength(context, exif));
+                    infoItems.add(InfoUtil.retrieveExposure(context, exif));
+                    infoItems.add(InfoUtil.retrieveModelAndMake(context, exif));
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        /*Aperture*/
-                        Object apertureObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_F_NUMBER);
-                        String aperture;
-                        if (apertureObject != null) {
-                            aperture = "f/" + String.valueOf(apertureObject);
-                        } else {
-                            aperture = ExifUtil.NO_DATA;
-                        }
-                        infoItems.add(new InfoItem(context.getString(R.string.info_aperture), aperture));
-
-                        /*ISO*/
-                        Object isoObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_ISO_SPEED_RATINGS);
-                        String iso;
-                        if (apertureObject != null) {
-                            iso = String.valueOf(isoObject);
-                        } else {
-                            iso = ExifUtil.NO_DATA;
-                        }
-                        infoItems.add(new InfoItem(context.getString(R.string.info_iso), iso));
+                        infoItems.add(InfoUtil.retrieveAperture(context, exif));
+                        infoItems.add(InfoUtil.retrieveISO(context, exif));
                     }
-                } else {
-                    /*Exif not supported/working for this image*/
-                    int[] imageDimens = albumItem.getImageDimens(context);
-                    String height = String.valueOf(imageDimens[1]);
-                    String width = String.valueOf(imageDimens[0]);
-                    infoItems.add(new InfoItem(context.getString(R.string.info_dimensions), width + " x " + height));
-
-                    String date = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale)
-                            .format(new Date(albumItem.getDate()));
-                    infoItems.add(new InfoItem(context.getString(R.string.info_date), date));
                 }
 
                 if (albumItem instanceof Video) {
-                    int frameRate = ((Video) albumItem).retrieveFrameRate();
-                    if (frameRate != -1) {
-                        infoItems.add(new InfoItem(context.getString(R.string.info_frame_rate), String.valueOf(frameRate) + " fps"));
-                    }
+                    infoItems.add(InfoUtil.retrieveVideoFrameRate(context, albumItem));
                 }
 
                 callback.onDataRetrieved();
@@ -242,10 +105,10 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        InfoItem infoItem = infoItems.get(position);
-        if (infoItem instanceof ColorsItem) {
+        InfoUtil.InfoItem infoItem = infoItems.get(position);
+        if (infoItem instanceof InfoUtil.ColorsItem) {
             return COLOR_VIEW_TYPE;
-        } else if (infoItem instanceof LocationItem) {
+        } else if (infoItem instanceof InfoUtil.LocationItem) {
             return LOCATION_VIEW_TYPE;
         }
         return INFO_VIEW_TYPE;
@@ -268,9 +131,9 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        InfoItem infoItem = infoItems.get(position);
-        if (holder instanceof ColorHolder && infoItem instanceof ColorsItem) {
-            ((ColorHolder) holder).setColors((ColorsItem) infoItem);
+        InfoUtil.InfoItem infoItem = infoItems.get(position);
+        if (holder instanceof ColorHolder && infoItem instanceof InfoUtil.ColorsItem) {
+            ((ColorHolder) holder).setColors((InfoUtil.ColorsItem) infoItem);
         } else if (holder instanceof InfoHolder) {
             ((InfoHolder) holder).bind(infoItem);
         }
@@ -293,7 +156,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             value = itemView.findViewById(R.id.value);
         }
 
-        void bind(InfoItem infoItem) {
+        void bind(InfoUtil.InfoItem infoItem) {
             type.setText(infoItem.getType());
             value.setText(infoItem.getValue());
         }
@@ -301,7 +164,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     static class LocationHolder extends InfoHolder {
 
-        private LocationItem locationItem;
+        private InfoUtil.LocationItem locationItem;
 
         private String featureName;
 
@@ -310,10 +173,10 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         }
 
         @Override
-        void bind(InfoItem infoItem) {
+        public void bind(InfoUtil.InfoItem infoItem) {
             type.setText(infoItem.getType());
-            if (infoItem instanceof LocationItem) {
-                locationItem = (LocationItem) infoItem;
+            if (infoItem instanceof InfoUtil.LocationItem) {
+                locationItem = (InfoUtil.LocationItem) infoItem;
                 value.setText(locationItem.getValue());
                 retrieveAddress(itemView.getContext(), locationItem.getValue());
 
@@ -344,7 +207,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                         double lat = Double.parseDouble(parts[0]);
                         double lng = Double.parseDouble(parts[1]);
 
-                        Address address = InfoUtil.retrieveAddredd(context, lat, lng);
+                        Address address = InfoUtil.retrieveAddress(context, lat, lng);
                         if (address != null) {
                             featureName = address.getFeatureName();
                             valueText = address.getLocality() + ", " + address.getAdminArea();
@@ -430,7 +293,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                     });
         }
 
-        private void setColors(ColorsItem colorsItem) {
+        private void setColors(InfoUtil.ColorsItem colorsItem) {
             if (p == null) {
                 AlbumItem albumItem = AlbumItem.getInstance(colorsItem.path);
 

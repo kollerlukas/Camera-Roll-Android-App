@@ -3,7 +3,7 @@ package us.koller.cameraroll.adapter.item.viewHolder;
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
 import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.imageDecoder.DngBitmapRegionDecoder;
+import us.koller.cameraroll.imageDecoder.RAWImageBitmapRegionDecoder;
 
 public class RAWImageViewHolder extends PhotoViewHolder {
 
@@ -13,7 +13,7 @@ public class RAWImageViewHolder extends PhotoViewHolder {
 
     @Override
     public Class<? extends ImageRegionDecoder> getBitmapRegionDecoderClass() {
-        return DngBitmapRegionDecoder.class;
+        return RAWImageBitmapRegionDecoder.class;
     }
 
 }

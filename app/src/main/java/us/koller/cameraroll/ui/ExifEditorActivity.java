@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -417,13 +417,8 @@ public class ExifEditorActivity extends ThemeableActivity {
             value.removeTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
             value.setText(editedItem == null ? exifInterface.getAttribute(tag) : editedItem.newValue);
 
-            ((ExifViewHolder) holder).setTextWatcher(new TextWatcher() {
-                public void afterTextChanged(Editable s) {
-                }
-
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
+            ((ExifViewHolder) holder).setTextWatcher(new SimpleTextWatcher() {
+                @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     callback.onItemEdited(tag, s.toString());
                 }
@@ -434,6 +429,23 @@ public class ExifEditorActivity extends ThemeableActivity {
         @Override
         public int getItemCount() {
             return ExifUtil.getExifTags().length;
+        }
+    }
+
+    public static class SimpleTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
         }
     }
 }

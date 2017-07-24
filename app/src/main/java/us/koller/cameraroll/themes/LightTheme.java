@@ -25,32 +25,32 @@ public class LightTheme extends Theme {
     }
 
     @Override
-    int getBackgroundColorRes() {
+    public int getBackgroundColorRes() {
         return R.color.light_bg;
     }
 
     @Override
-    int getToolbarColorRes() {
+    public int getToolbarColorRes() {
         return R.color.colorPrimary_light;
     }
 
     @Override
-    int getTextColorPrimaryRes() {
+    public int getTextColorPrimaryRes() {
         return R.color.grey_900_translucent;
     }
 
     @Override
-    int getTextColorSecondaryRes() {
+    public int getTextColorSecondaryRes() {
         return R.color.grey_900_translucent;
     }
 
     @Override
-    int getAccentColorRes() {
+    public int getAccentColorRes() {
         return R.color.colorAccent;
     }
 
     @Override
-    int getAccentTextColorRes() {
+    public int getAccentTextColorRes() {
         return R.color.colorAccent_text;
     }
 

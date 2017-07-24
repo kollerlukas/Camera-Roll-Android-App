@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -12,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -25,7 +23,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,7 +49,7 @@ import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
 
-public class MainActivity extends ThemeableActivity implements SelectorModeManager.Callback {
+public class MainActivity extends ThemeableActivity {
 
     //public static final String ALBUMS = "ALBUMS";
     public static final String REFRESH_MEDIA = "REFRESH_MEDIA";
@@ -116,8 +113,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     private boolean hiddenFolders;
 
     private boolean pick_photos;
-    @SuppressWarnings("FieldCanBeLocal")
-    private boolean allowMultiple;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +120,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         setContentView(R.layout.activity_main);
 
         pick_photos = getIntent().getAction() != null && getIntent().getAction().equals(PICK_PHOTOS);
-        allowMultiple = getIntent().getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+        boolean allowMultiple = getIntent().getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
 
         final Settings settings = Settings.getInstance(this);
 
@@ -194,7 +189,20 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
             recyclerViewAdapter.setSelectorModeManager(manager);
         }
 
-        recyclerViewAdapter.getSelectorManager().addCallback(this);
+        recyclerViewAdapter.getSelectorManager()
+                .addCallback(new SelectorModeManager.SimpleCallback() {
+                    @Override
+                    public void onSelectorModeEnter() {
+                        super.onSelectorModeEnter();
+                        showAndHideFab(false);
+                    }
+
+                    @Override
+                    public void onSelectorModeExit() {
+                        super.onSelectorModeExit();
+                        showAndHideFab(true);
+                    }
+                });
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             /*private float scrollY = 0.0f;*/
@@ -341,76 +349,75 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
         if (intent.getAction() != null) {
             if (intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)) {
                 //handle shared-element transition, for nested nestedRecyclerView style
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (Settings.getInstance(this).getStyle()
-                            == getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
-                        Bundle tmpReenterState = new Bundle(intent.getExtras());
-                        if (tmpReenterState.containsKey(AlbumActivity.ALBUM_PATH)
-                                && tmpReenterState.containsKey(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION)) {
+                boolean nestedRecyclerViewStyle = Settings.getInstance(this).getStyle()
+                        == getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && nestedRecyclerViewStyle) {
+                    Bundle tmpReenterState = new Bundle(intent.getExtras());
+                    if (tmpReenterState.containsKey(AlbumActivity.ALBUM_PATH)
+                            && tmpReenterState.containsKey(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION)) {
 
-                            String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
-                            final int sharedElementReturnPosition
-                                    = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
+                        String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
+                        final int sharedElementReturnPosition
+                                = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
 
-                            int index = -1;
+                        int index = -1;
 
-                            for (int i = 0; i < albums.size(); i++) {
-                                if (albums.get(i).getPath().equals(albumPath)) {
-                                    index = i;
-                                    break;
-                                }
+                        for (int i = 0; i < albums.size(); i++) {
+                            if (albums.get(i).getPath().equals(albumPath)) {
+                                index = i;
+                                break;
                             }
-
-                            if (index == -1) {
-                                return;
-                            }
-
-                            //postponing transition until sharedElement is laid out
-                            postponeEnterTransition();
-
-                            setExitSharedElementCallback(mCallback);
-
-                            final NestedRecyclerViewAlbumHolder
-                                    .StartSharedElementTransitionCallback callback =
-                                    new NestedRecyclerViewAlbumHolder
-                                            .StartSharedElementTransitionCallback() {
-                                        @Override
-                                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                                        public void startPostponedEnterTransition() {
-                                            //sharedElement is laid out --> start transition
-                                            MainActivity.this.startPostponedEnterTransition();
-                                        }
-                                    };
-
-                            final int finalIndex = index;
-
-                            recyclerView.scrollToPosition(index);
-
-                            //wait until ViewHolder is laid out
-                            recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                                @Override
-                                public void onLayoutChange(View v, int l, int t, int r, int b,
-                                                           int oL, int oT, int oR, int oB) {
-                                    RecyclerView.ViewHolder viewHolder
-                                            = recyclerView.findViewHolderForAdapterPosition(finalIndex);
-
-                                    if (viewHolder != null) {
-                                        recyclerView.removeOnLayoutChangeListener(this);
-                                    } else {
-                                        //viewHolder hasn't been laid out yet --> wait
-                                        recyclerView.scrollToPosition(finalIndex);
-                                    }
-
-                                    if (viewHolder instanceof NestedRecyclerViewAlbumHolder) {
-                                        //found ViewHolder
-                                        sharedElementViewHolder = (NestedRecyclerViewAlbumHolder) viewHolder;
-                                        ((NestedRecyclerViewAlbumHolder) viewHolder)
-                                                .onSharedElement(sharedElementReturnPosition, callback);
-                                    }
-                                }
-                            });
                         }
+
+                        if (index == -1) {
+                            return;
+                        }
+
+                        //postponing transition until sharedElement is laid out
+                        postponeEnterTransition();
+
+                        setExitSharedElementCallback(mCallback);
+
+                        final NestedRecyclerViewAlbumHolder
+                                .StartSharedElementTransitionCallback callback =
+                                new NestedRecyclerViewAlbumHolder
+                                        .StartSharedElementTransitionCallback() {
+                                    @Override
+                                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                                    public void startPostponedEnterTransition() {
+                                        //sharedElement is laid out --> start transition
+                                        MainActivity.this.startPostponedEnterTransition();
+                                    }
+                                };
+
+                        final int finalIndex = index;
+
+                        recyclerView.scrollToPosition(index);
+
+                        //wait until ViewHolder is laid out
+                        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                            @Override
+                            public void onLayoutChange(View v, int l, int t, int r, int b,
+                                                       int oL, int oT, int oR, int oB) {
+                                RecyclerView.ViewHolder viewHolder
+                                        = recyclerView.findViewHolderForAdapterPosition(finalIndex);
+
+                                if (viewHolder != null) {
+                                    recyclerView.removeOnLayoutChangeListener(this);
+                                } else {
+                                    //viewHolder hasn't been laid out yet --> wait
+                                    recyclerView.scrollToPosition(finalIndex);
+                                }
+
+                                if (viewHolder instanceof NestedRecyclerViewAlbumHolder) {
+                                    //found ViewHolder
+                                    sharedElementViewHolder = (NestedRecyclerViewAlbumHolder) viewHolder;
+                                    ((NestedRecyclerViewAlbumHolder) viewHolder)
+                                            .onSharedElement(sharedElementReturnPosition, callback);
+                                }
+                            }
+                        });
                     }
                 }
             }
@@ -638,31 +645,9 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MediaProvider.PERMISSION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //permission granted
-                    refreshPhotos();
-                    if (snackbar != null) {
-                        snackbar.dismiss();
-                    }
-                } else {
-                    // permission denied
-                    snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
-                    snackbar.setAction(R.string.retry, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            refreshPhotos();
-                        }
-                    });
-                    Util.showSnackbar(snackbar);
-                }
-            }
-        }
+    public void onPermissionGranted() {
+        super.onPermissionGranted();
+        refreshPhotos();
     }
 
     @Override
@@ -690,10 +675,7 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 break;
             case SETTINGS_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
-                    Log.d("MainActivity", "onActivityResult: RESULT_OK");
                     this.recreate();
-                } else {
-                    Log.d("MainActivity", "onActivityResult: RESULT_Cancel");
                 }
                 break;
         }
@@ -749,21 +731,6 @@ public class MainActivity extends ThemeableActivity implements SelectorModeManag
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
-    }
-
-    @Override
-    public void onSelectorModeEnter() {
-        showAndHideFab(false);
-    }
-
-    @Override
-    public void onSelectorModeExit() {
-        showAndHideFab(true);
-    }
-
-    @Override
-    public void onItemSelected(int selectedItemCount) {
-
     }
 
     @Override

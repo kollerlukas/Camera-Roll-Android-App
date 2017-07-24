@@ -22,17 +22,17 @@ public abstract class Theme {
     public abstract boolean darkStatusBarIconsInSelectorMode();
 
     /*colors*/
-    abstract int getBackgroundColorRes();
+    public abstract int getBackgroundColorRes();
 
-    abstract int getToolbarColorRes();
+    public abstract int getToolbarColorRes();
 
-    abstract int getTextColorPrimaryRes();
+    public abstract int getTextColorPrimaryRes();
 
-    abstract int getTextColorSecondaryRes();
+    public abstract int getTextColorSecondaryRes();
 
-    abstract int getAccentColorRes();
+    public abstract int getAccentColorRes();
 
-    abstract int getAccentTextColorRes();
+    public abstract int getAccentTextColorRes();
 
 
     public int getBackgroundColor(Context context) {

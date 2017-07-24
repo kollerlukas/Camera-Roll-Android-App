@@ -82,13 +82,13 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         }
     }
 
-    abstract void execute(Intent workIntent);
+    public abstract void execute(Intent workIntent);
 
-    void addPathToScan(String path) {
+    public void addPathToScan(String path) {
         pathsToScan.add(path);
     }
 
-    void addPathsToScan(List<String> paths) {
+    public void addPathsToScan(List<String> paths) {
         pathsToScan.addAll(paths);
     }
 
@@ -212,7 +212,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     };
 
 
-    Uri getTreeUri(Intent workIntent, String path) {
+    public Uri getTreeUri(Intent workIntent, String path) {
         Log.d("FileOperation", "getTreeUri");
         Uri treeUri;
         String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);

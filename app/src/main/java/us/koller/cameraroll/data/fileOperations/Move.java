@@ -16,7 +16,7 @@ import us.koller.cameraroll.data.File_POJO;
 public class Move extends FileOperation {
 
     @Override
-    void execute(Intent workIntent) {
+    public void execute(Intent workIntent) {
         File_POJO[] files = getFiles(workIntent);
         File_POJO target = workIntent.getParcelableExtra(TARGET);
 
@@ -51,7 +51,7 @@ public class Move extends FileOperation {
                 }
             }
 
-            boolean result = moveFile(this, treeUri, files[i].getPath(), target.getPath());
+            boolean result = moveFile(this, /*treeUri,*/ files[i].getPath(), target.getPath());
             success_count += result ? 1 : 0;
             onProgress(s, success_count, files.length);
         }
@@ -66,7 +66,7 @@ public class Move extends FileOperation {
         return FileOperation.MOVE;
     }
 
-    private boolean moveFile(Context context, Uri treeUri, String path, String destination) {
+    private boolean moveFile(Context context, /*Uri treeUri,*/ String path, String destination) {
         ArrayList<String> oldPaths = Util.getAllChildPaths(new ArrayList<String>(), path);
 
         File file = new File(path);
@@ -81,7 +81,7 @@ public class Move extends FileOperation {
                 success = renameFile(file, newFile);
             } else {
                 Log.d("Move", "renameFileRemovableStorage()");
-                success = renameFileRemovableStorage(context, treeUri, file, newFile);
+                success = renameFileRemovableStorage(context/*, treeUri, file, newFile*/);
             }
         } else {
             success = renameFile(file, newFile);
@@ -99,7 +99,7 @@ public class Move extends FileOperation {
         return file.renameTo(newFile);
     }
 
-    private static boolean renameFileRemovableStorage(Context context, Uri treeUri, File file, File newFile) {
+    private static boolean renameFileRemovableStorage(Context context/*, Uri treeUri, File file, File newFile*/) {
         //TODO implement
         Toast.makeText(context, "Moving files to/from removable Storage is currently not supported. Please just copy and delete the file", Toast.LENGTH_SHORT).show();
         return false;

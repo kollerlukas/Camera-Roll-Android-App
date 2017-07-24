@@ -4,13 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.support.media.ExifInterface;
 import android.util.Log;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,15 +18,15 @@ import us.koller.cameraroll.data.AlbumItem;
 
 public class DateTakenRetriever {
 
-    public interface Callback {
-        void done();
-    }
-
     private ArrayList<AlbumItem> queue;
 
     private boolean running;
 
     private Callback callback;
+
+    public interface Callback {
+        void done();
+    }
 
     public DateTakenRetriever() {
         running = false;
@@ -74,7 +71,7 @@ public class DateTakenRetriever {
     }
 
     //synchronous
-    public static void tryToRetrieveDateTaken(final Context context, final AlbumItem albumItem) {
+    private static void tryToRetrieveDateTaken(final Context context, final AlbumItem albumItem) {
         long dateTaken = getExifDateTaken(context, albumItem);
         if (dateTaken != -1) {
             albumItem.setDate(dateTaken);
@@ -85,7 +82,7 @@ public class DateTakenRetriever {
         tryToLoadDateTakenFromMediaStore(context, albumItem);
     }
 
-    public static long getExifDateTaken(Context context, AlbumItem albumItem) {
+    private static long getExifDateTaken(Context context, AlbumItem albumItem) {
         String mimeType = MediaType.getMimeType(context, albumItem.getUri(context));
         if (MediaType.doesSupportExif_MimeType(mimeType)) {
             ExifInterface exif = ExifUtil.getExifInterface(context, albumItem);

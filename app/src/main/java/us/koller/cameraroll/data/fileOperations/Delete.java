@@ -15,7 +15,7 @@ import us.koller.cameraroll.util.StorageUtil;
 public class Delete extends FileOperation {
 
     @Override
-    void execute(Intent workIntent) {
+    public void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
 
         String s = getString(R.string.successfully_deleted);

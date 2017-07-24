@@ -8,7 +8,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -17,7 +16,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -610,29 +608,9 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MediaProvider.PERMISSION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //permission granted
-                    if (snackbar != null) {
-                        snackbar.dismiss();
-                    }
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                } else {
-                    // permission denied
-                    Snackbar snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
-                    snackbar.setAction(R.string.retry, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            MediaProvider.checkPermission(AlbumActivity.this);
-                        }
-                    });
-                    Util.showSnackbar(snackbar);
-                }
-            }
-        }
+    public void onPermissionGranted() {
+        super.onPermissionGranted();
+        this.finish();
     }
 
     public void deleteAlbumItemsSnackbar() {
@@ -734,8 +712,7 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     public void setPhotosResult() {
-        final AlbumItem[] selected_items
-                = SelectorModeManager.createAlbumItemArray(this,
+        final AlbumItem[] selected_items = SelectorModeManager.createAlbumItemArray(
                 ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(this));
 
         Intent intent = new Intent("us.koller.RESULT_ACTION");

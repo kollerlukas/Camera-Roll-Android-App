@@ -414,7 +414,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     private static class SelectorModeUtil {
 
-        static final String SELECTOR_TOOLBAR_TAG = "SELECTOR_TOOLBAR_TAG";
+        private static final String SELECTOR_TOOLBAR_TAG = "SELECTOR_TOOLBAR_TAG";
 
         static Toolbar getSelectorModeToolbar(Context context,
                                               View.OnClickListener onClickListener,

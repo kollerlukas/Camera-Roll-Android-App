@@ -2,7 +2,6 @@ package us.koller.cameraroll.adapter.item.viewHolder;
 
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;

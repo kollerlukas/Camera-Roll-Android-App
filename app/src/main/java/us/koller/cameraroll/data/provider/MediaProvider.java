@@ -21,15 +21,15 @@ public class MediaProvider extends Provider {
 
     private static ArrayList<Album> albums;
 
-    public abstract static class Callback implements Provider.Callback {
-        public abstract void onMediaLoaded(ArrayList<Album> albums);
-    }
-
     private static final int MODE_STORAGE = 1;
     private static final int MODE_MEDIASTORE = 2;
 
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
+
+    public abstract static class Callback implements Provider.Callback {
+        public abstract void onMediaLoaded(ArrayList<Album> albums);
+    }
 
     public MediaProvider(Context context) {
         super(context);

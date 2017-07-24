@@ -14,7 +14,6 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.transition.Slide;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;

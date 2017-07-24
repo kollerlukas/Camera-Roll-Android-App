@@ -10,20 +10,15 @@ import us.koller.cameraroll.data.StorageRoot;
 
 public class FilesProvider extends Provider {
 
+    private Retriever retriever;
+
     public abstract static class Callback implements Provider.Callback {
         public abstract void onDirLoaded(File_POJO dir);
     }
 
-    private Retriever retriever;
-
     public FilesProvider(Context context) {
         super(context);
         retriever = new StorageRetriever();
-    }
-
-
-    public static StorageRoot[] getRoots(Activity context) {
-        return StorageRetriever.loadRoots(context);
     }
 
     public void loadDir(final Activity context, String dirPath,
@@ -58,4 +53,9 @@ public class FilesProvider extends Provider {
                     }
                 });
     }
+
+    public static StorageRoot[] getRoots(Activity context) {
+        return StorageRetriever.loadRoots(context);
+    }
+
 }

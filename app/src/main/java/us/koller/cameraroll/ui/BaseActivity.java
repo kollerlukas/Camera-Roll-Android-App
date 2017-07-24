@@ -5,20 +5,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.provider.MediaProvider;
+import us.koller.cameraroll.util.Util;
 
 //simple BaseActivity that handles LocalBroadcastReceivers, need for communication with FileOperationServices
 public abstract class BaseActivity extends AppCompatActivity {
@@ -29,6 +35,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     //workIntent for FileOperation awaiting permission to write to removable storage
     private Intent workIntent;
+
+    //snackbar to notify user Camera Roll is missing the storage permission
+    private Snackbar snackbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +90,36 @@ public abstract class BaseActivity extends AppCompatActivity {
                     workIntent = null;
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MediaProvider.PERMISSION_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //permission granted
+                    onPermissionGranted();
+                } else {
+                    // permission denied
+                    snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
+                    snackbar.setAction(R.string.retry, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            MediaProvider.checkPermission(BaseActivity.this);
+                        }
+                    });
+                    Util.showSnackbar(snackbar);
+                }
+            }
+            break;
+        }
+    }
+
+    public void onPermissionGranted() {
+        if (snackbar != null) {
+            snackbar.dismiss();
         }
     }
 

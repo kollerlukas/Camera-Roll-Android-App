@@ -38,10 +38,6 @@ import us.koller.cameraroll.util.Util;
 
 public class FileOperationDialogActivity extends ThemeableActivity {
 
-    private interface OnDestroyListener {
-        void onDestroy();
-    }
-
     public static String ACTION_COPY = "ACTION_COPY";
     public static String ACTION_MOVE = "ACTION_MOVE";
 
@@ -57,6 +53,10 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     // need to start FileOperation, when this activity is destroyed
     // otherwise running into issue with the removable storage permission broadcast not being received
     private OnDestroyListener onDestroyListener;
+
+    private interface OnDestroyListener {
+        void onDestroy();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -296,7 +296,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                 super(itemView);
             }
 
-            void setSelected(boolean selected) {
+            private void setSelected(boolean selected) {
                 final View imageView = itemView.findViewById(R.id.image);
 
                 if (selected) {

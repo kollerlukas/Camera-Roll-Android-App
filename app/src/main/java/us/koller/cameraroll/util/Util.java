@@ -2,7 +2,6 @@ package us.koller.cameraroll.util;
 
 import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -14,7 +13,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
-import android.provider.OpenableColumns;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.media.ExifInterface;

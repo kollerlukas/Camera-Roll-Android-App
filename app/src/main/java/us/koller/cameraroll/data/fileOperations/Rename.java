@@ -25,7 +25,7 @@ public class Rename extends FileOperation {
     public static final String NEW_FILE_PATH = "NEW_FILE_PATH";
 
     @Override
-    void execute(Intent workIntent) {
+    public void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
         final String newFileName = workIntent.getStringExtra(FileOperation.NEW_FILE_NAME);
         if (files.length > 0 && newFileName != null) {
@@ -104,7 +104,7 @@ public class Rename extends FileOperation {
 
             Theme theme = Settings.getInstance(activity).getThemeInstance(activity);
 
-            return new android.support.v7.app.AlertDialog.Builder(activity, theme.getDialogThemeRes())
+            return new AlertDialog.Builder(activity, theme.getDialogThemeRes())
                     .setTitle(R.string.rename)
                     .setView(dialogLayout)
                     .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.support.media.ExifInterface;
-import android.util.Rational;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;

@@ -61,10 +61,6 @@ import us.koller.cameraroll.util.Util;
 public class FileExplorerActivity extends ThemeableActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
 
-    public interface OnDirectoryChangeCallback {
-        void changeDir(String path);
-    }
-
     public static final String ROOTS = "ROOTS";
     public static final String CURRENT_DIR = "CURRENT_DIR";
     public static final String MODE = "MODE";
@@ -84,6 +80,10 @@ public class FileExplorerActivity extends ThemeableActivity
     private Menu menu;
 
     private Intent fileOpIntent;
+
+    public interface OnDirectoryChangeCallback {
+        void changeDir(String path);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

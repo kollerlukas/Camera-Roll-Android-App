@@ -7,17 +7,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
@@ -70,10 +67,6 @@ import us.koller.cameraroll.util.Util;
 
 public class ItemActivity extends ThemeableActivity {
 
-    public interface ViewPagerOnInstantiateItemCallback {
-        boolean onInstantiateItem(ViewHolder viewHolder);
-    }
-
     public static int FILE_OP_DIALOG_REQUEST = 1;
 
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
@@ -81,13 +74,27 @@ public class ItemActivity extends ThemeableActivity {
     public static final String ALBUM_PATH = "ALBUM_PATH";
     public static final String ITEM_POSITION = "ITEM_POSITION";
     public static final String VIEW_ONLY = "VIEW_ONLY";
-    public static final String FINISH_AFTER = "FINISH_AFTER";
     private static final String WAS_SYSTEM_UI_HIDDEN = "WAS_SYSTEM_UI_HIDDEN";
     private static final String IMAGE_VIEW_SAVED_STATE = "IMAGE_VIEW_SAVED_STATE";
     private static final String INFO_DIALOG_SHOWN = "INFO_DIALOG_SHOWN";
     public static final String SHARED_ELEMENT_RETURN_TRANSITION = "SHARED_ELEMENT_RETURN_TRANSITION";
 
+    private Toolbar toolbar;
+    private View bottomBar;
+    private ViewPager viewPager;
+
+    private AlertDialog infoDialog;
+    private Menu menu;
+
+    private boolean systemUiVisible = true;
+
+    private Album album;
+    private AlbumItem albumItem;
+
+    public boolean view_only;
+
     private boolean isReturning;
+
     private final SharedElementCallback sharedElementCallback = new SharedElementCallback() {
         @Override
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -140,20 +147,9 @@ public class ItemActivity extends ThemeableActivity {
         }
     };
 
-    private Toolbar toolbar;
-    private View bottomBar;
-    private ViewPager viewPager;
-
-    private AlertDialog infoDialog;
-    private Snackbar snackbar;
-    private Menu menu;
-
-    private boolean systemUiVisible = true;
-
-    private Album album;
-    private AlbumItem albumItem;
-
-    public boolean view_only;
+    public interface ViewPagerOnInstantiateItemCallback {
+        boolean onInstantiateItem(ViewHolder viewHolder);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -244,7 +240,7 @@ public class ItemActivity extends ThemeableActivity {
         viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         bottomBar = findViewById(R.id.bottom_bar);
-        ImageView delete_button = bottomBar.findViewById(R.id.delete_button);
+        /*ImageView delete_button = bottomBar.findViewById(R.id.delete_button);
         if (!view_only) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Drawable d = ContextCompat.getDrawable(this, R.drawable.ic_delete_avd);
@@ -254,7 +250,7 @@ public class ItemActivity extends ThemeableActivity {
             }
         } else {
             ((View) delete_button.getParent()).setVisibility(View.GONE);
-        }
+        }*/
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
@@ -660,7 +656,22 @@ public class ItemActivity extends ThemeableActivity {
                 });
     }
 
-    public void bottomBarOnClick(View v) {
+    public void bottomBarOnClick(final View v) {
+        Drawable d = ((ImageView) v).getDrawable();
+        if (d instanceof Animatable) {
+            ((Animatable) d).start();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bottomBarAction(v);
+                }
+            }, (int) (400 * Util.getAnimatorSpeed(this)));
+        } else {
+            bottomBarAction(v);
+        }
+    }
+
+    private void bottomBarAction(View v) {
         switch (v.getId()) {
             case R.id.info_button:
                 showInfoDialog();
@@ -672,19 +683,7 @@ public class ItemActivity extends ThemeableActivity {
                 editPhoto();
                 break;
             case R.id.delete_button:
-                ImageView delete_button = (ImageView) v;
-                Drawable d = delete_button.getDrawable();
-                if (d instanceof Animatable) {
-                    ((Animatable) d).start();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            showDeleteDialog();
-                        }
-                    }, (int) (400 * Util.getAnimatorSpeed(this)));
-                } else {
-                    showDeleteDialog();
-                }
+                showDeleteDialog();
                 break;
         }
     }
@@ -723,10 +722,6 @@ public class ItemActivity extends ThemeableActivity {
                 .translationY(bottomBar_translationY)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
-
-        if (snackbar != null && !show) {
-            snackbar.dismiss();
-        }
     }
 
     private void showSystemUI(final boolean show) {
@@ -751,29 +746,9 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull
-            String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MediaProvider.PERMISSION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0]
-                        == PackageManager.PERMISSION_GRANTED) {
-                    //permission granted
-                    this.finish();
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    snackbar = Util.getPermissionDeniedSnackbar(findViewById(R.id.root_view));
-                    snackbar.setAction(R.string.retry, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            MediaProvider.checkPermission(ItemActivity.this);
-                        }
-                    });
-                    Util.showSnackbar(snackbar);
-                }
-            }
-        }
+    public void onPermissionGranted() {
+        super.onPermissionGranted();
+        this.finish();
     }
 
     @Override

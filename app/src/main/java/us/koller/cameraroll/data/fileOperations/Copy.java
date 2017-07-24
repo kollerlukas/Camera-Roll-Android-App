@@ -21,7 +21,7 @@ import us.koller.cameraroll.util.StorageUtil;
 public class Copy extends FileOperation {
 
     @Override
-    void execute(Intent workIntent) {
+    public void execute(Intent workIntent) {
         File_POJO[] files = getFiles(workIntent);
         File_POJO target = workIntent.getParcelableExtra(TARGET);
 

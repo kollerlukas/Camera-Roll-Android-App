@@ -1,7 +1,6 @@
 package us.koller.cameraroll.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -53,6 +52,23 @@ public class SelectorModeManager {
         void onSelectorModeExit();
 
         void onItemSelected(int selectedItemCount);
+    }
+
+    public static class SimpleCallback implements Callback {
+        @Override
+        public void onSelectorModeEnter() {
+
+        }
+
+        @Override
+        public void onSelectorModeExit() {
+
+        }
+
+        @Override
+        public void onItemSelected(int selectedItemCount) {
+
+        }
     }
 
     public SelectorModeManager(Bundle savedState) {
@@ -183,13 +199,13 @@ public class SelectorModeManager {
         }
     }
 
-    public static AlbumItem[] createAlbumItemArray(Context c, String[] arr) {
+    public static AlbumItem[] createAlbumItemArray(String[] arr) {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.addAll(Arrays.asList(arr));
-        return createAlbumItemArray(c, arrayList);
+        return createAlbumItemArray(arrayList);
     }
 
-    private static AlbumItem[] createAlbumItemArray(Context c, ArrayList<String> arr) {
+    private static AlbumItem[] createAlbumItemArray(ArrayList<String> arr) {
         AlbumItem[] albumItems = new AlbumItem[arr.size()];
         for (int i = 0; i < arr.size(); i++) {
             albumItems[i] = AlbumItem.getInstance(arr.get(i));

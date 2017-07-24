@@ -25,32 +25,32 @@ public class DarkTheme extends Theme {
     }
 
     @Override
-    int getBackgroundColorRes() {
+    public int getBackgroundColorRes() {
         return R.color.dark_bg;
     }
 
     @Override
-    int getToolbarColorRes() {
+    public int getToolbarColorRes() {
         return R.color.black_translucent2;
     }
 
     @Override
-    int getTextColorPrimaryRes() {
+    public int getTextColorPrimaryRes() {
         return R.color.white;
     }
 
     @Override
-    int getTextColorSecondaryRes() {
+    public int getTextColorSecondaryRes() {
         return R.color.white_translucent1;
     }
 
     @Override
-    int getAccentColorRes() {
+    public int getAccentColorRes() {
         return R.color.colorAccent;
     }
 
     @Override
-    int getAccentTextColorRes() {
+    public int getAccentTextColorRes() {
         return R.color.colorAccent_text;
     }
 

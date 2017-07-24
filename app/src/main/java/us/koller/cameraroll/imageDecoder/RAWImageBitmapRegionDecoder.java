@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapRegionDecoder;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -17,7 +16,7 @@ import us.koller.cameraroll.util.Util;
 
 //simple RegionDecoder using BitmapFactory.decodeStream(..., rect,...),
 //because BitmapRegionDecoder doesn't support RAW(.dng) images
-public class DngBitmapRegionDecoder implements ImageRegionDecoder {
+public class RAWImageBitmapRegionDecoder implements ImageRegionDecoder {
 
     private InputStream inputStream;
     private final Object decoderLock = new Object();

@@ -136,19 +136,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
 
         setWindowInsets();
 
-        player.addListener(new ExoPlayer.EventListener() {
-            @Override
-            public void onTimelineChanged(Timeline timeline, Object o) {
-            }
-
-            @Override
-            public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
-            }
-
-            @Override
-            public void onLoadingChanged(boolean b) {
-            }
-
+        player.addListener(new SimpleEventListener() {
             @Override
             public void onPlayerStateChanged(boolean b, int i) {
                 //update PlayPause-Button
@@ -172,19 +160,6 @@ public class VideoPlayerActivity extends ThemeableActivity {
                 }
 
             }
-
-            @Override
-            public void onPlayerError(ExoPlaybackException e) {
-            }
-
-            @Override
-            public void onPositionDiscontinuity() {
-            }
-
-            /*@Override
-            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
-            }*/
         });
 
         //hide & show Nav-/StatusBar together with controls
@@ -366,6 +341,39 @@ public class VideoPlayerActivity extends ThemeableActivity {
             }
             toolbar.setTitleTextColor(white);
             us.koller.cameraroll.util.Util.colorToolbarOverflowMenuIcon(toolbar, white);
+        }
+    }
+
+    public static class SimpleEventListener implements ExoPlayer.EventListener {
+
+        @Override
+        public void onTimelineChanged(Timeline timeline, Object o) {
+
+        }
+
+        @Override
+        public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
+
+        }
+
+        @Override
+        public void onLoadingChanged(boolean b) {
+
+        }
+
+        @Override
+        public void onPlayerStateChanged(boolean b, int i) {
+
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException e) {
+
+        }
+
+        @Override
+        public void onPositionDiscontinuity() {
+
         }
     }
 }

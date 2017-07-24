@@ -31,12 +31,6 @@ import us.koller.cameraroll.util.SortUtil;
 //advantage: all items, disadvantage: slower than MediaStore
 public class StorageRetriever extends Retriever {
 
-    interface StorageSearchCallback {
-        void onThreadResult(ItemLoader.Result result);
-
-        void done();
-    }
-
     //option to set thread count;
     private static final int THREAD_COUNT = 8;
 
@@ -45,6 +39,12 @@ public class StorageRetriever extends Retriever {
     //for timeout
     private Handler handler;
     private Runnable timeout;
+
+    interface StorageSearchCallback {
+        void onThreadResult(ItemLoader.Result result);
+
+        void done();
+    }
 
     public StorageRetriever() {
 

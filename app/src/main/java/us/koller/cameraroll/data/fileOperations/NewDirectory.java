@@ -13,7 +13,7 @@ import us.koller.cameraroll.util.StorageUtil;
 public class NewDirectory extends FileOperation {
 
     @Override
-    void execute(Intent workIntent) {
+    public void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
         if (files.length > 0) {
             final File_POJO file = files[0];

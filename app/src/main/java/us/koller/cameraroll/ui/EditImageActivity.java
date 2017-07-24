@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -28,7 +27,6 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImageView;
-import com.theartofdev.edmodo.cropper.CropOverlayView;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.Util;
@@ -197,7 +195,7 @@ public class EditImageActivity extends AppCompatActivity {
         MenuItem rotate = menu.findItem(R.id.rotate);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AnimatedVectorDrawable avd = (AnimatedVectorDrawable)
-                    ContextCompat.getDrawable(this, R.drawable.rotate_90_avd);
+                    ContextCompat.getDrawable(this, R.drawable.ic_rotate_90_avd);
             rotate.setIcon(avd);
         }
         return true;

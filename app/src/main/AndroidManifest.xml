@@ -169,18 +169,5 @@
         <service
             android:name=".data.fileOperations.Rename"
             tools:ignore="InnerclassSeparator" />
-
-        <!--<service
-            android:name=".muzei.ArtSourceService"
-            android:description="@string/muzei_description"
-            android:icon="@drawable/muzei_icon"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
-            </intent-filter>
-            <meta-data
-                android:name="color"
-                android:value="#EF5350" />
-        </service>-->
     </application>
 </manifest>

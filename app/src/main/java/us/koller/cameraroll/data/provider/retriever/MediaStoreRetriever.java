@@ -26,7 +26,6 @@ public class MediaStoreRetriever extends Retriever {
             MediaStore.Files.FileColumns.PARENT,
             MediaStore.Images.ImageColumns.DATE_TAKEN};
 
-
     @Override
     void loadAlbums(final Activity context, boolean hiddenFolders) {
 

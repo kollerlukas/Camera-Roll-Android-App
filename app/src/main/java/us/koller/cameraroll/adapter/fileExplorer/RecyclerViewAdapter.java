@@ -22,6 +22,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     public static final int SELECTOR_MODE = 1;
     public static final int PICK_TARGET_MODE = 2;
 
+    private File_POJO files;
+
+    private int mode = NORMAL_MODE;
+    private boolean[] selected_items;
+
+    private Callback callback;
+
+    private FileExplorerActivity.OnDirectoryChangeCallback directoryChangeCallback;
 
     public interface Callback {
         void onSelectorModeEnter();
@@ -36,15 +44,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
         void onDataChanged();
     }
-
-    private File_POJO files;
-
-    private int mode = NORMAL_MODE;
-    private boolean[] selected_items;
-
-    private Callback callback;
-
-    private FileExplorerActivity.OnDirectoryChangeCallback directoryChangeCallback;
 
     public RecyclerViewAdapter(
             FileExplorerActivity.OnDirectoryChangeCallback directoryChangeCallback,

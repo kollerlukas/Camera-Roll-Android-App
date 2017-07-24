@@ -11,6 +11,10 @@ import us.koller.cameraroll.data.Settings;
 
 public class SortUtil {
 
+    public static final int BY_DATE = 1;
+    public static final int BY_NAME = 2;
+    public static final int BY_SIZE = 3;
+
     //interface, implemented by Album & AlbumItem, to sort them
     public interface Sortable {
         String getName();
@@ -21,10 +25,6 @@ public class SortUtil {
 
         boolean pinned();
     }
-
-    public static final int BY_DATE = 1;
-    public static final int BY_NAME = 2;
-    public static final int BY_SIZE = 3;
 
     public static void sortAlbums(Activity context, ArrayList<Album> albums) {
         Settings settings = Settings.getInstance(context);

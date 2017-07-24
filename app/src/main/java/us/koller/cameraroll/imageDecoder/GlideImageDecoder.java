@@ -15,10 +15,6 @@ import us.koller.cameraroll.util.Util;
 
 public class GlideImageDecoder implements ImageDecoder {
 
-    public GlideImageDecoder() {
-
-    }
-
     @Override
     public Bitmap decode(Context context, Uri uri) throws Exception {
         int[] imageDimens = Util.getImageDimensions(context, uri);
