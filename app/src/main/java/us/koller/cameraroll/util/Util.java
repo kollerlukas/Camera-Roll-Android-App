@@ -177,7 +177,7 @@ public class Util {
     public static Drawable getAlbumItemSelectorOverlay(Context context) {
         if (selectorOverlay == null) {
             selectorOverlay = ContextCompat.getDrawable(context,
-                    R.drawable.album_item_selected_indicator);
+                    R.drawable.albumitem_selected_indicator);
         }
 
         Settings s = Settings.getInstance(context);

@@ -5,9 +5,9 @@
         <selector>
             <item
                 android:state_selected="true"
-                android:drawable="@drawable/album_item_selected" />
+                android:drawable="@drawable/albumitem_selected" />
             <item android:state_selected="false"
-                android:drawable="@drawable/album_item_not_selected" />
+                android:drawable="@drawable/albumitem_not_selected" />
         </selector>
     </item>
 </layer-list>
