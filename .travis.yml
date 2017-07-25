@@ -2,10 +2,9 @@ language: android
 android:
  components:
   - tools
-  - tools
+  - platform-tools
   - build-tools-26.0.1
   - android-26
-  - platform-tools
 
   # Additional components
   - extra-android-support
