@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.support.media.ExifInterface;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -368,11 +369,11 @@ public class ExifUtil {
     private static int getTypeForTag(String tag) {
         int type;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            List tags = Arrays.asList(exifTags_v24);
+            List<String> tags = Arrays.asList(exifTags_v24);
             int index = tags.indexOf(tag);
             type = exifTypes_v24[index];
         } else {
-            List tags = Arrays.asList(exifTags);
+            List<String> tags = Arrays.asList(exifTags);
             int index = tags.indexOf(tag);
             type = exifTypes[index];
         }
@@ -419,5 +420,58 @@ public class ExifUtil {
                 break;
         }
         return castValue == null ? value : castValue;
+    }
+
+    public static ExifItem[] retrieveExifData(Context context, Uri uri) {
+        ExifInterface exif = getExifInterface(context, AlbumItem.getInstance(context, uri));
+        if (exif != null) {
+            String[] exifTags = getExifTags();
+            ExifItem[] exifData = new ExifItem[exifTags.length];
+            for (int i = 0; i < exifTags.length; i++) {
+                String tag = exifTags[i];
+                String value = exif.getAttribute(tag);
+                ExifItem exifItem = new ExifItem(tag, value);
+                exifData[i] = exifItem;
+            }
+            return exifData;
+        }
+        return null;
+    }
+
+    public static void saveExifData(String path, ExifItem[] exifData) {
+        try {
+            ExifInterface exif = new ExifInterface(path);
+            for (int i = 0; i < exifData.length; i++) {
+                ExifItem exifItem = exifData[i];
+                exif.setAttribute(exifItem.getTag(), exifItem.getValue());
+            }
+            exif.saveAttributes();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static class ExifItem {
+
+        private String tag;
+        private String value;
+
+        ExifItem(String tag, String value) {
+            this.tag = tag;
+            this.value = value;
+        }
+
+        public String getTag() {
+            return tag;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return "(Tag: " + tag + ", Value: " + value + ")";
+        }
     }
 }

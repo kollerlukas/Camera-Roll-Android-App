@@ -96,9 +96,12 @@ public class IntentReceiver extends AppCompatActivity {
     }
 
     private void edit(Intent intent) {
+        String imagePath = intent.getStringExtra(EditImageActivity.IMAGE_PATH);
+
         Intent edit = new Intent(this, EditImageActivity.class)
                 .setAction(Intent.ACTION_EDIT)
-                .setData(intent.getData());
+                .setDataAndType(intent.getData(), intent.getType())
+                .putExtra(EditImageActivity.IMAGE_PATH, imagePath);
 
         startActivity(edit);
         this.finish();

@@ -29,10 +29,14 @@ import android.widget.Toast;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.Util;
 
 public class EditImageActivity extends AppCompatActivity {
 
+    public static final String IMAGE_PATH = "IMAGE_PATH";
+
+    private String imagePath;
     private boolean animating90DegreeRotation = false;
 
     @Override
@@ -59,6 +63,8 @@ public class EditImageActivity extends AppCompatActivity {
         if (uri == null) {
             finish();
         }
+
+        imagePath = intent.getStringExtra(IMAGE_PATH);
 
         if (savedInstanceState == null) {
             cropImageView.setImageUriAsync(uri);
@@ -178,9 +184,14 @@ public class EditImageActivity extends AppCompatActivity {
 
     public void done(View v) {
         CropImageView cropImageView = findViewById(R.id.cropImageView);
+        final ExifUtil.ExifItem[] exifData = ExifUtil.retrieveExifData(this, cropImageView.getImageUri());
         cropImageView.setOnCropImageCompleteListener(new CropImageView.OnCropImageCompleteListener() {
             @Override
             public void onCropImageComplete(CropImageView view, CropImageView.CropResult result) {
+                if (exifData != null) {
+                    ExifUtil.saveExifData(imagePath, exifData);
+                }
+
                 Toast.makeText(EditImageActivity.this, "Success!", Toast.LENGTH_SHORT).show();
                 finish();
             }

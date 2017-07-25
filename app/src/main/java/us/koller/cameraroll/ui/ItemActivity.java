@@ -511,6 +511,7 @@ public class ItemActivity extends ThemeableActivity {
 
         Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(uri, MediaType.getMimeType(this, uri))
+                .putExtra(EditImageActivity.IMAGE_PATH, albumItem.getPath())
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {

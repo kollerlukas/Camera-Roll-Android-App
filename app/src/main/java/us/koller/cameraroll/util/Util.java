@@ -21,9 +21,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,16 +33,10 @@ import java.util.Locale;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.ui.MainActivity;
 
 public class Util {
 
     private static Drawable selectorOverlay;
-
-    public interface OnWindowInsetsCallback {
-        /*windowInsets: left, top, right, bottom*/
-        public void onWindowInsets(int[] windowInsets);
-    }
 
     public static int[] getImageDimensions(Context context, Uri uri) {
         int[] dimensions = new int[]{0, 0};
@@ -63,7 +54,9 @@ public class Util {
                         && exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
                     int width = (int) ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_WIDTH);
                     int height = (int) ExifUtil.getCastValue(exif, ExifInterface.TAG_IMAGE_LENGTH);
-                    return new int[]{width, height};
+                    if (width != 0 && height != 0) {
+                        return new int[]{width, height};
+                    }
                 }
             }
 
@@ -239,46 +232,5 @@ public class Util {
             locale = context.getResources().getConfiguration().locale;
         }
         return locale;
-    }
-
-    public static void setWindowInsetsCallback(final Activity activity, final View rootView, final OnWindowInsetsCallback callback) {
-        //setting window insets manually
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-
-                    callback.onWindowInsets(new int[]{
-                            insets.getSystemWindowInsetLeft(),
-                            insets.getSystemWindowInsetTop(),
-                            insets.getSystemWindowInsetRight(),
-                            insets.getSystemWindowInsetLeft()});
-
-                    return insets.consumeSystemWindowInsets();
-                }
-            });
-        } else {
-            rootView.getViewTreeObserver()
-                    .addOnGlobalLayoutListener(
-                            new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                    // hacky way of getting window insets on pre-Lollipop
-                                    // somewhat works...
-                                    int[] screenSize = Util.getScreenSize(activity);
-
-                                    callback.onWindowInsets(new int[]{
-                                            Math.abs(screenSize[0] - rootView.getLeft()),
-                                            Math.abs(screenSize[1] - rootView.getTop()),
-                                            Math.abs(screenSize[2] - rootView.getRight()),
-                                            Math.abs(screenSize[3] - rootView.getBottom())});
-
-                                }
-                            });
-        }
     }
 }

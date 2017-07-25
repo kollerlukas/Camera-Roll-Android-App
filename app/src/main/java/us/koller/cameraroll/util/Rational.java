@@ -2,11 +2,11 @@ package us.koller.cameraroll.util;
 
 /*simple class to handle Rational numbers from Exif data easier*/
 /*own class, since android.util.Rational only for api 21 and up*/
-public class Rational {
+class Rational {
 
     private int numerator, denominator;
 
-    public static Rational parseRational(String input) {
+    static Rational parseRational(String input) {
         String[] parts = input.split("/");
         int numerator = Integer.valueOf(parts[0]);
         int denominator = Integer.valueOf(parts[1]);
@@ -19,23 +19,15 @@ public class Rational {
         this.denominator = denominator;
     }
 
-    public float floatValue() {
+    float floatValue() {
         return (float) numerator / (float) denominator;
     }
 
-    public void setNumerator(int numerator) {
-        this.numerator = numerator;
-    }
-
-    public int getNumerator() {
-        return numerator;
-    }
-
-    public void setDenominator(int denominator) {
+    void setDenominator(int denominator) {
         this.denominator = denominator;
     }
 
-    public int getDenominator() {
+    int getDenominator() {
         return denominator;
     }
 }
