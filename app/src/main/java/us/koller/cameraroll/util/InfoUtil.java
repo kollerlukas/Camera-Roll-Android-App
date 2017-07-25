@@ -57,17 +57,22 @@ public class InfoUtil {
 
     public static String retrieveFileName(Context context, Uri uri) {
         //retrieve file name
-        Cursor cursor = context.getContentResolver().query(uri,
-                null, null, null, null);
-        if (cursor != null) {
-            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-            cursor.moveToFirst();
-            String filename = cursor.getString(nameIndex);
-            cursor.close();
-            return filename;
-        } else {
-            return null;
+        try {
+            Cursor cursor = context.getContentResolver().query(uri,
+                    null, null, null, null);
+            if (cursor != null) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                cursor.moveToFirst();
+                if (!cursor.isAfterLast()) {
+                    String filename = cursor.getString(nameIndex);
+                    cursor.close();
+                    return filename;
+                }
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     public static InfoItem retrieveFileSize(Context context, Uri uri) {
@@ -79,8 +84,10 @@ public class InfoUtil {
         if (cursor != null && !cursor.isAfterLast()) {
             int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
             cursor.moveToFirst();
-            size = cursor.getLong(sizeIndex);
-            cursor.close();
+            if (!cursor.isAfterLast()) {
+                size = cursor.getLong(sizeIndex);
+                cursor.close();
+            }
         }
         return new InfoItem(context.getString(R.string.info_size), Parser.parseFileSize(size));
     }
@@ -203,9 +210,10 @@ public class InfoUtil {
         if (Util.hasWifiConnection(context)) {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             try {
-                List<Address> addresses = geocoder
-                        .getFromLocation(lat, lng, 1);
-                return addresses.get(0);
+                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+                if (addresses.size() > 0) {
+                    return addresses.get(0);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

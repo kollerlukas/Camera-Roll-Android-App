@@ -49,6 +49,8 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     public interface OnDataRetrievedCallback {
         void onDataRetrieved();
 
+        void failed();
+
         Context getContext();
     }
 
@@ -58,6 +60,11 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     public void retrieveData(final AlbumItem albumItem, final boolean showColors, final OnDataRetrievedCallback callback) {
+        if (albumItem == null) {
+            callback.failed();
+            return;
+        }
+
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {

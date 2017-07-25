@@ -8,9 +8,14 @@ class Rational {
 
     static Rational parseRational(String input) {
         String[] parts = input.split("/");
-        int numerator = Integer.valueOf(parts[0]);
-        int denominator = Integer.valueOf(parts[1]);
-        return new Rational(numerator, denominator);
+        try {
+            int numerator = Integer.valueOf(parts[0]);
+            int denominator = Integer.valueOf(parts[1]);
+            return new Rational(numerator, denominator);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @SuppressWarnings("WeakerAccess")

@@ -393,7 +393,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
         @Override
         public int getItemCount() {
-            return albums.size();
+            return albums != null ? albums.size() : 0;
         }
     }
 }

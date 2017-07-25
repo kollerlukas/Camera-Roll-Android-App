@@ -332,8 +332,12 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         static boolean isOnRemovableStorage(String path) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 File file = new File(path);
-                if (file.exists() && Environment.isExternalStorageRemovable(file)) {
-                    return true;
+                try {
+                    if (file.exists() && Environment.isExternalStorageRemovable(file)) {
+                        return true;
+                    }
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
                 }
             }
             return false;

@@ -348,6 +348,10 @@ public class ExifUtil {
     };
 
     public static ExifInterface getExifInterface(Context context, AlbumItem albumItem) {
+        if (albumItem == null) {
+            return null;
+        }
+
         ExifInterface exif = null;
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

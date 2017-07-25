@@ -176,8 +176,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                                             BaseActivity.this.workIntent = workIntent;
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                                 Intent requestIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                                                startActivityForResult(requestIntent,
-                                                        MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
+                                                startActivityForResult(requestIntent, MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
                                             }
                                             dialog.dismiss();
                                         }

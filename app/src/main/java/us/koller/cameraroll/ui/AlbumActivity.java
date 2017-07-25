@@ -418,7 +418,7 @@ public class AlbumActivity extends ThemeableActivity
         if (data != null) {
             Bundle tmpReenterState = new Bundle(data.getExtras());
             sharedElementReturnPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-            if (sharedElementReturnPosition != -1) {
+            if (sharedElementReturnPosition != -1 && album.getAlbumItems().size() > 0) {
                 album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
                 if (recyclerView.getAdapter().getItemCount() > 0) {
                     postponeEnterTransition();

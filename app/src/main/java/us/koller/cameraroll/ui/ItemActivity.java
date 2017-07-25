@@ -193,7 +193,7 @@ public class ItemActivity extends ThemeableActivity {
         } else {
             //album = getIntent().getExtras().getParcelable(AlbumActivity.ALBUM);
             int position = getIntent().getIntExtra(ITEM_POSITION, 0);
-            if (album != null) {
+            if (album != null && position < album.getAlbumItems().size()) {
                 albumItem = album.getAlbumItems().get(position);
                 albumItem.isSharedElement = true;
             }
@@ -240,17 +240,6 @@ public class ItemActivity extends ThemeableActivity {
         viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         bottomBar = findViewById(R.id.bottom_bar);
-        /*ImageView delete_button = bottomBar.findViewById(R.id.delete_button);
-        if (!view_only) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Drawable d = ContextCompat.getDrawable(this, R.drawable.ic_delete_avd);
-                delete_button.setImageDrawable(d);
-            } else {
-                delete_button.setImageResource(R.drawable.ic_delete_white_24dp);
-            }
-        } else {
-            ((View) delete_button.getParent()).setVisibility(View.GONE);
-        }*/
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
@@ -652,6 +641,11 @@ public class ItemActivity extends ThemeableActivity {
                                 dialogLayout.setVisibility(View.VISIBLE);
                             }
                         });
+                    }
+
+                    @Override
+                    public void failed() {
+                        Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

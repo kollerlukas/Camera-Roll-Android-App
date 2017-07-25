@@ -154,9 +154,8 @@ public class SetWallpaperActivity extends AppCompatActivity {
     }
 
     private void setWallpaper() {
-        WallpaperManager wallpaperManager
-                = WallpaperManager.getInstance(getApplicationContext());
         try {
+            WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
             InputStream inputStream = getContentResolver().openInputStream(imageUri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Rect croppedRect = getCroppedRect();
@@ -169,7 +168,7 @@ public class SetWallpaperActivity extends AppCompatActivity {
             imageView.recycle();
 
             this.finish();
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
     }

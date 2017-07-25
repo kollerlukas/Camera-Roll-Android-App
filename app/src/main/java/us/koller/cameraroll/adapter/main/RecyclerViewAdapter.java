@@ -76,37 +76,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         Resources res = parent.getContext().getResources();
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_parallax, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_parallax, parent, false);
             viewHolder = new ParallaxAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_EXCLUDED_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_default_excluded, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_default_excluded, parent, false);
             viewHolder = new ExcludedAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_card, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_card, parent, false);
             viewHolder = new CardAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_EXCLUDED_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_card_excluded, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_card_excluded, parent, false);
             viewHolder = new CardAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_card_2, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_card_2, parent, false);
             viewHolder = new CardAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_2_EXCLUDED_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_card_2_excluded, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_card_2_excluded, parent, false);
             viewHolder = new CardAlbumHolder(v);
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_nested_recyclerview, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_nested_recyclerview, parent, false);
             viewHolder = new NestedRecyclerViewAlbumHolder(v).setSelectorModeManager(selectorManager);
         } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_EXCLUDED_VALUE)) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.album_cover_default_excluded, parent, false);
+            View v = inflater.inflate(R.layout.album_cover_default_excluded, parent, false);
             viewHolder = new ExcludedAlbumHolder(v);
         }
 
