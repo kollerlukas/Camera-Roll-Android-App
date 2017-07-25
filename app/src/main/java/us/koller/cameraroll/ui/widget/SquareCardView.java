@@ -5,6 +5,7 @@ import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 
 public class SquareCardView extends CardView {
+
     public SquareCardView(Context context) {
         super(context);
     }

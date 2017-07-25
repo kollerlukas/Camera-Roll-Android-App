@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:contentDescription="@string/image"
+            android:foreground="@drawable/ripple"
             android:scaleType="centerCrop" />
 
         <LinearLayout

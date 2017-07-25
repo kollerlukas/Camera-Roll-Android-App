@@ -10,7 +10,6 @@
         android:layout_height="200dp"
         android:layout_gravity="center"
         android:contentDescription="@string/image"
-        android:foreground="@drawable/ripple"
         android:scaleType="centerCrop" />
 
     <LinearLayout

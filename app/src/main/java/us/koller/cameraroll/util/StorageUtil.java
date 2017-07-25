@@ -80,6 +80,7 @@ public class StorageUtil {
     }
 
     private static Uri createContentUriFromFileProvider(Context context, String path) {
+        Log.d("StorageUtil", "createContentUriFromFileProvider: " + BuildConfig.APPLICATION_ID);
         return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", new File(path));
     }
 
