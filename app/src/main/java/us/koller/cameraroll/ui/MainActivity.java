@@ -44,6 +44,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.ui.widget.FastScrollerRecyclerView;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
@@ -175,10 +176,9 @@ public class MainActivity extends ThemeableActivity {
 
         int spacing = settings.getStyleGridSpacing(this, pick_photos);
         recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
-        recyclerView.setPadding(recyclerView.getPaddingStart() + spacing / 2,
-                recyclerView.getPaddingTop() + spacing / 2,
-                recyclerView.getPaddingEnd() + spacing / 2,
-                recyclerView.getPaddingBottom() + spacing / 2);
+        if (recyclerView instanceof FastScrollerRecyclerView) {
+            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing / 2);
+        }
 
         //disable default change animation
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
@@ -270,9 +270,9 @@ public class MainActivity extends ThemeableActivity {
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
 
-                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             toolbar.getPaddingBottom());
 
                     ViewGroup.MarginLayoutParams toolbarParams

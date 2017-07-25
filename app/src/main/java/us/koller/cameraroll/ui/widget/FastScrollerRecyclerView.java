@@ -18,6 +18,9 @@ public class FastScrollerRecyclerView extends RecyclerView {
     private RecyclerFastScroller fastScroller;
     private boolean fastScrolling = false;
 
+    //to achieve equalSpacing between cards
+    private int outerGridSpacing = 0;
+
     public FastScrollerRecyclerView(Context context) {
         super(context);
     }
@@ -51,10 +54,10 @@ public class FastScrollerRecyclerView extends RecyclerView {
         //handle fastScroller padding
         if (fastScroller != null) {
             MarginLayoutParams params = (MarginLayoutParams) fastScroller.getLayoutParams();
-            params.leftMargin = getPaddingLeft();
-            params.topMargin = getPaddingTop();
-            params.rightMargin = getPaddingRight();
-            params.bottomMargin = getPaddingBottom();
+            params.leftMargin = getPaddingLeft() - getOuterGridSpacing();
+            params.topMargin = getPaddingTop() - getOuterGridSpacing();
+            params.rightMargin = getPaddingRight() - getOuterGridSpacing();
+            params.bottomMargin = getPaddingBottom() - getOuterGridSpacing();
             fastScroller.setLayoutParams(params);
 
             //pass padding top to Handle as translationY
@@ -83,6 +86,19 @@ public class FastScrollerRecyclerView extends RecyclerView {
 
             fastScroller.requestLayout();
         }
+    }
+
+    public void addOuterGridSpacing(int outerGridSpacing) {
+        this.outerGridSpacing += outerGridSpacing;
+
+        setPadding(getPaddingStart() + outerGridSpacing,
+                getPaddingTop() + outerGridSpacing,
+                getPaddingEnd() + outerGridSpacing,
+                getPaddingBottom() + outerGridSpacing);
+    }
+
+    public int getOuterGridSpacing() {
+        return outerGridSpacing;
     }
 
     /*So that fastScroller doesn't trigger SwipeBack*/

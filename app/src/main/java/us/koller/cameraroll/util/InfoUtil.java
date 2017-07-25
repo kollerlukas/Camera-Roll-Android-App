@@ -76,7 +76,7 @@ public class InfoUtil {
                 uri, null, null,
                 null, null);
         long size = 0;
-        if (cursor != null) {
+        if (cursor != null && !cursor.isAfterLast()) {
             int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
             cursor.moveToFirst();
             size = cursor.getLong(sizeIndex);
