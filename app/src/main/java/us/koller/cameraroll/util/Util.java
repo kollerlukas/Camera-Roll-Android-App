@@ -45,7 +45,10 @@ public class Util {
             InputStream is = context.getContentResolver().openInputStream(uri);
 
             //try exif
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && is != null) {
+            String mimeType = MediaType.getMimeType(context, uri);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                    && MediaType.doesSupportExifMimeType(mimeType)
+                    && is != null) {
                 ExifInterface exif = new ExifInterface(is);
                 if (exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH) != null
                         && exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH) != null) {
