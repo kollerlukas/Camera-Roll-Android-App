@@ -32,7 +32,7 @@ import us.koller.cameraroll.util.SortUtil;
 public class StorageRetriever extends Retriever {
 
     //option to set thread count;
-    private static final int THREAD_COUNT = 8;
+    private static final int THREAD_COUNT = 16;
 
     private ArrayList<AbstractThread> threads;
 
@@ -206,32 +206,30 @@ public class StorageRetriever extends Retriever {
     }
 
     private static File[] getDirectoriesToSearch(Context context) {
-        //external Directory
-        File dir = Environment.getExternalStorageDirectory();
-        File[] dirs = dir.listFiles(new FileFilter() {
+        FileFilter filter = new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return file != null
-                        && Provider.searchDir(file.getPath());
+                return file != null && Provider.searchDir(file.getPath());
             }
-        });
+        };
+
+        //external Directory
+        File dir = Environment.getExternalStorageDirectory();
+        File[] dirs = dir.listFiles(filter);
 
         //handle removable storage (e.g. SDCards)
         ArrayList<File> temp = new ArrayList<>();
         temp.addAll(Arrays.asList(dirs));
         File[] removableStorageRoots = getRemovableStorageRoots(context);
         for (int i = 0; i < removableStorageRoots.length; i++) {
-            Log.d("StorageRetriever", "removableStorageRoot: "
-                    + removableStorageRoots[i].getPath());
             File root = removableStorageRoots[i];
-            File[] files = root.listFiles();
+            File[] files = root.listFiles(filter);
             if (files != null) {
                 Collections.addAll(temp, files);
             }
         }
 
         dirs = new File[temp.size()];
-
         for (int i = 0; i < dirs.length; i++) {
             dirs[i] = temp.get(i);
         }
@@ -259,12 +257,17 @@ public class StorageRetriever extends Retriever {
 
         final File[][] threadDirs = divideDirs(dirs);
 
+        /*DateTakenRetriever dateRetriever = new DateTakenRetriever();*/
+
         for (int i = 0; i < THREAD_COUNT; i++) {
             final File[] files = threadDirs[i];
-            Thread thread = new Thread(context, files, new AlbumLoader())
-                    .setCallback(threadCallback);
-            threads.add(thread);
-            thread.start();
+            if (files.length > 0) {
+                ItemLoader itemLoader = new AlbumLoader()/*.setDateRetriever(dateRetriever)*/;
+                Thread thread = new Thread(context, files, itemLoader)
+                        .setCallback(threadCallback);
+                threads.add(thread);
+                thread.start();
+            }
         }
     }
 

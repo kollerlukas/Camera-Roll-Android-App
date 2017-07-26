@@ -2,6 +2,8 @@ package us.koller.cameraroll.data.provider.itemLoader;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,8 +25,10 @@ public class AlbumLoader extends ItemLoader {
         albums = new ArrayList<>();
     }
 
-    public void setDateRetriever(DateTakenRetriever dateRetriever) {
+    @SuppressWarnings("unused")
+    public AlbumLoader setDateRetriever(DateTakenRetriever dateRetriever) {
         this.dateRetriever = dateRetriever;
+        return this;
     }
 
     @Override
@@ -36,9 +40,8 @@ public class AlbumLoader extends ItemLoader {
             dateRetriever.setCallback(new DateTakenRetriever.Callback() {
                 @Override
                 public void done() {
-                    Intent intent = new Intent(context, MainActivity.class);
-                    intent.setAction(MainActivity.RESORT);
-                    context.startActivity(intent);
+                    Intent intent = new Intent(MainActivity.RESORT);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 }
             });
         }
@@ -51,6 +54,8 @@ public class AlbumLoader extends ItemLoader {
             if (dateRetriever != null) {
                 dateRetriever.retrieveDate(context, albumItem);
             }
+            //preload uri
+            //albumItem.preloadUri(context);
             currentAlbum.getAlbumItems().add(albumItem);
         }
     }

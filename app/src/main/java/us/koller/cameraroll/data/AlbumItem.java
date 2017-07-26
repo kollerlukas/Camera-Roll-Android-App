@@ -2,6 +2,7 @@ package us.koller.cameraroll.data;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -131,13 +132,23 @@ public abstract class AlbumItem
         return false;
     }
 
-    void setUri(Uri uri) {
+    @SuppressWarnings("unused")
+    public void preloadUri(final Context context) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                getUri(context);
+            }
+        });
+    }
+
+    public void setUri(Uri uri) {
         this.uri = uri;
     }
 
     public Uri getUri(Context context) {
         if (uri == null) {
-            uri = StorageUtil.getContentUri(context, this);
+            setUri(StorageUtil.getContentUri(context, this));
         }
         return uri;
     }

@@ -219,7 +219,21 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                         Address address = InfoUtil.retrieveAddress(context, lat, lng);
                         if (address != null) {
                             featureName = address.getFeatureName();
-                            valueText = address.getLocality() + ", " + address.getAdminArea();
+                            valueText = null;
+                            if (address.getLocality() != null) {
+                                valueText = address.getLocality();
+                            }
+                            if (address.getAdminArea() != null) {
+                                if (valueText != null) {
+                                    valueText += ", " + address.getAdminArea();
+                                } else {
+                                    valueText = address.getAdminArea();
+                                }
+                            }
+                            if (valueText == null) {
+                                valueText = locationString;
+                            }
+
                         }
                     } catch (NumberFormatException ignored) {
                     }

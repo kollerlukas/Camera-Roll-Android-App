@@ -436,21 +436,22 @@ public class FileExplorerActivity extends ThemeableActivity
 
                 int id = menu.getItem(i).getItemId();
                 if (id == R.id.exclude) {
+                    MenuItem item = menu.getItem(i);
                     if (currentDir != null) {
-                        menu.getItem(i).setVisible(!isCurrentFileARoot());
+                        item.setVisible(!currentDir.getPath().equals(STORAGE_ROOTS));
                         if (Provider.isPathPermanentlyExcluded(currentDir.getPath())) {
-                            menu.getItem(i).setChecked(true);
-                            menu.getItem(i).setEnabled(false);
+                            item.setChecked(true);
+                            item.setEnabled(false);
                         } else {
-                            menu.getItem(i).setChecked(!isCurrentFileARoot() && currentDir.excluded);
-                            menu.getItem(i).setEnabled(!isCurrentFileARoot()
+                            item.setChecked(currentDir.excluded);
+                            item.setEnabled(!currentDir.getPath().equals(STORAGE_ROOTS)
                                     && !Provider.isDirExcludedBecauseParentDirIsExcluded(
                                     currentDir.getPath(), Provider.getExcludedPaths()));
                         }
                     } else {
-                        menu.getItem(i).setVisible(true);
-                        menu.getItem(i).setChecked(false);
-                        menu.getItem(i).setEnabled(false);
+                        item.setVisible(true);
+                        item.setChecked(false);
+                        item.setEnabled(false);
                     }
                 }
             }
@@ -851,8 +852,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     });
         }
 
-        if (recyclerViewAdapter.getMode()
-                == RecyclerViewAdapter.NORMAL_MODE) {
+        if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
             manageMenuItems();
         }
     }

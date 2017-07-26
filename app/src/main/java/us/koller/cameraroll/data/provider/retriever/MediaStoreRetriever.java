@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -24,7 +25,8 @@ public class MediaStoreRetriever extends Retriever {
     private static final String[] projection = new String[]{
             MediaStore.Files.FileColumns.DATA,
             MediaStore.Files.FileColumns.PARENT,
-            MediaStore.Images.ImageColumns.DATE_TAKEN};
+            MediaStore.Images.ImageColumns.DATE_TAKEN,
+            MediaStore.Video.VideoColumns.DATE_TAKEN};
 
     @Override
     void loadAlbums(final Activity context, boolean hiddenFolders) {
@@ -69,14 +71,19 @@ public class MediaStoreRetriever extends Retriever {
                     String path;
                     long dateTaken;
                     int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-                    int dateTakenColumn = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
 
                     do {
                         path = cursor.getString(pathColumn);
-                        dateTaken = cursor.getLong(dateTakenColumn);
+
 
                         AlbumItem albumItem = AlbumItem.getInstance(path);
                         if (albumItem != null) {
+                            //set dateTaken
+                            int dateTakenColumn = cursor.getColumnIndex(
+                                    !(albumItem instanceof Video) ?
+                                            MediaStore.Images.ImageColumns.DATE_TAKEN :
+                                            MediaStore.Video.VideoColumns.DATE_TAKEN);
+                            dateTaken = cursor.getLong(dateTakenColumn);
                             albumItem.setDate(dateTaken);
 
                             //search bucket

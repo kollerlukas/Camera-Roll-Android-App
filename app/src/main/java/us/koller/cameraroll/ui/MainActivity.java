@@ -742,6 +742,9 @@ public class MainActivity extends ThemeableActivity {
                     case FileOperation.FAILED:
                         refreshPhotos();
                         break;
+                    case RESORT:
+                        resortAlbums();
+                        break;
                     default:
                         break;
                 }
@@ -751,6 +754,8 @@ public class MainActivity extends ThemeableActivity {
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
+        IntentFilter filter = FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
+        filter.addAction(RESORT);
+        return filter;
     }
 }
