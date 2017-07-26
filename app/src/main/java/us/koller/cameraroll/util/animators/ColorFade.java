@@ -38,7 +38,11 @@ public class ColorFade {
     }
 
     private static ValueAnimator getDefaultValueAnimator() {
-        ValueAnimator animator = ValueAnimator.ofInt(0, 100);
+        return getDefaultValueAnimator(0, 100);
+    }
+
+    private static ValueAnimator getDefaultValueAnimator(int startValue, int encValue) {
+        ValueAnimator animator = ValueAnimator.ofInt(startValue, encValue);
         animator.setDuration(500);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         return animator;
@@ -189,10 +193,8 @@ public class ColorFade {
         toolbarTitleAnimSet.start();
     }
 
-    public static void fadeIconColor(final Drawable d, final int startColor,
-                                     final int endColor) {
+    public static void fadeDrawableColor(final Drawable d, final int startColor, final int endColor) {
         DrawableCompat.wrap(d);
-
         ValueAnimator animator = getDefaultValueAnimator();
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -213,5 +215,16 @@ public class ColorFade {
             }
         });
         set.start();
+    }
+
+    public static void fadeDrawableAlpha(final Drawable d, int endAlpha) {
+        ValueAnimator animator = getDefaultValueAnimator(d.getAlpha(), endAlpha);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                d.setAlpha((Integer) valueAnimator.getAnimatedValue());
+            }
+        });
+        animator.start();
     }
 }

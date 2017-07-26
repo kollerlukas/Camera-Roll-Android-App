@@ -59,7 +59,7 @@ import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.Video;
-import us.koller.cameraroll.util.ZoomOutPageTransformer;
+import us.koller.cameraroll.util.ParallaxTransformer;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.TransitionListenerAdapter;
@@ -237,7 +237,7 @@ public class ItemActivity extends ThemeableActivity {
             }
         });
 
-        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+        viewPager.setPageTransformer(false, new ParallaxTransformer());
 
         bottomBar = findViewById(R.id.bottom_bar);
 

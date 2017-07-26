@@ -5,12 +5,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -32,6 +35,8 @@ public abstract class ThemeableActivity extends BaseActivity {
     public int textColorSecondary;
     public int accentColor;
     public int accentTextColor;
+
+    private ColorDrawable statusBarOverlay;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,18 +72,6 @@ public abstract class ThemeableActivity extends BaseActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
-
-    /*@Override
-    protected void onRestart() {
-        super.onRestart();
-
-        Settings s = Settings.getInstance(this);
-        Theme newTheme = s.getThemeInstance(this);
-        if (!theme.equals(newTheme)) {
-            readTheme(this);
-            this.recreate();
-        }
-    }*/
 
     private void readTheme(Context context) {
         Settings s = Settings.getInstance(context);
@@ -211,5 +204,21 @@ public abstract class ThemeableActivity extends BaseActivity {
                 (int) (Color.green(toolbarColor) * darken),
                 (int) (Color.blue(toolbarColor) * darken));
     }
-}
 
+    public void addStatusBarOverlay(final Toolbar toolbar) {
+        int statusBarColor = getStatusBarColor();
+        statusBarOverlay = new ColorDrawable(statusBarColor);
+        toolbar.post(new Runnable() {
+            @Override
+            public void run() {
+                statusBarOverlay.setBounds(new Rect(0, 0,
+                        toolbar.getWidth(), toolbar.getPaddingTop()));
+                toolbar.getOverlay().add(statusBarOverlay);
+            }
+        });
+    }
+
+    public ColorDrawable getStatusBarOverlay() {
+        return statusBarOverlay;
+    }
+}

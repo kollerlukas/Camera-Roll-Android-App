@@ -726,6 +726,10 @@ public class MainActivity extends ThemeableActivity {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
+
+        if (theme.statusBarOverlay()) {
+            addStatusBarOverlay(toolbar);
+        }
     }
 
     @Override

@@ -11,13 +11,10 @@
     <color name="light_bg">#FAFAFA</color>
 
     <!--black theme colors-->
-    <!--<color name="colorPrimary_black">#000000</color>
-    <color name="colorPrimaryDark_black">#000000</color>-->
     <color name="black_bg">#000000</color>
 
     <!--accent color-->
     <color name="colorAccent">#69F0AE</color>
-    <!--<color name="colorAccent_translucent">#8A69F0AE</color>-->
     <color name="colorAccent_text">#8A212121</color>
 
     <color name="white">#FFFFFF</color>

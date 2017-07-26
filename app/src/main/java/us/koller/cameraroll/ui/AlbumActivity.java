@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -749,27 +751,25 @@ public class AlbumActivity extends ThemeableActivity
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
+        ColorDrawable statusBarOverlay = getStatusBarOverlay();
+        if (statusBarOverlay != null) {
+            ColorFade.fadeDrawableAlpha(statusBarOverlay, 0);
+        }
+
         handleMenuVisibilityForSelectorMode(true);
 
         if (!pick_photos) {
-            toolbar.post(new Runnable() {
-                @Override
-                public void run() {
-                    toolbar.getOverlay().clear();
-                }
-            });
-
             ColorFade.fadeBackgroundColor(toolbar, toolbarColor, accentColor);
 
             ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor, null);
 
             //fade overflow menu icon
-            ColorFade.fadeIconColor(toolbar.getOverflowIcon(), textColorSecondary, accentTextColor);
+            ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), textColorSecondary, accentTextColor);
 
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon instanceof Animatable) {
                 ((Animatable) navIcon).start();
-                ColorFade.fadeIconColor(navIcon, textColorSecondary, accentTextColor);
+                ColorFade.fadeDrawableColor(navIcon, textColorSecondary, accentTextColor);
             }
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -814,6 +814,12 @@ public class AlbumActivity extends ThemeableActivity
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
+        ColorDrawable statusBarOverlay = getStatusBarOverlay();
+        if (statusBarOverlay != null) {
+            int alpha = Color.alpha(getStatusBarColor());
+            ColorFade.fadeDrawableAlpha(statusBarOverlay, alpha);
+        }
+
         ColorFade.fadeBackgroundColor(toolbar, accentColor, toolbarColor);
 
         ColorFade.fadeToolbarTitleColor(toolbar, textColorPrimary,
@@ -825,12 +831,12 @@ public class AlbumActivity extends ThemeableActivity
                 });
 
         //fade overflow menu icon
-        ColorFade.fadeIconColor(toolbar.getOverflowIcon(), accentTextColor, textColorSecondary);
+        ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), accentTextColor, textColorSecondary);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
-            ColorFade.fadeIconColor(navIcon, accentTextColor, textColorSecondary);
+            ColorFade.fadeDrawableColor(navIcon, accentTextColor, textColorSecondary);
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -1047,6 +1053,10 @@ public class AlbumActivity extends ThemeableActivity
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         } else {
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
+        }
+
+        if (theme.statusBarOverlay()) {
+            addStatusBarOverlay(toolbar);
         }
     }
 

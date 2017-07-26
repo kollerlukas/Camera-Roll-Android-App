@@ -5,8 +5,8 @@ import android.support.v4.content.ContextCompat;
 
 public abstract class Theme {
 
-    public static final int BASE_DARK = 0;
-    public static final int BASE_LIGHT = 1;
+    static final int BASE_DARK = 0;
+    static final int BASE_LIGHT = 1;
 
     public abstract int getBaseTheme();
 
@@ -20,6 +20,8 @@ public abstract class Theme {
     public abstract boolean elevatedToolbar();
 
     public abstract boolean darkStatusBarIconsInSelectorMode();
+
+    public abstract boolean statusBarOverlay();
 
     /*colors*/
     public abstract int getBackgroundColorRes();

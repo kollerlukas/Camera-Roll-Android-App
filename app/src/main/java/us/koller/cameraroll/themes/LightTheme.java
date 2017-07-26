@@ -25,6 +25,11 @@ public class LightTheme extends Theme {
     }
 
     @Override
+    public boolean statusBarOverlay() {
+        return true;
+    }
+
+    @Override
     public int getBackgroundColorRes() {
         return R.color.light_bg;
     }
@@ -36,7 +41,7 @@ public class LightTheme extends Theme {
 
     @Override
     public int getTextColorPrimaryRes() {
-        return R.color.grey_900_translucent;
+        return R.color.black_translucent3;
     }
 
     @Override

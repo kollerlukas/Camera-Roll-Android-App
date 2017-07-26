@@ -8,8 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -672,18 +674,23 @@ public class FileExplorerActivity extends ThemeableActivity
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
+        ColorDrawable statusBarOverlay = getStatusBarOverlay();
+        if (statusBarOverlay != null) {
+            ColorFade.fadeDrawableAlpha(statusBarOverlay, 0);
+        }
+
         ColorFade.fadeBackgroundColor(toolbar, toolbarColor, accentColor);
 
         ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor, null);
 
         //fade overflow menu icon
-        ColorFade.fadeIconColor(toolbar.getOverflowIcon(),
+        ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(),
                 textColorSecondary, accentTextColor);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
-            ColorFade.fadeIconColor(navIcon,
+            ColorFade.fadeDrawableColor(navIcon,
                     textColorSecondary, accentTextColor);
         }
         new Handler().postDelayed(new Runnable() {
@@ -859,6 +866,12 @@ public class FileExplorerActivity extends ThemeableActivity
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
+        ColorDrawable statusBarOverlay = getStatusBarOverlay();
+        if (statusBarOverlay != null) {
+            int alpha = Color.alpha(getStatusBarColor());
+            ColorFade.fadeDrawableAlpha(statusBarOverlay, alpha);
+        }
+
         toolbar.setActivated(theme.elevatedToolbar());
 
         ColorFade.fadeBackgroundColor(toolbar, accentColor, toolbarColor);
@@ -871,12 +884,12 @@ public class FileExplorerActivity extends ThemeableActivity
                 });
 
         //fade overflow menu icon
-        ColorFade.fadeIconColor(toolbar.getOverflowIcon(), accentTextColor, textColorPrimary);
+        ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), accentTextColor, textColorPrimary);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
             ((Animatable) navIcon).start();
-            ColorFade.fadeIconColor(navIcon, accentTextColor, textColorSecondary);
+            ColorFade.fadeDrawableColor(navIcon, accentTextColor, textColorSecondary);
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -931,6 +944,10 @@ public class FileExplorerActivity extends ThemeableActivity
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setActivated(theme.elevatedToolbar());
+
+        if (theme.statusBarOverlay()) {
+            addStatusBarOverlay(toolbar);
+        }
     }
 
     @Override

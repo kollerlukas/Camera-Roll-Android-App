@@ -25,6 +25,11 @@ public class DarkTheme extends Theme {
     }
 
     @Override
+    public boolean statusBarOverlay() {
+        return false;
+    }
+
+    @Override
     public int getBackgroundColorRes() {
         return R.color.dark_bg;
     }
