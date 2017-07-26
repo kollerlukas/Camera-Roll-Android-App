@@ -59,7 +59,7 @@ public class AboutActivity extends ThemeableActivity
         ImageView headerImage = findViewById(R.id.header_image);
 
         RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder_tinted);
+                .error(R.drawable.error_placeholder);
 
         Glide.with(this)
                 .load("https://raw.githubusercontent.com/kollerlukas/Camera-Roll-Android-App/master/camera_roll_logo.png")

@@ -31,7 +31,7 @@ public class GifViewHolder extends AlbumItemHolder {
         //super.loadImage(imageView, albumItem);
 
         RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder_tinted)
+                .error(R.drawable.error_placeholder)
                 .signature(albumItem.getGlideSignature());
 
         Glide.with(imageView.getContext())

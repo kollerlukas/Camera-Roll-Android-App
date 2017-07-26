@@ -81,7 +81,7 @@ public class ItemViewUtil {
         }
 
         RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder_tinted)
+                .error(R.drawable.error_placeholder)
                 .signature(albumItem.getGlideSignature());
 
         Context context = imageView.getContext();
@@ -123,7 +123,7 @@ public class ItemViewUtil {
                                final AlbumItem albumItem) {
 
         RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder_tinted)
+                .error(R.drawable.error_placeholder)
                 .signature(albumItem.getGlideSignature());
 
         Context context = imageView.getContext();

@@ -16,7 +16,7 @@ public class ParallaxTransformer implements ViewPager.PageTransformer {
         }
 
         int translationX = 0;
-        if (position > -1 && position < 1) {
+        if (position >= -1 && position <= 1) {
             int direction = position > 0 ? -1 : 1;
             position = Math.abs(position * PARALLAX_OFFSET);
             translationX = (int) (page.getWidth() * direction * position);

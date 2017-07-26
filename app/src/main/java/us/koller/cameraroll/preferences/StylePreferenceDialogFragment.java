@@ -127,9 +127,7 @@ public class StylePreferenceDialogFragment
             textView.setText(nameRess[position]);
 
             ImageView imageView = view.findViewById(R.id.image);
-            Glide.with(imageView.getContext())
-                    .load(imageRess[position])
-                    .into(imageView);
+            imageView.setImageResource(imageRess[position]);
             imageView.setColorFilter(ContextCompat.getColor(container.getContext(), R.color.colorAccent));
 
             container.addView(view);

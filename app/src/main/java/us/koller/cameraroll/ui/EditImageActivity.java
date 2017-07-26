@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -315,6 +316,7 @@ public class EditImageActivity extends AppCompatActivity {
     @SuppressWarnings("unused")
     private void animate90DegreeRotation() {
         final CropImageView cropImageView = findViewById(R.id.cropImageView);
+        final Rect cropRect = cropImageView.getCropRect();
         final int oldDegree = cropImageView.getRotatedDegrees();
         int newDegree = oldDegree + 90;
         if (newDegree > 360) {

@@ -73,7 +73,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
 
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
         RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder_tinted)
+                .error(R.drawable.error_placeholder)
                 .signature(albumItem.getGlideSignature());
 
         Glide.with(imageView.getContext())

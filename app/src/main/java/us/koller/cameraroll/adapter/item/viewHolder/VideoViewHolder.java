@@ -39,7 +39,7 @@ public class VideoViewHolder extends ViewHolder {
 
         final Drawable playOverlay
                 = ContextCompat.getDrawable(itemView.getContext(),
-                R.drawable.ic_play_circle_filled_white_24dp);
+                R.drawable.play_indicator);
 
         view.post(new Runnable() {
             @Override

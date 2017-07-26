@@ -367,7 +367,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                 AlbumItem albumItem = album.getAlbumItems().get(0);
 
                 RequestOptions options = new RequestOptions()
-                        .error(R.drawable.error_placeholder_tinted)
+                        .error(R.drawable.error_placeholder)
                         .signature(albumItem.getGlideSignature());
 
                 Glide.with(holder.itemView.getContext())

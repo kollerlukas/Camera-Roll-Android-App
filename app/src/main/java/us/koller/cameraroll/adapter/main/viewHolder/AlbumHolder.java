@@ -87,7 +87,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
     void loadImage(final ImageView image) {
         if (album.getAlbumItems().size() == 0) {
             Glide.with(getContext())
-                    .load(R.drawable.error_placeholder_tinted)
+                    .load(R.drawable.error_placeholder)
                     .into(image);
             return;
         }
@@ -95,7 +95,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         final AlbumItem coverImage = album.getAlbumItems().get(0);
 
         RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder_tinted)
+                .error(R.drawable.error_placeholder)
                 .signature(coverImage.getGlideSignature());
 
         Glide.with(getContext())
