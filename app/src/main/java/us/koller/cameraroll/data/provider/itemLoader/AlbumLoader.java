@@ -3,7 +3,6 @@ package us.koller.cameraroll.data.provider.itemLoader;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;

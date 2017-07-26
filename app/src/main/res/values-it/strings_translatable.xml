@@ -1,0 +1,118 @@
+<resources>
+    <!--translatable-->
+    <string name="read_permission_denied">Camera Roll ha bisogno del permesso di accedere alla Memoria del dispositivo per mostrare le tue immagini.</string>
+
+    <string name="refresh">Ricarica</string>
+    <string name="sort_by">Ordina per…</string>
+    <string name="hidden_folders">Cartelle Nascoste</string>
+    <string name="file_explorer">Esploratore di File</string>
+    <string name="about">Info</string>
+    <string name="settings">Impostazioni</string>
+
+    <string name="set_as">Imposta come…</string>
+    <string name="info">Info</string>
+    <string name="share">Condividi</string>
+    <string name="share_photo">Condividi Immagine</string>
+    <string name="edit">Modifica</string>
+    <string name="print">Stampa</string>
+
+    <string name="delete">Elimina</string>
+    <string name="photo_deleted">Immagine eliminata</string>
+    <string name="photos_deleted">Immagini eliminate</string>
+    <string name="successfully_deleted">"eliminata con successo "</string>
+
+    <string name="move">Sposta</string>
+    <string name="copy">Copia</string>
+    <string name="create">Crea</string>
+    <string name="new_folder">Nuova Cartella</string>
+    <string name="rename">Rinomina</string>
+    <string name="paste">Incolla</string>
+    <string name="to">" a"</string>
+    <string name="successfully_moved">"spostata con successo "</string>
+    <string name="successfully_copied">"copiata con successo "</string>
+    <string name="successfully_created_new_folder">Nuova cartella creata con successo!</string>
+    <string name="successfully_renamed_file">File rinominato con successo!</string>
+
+    <string name="pick_photo">Seleziona l\'immagine</string>
+    <string name="pick_photos">Seleziona le immagini</string>
+
+    <string name="item">" Strumento"</string>
+    <string name="items">" Strumenti"</string>
+    <string name="files">File</string>
+    <string name="file">File</string>
+
+    <string name="loading">Caricamento…</string>
+    <string name="loading_failed">Caricamento fallito</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Annulla</string>
+    <string name="no">No</string>
+
+    <string name="undo">Annulla</string>
+    <string name="done">Fatto</string>
+    <string name="retry">Riprova</string>
+
+    <string name="error">Errore</string>
+
+    <string name="photo">Immagine</string>
+
+    <string name="no_files">NESSUN FILE</string>
+    <string name="storage">Memoria</string>
+
+    <string name="exclude">Escludi</string>
+    <string name="excluded">Escluso</string>
+
+    <string name="appearance">Aspetto</string>
+    <string name="theme">Tema</string>
+    <string name="style">Stile</string>
+    <string name="column_count">Numero di colonne</string>
+    <string name="other">Altro</string>
+
+    <string name="media_retriever">MediaRetriever</string>
+    <string name="media_retriever_summary">Cerca manualmente nella Memoria invece di affidarti all\'Ape del MediaStore. Cio' potrebbe aiutare nel caso manchino delle immagini.</string>
+
+    <string name="use_8_bit_color">Colori a 8-Bit</string>
+    <string name="use_8_bit_color_summary">Usa i colori a 8-Bit quando mostra le immagini. Queste potrebbero prendere piu\' tempo a caricare. Cio' aumentera' anche l'ammontare di memoria usata mentre l'app e' in esecuzione.</string>
+
+    <string name="camera_shortcut">Scorciatoia per la Camera</string>
+
+    <string name="edit_space">"Modifica "</string>
+    <string name="copied_to_clipboard">Copiato negli Appunti</string>
+    <string name="exif_editor">Editore Exif</string>
+    <string name="edit_exif">Modifica Exif</string>
+    <string name="save">Salva</string>
+    <string name="changes_saved">Modifiche salvate</string>
+
+    <!--ImageView ContentDescription-->
+    <string name="image">Immagine</string>
+
+    <string name="play_pause"><![CDATA[Play & Pausa]]></string>
+    <string name="minus">Minus</string>
+    <string name="plus">Plus</string>
+    <string name="by_name">Nome</string>
+    <string name="by_size">Dimensione</string>
+    <string name="by_date">Data</string><!--Last Modified-->
+    <string name="pin_album">Pin Album</string>
+    <string name="grant_removable_storage_permission">Concedi il permesso alla Memoria Rimovibile</string>
+    <string name="grant_removable_storage_permission_message">Seleziona la cartella Root della Memoria Rimovibile del tuo dispositivo (e.s. SD Card) nella prossima schermata.</string>
+    <string name="open_with">Apri con…</string>
+    <string name="rotate">Ruota</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="set_wallpaper">Imposta Wallpaper</string>
+
+    <!--info Dialog Strings-->
+    <string name="info_filename">Nome del file: </string>
+    <string name="info_filepath">Percorso del file: </string>
+    <string name="info_size">Size: </string>
+    <string name="info_dimensions">Dimensioni: </string>
+    <string name="info_date">Data: </string>
+    <string name="info_location">Luogo: </string>
+    <string name="info_focal_length">Lunghezza focale: </string>
+    <string name="info_exposure">Esposizione: </string>
+    <string name="info_camera_model">Modello Camera: </string>
+    <string name="info_aperture">Apertura: </string>
+    <string name="info_iso">ISO: </string>
+    <string name="info_frame_rate">Frame rate: </string>
+
+    <string name="success">Successo!</string>
+</resources>
