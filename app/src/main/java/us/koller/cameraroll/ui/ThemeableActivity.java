@@ -197,7 +197,7 @@ public abstract class ThemeableActivity extends BaseActivity {
     }
 
     public int getStatusBarColor() {
-        float darken = 0.9f;
+        float darken = 0.96f;
         return Color.argb(
                 (int) (Color.alpha(toolbarColor) * darken),
                 (int) (Color.red(toolbarColor) * darken),

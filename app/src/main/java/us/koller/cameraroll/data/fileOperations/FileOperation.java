@@ -329,7 +329,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             return EMPTY;
         }
 
-        static boolean isOnRemovableStorage(String path) {
+        public static boolean isOnRemovableStorage(String path) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 File file = new File(path);
                 try {
@@ -358,11 +358,11 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             return paths;
         }
 
-        interface MediaScannerCallback {
+        public interface MediaScannerCallback {
             void onAllPathsScanned();
         }
 
-        static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback) {
+        public static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback) {
             MediaScannerConnection.scanFile(context.getApplicationContext(),
                     paths,
                     null,

@@ -4,15 +4,19 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,13 +32,22 @@ import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.util.ExifUtil;
+import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.Util;
 
 public class EditImageActivity extends AppCompatActivity {
 
     public static final String IMAGE_PATH = "IMAGE_PATH";
+
+    private static final int JPEG_QUALITY = 90;
 
     private String imagePath;
     private boolean animating90DegreeRotation = false;
@@ -188,15 +201,81 @@ public class EditImageActivity extends AppCompatActivity {
         cropImageView.setOnCropImageCompleteListener(new CropImageView.OnCropImageCompleteListener() {
             @Override
             public void onCropImageComplete(CropImageView view, CropImageView.CropResult result) {
-                if (exifData != null) {
-                    ExifUtil.saveExifData(imagePath, exifData);
-                }
-
-                Toast.makeText(EditImageActivity.this, "Success!", Toast.LENGTH_SHORT).show();
-                finish();
+                saveCroppedImage(result.getOriginalUri(), result.getBitmap(), exifData);
             }
         });
-        cropImageView.saveCroppedImageAsync(cropImageView.getImageUri());
+        cropImageView.getCroppedImageAsync();
+    }
+
+    private void saveCroppedImage(final Uri uri, final Bitmap bitmap, final ExifUtil.ExifItem[] exifData) {
+        if (uri == null || bitmap == null) {
+            Toast.makeText(EditImageActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String newPath = null;
+                    OutputStream outputStream;
+                    if (imagePath != null) {
+                        boolean removableStorage = FileOperation.Util.isOnRemovableStorage(imagePath);
+                        //replace fileExtension with .jpg
+                        int index = imagePath.lastIndexOf(".");
+                        newPath = imagePath.substring(0, index) + ".jpg";
+                        if (!removableStorage) {
+                            outputStream = new FileOutputStream(newPath);
+                        } else {
+                            Settings s = Settings.getInstance(getApplicationContext());
+                            Uri treeUri = s.getRemovableStorageTreeUri();
+                            DocumentFile file = StorageUtil.createDocumentFile(EditImageActivity.this,
+                                    treeUri, imagePath, "image/jpeg");
+                            if (file != null) {
+                                outputStream = getContentResolver().openOutputStream(file.getUri());
+                            } else {
+                                outputStream = null;
+                            }
+                        }
+                    } else {
+                        outputStream = getContentResolver().openOutputStream(uri);
+                    }
+
+                    if (outputStream != null) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, outputStream);
+                        outputStream.flush();
+                        outputStream.close();
+                    }
+
+                    //save Exif-Data
+                    if (exifData != null) {
+                        ExifUtil.saveExifData(newPath, exifData);
+                    }
+
+                    //scan path
+                    if (imagePath != null) {
+                        FileOperation.Util.scanPaths(EditImageActivity.this, new String[]{newPath},
+                                new FileOperation.Util.MediaScannerCallback() {
+                                    @Override
+                                    public void onAllPathsScanned() {
+                                        Intent intent = new Intent(FileOperation.RESULT_DONE);
+                                        LocalBroadcastManager.getInstance(EditImageActivity.this).sendBroadcast(intent);
+                                    }
+                                });
+                    }
+
+                    EditImageActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(EditImageActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
