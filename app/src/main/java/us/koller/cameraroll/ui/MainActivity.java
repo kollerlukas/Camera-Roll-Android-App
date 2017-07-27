@@ -350,11 +350,8 @@ public class MainActivity extends ThemeableActivity {
                     && tmpReenterState.containsKey(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION)) {
 
                 String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
-                final int sharedElementReturnPosition
-                        = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
-
+                final int sharedElementReturnPosition = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
                 int index = -1;
-
                 for (int i = 0; i < albums.size(); i++) {
                     if (albums.get(i).getPath().equals(albumPath)) {
                         index = i;
@@ -368,9 +365,7 @@ public class MainActivity extends ThemeableActivity {
 
                 //postponing transition until sharedElement is laid out
                 postponeEnterTransition();
-
                 setExitSharedElementCallback(mCallback);
-
                 final NestedRecyclerViewAlbumHolder
                         .StartSharedElementTransitionCallback callback =
                         new NestedRecyclerViewAlbumHolder
@@ -384,9 +379,7 @@ public class MainActivity extends ThemeableActivity {
                         };
 
                 final int finalIndex = index;
-
                 recyclerView.scrollToPosition(index);
-
                 //wait until ViewHolder is laid out
                 recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -432,15 +425,6 @@ public class MainActivity extends ThemeableActivity {
                 break;
             default:
                 break;
-        }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (recyclerView != null) {
-            int columnCount = Settings.getInstance(this).getStyleColumnCount(this, pick_photos);
-            ((GridLayoutManager) recyclerView.getLayoutManager()).setSpanCount(columnCount);
         }
     }
 

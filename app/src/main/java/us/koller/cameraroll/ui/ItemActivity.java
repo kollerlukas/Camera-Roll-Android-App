@@ -25,6 +25,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -330,6 +332,20 @@ public class ItemActivity extends ThemeableActivity {
             menu.findItem(R.id.delete).setVisible(false);
         }
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (theme.isBaseLight()) {
+            int black = ContextCompat.getColor(this, R.color.black);
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem item = menu.getItem(i);
+                SpannableString s = new SpannableString(item.getTitle());
+                s.setSpan(new ForegroundColorSpan(black), 0, s.length(), 0);
+                item.setTitle(s);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

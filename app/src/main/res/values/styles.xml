@@ -17,7 +17,7 @@
     <style name="Theme.CameraRoll.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary_light</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_light</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorAccent_light</item>
 
         <item name="android:windowTranslucentNavigation">@bool/show_nav_bar</item>
         <item name="android:windowTranslucentStatus">true</item>
@@ -56,26 +56,30 @@
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white_translucent1</item>
     </style>
 
     <style name="Theme.CameraRoll.Light.PhotoView" parent="Theme.CameraRoll.Light">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white_translucent1</item>
     </style>
 
     <!--VideoPlayer Theme-->
     <style name="Theme.CameraRoll.VideoPlayer" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white_translucent1</item>
     </style>
 
     <style name="Theme.CameraRoll.Light.VideoPlayer" parent="Theme.CameraRoll.Light">
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white_translucent1</item>
     </style>
 
     <!--FileExplorer Theme-->
@@ -129,7 +133,7 @@
     </style>
 
     <style name="Theme.CameraRoll.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorAccent_light</item>
     </style>
 
     <!-- Style for a DialogPreference Entry -->

@@ -27,8 +27,8 @@ public abstract class Provider {
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES).getPath()};
 
     // by default pinned folders:
-    private static final String[] defaultPinnedPaths = {
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath()};
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
+    private static final String[] defaultPinnedPaths = {}; /*Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath()*/
 
     Retriever retriever;
 
@@ -124,6 +124,7 @@ public abstract class Provider {
         } catch (IOException e) {
             // no file found
             pinnedPaths.addAll(Arrays.asList(defaultPinnedPaths));
+            pinnedPaths.remove(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath());
         }
 
         return excludedPaths;

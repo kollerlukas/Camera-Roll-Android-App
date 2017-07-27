@@ -2,11 +2,11 @@ package us.koller.cameraroll.preferences;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -17,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
-import com.bumptech.glide.Glide;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 
 import us.koller.cameraroll.R;
@@ -128,7 +126,11 @@ public class StylePreferenceDialogFragment
 
             ImageView imageView = view.findViewById(R.id.image);
             imageView.setImageResource(imageRess[position]);
-            imageView.setColorFilter(ContextCompat.getColor(container.getContext(), R.color.colorAccent));
+
+            Context context = container.getContext();
+            Settings s = Settings.getInstance(context);
+            int accentColor = s.getThemeInstance(context).getAccentColor(context);
+            imageView.setColorFilter(accentColor);
 
             container.addView(view);
             return view;

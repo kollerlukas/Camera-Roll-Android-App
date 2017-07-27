@@ -56,7 +56,11 @@ public class AboutActivity extends ThemeableActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        final View header = findViewById(R.id.header);
+        header.setBackgroundColor(theme.getAccentColor(this));
+
         ImageView headerImage = findViewById(R.id.header_image);
+        headerImage.setColorFilter(theme.getAccentTextColor(this));
 
         RequestOptions options = new RequestOptions()
                 .error(R.drawable.error_placeholder);
@@ -73,7 +77,8 @@ public class AboutActivity extends ThemeableActivity
             final int versionCode = getPackageManager()
                     .getPackageInfo(getPackageName(), 0).versionCode;
             //noinspection deprecation
-            version.setText(Html.fromHtml(/*getString(R.string.app_name) + "<br/>" +*/ versionName));
+            version.setText(Html.fromHtml(versionName));
+            version.setTextColor(theme.getAccentTextColor(this));
             version.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -93,7 +98,6 @@ public class AboutActivity extends ThemeableActivity
         final View rootView = findViewById(R.id.root_view);
 
         if (!theme.darkStatusBarIcons()) {
-            final View header = findViewById(R.id.header);
             final NestedScrollView scrollView = findViewById(R.id.scroll_view);
             scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                 @Override

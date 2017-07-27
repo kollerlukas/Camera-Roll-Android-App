@@ -20,13 +20,13 @@ public class DarkTheme extends Theme {
     }
 
     @Override
-    public boolean darkStatusBarIconsInSelectorMode() {
-        return true;
+    public boolean statusBarOverlay() {
+        return false;
     }
 
     @Override
-    public boolean statusBarOverlay() {
-        return false;
+    public boolean darkStatusBarIconsInSelectorMode() {
+        return true;
     }
 
     @Override

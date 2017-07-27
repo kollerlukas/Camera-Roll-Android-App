@@ -19,9 +19,9 @@ public abstract class Theme {
 
     public abstract boolean elevatedToolbar();
 
-    public abstract boolean darkStatusBarIconsInSelectorMode();
-
     public abstract boolean statusBarOverlay();
+
+    public abstract boolean darkStatusBarIconsInSelectorMode();
 
     /*colors*/
     public abstract int getBackgroundColorRes();

@@ -138,7 +138,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                         allowMultiple = a.getIntent()
                                 .getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
                     }
-
                     intent.setAction(MainActivity.PICK_PHOTOS);
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
                 } else {
@@ -147,7 +146,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                 ActivityOptionsCompat options;
                 Activity context = (Activity) holder.itemView.getContext();
-
                 if (!pick_photos) {
                     //noinspection unchecked
                     options = ActivityOptionsCompat.makeSceneTransitionAnimation(context);
@@ -155,8 +153,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                             MainActivity.REFRESH_PHOTOS_REQUEST_CODE, options.toBundle());
                 } else {
                     View toolbar = context.findViewById(R.id.toolbar);
-                    options = ActivityOptionsCompat.makeSceneTransitionAnimation(context,
-                            toolbar, context.getString(R.string.toolbar_transition_name));
+                    options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            context, toolbar, context.getString(R.string.toolbar_transition_name));
                     context.startActivityForResult(intent,
                             MainActivity.PICK_PHOTOS_REQUEST_CODE, options.toBundle());
                 }

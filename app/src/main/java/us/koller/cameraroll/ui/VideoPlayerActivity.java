@@ -11,8 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -48,7 +46,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 
 public class VideoPlayerActivity extends ThemeableActivity {
 
@@ -327,23 +324,6 @@ public class VideoPlayerActivity extends ThemeableActivity {
     @Override
     public int getLightThemeRes() {
         return R.style.Theme_CameraRoll_Light_VideoPlayer;
-    }
-
-    @Override
-    public void onThemeApplied(Theme theme) {
-        if (theme.isBaseLight()) {
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            int white = ContextCompat.getColor(this, R.color.white);
-
-            Drawable d = toolbar.getNavigationIcon();
-            if (d != null) {
-                DrawableCompat.wrap(d);
-                DrawableCompat.setTint(d.mutate(), white);
-                toolbar.setNavigationIcon(d);
-            }
-            toolbar.setTitleTextColor(white);
-            us.koller.cameraroll.util.Util.colorToolbarOverflowMenuIcon(toolbar, white);
-        }
     }
 
     public static class SimpleEventListener implements ExoPlayer.EventListener {
