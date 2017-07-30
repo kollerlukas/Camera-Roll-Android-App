@@ -218,7 +218,7 @@ public class SettingsActivity extends ThemeableActivity {
             Settings settings = Settings.getInstance(getContext());
 
             initThemePref(settings.getTheme());
-            initStylePref(settings.getStyle());
+            initStylePref(settings.getStyle(getContext(), false));
             initColumnCountPref(settings.getColumnCount(getContext()));
             initMediaRetrieverPref(settings.useStorageRetriever());
             init8BitColorPref(settings.use8BitColor());

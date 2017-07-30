@@ -116,7 +116,11 @@ public class Settings {
         this.storageRetriever = storageRetriever;
     }
 
-    public int getStyle() {
+    public int getStyle(Context context, boolean pickPhotos) {
+        Resources res = context.getResources();
+        if (pickPhotos && style == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
+            return res.getInteger(R.integer.STYLE_CARDS_VALUE);
+        }
         return style;
     }
 
@@ -124,28 +128,22 @@ public class Settings {
         this.style = style;
     }
 
-    public int getStyleColumnCount(Context context, boolean pick_photos) {
+    public int getStyleColumnCount(Context context, int style) {
         Resources res = context.getResources();
         boolean landscape = res.getBoolean(R.bool.landscape);
-        if (pick_photos && getStyle() == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
-            int styleColumnCount = getDefaultStyleColumnCount(context,
-                    res.getInteger(R.integer.STYLE_CARDS_VALUE));
-            return landscape ? styleColumnCount + 1 : styleColumnCount;
-        }
         if (landscape &&
-                (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
-                        getStyle() == res.getInteger(R.integer.STYLE_CARDS_2_VALUE))) {
+                (style == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
+                        style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE))) {
             return styleColumnCount + 1;
         }
         return styleColumnCount;
     }
 
-    public int getStyleGridSpacing(Context context, boolean pick_photos) {
+    public int getStyleGridSpacing(Context context, int style) {
         Resources res = context.getResources();
-        if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
-                pick_photos && getStyle() == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
+        if (style == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
-        } else if (getStyle() == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
+        } else if (style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
             return (int) res.getDimension(R.dimen.album_grid_spacing);
         }
         return 0;

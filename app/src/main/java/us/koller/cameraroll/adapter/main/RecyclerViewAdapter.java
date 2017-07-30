@@ -42,7 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         this.pick_photos = pick_photos;
         Settings settings = Settings.getInstance(context);
 
-        viewType = settings.getStyle();
+        viewType = settings.getStyle(context, pick_photos);
         // not allowing NestedRecyclerView Style, when picking photos
         Resources res = context.getResources();
         if (pick_photos && viewType == res

@@ -44,6 +44,7 @@ import us.koller.cameraroll.data.Album;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.ui.widget.FastScrollerRecyclerView;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
@@ -168,16 +169,16 @@ public class MainActivity extends ThemeableActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
-        int columnCount = settings.getStyleColumnCount(this, pick_photos);
+        int columnCount = settings.getStyleColumnCount(this, settings.getStyle(this, pick_photos));
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(layoutManager);
         recyclerViewAdapter = new RecyclerViewAdapter(this, pick_photos).setAlbums(albums);
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        int spacing = settings.getStyleGridSpacing(this, pick_photos);
-        recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
+        int spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
+        //recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
         if (recyclerView instanceof FastScrollerRecyclerView) {
-            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing / 2);
+            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing/* / 2*/);
         }
 
         //disable default change animation
@@ -343,7 +344,7 @@ public class MainActivity extends ThemeableActivity {
         if (intent.getAction() != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)
-                && Settings.getInstance(this).getStyle() == nestedRecyclerViewValue) {
+                && Settings.getInstance(this).getStyle(this, pick_photos) == nestedRecyclerViewValue) {
             //handle shared-element transition, for nested nestedRecyclerView style
             Bundle tmpReenterState = new Bundle(intent.getExtras());
             if (tmpReenterState.containsKey(AlbumActivity.ALBUM_PATH)
