@@ -112,7 +112,7 @@ public class MediaStoreRetriever extends Retriever {
                 cursor.close();
 
                 //done loading media with content resolver
-                MediaProvider.Callback callback = getCallback();
+                MediaProvider.OnMediaLoadedCallback callback = getCallback();
                 if (callback != null) {
                     callback.onMediaLoaded(albums);
                 }

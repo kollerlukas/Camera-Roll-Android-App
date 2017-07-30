@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,7 +71,8 @@ import us.koller.cameraroll.util.Util;
 
 public class ItemActivity extends ThemeableActivity {
 
-    public static int FILE_OP_DIALOG_REQUEST = 1;
+    public static final int VIEW_IMAGE = 3;
+    public static final int FILE_OP_DIALOG_REQUEST = 1;
 
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
     public static final String ALBUM = "ALBUM";
@@ -154,7 +157,7 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
 
@@ -162,47 +165,12 @@ public class ItemActivity extends ThemeableActivity {
 
         view_only = getIntent().getBooleanExtra(VIEW_ONLY, false);
 
-        if (!view_only && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (!view_only
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && savedInstanceState == null) {
             postponeEnterTransition();
             setEnterSharedElementCallback(sharedElementCallback);
             getWindow().getSharedElementEnterTransition().addListener(transitionListener);
-        }
-
-        if (!view_only) {
-            String path;
-            if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
-                path = savedInstanceState.getString(ALBUM_PATH);
-            } else {
-                path = getIntent().getStringExtra(ALBUM_PATH);
-            }
-            album = MediaProvider.loadAlbum(path);
-        } else {
-            album = getIntent().getExtras().getParcelable(ALBUM);
-        }
-
-        if (savedInstanceState != null) {
-            //album = savedInstanceState.getParcelable(ALBUM);
-            albumItem = savedInstanceState.getParcelable(ALBUM_ITEM);
-            if (albumItem != null && albumItem instanceof Photo) {
-                Photo photo = (Photo) albumItem;
-                ImageViewState imageViewState
-                        = (ImageViewState) savedInstanceState.getSerializable(IMAGE_VIEW_SAVED_STATE);
-                photo.putImageViewSavedState(imageViewState);
-            }
-            if (savedInstanceState.getBoolean(INFO_DIALOG_SHOWN, false)) {
-                showInfoDialog();
-            }
-        } else {
-            //album = getIntent().getExtras().getParcelable(AlbumActivity.ALBUM);
-            int position = getIntent().getIntExtra(ITEM_POSITION, 0);
-            if (album != null && position < album.getAlbumItems().size()) {
-                albumItem = album.getAlbumItems().get(position);
-                albumItem.isSharedElement = true;
-            }
-        }
-
-        if (album == null || albumItem == null) {
-            return;
         }
 
         toolbar = findViewById(R.id.toolbar);
@@ -210,38 +178,15 @@ public class ItemActivity extends ThemeableActivity {
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(albumItem.getName());
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(new ViewPagerAdapter(album));
-        viewPager.setCurrentItem(album.getAlbumItems().indexOf(albumItem), false);
-        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            private final int color = ContextCompat.getColor(ItemActivity.this, R.color.white);
-
-            @Override
-            public void onPageSelected(int position) {
-                //set new AlbumItem
-                albumItem = album.getAlbumItems().get(position);
-                ColorFade.fadeToolbarTitleColor(toolbar, color,
-                        new ColorFade.ToolbarTitleFadeCallback() {
-                            @Override
-                            public void setTitle(Toolbar toolbar) {
-                                toolbar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
-                            }
-                        });
-
-                ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
-                        .findViewHolderByTag(albumItem.getPath());
-
-                onShowViewHolder(viewHolder);
-            }
-        });
-
-        viewPager.setPageTransformer(false, new ParallaxTransformer());
-
         bottomBar = findViewById(R.id.bottom_bar);
+
+        if (view_only) {
+            ImageView delete = findViewById(R.id.delete_button);
+            ((View) delete.getParent()).setVisibility(View.GONE);
+        }
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
@@ -296,30 +241,110 @@ public class ItemActivity extends ThemeableActivity {
         }
 
         //needed to achieve transparent navBar
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        setSystemUiFlags();
 
-        if (view_only
-                || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-                || savedInstanceState != null) {
+        if (!view_only) {
+            String path;
+            if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
+                path = savedInstanceState.getString(ALBUM_PATH);
+            } else {
+                path = getIntent().getStringExtra(ALBUM_PATH);
+            }
+            MediaProvider.loadAlbum(this, path,
+                    new MediaProvider.OnAlbumLoadedCallback() {
+                        @Override
+                        public void onAlbumLoaded(Album album) {
+                            ItemActivity.this.album = album;
+                            ItemActivity.this.onAlbumLoaded(savedInstanceState);
+                        }
+                    });
+        } else {
+            album = getIntent().getExtras().getParcelable(ALBUM);
+            onAlbumLoaded(savedInstanceState);
+        }
+    }
+
+    private void onAlbumLoaded(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            int position = getIntent().getIntExtra(ITEM_POSITION, 0);
+            if (album != null && position < album.getAlbumItems().size()) {
+                albumItem = album.getAlbumItems().get(position);
+                albumItem.isSharedElement = true;
+            }
+        } else {
+            albumItem = savedInstanceState.getParcelable(ALBUM_ITEM);
+            if (albumItem != null && albumItem instanceof Photo) {
+                Photo photo = (Photo) albumItem;
+                ImageViewState imageViewState
+                        = (ImageViewState) savedInstanceState.getSerializable(IMAGE_VIEW_SAVED_STATE);
+                photo.putImageViewSavedState(imageViewState);
+            }
+            if (savedInstanceState.getBoolean(INFO_DIALOG_SHOWN, false)) {
+                showInfoDialog();
+            }
+        }
+
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(albumItem.getName());
+        }
+
+        viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(new ViewPagerAdapter(album));
+        viewPager.setCurrentItem(album.getAlbumItems().indexOf(albumItem), false);
+        viewPager.setPageTransformer(false, new ParallaxTransformer());
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            private final int color = ContextCompat.getColor(ItemActivity.this, R.color.white);
+
+            @Override
+            public void onPageSelected(int position) {
+                //set new AlbumItem
+                albumItem = album.getAlbumItems().get(position);
+                ColorFade.fadeToolbarTitleColor(toolbar, color,
+                        new ColorFade.ToolbarTitleFadeCallback() {
+                            @Override
+                            public void setTitle(Toolbar toolbar) {
+                                toolbar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
+                            }
+                        });
+
+                ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
+                        .findViewHolderByTag(albumItem.getPath());
+
+                onShowViewHolder(viewHolder);
+            }
+        });
+
+        if (!enterTransitionPostponed()) {
             albumItem.isSharedElement = false;
-            //config was changed
-            //skipping sharedElement transition
-            ((ViewPagerAdapter) viewPager.getAdapter())
-                    .addOnInstantiateItemCallback(
-                            new ViewPagerOnInstantiateItemCallback() {
-                                @Override
-                                public boolean onInstantiateItem(ViewHolder viewHolder) {
-                                    if (viewHolder.albumItem.getPath()
-                                            .equals(albumItem.getPath())) {
-                                        onShowViewHolder(viewHolder);
-                                        return false;
-                                    }
-                                    return true;
+            //there is no sharedElementTransition
+            ViewPagerAdapter adapter = (ViewPagerAdapter) viewPager.getAdapter();
+            ViewHolder viewHolder = adapter.findViewHolderByTag(albumItem.getPath());
+            if (viewHolder != null) {
+                onShowViewHolder(viewHolder);
+            } else {
+                ((ViewPagerAdapter) viewPager.getAdapter())
+                        .addOnInstantiateItemCallback(new ViewPagerOnInstantiateItemCallback() {
+                            @Override
+                            public boolean onInstantiateItem(ViewHolder viewHolder) {
+                                if (viewHolder.albumItem.getPath().equals(albumItem.getPath())) {
+                                    onShowViewHolder(viewHolder);
+                                    return false;
                                 }
-                            });
+                                return true;
+                            }
+                        });
+            }
+
+        }
+    }
+
+    public void onShowViewHolder(ViewHolder viewHolder) {
+        viewHolder.onSharedElementEnter();
+
+        if (menu != null) {
+            menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
+            menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
         }
     }
 
@@ -392,7 +417,7 @@ public class ItemActivity extends ThemeableActivity {
 
                         new MediaProvider(a).loadAlbums(a,
                                 Settings.getInstance(a).getHiddenFolders(),
-                                new MediaProvider.Callback() {
+                                new MediaProvider.OnMediaLoadedCallback() {
                                     @Override
                                     public void onMediaLoaded(ArrayList<Album> albums) {
                                         //reload activity
@@ -423,15 +448,6 @@ public class ItemActivity extends ThemeableActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void onShowViewHolder(ViewHolder viewHolder) {
-        viewHolder.onSharedElementEnter();
-
-        if (menu != null) {
-            menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
-            menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
-        }
     }
 
     public void setPhotoAs() {
@@ -817,25 +833,14 @@ public class ItemActivity extends ThemeableActivity {
         }
     }
 
-    @Override
-    public boolean onNavigateUp() {
-        setResultAndFinish();
-        return true;
-    }
-
     public void setResultAndFinish() {
         isReturning = true;
         Intent data = new Intent();
         data.setAction(SHARED_ELEMENT_RETURN_TRANSITION);
         data.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
-        data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION,
-                viewPager.getCurrentItem());
+        data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION, viewPager.getCurrentItem());
         setResult(RESULT_OK, data);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            finishAfterTransition();
-        } else {
-            finish();
-        }
+        ActivityCompat.finishAfterTransition(this);
     }
 
     @Override

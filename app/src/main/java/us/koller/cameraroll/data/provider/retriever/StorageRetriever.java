@@ -58,7 +58,7 @@ public class StorageRetriever extends Retriever {
             @Override
             public void run() {
                 Toast.makeText(context, "timeout", Toast.LENGTH_SHORT).show();
-                MediaProvider.Callback callback = getCallback();
+                MediaProvider.OnMediaLoadedCallback callback = getCallback();
                 if (callback != null) {
                     callback.timeout();
                 }
@@ -89,7 +89,7 @@ public class StorageRetriever extends Retriever {
                                 }
 
                                 //done loading media from storage
-                                MediaProvider.Callback callback = getCallback();
+                                MediaProvider.OnMediaLoadedCallback callback = getCallback();
                                 if (callback != null) {
                                     callback.onMediaLoaded(albums);
                                 }
@@ -182,61 +182,6 @@ public class StorageRetriever extends Retriever {
         }
     }
 
-    private static File[] getRemovableStorageRoots(Context context) {
-        File[] roots = context.getExternalFilesDirs("external");
-        ArrayList<File> rootsArrayList = new ArrayList<>();
-
-        for (int i = 0; i < roots.length; i++) {
-            if (roots[i] != null) {
-                String path = roots[i].getPath();
-                int index = path.lastIndexOf("/Android/data/");
-                if (index > 0) {
-                    path = path.substring(0, index);
-                    if (!path.equals(Environment
-                            .getExternalStorageDirectory().getPath())) {
-                        rootsArrayList.add(new File(path));
-                    }
-                }
-            }
-        }
-
-        roots = new File[rootsArrayList.size()];
-        rootsArrayList.toArray(roots);
-        return roots;
-    }
-
-    private static File[] getDirectoriesToSearch(Context context) {
-        FileFilter filter = new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file != null && Provider.searchDir(file.getPath());
-            }
-        };
-
-        //external Directory
-        File dir = Environment.getExternalStorageDirectory();
-        File[] dirs = dir.listFiles(filter);
-
-        //handle removable storage (e.g. SDCards)
-        ArrayList<File> temp = new ArrayList<>();
-        temp.addAll(Arrays.asList(dirs));
-        File[] removableStorageRoots = getRemovableStorageRoots(context);
-        for (int i = 0; i < removableStorageRoots.length; i++) {
-            File root = removableStorageRoots[i];
-            File[] files = root.listFiles(filter);
-            if (files != null) {
-                Collections.addAll(temp, files);
-            }
-        }
-
-        dirs = new File[temp.size()];
-        for (int i = 0; i < dirs.length; i++) {
-            dirs[i] = temp.get(i);
-        }
-
-        return dirs;
-    }
-
     private void searchStorage(final Activity context, final StorageSearchCallback callback) {
         File[] dirs = getDirectoriesToSearch(context);
 
@@ -271,7 +216,69 @@ public class StorageRetriever extends Retriever {
         }
     }
 
+    private static File[] getDirectoriesToSearch(Context context) {
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file != null && Provider.searchDir(file.getPath());
+            }
+        };
+
+        //external Directory
+        File dir = Environment.getExternalStorageDirectory();
+        File[] dirs = dir.listFiles(filter);
+
+        //handle removable storage (e.g. SDCards)
+        ArrayList<File> temp = new ArrayList<>();
+        temp.addAll(Arrays.asList(dirs));
+        File[] removableStorageRoots = getRemovableStorageRoots(context);
+        for (int i = 0; i < removableStorageRoots.length; i++) {
+            File root = removableStorageRoots[i];
+            File[] files = root.listFiles(filter);
+            if (files != null) {
+                Collections.addAll(temp, files);
+            }
+        }
+
+        dirs = new File[temp.size()];
+        for (int i = 0; i < dirs.length; i++) {
+            dirs[i] = temp.get(i);
+        }
+        return dirs;
+    }
+
+    private static File[] getRemovableStorageRoots(Context context) {
+        File[] roots = context.getExternalFilesDirs("external");
+        ArrayList<File> rootsArrayList = new ArrayList<>();
+
+        for (int i = 0; i < roots.length; i++) {
+            if (roots[i] != null) {
+                String path = roots[i].getPath();
+                int index = path.lastIndexOf("/Android/data/");
+                if (index > 0) {
+                    path = path.substring(0, index);
+                    if (!path.equals(Environment.getExternalStorageDirectory().getPath())) {
+                        rootsArrayList.add(new File(path));
+                    }
+                }
+            }
+        }
+
+        roots = new File[rootsArrayList.size()];
+        rootsArrayList.toArray(roots);
+        return roots;
+    }
+
     private File[][] divideDirs(File[] dirs) {
+        ArrayList<File> dirsList = new ArrayList<>();
+        for (int i = 0; i < dirs.length; i++) {
+            if (dirs[i].listFiles() != null) {
+                dirsList.add(dirs[i]);
+            }
+        }
+        dirs = new File[dirsList.size()];
+        dirsList.toArray(dirs);
+
         int[] threadDirs_sizes = new int[THREAD_COUNT];
         int rest = dirs.length % THREAD_COUNT;
         for (int i = 0; i < threadDirs_sizes.length; i++) {
@@ -281,7 +288,6 @@ public class StorageRetriever extends Retriever {
                 rest--;
             }
         }
-
         Log.d("StorageRetriever", Arrays.toString(threadDirs_sizes));
 
         File[][] threadDirs = new File[THREAD_COUNT][dirs.length / THREAD_COUNT + 1];
@@ -291,7 +297,6 @@ public class StorageRetriever extends Retriever {
             threadDirs[i] = threadDir;
             index = index + threadDirs_sizes[i];
         }
-
         return threadDirs;
     }
 
@@ -340,13 +345,15 @@ public class StorageRetriever extends Retriever {
         @Override
         public void run() {
             super.run();
-
             if (dirs != null) {
                 for (int i = 0; i < dirs.length; i++) {
                     recursivelySearchStorage(context, dirs[i]);
                 }
             }
+            done();
+        }
 
+        public void done() {
             if (callback != null) {
                 callback.done(this, itemLoader.getResult());
             }
@@ -363,7 +370,6 @@ public class StorageRetriever extends Retriever {
             }
 
             itemLoader.onNewDir(context, file);
-
             File[] files = file.listFiles();
             if (files != null) {
                 for (int i = 0; i < files.length; i++) {

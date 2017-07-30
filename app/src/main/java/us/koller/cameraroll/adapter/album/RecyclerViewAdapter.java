@@ -1,8 +1,10 @@
 package us.koller.cameraroll.adapter.album;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -26,7 +28,6 @@ import us.koller.cameraroll.data.Photo;
 import us.koller.cameraroll.data.RAWImage;
 import us.koller.cameraroll.data.Video;
 import us.koller.cameraroll.ui.ItemActivity;
-import us.koller.cameraroll.ui.MainActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
@@ -136,7 +137,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 if (getSelectorMode()) {
                     onItemSelected((AlbumItemHolder) holder);
                 } else {
-                    Intent intent = new Intent(holder.itemView.getContext(), ItemActivity.class);
+                    Context context = holder.itemView.getContext();
+                    Intent intent = new Intent(context, ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
                     //intent.putExtra(ItemActivity.ALBUM, getAlbum());
                     intent.putExtra(ItemActivity.ALBUM_PATH, album.getPath());
@@ -144,12 +146,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                     ActivityOptionsCompat options =
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    (Activity) holder.itemView.getContext(),
-                                    holder.itemView.findViewById(R.id.image),
+                                    (Activity) context, holder.itemView.findViewById(R.id.image),
                                     albumItem.getPath());
-                    ((Activity) holder.itemView.getContext())
-                            .startActivityForResult(intent,
-                                    MainActivity.REFRESH_PHOTOS_REQUEST_CODE, options.toBundle());
+                    ActivityCompat.startActivityForResult((Activity) context, intent,
+                            ItemActivity.VIEW_IMAGE, options.toBundle());
                 }
             }
         });

@@ -9,6 +9,8 @@
     <!--accent color-->
     <color name="colorAccent">#69F0AE</color>
     <color name="colorAccent_text">#8A212121</color>
+    <!--<color name="colorAccent">#64ffda</color>
+    <color name="colorAccent_text">#8A212121</color>-->
 
     <!--light theme colors-->
     <color name="colorPrimary_light">#F5F5F5</color>
@@ -16,8 +18,8 @@
     <color name="light_bg">#FAFAFA</color>
 
     <!--light accent color-->
-    <color name="colorAccent_light">#69F0AE</color>
-    <color name="colorAccent_text_light">#8A212121</color>
+    <color name="colorAccent_light">@color/colorAccent</color>
+    <color name="colorAccent_text_light">@color/colorAccent_text</color>
 
     <color name="white">#FFFFFF</color>
     <color name="white_translucent1">#8AFFFFFF</color>

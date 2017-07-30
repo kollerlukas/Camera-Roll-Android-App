@@ -61,12 +61,15 @@ public class SetWallpaperActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey(IMAGE_VIEW_STATE)) {
             imageViewState = (ImageViewState) savedInstanceState.getSerializable(IMAGE_VIEW_STATE);
         }
-        imageView.setImage(ImageSource.uri(imageUri), imageViewState);
-        imageView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
+
+        imageView.setMinimumTileDpi(196);
 
         // use custom decoders
         imageView.setBitmapDecoderClass(GlideImageDecoder.class);
         imageView.setRegionDecoderClass(CustomRegionDecoder.class);
+
+        imageView.setImage(ImageSource.uri(imageUri), imageViewState);
+        imageView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
 
         if (imageViewState == null) {
             imageView.setOnImageEventListener(

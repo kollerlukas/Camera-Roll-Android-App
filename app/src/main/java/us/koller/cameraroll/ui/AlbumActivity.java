@@ -122,7 +122,7 @@ public class AlbumActivity extends ThemeableActivity
     private boolean allowMultiple;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
@@ -146,21 +146,6 @@ public class AlbumActivity extends ThemeableActivity
                     .setInterpolator(new AccelerateDecelerateInterpolator()));
         }
 
-        String path;
-        if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
-            path = savedInstanceState.getString(ALBUM_PATH);
-        } else {
-            path = getIntent().getStringExtra(ALBUM_PATH);
-        }
-        album = MediaProvider.loadAlbum(path);
-
-        if (album == null) {
-            return;
-        }
-
-        int sort_by = Settings.getInstance(this).sortAlbumBy();
-        SortUtil.sort(album.getAlbumItems(), sort_by);
-
         final ViewGroup swipeBackView = findViewById(R.id.swipeBackView);
         if (swipeBackView instanceof SwipeBackCoordinatorLayout) {
             ((SwipeBackCoordinatorLayout) swipeBackView).setOnSwipeListener(this);
@@ -170,10 +155,6 @@ public class AlbumActivity extends ThemeableActivity
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (!pick_photos) {
-            if (actionBar != null) {
-                actionBar.setTitle(album.getName());
-            }
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
                         ContextCompat.getDrawable(AlbumActivity.this, R.drawable.back_to_cancel_avd);
@@ -222,9 +203,6 @@ public class AlbumActivity extends ThemeableActivity
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new GridMarginDecoration((int)
                 getResources().getDimension(R.dimen.album_grid_spacing)));
-
-        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, recyclerView, album, pick_photos);
-        recyclerView.setAdapter(adapter);
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {
             recyclerView.getLayoutManager().onRestoreInstanceState(
@@ -360,17 +338,46 @@ public class AlbumActivity extends ThemeableActivity
         //needed for transparent statusBar
         setSystemUiFlags();
 
+        //load album
+        String path;
+        if (savedInstanceState != null && savedInstanceState.containsKey(ALBUM_PATH)) {
+            path = savedInstanceState.getString(ALBUM_PATH);
+        } else {
+            path = getIntent().getStringExtra(ALBUM_PATH);
+        }
+        MediaProvider.loadAlbum(this, path,
+                new MediaProvider.OnAlbumLoadedCallback() {
+                    @Override
+                    public void onAlbumLoaded(Album album) {
+                        AlbumActivity.this.album = album;
+                        AlbumActivity.this.onAlbumLoaded(savedInstanceState);
+                    }
+                });
+    }
+
+    private void onAlbumLoaded(Bundle savedInstanceState) {
+        int sort_by = Settings.getInstance(this).sortAlbumBy();
+        SortUtil.sort(album.getAlbumItems(), sort_by);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (!pick_photos && actionBar != null) {
+            actionBar.setTitle(album.getName());
+        }
+
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, recyclerView, album, pick_photos);
+        recyclerView.setAdapter(adapter);
+
         //restore Selector mode, when needed
         if (savedInstanceState != null) {
             final SelectorModeManager manager = new SelectorModeManager(savedInstanceState);
             manager.addCallback(this);
             adapter.setSelectorModeManager(manager);
+            final View rootView = findViewById(R.id.root_view);
             rootView.getViewTreeObserver().addOnGlobalLayoutListener(
                     new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
                             rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
                             if (manager.isSelectorModeActive())
                                 adapter.restoreSelectedItems();
                         }
@@ -402,10 +409,18 @@ public class AlbumActivity extends ThemeableActivity
             case VIEW_ALBUM:
                 if (!pick_photos) {
                     String path = getIntent().getStringExtra(ALBUM_PATH);
-                    album = MediaProvider.loadAlbum(path);
+                    /*album = MediaProvider.loadAlbum(path);
                     recyclerView.getAdapter().notifyDataSetChanged();
                     final Toolbar toolbar = findViewById(R.id.toolbar);
-                    toolbar.setTitle(album.getName());
+                    toolbar.setTitle(album.getName());*/
+                    MediaProvider.loadAlbum(this, path,
+                            new MediaProvider.OnAlbumLoadedCallback() {
+                                @Override
+                                public void onAlbumLoaded(Album album) {
+                                    AlbumActivity.this.album = album;
+                                    AlbumActivity.this.onAlbumLoaded(null);
+                                }
+                            });
                 }
                 break;
             default:
@@ -416,6 +431,7 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onActivityReenter(int requestCode, Intent data) {
+        Log.d("AlbumActivity", "onActivityReenter: " + this);
         super.onActivityReenter(requestCode, data);
         if (data != null) {
             Bundle tmpReenterState = new Bundle(data.getExtras());
@@ -564,7 +580,7 @@ public class AlbumActivity extends ThemeableActivity
 
                         new MediaProvider(a).loadAlbums(a,
                                 Settings.getInstance(a).getHiddenFolders(),
-                                new MediaProvider.Callback() {
+                                new MediaProvider.OnMediaLoadedCallback() {
                                     @Override
                                     public void onMediaLoaded(ArrayList<Album> albums) {
                                         //reload activity

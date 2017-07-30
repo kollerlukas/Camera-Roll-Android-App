@@ -39,6 +39,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     //snackbar to notify user Camera Roll is missing the storage permission
     private Snackbar snackbar;
 
+    private boolean enterTransitionPostponed = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         BroadcastReceiver defaultBroadcastReceiver = getDefaultLocalBroadcastReceiver();
         if (defaultBroadcastReceiver != null) {
             registerLocalBroadcastReceiver(defaultBroadcastReceiver);
+            broadcastReceivers.add(defaultBroadcastReceiver);
         }
     }
 
@@ -194,5 +197,21 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public IntentFilter getBroadcastIntentFilter() {
         return new IntentFilter();
+    }
+
+    @Override
+    public void postponeEnterTransition() {
+        super.postponeEnterTransition();
+        enterTransitionPostponed = true;
+    }
+
+    @Override
+    public void startPostponedEnterTransition() {
+        super.startPostponedEnterTransition();
+        enterTransitionPostponed = false;
+    }
+
+    boolean enterTransitionPostponed() {
+        return enterTransitionPostponed;
     }
 }

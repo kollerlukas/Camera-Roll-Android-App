@@ -2,19 +2,17 @@ package us.koller.cameraroll.util;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
-import java.io.File;
 import java.util.Arrays;
 
-import us.koller.cameraroll.BuildConfig;
 import us.koller.cameraroll.data.AlbumItem;
 import us.koller.cameraroll.data.Video;
 
@@ -29,29 +27,36 @@ public class StorageUtil {
     }
 
     public static Uri getContentUri(Context context, AlbumItem albumItem) {
+        Uri uri;
         if (albumItem instanceof Video) {
-            return getContentUriForVideoFromMediaStore(context, albumItem.getPath());
+            uri = getContentUriForVideoFromMediaStore(context, albumItem.getPath());
+        } else {
+            uri = getContentUriForImageFromMediaStore(context, albumItem.getPath());
         }
-        return getContentUriForImageFromMediaStore(context, albumItem.getPath());
+        return uri;
     }
 
     private static Uri getContentUriForImageFromMediaStore(Context context, String path) {
         ContentResolver resolver = context.getContentResolver();
-
-        Cursor cursor = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[]{BaseColumns._ID}, MediaStore.MediaColumns.DATA + " = ?",
-                new String[]{path}, MediaStore.MediaColumns.DATE_ADDED + " desc");
-
+        Uri photoUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = resolver.query(photoUri,
+                new String[]{BaseColumns._ID},
+                MediaStore.MediaColumns.DATA + " = ?",
+                new String[]{path}, null);
         if (cursor == null) {
             return Uri.parse(path);
         }
         cursor.moveToFirst();
-
         if (cursor.isAfterLast()) {
-            return createContentUriFromFileProvider(context, path);
+            cursor.close();
+            // insert system media db
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DATA, path);
+            values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
+            return context.getContentResolver().insert(photoUri, values);
         } else {
-            int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
-            Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId);
+            long id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+            Uri uri = ContentUris.withAppendedId(photoUri, id);
             cursor.close();
             return uri;
         }
@@ -59,29 +64,29 @@ public class StorageUtil {
 
     private static Uri getContentUriForVideoFromMediaStore(Context context, String path) {
         ContentResolver resolver = context.getContentResolver();
-
-        Cursor cursor = resolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                new String[]{BaseColumns._ID}, MediaStore.MediaColumns.DATA + " = ?",
-                new String[]{path}, MediaStore.MediaColumns.DATE_ADDED + " desc");
+        Uri videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = resolver.query(videoUri,
+                new String[]{BaseColumns._ID},
+                MediaStore.MediaColumns.DATA + " = ?",
+                new String[]{path}, null);
 
         if (cursor == null) {
             return Uri.parse(path);
         }
         cursor.moveToFirst();
-
         if (cursor.isAfterLast()) {
-            return createContentUriFromFileProvider(context, path);
+            cursor.close();
+            // insert system media db
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Video.Media.DATA, path);
+            values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
+            return context.getContentResolver().insert(videoUri, values);
         } else {
             int imageId = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
-            Uri uri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, imageId);
+            Uri uri = ContentUris.withAppendedId(videoUri, imageId);
             cursor.close();
             return uri;
         }
-    }
-
-    private static Uri createContentUriFromFileProvider(Context context, String path) {
-        Log.d("StorageUtil", "createContentUriFromFileProvider: " + BuildConfig.APPLICATION_ID);
-        return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", new File(path));
     }
 
     public static DocumentFile parseDocumentFile(Context context, Uri treeUri, String path) {

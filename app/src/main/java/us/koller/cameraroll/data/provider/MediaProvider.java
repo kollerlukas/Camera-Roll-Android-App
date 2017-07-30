@@ -27,8 +27,12 @@ public class MediaProvider extends Provider {
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
 
-    public abstract static class Callback implements Provider.Callback {
+    public abstract static class OnMediaLoadedCallback implements Provider.Callback {
         public abstract void onMediaLoaded(ArrayList<Album> albums);
+    }
+
+    public interface OnAlbumLoadedCallback {
+        void onAlbumLoaded(Album album);
     }
 
     public MediaProvider(Context context) {
@@ -52,7 +56,7 @@ public class MediaProvider extends Provider {
 
     public void loadAlbums(final Activity context,
                            final boolean hiddenFolders,
-                           Callback callback) {
+                           OnMediaLoadedCallback callback) {
 
         if (!MediaProvider.checkPermission(context)) {
             callback.needPermission();
@@ -76,7 +80,7 @@ public class MediaProvider extends Provider {
             setCallback(callback);
 
             retriever.loadAlbums(context, hiddenFolders,
-                    new Callback() {
+                    new OnMediaLoadedCallback() {
                         @Override
                         public void onMediaLoaded(ArrayList<Album> albums) {
                             if (!hiddenFolders) {
@@ -91,7 +95,7 @@ public class MediaProvider extends Provider {
                             SortUtil.sortAlbums(context, albums);
 
                             setAlbums(albums);
-                            Callback callback = getCallback();
+                            OnMediaLoadedCallback callback = getCallback();
                             if (callback != null) {
                                 callback.onMediaLoaded(albums);
                             }
@@ -99,7 +103,7 @@ public class MediaProvider extends Provider {
 
                         @Override
                         public void timeout() {
-                            Callback callback = getCallback();
+                            OnMediaLoadedCallback callback = getCallback();
                             if (callback != null) {
                                 callback.timeout();
                             }
@@ -107,7 +111,7 @@ public class MediaProvider extends Provider {
 
                         @Override
                         public void needPermission() {
-                            Callback callback = getCallback();
+                            OnMediaLoadedCallback callback = getCallback();
                             if (callback != null) {
                                 callback.needPermission();
                             }
@@ -128,7 +132,7 @@ public class MediaProvider extends Provider {
         return albums;
     }
 
-    public static Album loadAlbum(String path) {
+    /*public static Album loadAlbum(String path) {
         if (albums == null) {
             return getErrorAlbum();
         }
@@ -140,6 +144,42 @@ public class MediaProvider extends Provider {
         }
 
         return getErrorAlbum();
+    }*/
+
+    public static void loadAlbum(final Activity context, final String path,
+                                 final OnAlbumLoadedCallback callback) {
+        if (albums == null) {
+            Settings s = Settings.getInstance(context);
+            boolean hiddenFolders = s.getHiddenFolders();
+            new MediaProvider(context).loadAlbums(context, hiddenFolders, new OnMediaLoadedCallback() {
+                @Override
+                public void onMediaLoaded(ArrayList<Album> albums) {
+                    loadAlbum(context, path, callback);
+                }
+
+                @Override
+                public void timeout() {
+                    callback.onAlbumLoaded(getErrorAlbum());
+                }
+
+                @Override
+                public void needPermission() {
+                    callback.onAlbumLoaded(getErrorAlbum());
+                }
+            });
+        } else {
+            for (int i = 0; i < albums.size(); i++) {
+                if (albums.get(i).getPath().equals(path)) {
+                    final Album album = albums.get(i);
+                    context.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onAlbumLoaded(album);
+                        }
+                    });
+                }
+            }
+        }
     }
 
     public static Album getErrorAlbum() {

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -57,14 +58,7 @@ public class ItemViewUtil {
     }
 
     public static void bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
-        /*if (albumItem instanceof Video) {
-            bindVideoTransitionView(imageView, albumItem);
-            return;
-        }*/
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setTransitionName(albumItem.getPath());
-        }
+        ViewCompat.setTransitionName(imageView, albumItem.getPath());
 
         //handle timeOut
         if (albumItem.isSharedElement
@@ -122,6 +116,8 @@ public class ItemViewUtil {
                                final ImageView imageView,
                                final AlbumItem albumItem) {
 
+        ViewCompat.setTransitionName(imageView, albumItem.getPath());
+
         RequestOptions options = new RequestOptions()
                 .error(R.drawable.error_placeholder)
                 .signature(albumItem.getGlideSignature());
@@ -148,8 +144,5 @@ public class ItemViewUtil {
                 })
                 .apply(options)
                 .into(imageView);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setTransitionName(albumItem.getPath());
-        }
     }
 }

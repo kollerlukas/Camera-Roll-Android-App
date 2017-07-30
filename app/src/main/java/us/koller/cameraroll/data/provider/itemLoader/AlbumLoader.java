@@ -24,7 +24,13 @@ public class AlbumLoader extends ItemLoader {
         albums = new ArrayList<>();
     }
 
-    @SuppressWarnings("unused")
+    @Override
+    public ItemLoader newInstance() {
+        DateTakenRetriever dateRetriever = this.dateRetriever != null ? new DateTakenRetriever() : null;
+        return new AlbumLoader().setDateRetriever(dateRetriever);
+    }
+
+    @SuppressWarnings("WeakerAccess")
     public AlbumLoader setDateRetriever(DateTakenRetriever dateRetriever) {
         this.dateRetriever = dateRetriever;
         return this;

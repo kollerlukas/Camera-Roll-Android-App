@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -83,24 +82,6 @@ public class EditImageActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             cropImageView.setImageUriAsync(uri);
         }
-
-        SeekBar seekbar = findViewById(R.id.seekbar);
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                cropImageView.setRotatedDegrees(i);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
 
         final Button doneButton = findViewById(R.id.done_button);
         doneButton.setOnClickListener(new View.OnClickListener() {

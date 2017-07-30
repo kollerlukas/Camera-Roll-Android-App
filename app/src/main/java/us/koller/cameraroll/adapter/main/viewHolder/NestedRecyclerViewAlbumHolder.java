@@ -199,7 +199,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             manager.setOnBackPressedCallback(onBackPressedCallback);
         }
 
-        //checking if Callback is already attached, if not attach it
+        //checking if OnMediaLoadedCallback is already attached, if not attach it
         boolean callbackAttached = false;
         ArrayList<SelectorModeManager.Callback> callbacks = manager.getCallbacks();
         if (callbacks != null) {

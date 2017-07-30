@@ -21,6 +21,11 @@ public class FileLoader extends ItemLoader {
     }
 
     @Override
+    public ItemLoader newInstance() {
+        return new FileLoader();
+    }
+
+    @Override
     public void onNewDir(Context context, File dir) {
         dir_pojo = new File_POJO(dir.getPath(),
                 MediaType.isMedia(dir.getPath()));

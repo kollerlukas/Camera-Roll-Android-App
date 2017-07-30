@@ -4,7 +4,6 @@
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     android:orientation="vertical">
 
     <com.theartofdev.edmodo.cropper.CropImageView
@@ -20,14 +19,6 @@
         android:layout_gravity="bottom"
         android:orientation="vertical"
         android:background="@drawable/transparent_to_dark_gradient">
-
-        <SeekBar
-            android:id="@+id/seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:max="90"
-            android:visibility="gone" />
 
         <Button
             android:id="@+id/done_button"

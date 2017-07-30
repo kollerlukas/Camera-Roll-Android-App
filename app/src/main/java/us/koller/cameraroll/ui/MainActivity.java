@@ -270,9 +270,9 @@ public class MainActivity extends ThemeableActivity {
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
 
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
                             toolbar.getPaddingBottom());
 
                     ViewGroup.MarginLayoutParams toolbarParams
@@ -438,8 +438,8 @@ public class MainActivity extends ThemeableActivity {
                 R.string.loading, Snackbar.LENGTH_INDEFINITE);
         Util.showSnackbar(snackbar);
 
-        final MediaProvider.Callback callback
-                = new MediaProvider.Callback() {
+        final MediaProvider.OnMediaLoadedCallback callback
+                = new MediaProvider.OnMediaLoadedCallback() {
             @Override
             public void onMediaLoaded(final ArrayList<Album> albums) {
                 if (albums != null) {
@@ -652,8 +652,14 @@ public class MainActivity extends ThemeableActivity {
                 break;
             case SETTINGS_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
-                    this.recreate();
+                    // StatusBar is no longer translucent after recreate() + 2x sharedElementTransition in NestedRecyclerView-Style
+                    //this.recreate();
+                    Intent intent = getIntent();
+                    this.finish();
+                    startActivity(intent);
                 }
+                break;
+            case ItemActivity.VIEW_IMAGE:
                 break;
             default:
                 break;

@@ -19,6 +19,9 @@ public abstract class ItemLoader {
 
     }
 
+    @SuppressWarnings("unused")
+    public abstract ItemLoader newInstance();
+
     public abstract void onNewDir(Context context, File dir);
 
     public abstract void onFile(Context context, File file);
