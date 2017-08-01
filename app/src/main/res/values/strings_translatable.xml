@@ -115,4 +115,5 @@
     <string name="info_frame_rate">Frame rate: </string>
 
     <string name="success">Success!</string>
+    <string name="wallpaper_file_format_not_supported">This file format is not supported for wallpapers</string>
 </resources>

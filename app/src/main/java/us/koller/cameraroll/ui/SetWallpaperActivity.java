@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
@@ -28,6 +29,7 @@ import java.io.InputStream;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
 import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
 public class SetWallpaperActivity extends AppCompatActivity {
@@ -55,6 +57,10 @@ public class SetWallpaperActivity extends AppCompatActivity {
         }
 
         imageUri = intent.getData();
+        if (!MediaType.suitableAsWallpaper(this, imageUri)) {
+            Toast.makeText(this, R.string.wallpaper_file_format_not_supported, Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
         final SubsamplingScaleImageView imageView = findViewById(R.id.imageView);
         ImageViewState imageViewState = null;
