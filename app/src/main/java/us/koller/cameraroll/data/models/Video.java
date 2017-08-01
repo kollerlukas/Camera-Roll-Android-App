@@ -1,4 +1,4 @@
-package us.koller.cameraroll.data;
+package us.koller.cameraroll.data.models;
 
 import android.content.Context;
 import android.media.MediaExtractor;
@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.util.Util;
 
 public class Video extends AlbumItem implements Parcelable {

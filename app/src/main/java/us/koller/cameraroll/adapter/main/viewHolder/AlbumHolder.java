@@ -21,8 +21,8 @@ import com.bumptech.glide.request.target.Target;
 import java.io.File;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;

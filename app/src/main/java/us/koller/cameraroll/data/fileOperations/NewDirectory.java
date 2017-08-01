@@ -7,7 +7,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.util.StorageUtil;
 
 public class NewDirectory extends FileOperation {

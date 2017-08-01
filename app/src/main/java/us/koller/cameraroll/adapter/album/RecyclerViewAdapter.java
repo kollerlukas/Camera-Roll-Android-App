@@ -21,12 +21,12 @@ import us.koller.cameraroll.adapter.album.viewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.album.viewHolder.PhotoViewHolder;
 import us.koller.cameraroll.adapter.album.viewHolder.RAWImageHolder;
 import us.koller.cameraroll.adapter.album.viewHolder.VideoViewHolder;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Gif;
-import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.data.RAWImage;
-import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Gif;
+import us.koller.cameraroll.data.models.Photo;
+import us.koller.cameraroll.data.models.RAWImage;
+import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter {

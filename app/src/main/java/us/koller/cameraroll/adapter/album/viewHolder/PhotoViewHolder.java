@@ -3,7 +3,7 @@ package us.koller.cameraroll.adapter.album.viewHolder;
 import android.view.View;
 import android.widget.ImageView;
 
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 
 public class PhotoViewHolder extends AlbumItemHolder {
 

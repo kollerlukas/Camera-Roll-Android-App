@@ -11,11 +11,11 @@ import us.koller.cameraroll.adapter.item.viewHolder.PhotoViewHolder;
 import us.koller.cameraroll.adapter.item.viewHolder.RAWImageViewHolder;
 import us.koller.cameraroll.adapter.item.viewHolder.VideoViewHolder;
 import us.koller.cameraroll.adapter.item.viewHolder.ViewHolder;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Gif;
-import us.koller.cameraroll.data.RAWImage;
-import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Gif;
+import us.koller.cameraroll.data.models.RAWImage;
+import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class ViewPagerAdapter extends PagerAdapter {

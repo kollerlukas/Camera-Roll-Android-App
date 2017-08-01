@@ -27,10 +27,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Gif;
-import us.koller.cameraroll.data.Photo;
-import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Gif;
+import us.koller.cameraroll.data.models.Photo;
+import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;

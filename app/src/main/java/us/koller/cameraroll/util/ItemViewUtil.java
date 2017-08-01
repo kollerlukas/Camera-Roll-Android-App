@@ -25,8 +25,8 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.viewHolder.GifViewHolder;
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Photo;
 
 public class ItemViewUtil {
 

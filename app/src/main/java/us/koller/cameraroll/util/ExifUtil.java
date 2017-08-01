@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 
 public class ExifUtil {
 

@@ -1,17 +1,17 @@
-package us.koller.cameraroll.data;
+package us.koller.cameraroll.data.models;
 
 import android.content.Context;
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import us.koller.cameraroll.util.Util;
 
-public class RAWImage extends Photo {
-
-    RAWImage() {
+public class Gif extends AlbumItem implements Parcelable {
+    Gif() {
 
     }
 
-    RAWImage(Parcel parcel) {
+    Gif(Parcel parcel) {
         super(parcel);
     }
 
@@ -21,7 +21,12 @@ public class RAWImage extends Photo {
     }
 
     @Override
+    public String toString() {
+        return "Gif: " + super.toString();
+    }
+
+    @Override
     public String getType() {
-        return "RAW Image";
+        return "Gif";
     }
 }

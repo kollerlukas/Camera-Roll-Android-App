@@ -6,7 +6,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.util.SortUtil;
 

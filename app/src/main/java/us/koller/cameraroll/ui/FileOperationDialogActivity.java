@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.util.MediaType;

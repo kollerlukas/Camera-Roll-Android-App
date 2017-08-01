@@ -11,11 +11,10 @@ import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
 //loading media through MediaStore
@@ -74,8 +73,6 @@ public class MediaStoreRetriever extends Retriever {
 
                     do {
                         path = cursor.getString(pathColumn);
-
-
                         AlbumItem albumItem = AlbumItem.getInstance(path);
                         if (albumItem != null) {
                             //set dateTaken
@@ -160,7 +157,6 @@ public class MediaStoreRetriever extends Retriever {
 
             do {
                 String path = cursor.getString(pathColumn);
-
                 path = path.replace(MediaProvider.FILE_TYPE_NO_MEDIA, "");
                 File dir = new File(path);
                 final Album album = new Album().setPath(path);
@@ -169,11 +165,9 @@ public class MediaStoreRetriever extends Retriever {
 
                 if (files != null) {
                     for (int i = 0; i < files.length; i++) {
-                        if (MediaType.isMedia(files[i].getPath())) {
-                            AlbumItem albumItem = AlbumItem.getInstance(files[i].getPath());
-                            if (albumItem != null) {
-                                album.getAlbumItems().add(albumItem);
-                            }
+                        AlbumItem albumItem = AlbumItem.getInstance(files[i].getPath());
+                        if (albumItem != null) {
+                            album.getAlbumItems().add(albumItem);
                         }
                     }
                 }

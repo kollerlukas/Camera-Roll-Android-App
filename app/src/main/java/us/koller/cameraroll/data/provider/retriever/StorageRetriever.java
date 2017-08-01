@@ -15,15 +15,15 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.FilesProvider;
 import us.koller.cameraroll.data.provider.itemLoader.AlbumLoader;
 import us.koller.cameraroll.data.provider.itemLoader.FileLoader;
 import us.koller.cameraroll.data.provider.itemLoader.ItemLoader;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.provider.Provider;
-import us.koller.cameraroll.data.StorageRoot;
+import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 

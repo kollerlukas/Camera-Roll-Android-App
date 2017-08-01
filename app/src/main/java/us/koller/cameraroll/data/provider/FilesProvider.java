@@ -3,10 +3,10 @@ package us.koller.cameraroll.data.provider;
 import android.app.Activity;
 import android.content.Context;
 
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.retriever.Retriever;
 import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
-import us.koller.cameraroll.data.StorageRoot;
+import us.koller.cameraroll.data.models.StorageRoot;
 
 public class FilesProvider extends Provider {
 

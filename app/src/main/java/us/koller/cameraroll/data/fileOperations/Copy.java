@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
 

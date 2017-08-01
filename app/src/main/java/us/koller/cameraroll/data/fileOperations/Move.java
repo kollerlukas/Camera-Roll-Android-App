@@ -11,14 +11,20 @@ import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.File_POJO;
 
 public class Move extends FileOperation {
+
+    public static final String MOVED_FILES_PATHS = "MOVED_FILES_PATHS";
+
+    private ArrayList<String> movedFilePaths;
 
     @Override
     public void execute(Intent workIntent) {
         File_POJO[] files = getFiles(workIntent);
         File_POJO target = workIntent.getParcelableExtra(TARGET);
+
+        movedFilePaths = new ArrayList<>();
 
         if (target == null) {
             return;
@@ -52,6 +58,9 @@ public class Move extends FileOperation {
             }
 
             boolean result = moveFile(this, /*treeUri,*/ files[i].getPath(), target.getPath());
+            if (result) {
+                movedFilePaths.add(files[i].getPath());
+            }
             success_count += result ? 1 : 0;
             onProgress(s, success_count, files.length);
         }
@@ -103,5 +112,12 @@ public class Move extends FileOperation {
         //TODO implement
         Toast.makeText(context, "Moving files to/from removable Storage is currently not supported. Please just copy and delete the file", Toast.LENGTH_SHORT).show();
         return false;
+    }
+
+    @Override
+    public Intent getDoneIntent() {
+        Intent intent = super.getDoneIntent();
+        intent.putExtra(MOVED_FILES_PATHS, movedFilePaths);
+        return intent;
     }
 }

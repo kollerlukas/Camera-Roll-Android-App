@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 
 public class DateTakenRetriever {
 

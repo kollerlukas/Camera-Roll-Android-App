@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;

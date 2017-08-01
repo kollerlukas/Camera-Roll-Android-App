@@ -13,7 +13,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 
 public class GifViewHolder extends AlbumItemHolder {
 

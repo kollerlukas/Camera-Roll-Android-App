@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 
 public class ParallaxAlbumHolder extends AlbumHolder {

@@ -5,8 +5,8 @@ import android.content.Context;
 import java.io.File;
 import java.util.ArrayList;
 
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.File_POJO;
 
 public abstract class ItemLoader {
 

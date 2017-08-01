@@ -21,7 +21,7 @@ import us.koller.cameraroll.adapter.main.viewHolder.CardAlbumHolder;
 import us.koller.cameraroll.adapter.main.viewHolder.ExcludedAlbumHolder;
 import us.koller.cameraroll.adapter.main.viewHolder.NestedRecyclerViewAlbumHolder;
 import us.koller.cameraroll.adapter.main.viewHolder.ParallaxAlbumHolder;
-import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.AlbumActivity;

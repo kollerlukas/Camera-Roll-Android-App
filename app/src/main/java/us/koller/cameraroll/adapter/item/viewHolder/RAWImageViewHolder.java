@@ -2,7 +2,7 @@ package us.koller.cameraroll.adapter.item.viewHolder;
 
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.imageDecoder.RAWImageBitmapRegionDecoder;
 
 public class RAWImageViewHolder extends PhotoViewHolder {

@@ -5,7 +5,7 @@ import android.os.Environment;
 
 import java.io.File;
 
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.util.MediaType;
 
 public class FileLoader extends ItemLoader {

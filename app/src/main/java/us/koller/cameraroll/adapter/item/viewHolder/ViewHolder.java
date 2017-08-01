@@ -3,7 +3,7 @@ package us.koller.cameraroll.adapter.item.viewHolder;
 import android.view.View;
 import android.view.ViewGroup;
 
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.util.ItemViewUtil;
 

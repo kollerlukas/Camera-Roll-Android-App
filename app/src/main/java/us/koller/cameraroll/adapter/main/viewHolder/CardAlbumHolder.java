@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
 
 public class CardAlbumHolder extends AlbumHolder {
 
@@ -21,7 +21,7 @@ public class CardAlbumHolder extends AlbumHolder {
     public void setAlbum(Album album) {
         super.setAlbum(album);
 
-        final ImageView image = (ImageView) itemView.findViewById(R.id.image);
+        final ImageView image = itemView.findViewById(R.id.image);
 
         if (!excluded) {
             //album not excluded

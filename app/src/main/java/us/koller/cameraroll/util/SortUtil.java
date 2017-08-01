@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.Settings;
 
 public class SortUtil {

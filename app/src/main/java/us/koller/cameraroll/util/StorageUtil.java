@@ -13,8 +13,8 @@ import android.util.Log;
 
 import java.util.Arrays;
 
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Video;
 
 //workarounds to handle removable storage
 
@@ -38,7 +38,9 @@ public class StorageUtil {
 
     private static Uri getContentUriForImageFromMediaStore(Context context, String path) {
         ContentResolver resolver = context.getContentResolver();
-        Uri photoUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        //Uri photoUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        // to handle hidden images
+        Uri photoUri = MediaStore.Files.getContentUri("external");
         Cursor cursor = resolver.query(photoUri,
                 new String[]{BaseColumns._ID},
                 MediaStore.MediaColumns.DATA + " = ?",
@@ -64,7 +66,9 @@ public class StorageUtil {
 
     private static Uri getContentUriForVideoFromMediaStore(Context context, String path) {
         ContentResolver resolver = context.getContentResolver();
-        Uri videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        //Uri videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        // to handle hidden videos
+        Uri videoUri = MediaStore.Files.getContentUri("external");
         Cursor cursor = resolver.query(videoUri,
                 new String[]{BaseColumns._ID},
                 MediaStore.MediaColumns.DATA + " = ?",

@@ -40,13 +40,11 @@ import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
 import us.koller.cameraroll.adapter.main.viewHolder.NestedRecyclerViewAlbumHolder;
-import us.koller.cameraroll.data.Album;
+import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.ui.widget.FastScrollerRecyclerView;
-import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
@@ -641,7 +639,7 @@ public class MainActivity extends ThemeableActivity {
             case REFRESH_PHOTOS_REQUEST_CODE:
                 if (data != null
                         && data.getAction() != null
-                        && (data.getAction().equals(AlbumActivity.ALBUM_ITEM_DELETED)
+                        && (data.getAction().equals(AlbumActivity.ALBUM_ITEM_REMOVED)
                         || data.getAction().equals(REFRESH_MEDIA))) {
                     refreshPhotos();
                 }

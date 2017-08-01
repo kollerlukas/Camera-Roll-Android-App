@@ -16,7 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.util.Util;
 import us.koller.cameraroll.util.animators.ColorFade;
 

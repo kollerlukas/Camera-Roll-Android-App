@@ -24,6 +24,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -47,14 +48,15 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.fileOperations.Move;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.fileOperations.Rename;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.Settings;
@@ -74,7 +76,8 @@ public class AlbumActivity extends ThemeableActivity
     //public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
     public static final String VIEW_ALBUM = "VIEW_ALBUM";
-    public static final String ALBUM_ITEM_DELETED = "ALBUM_ITEM_DELETED";
+    public static final String ALBUM_ITEM_REMOVED = "ALBUM_ITEM_REMOVED";
+    public static final String ALBUM_ITEM_RENAMED = "ALBUM_ITEM_RENAMED";
     public static final String EXTRA_CURRENT_ALBUM_POSITION = "EXTRA_CURRENT_ALBUM_POSITION";
     public static final String RECYCLER_VIEW_SCROLL_STATE = "RECYCLER_VIEW_STATE";
 
@@ -390,29 +393,9 @@ public class AlbumActivity extends ThemeableActivity
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         switch (intent.getAction()) {
-            case ALBUM_ITEM_DELETED:
-                final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
-                Log.d("AlbumActivity", "ALBUM_ITEM_DELETED: " + albumItem.getPath());
-
-                int index = -1;
-                for (int i = 0; i < album.getAlbumItems().size(); i++) {
-                    if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
-                        index = i;
-                        break;
-                    }
-                }
-                if (index > -1) {
-                    album.getAlbumItems().remove(index);
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                }
-                break;
             case VIEW_ALBUM:
                 if (!pick_photos) {
                     String path = getIntent().getStringExtra(ALBUM_PATH);
-                    /*album = MediaProvider.loadAlbum(path);
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                    final Toolbar toolbar = findViewById(R.id.toolbar);
-                    toolbar.setTitle(album.getName());*/
                     MediaProvider.loadAlbum(this, path,
                             new MediaProvider.OnAlbumLoadedCallback() {
                                 @Override
@@ -436,7 +419,9 @@ public class AlbumActivity extends ThemeableActivity
         if (data != null) {
             Bundle tmpReenterState = new Bundle(data.getExtras());
             sharedElementReturnPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-            if (sharedElementReturnPosition != -1 && album.getAlbumItems().size() > 0) {
+            if (sharedElementReturnPosition >= 0
+                    && sharedElementReturnPosition < album.getAlbumItems().size()
+                    && album.getAlbumItems().size() > 0) {
                 album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
                 if (recyclerView.getAdapter().getItemCount() > 0) {
                     postponeEnterTransition();
@@ -574,20 +559,25 @@ public class AlbumActivity extends ThemeableActivity
                 Rename.Util.getRenameDialog(this, file, new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
-                        final Activity a = AlbumActivity.this;
+                        final Activity activity = AlbumActivity.this;
 
                         final String newFilePath = intent.getStringExtra(Rename.NEW_FILE_PATH);
+                        getIntent().putExtra(ALBUM_PATH, newFilePath);
 
-                        new MediaProvider(a).loadAlbums(a,
-                                Settings.getInstance(a).getHiddenFolders(),
+                        boolean hiddenFolders = Settings.getInstance(activity).getHiddenFolders();
+                        new MediaProvider(activity).loadAlbums(activity, hiddenFolders,
                                 new MediaProvider.OnMediaLoadedCallback() {
                                     @Override
                                     public void onMediaLoaded(ArrayList<Album> albums) {
                                         //reload activity
-                                        Intent intent = getIntent();
-                                        intent.putExtra(ALBUM_PATH, newFilePath);
-                                        finish();
-                                        startActivity(intent);
+                                        MediaProvider.loadAlbum(activity, newFilePath,
+                                                new MediaProvider.OnAlbumLoadedCallback() {
+                                                    @Override
+                                                    public void onAlbumLoaded(Album album) {
+                                                        AlbumActivity.this.album = album;
+                                                        AlbumActivity.this.onAlbumLoaded(null);
+                                                    }
+                                                });
                                     }
 
                                     @Override
@@ -1078,6 +1068,73 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
+        IntentFilter filter = FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
+        filter.addAction(ALBUM_ITEM_REMOVED);
+        filter.addAction(ALBUM_ITEM_RENAMED);
+        return filter;
+    }
+
+    @Override
+    public BroadcastReceiver getDefaultLocalBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case FileOperation.RESULT_DONE:
+                        int type = intent.getIntExtra(FileOperation.TYPE, FileOperation.EMPTY);
+                        if (type == FileOperation.MOVE) {
+                            ArrayList<String> movedFilesPaths = intent
+                                    .getStringArrayListExtra(Move.MOVED_FILES_PATHS);
+                            for (int i = 0; i < movedFilesPaths.size(); i++) {
+                                String path = movedFilesPaths.get(i);
+                                removeAlbumItem(path);
+                            }
+                        }
+                        break;
+                    case ALBUM_ITEM_REMOVED:
+                        /*final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
+                        int index = -1;
+                        for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                            if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index > -1) {
+                            album.getAlbumItems().remove(index);
+                            recyclerView.getAdapter().notifyDataSetChanged();
+                        }*/
+                        String path = intent.getStringExtra(ItemActivity.ALBUM_ITEM_PATH);
+                        removeAlbumItem(path);
+                        break;
+                    case ALBUM_ITEM_RENAMED:
+                        String albumPath = getIntent().getStringExtra(ALBUM_PATH);
+                        MediaProvider.loadAlbum(AlbumActivity.this, albumPath,
+                                new MediaProvider.OnAlbumLoadedCallback() {
+                                    @Override
+                                    public void onAlbumLoaded(Album album) {
+                                        AlbumActivity.this.album = album;
+                                        AlbumActivity.this.onAlbumLoaded(null);
+                                    }
+                                });
+                        break;
+                }
+            }
+        };
+    }
+
+    private void removeAlbumItem(String path) {
+        int index = -1;
+        for (int i = 0; i < album.getAlbumItems().size(); i++) {
+            AlbumItem albumItem = album.getAlbumItems().get(i);
+            if (albumItem.getPath().equals(path)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            album.getAlbumItems().remove(index);
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
     }
 }

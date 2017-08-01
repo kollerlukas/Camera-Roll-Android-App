@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Locale;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Video;
 
 public class InfoUtil {
 
@@ -270,6 +270,7 @@ public class InfoUtil {
                 for (int k = 0; k < i; k++) {
                     factor *= 60;
                 }
+                //noinspection ConstantConditions
                 r.setDenominator(r.getDenominator() * factor);
                 value += r.floatValue();
             }

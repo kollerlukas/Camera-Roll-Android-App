@@ -7,8 +7,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import java.io.File;
 import java.util.ArrayList;
 
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.util.DateTakenRetriever;
 

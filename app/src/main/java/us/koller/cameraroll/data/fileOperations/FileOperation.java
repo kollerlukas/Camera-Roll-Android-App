@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.AlbumItem;
-import us.koller.cameraroll.data.File_POJO;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.util.StorageUtil;
 
@@ -33,6 +33,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     public static final String RESULT_DONE = "us.koller.cameraroll.data.FileOperations.FileOperation.RESULT_DONE";
     public static final String FAILED = "us.koller.cameraroll.data.FileOperations.FileOperation.FAILED";
     public static final String NEED_REMOVABLE_STORAGE_PERMISSION = "us.koller.cameraroll.data.FileOperations.FileOperation.NEED_REMOVABLE_STORAGE_PERMISSION";
+    public static final String TYPE = "TYPE";
 
     public static final int EMPTY = 0;
     public static final int MOVE = 1;
@@ -116,7 +117,9 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     public Intent getDoneIntent() {
-        return new Intent(RESULT_DONE);
+        Intent intent = new Intent(RESULT_DONE);
+        intent.putExtra(TYPE, this.getType());
+        return intent;
     }
 
     public void sendLocalBroadcast(Intent intent) {

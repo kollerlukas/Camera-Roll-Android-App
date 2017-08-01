@@ -1,4 +1,4 @@
-package us.koller.cameraroll.data;
+package us.koller.cameraroll.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

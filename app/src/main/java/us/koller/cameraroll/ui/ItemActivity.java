@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.print.PrintHelper;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -29,7 +30,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.transition.Transition;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,16 +53,17 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.InfoRecyclerViewAdapter;
 import us.koller.cameraroll.adapter.item.viewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
-import us.koller.cameraroll.data.Album;
-import us.koller.cameraroll.data.AlbumItem;
+import us.koller.cameraroll.data.fileOperations.Move;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.fileOperations.Rename;
-import us.koller.cameraroll.data.File_POJO;
-import us.koller.cameraroll.data.Gif;
-import us.koller.cameraroll.data.Photo;
+import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.data.models.Gif;
+import us.koller.cameraroll.data.models.Photo;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.data.Video;
+import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.util.ParallaxTransformer;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
@@ -75,6 +76,7 @@ public class ItemActivity extends ThemeableActivity {
     public static final int FILE_OP_DIALOG_REQUEST = 1;
 
     public static final String ALBUM_ITEM = "ALBUM_ITEM";
+    public static final String ALBUM_ITEM_PATH = "ALBUM_ITEM_PATH";
     public static final String ALBUM = "ALBUM";
     public static final String ALBUM_PATH = "ALBUM_PATH";
     public static final String ITEM_POSITION = "ITEM_POSITION";
@@ -409,37 +411,7 @@ public class ItemActivity extends ThemeableActivity {
                 startActivityForResult(intent, FILE_OP_DIALOG_REQUEST);
                 break;
             case R.id.rename:
-                File_POJO file = new File_POJO(albumItem.getPath(), true);
-                Rename.Util.getRenameDialog(this, file, new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        final Activity a = ItemActivity.this;
-
-                        new MediaProvider(a).loadAlbums(a,
-                                Settings.getInstance(a).getHiddenFolders(),
-                                new MediaProvider.OnMediaLoadedCallback() {
-                                    @Override
-                                    public void onMediaLoaded(ArrayList<Album> albums) {
-                                        //reload activity
-                                        Intent intent = new Intent(a, AlbumActivity.class);
-                                        intent.setAction(AlbumActivity.VIEW_ALBUM);
-                                        intent.putExtra(ALBUM_PATH, album.getPath());
-                                        finish();
-                                        startActivity(intent);
-                                    }
-
-                                    @Override
-                                    public void timeout() {
-                                        onBackPressed();
-                                    }
-
-                                    @Override
-                                    public void needPermission() {
-                                        onBackPressed();
-                                    }
-                                });
-                    }
-                }).show();
+                renameAlbumItem();
                 break;
             case R.id.delete:
                 showDeleteDialog();
@@ -577,16 +549,14 @@ public class ItemActivity extends ThemeableActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 unregisterLocalBroadcastReceiver(this);
-
                 switch (intent.getAction()) {
                     case FileOperation.RESULT_DONE:
-                        Intent i = new Intent(AlbumActivity.ALBUM_ITEM_DELETED)
-                                .putExtra(AlbumActivity.ALBUM_PATH, album.getPath())
-                                .putExtra(ALBUM_ITEM, albumItem)
-                                .putExtra(VIEW_ONLY, view_only);
-
-                        ItemActivity.this.setResult(RESULT_OK, i);
-
+                        String path = albumItem.getPath();
+                        Intent i = new Intent(AlbumActivity.ALBUM_ITEM_REMOVED)
+                                .putExtra(ALBUM_ITEM_PATH, path);
+                        //notify AlbumActivity
+                        LocalBroadcastManager.getInstance(ItemActivity.this).sendBroadcast(i);
+                        ItemActivity.this.setResult(RESULT_OK);
                         finish();
                         break;
                     case FileOperation.FAILED:
@@ -598,6 +568,54 @@ public class ItemActivity extends ThemeableActivity {
             }
         });
         startService(FileOperation.getDefaultIntent(this, FileOperation.DELETE, files));
+    }
+
+    public void renameAlbumItem() {
+        File_POJO file = new File_POJO(albumItem.getPath(), true);
+        Rename.Util.getRenameDialog(this, file, new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //refresh data
+                final Activity activity = ItemActivity.this;
+
+                String newFilePath = intent.getStringExtra(Rename.NEW_FILE_PATH);
+                int index = newFilePath.lastIndexOf("/");
+                final String albumPath = newFilePath.substring(0, index);
+                getIntent().putExtra(ALBUM_PATH, albumPath);
+
+                boolean hiddenFolders = Settings.getInstance(activity).getHiddenFolders();
+                new MediaProvider(activity).loadAlbums(activity, hiddenFolders,
+                        new MediaProvider.OnMediaLoadedCallback() {
+                            @Override
+                            public void onMediaLoaded(ArrayList<Album> albums) {
+                                //reload activity
+                                MediaProvider.loadAlbum(activity, albumPath,
+                                        new MediaProvider.OnAlbumLoadedCallback() {
+                                            @Override
+                                            public void onAlbumLoaded(Album album) {
+                                                ItemActivity.this.albumItem = null;
+                                                ItemActivity.this.album = album;
+                                                ItemActivity.this.onAlbumLoaded(null);
+
+                                                //notify AlbumActivity
+                                                LocalBroadcastManager.getInstance(ItemActivity.this)
+                                                        .sendBroadcast(new Intent(AlbumActivity.ALBUM_ITEM_RENAMED));
+                                            }
+                                        });
+                            }
+
+                            @Override
+                            public void timeout() {
+                                finish();
+                            }
+
+                            @Override
+                            public void needPermission() {
+                                finish();
+                            }
+                        });
+            }
+        }).show();
     }
 
     public void showInfoDialog() {
@@ -856,5 +874,34 @@ public class ItemActivity extends ThemeableActivity {
     @Override
     public IntentFilter getBroadcastIntentFilter() {
         return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
+    }
+
+    @Override
+    public BroadcastReceiver getDefaultLocalBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case FileOperation.RESULT_DONE:
+                        int type = intent.getIntExtra(FileOperation.TYPE, FileOperation.EMPTY);
+                        if (type == FileOperation.MOVE) {
+                            ArrayList<String> movedFilesPaths = intent
+                                    .getStringArrayListExtra(Move.MOVED_FILES_PATHS);
+                            for (int i = 0; i < movedFilesPaths.size(); i++) {
+                                String path = movedFilesPaths.get(i);
+                                //notify AlbumActivity
+                                LocalBroadcastManager.getInstance(ItemActivity.this).sendBroadcast(
+                                        new Intent(AlbumActivity.ALBUM_ITEM_REMOVED)
+                                                .putExtra(ALBUM_ITEM_PATH, path));
+                                ItemActivity.this.setResult(RESULT_OK);
+                                finish();
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
     }
 }
