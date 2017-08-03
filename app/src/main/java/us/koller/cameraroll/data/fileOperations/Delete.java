@@ -75,7 +75,7 @@ public class Delete extends FileOperation {
 
     private boolean deleteFileOnRemovableStorage(Context context, Uri treeUri, String path) {
         boolean success = false;
-        DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, path);
+        DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, new File(path));
         if (file != null) {
             Log.d("Delete", "execute: file is on removable storage" + ", canWrite(): " + String.valueOf(file.canWrite()));
             success = file.delete();

@@ -165,6 +165,13 @@ public class Settings {
         return columnCount;
     }
 
+    public int getRealColumnCount() {
+        if (columnCount == 0) {
+            columnCount = DEFAULT_COLUMN_COUNT;
+        }
+        return columnCount;
+    }
+
     public void setColumnCount(int columnCount) {
         this.columnCount = columnCount;
     }

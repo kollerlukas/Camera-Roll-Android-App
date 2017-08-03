@@ -6,12 +6,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.Video;
@@ -93,7 +96,39 @@ public class StorageUtil {
         }
     }
 
-    public static DocumentFile parseDocumentFile(Context context, Uri treeUri, String path) {
+    public static File[] getRemovableStorageRoots(Context context) {
+        File[] roots = context.getExternalFilesDirs("external");
+        ArrayList<File> rootsArrayList = new ArrayList<>();
+
+        for (int i = 0; i < roots.length; i++) {
+            if (roots[i] != null) {
+                String path = roots[i].getPath();
+                int index = path.lastIndexOf("/Android/data/");
+                if (index > 0) {
+                    path = path.substring(0, index);
+                    if (!path.equals(Environment.getExternalStorageDirectory().getPath())) {
+                        rootsArrayList.add(new File(path));
+                    }
+                }
+            }
+        }
+
+        roots = new File[rootsArrayList.size()];
+        rootsArrayList.toArray(roots);
+        return roots;
+    }
+
+    private static String getSdCardRootPath(Context context, String path) {
+        File[] roots = getRemovableStorageRoots(context);
+        for (int i = 0; i < roots.length; i++) {
+            if (path.startsWith(roots[i].getPath())) {
+                return roots[i].getPath();
+            }
+        }
+        return null;
+    }
+
+    public static DocumentFile parseDocumentFile(Context context, Uri treeUri, File file) {
         DocumentFile treeRoot;
         try {
             treeRoot = DocumentFile.fromTreeUri(context, treeUri);
@@ -102,43 +137,58 @@ public class StorageUtil {
             return null;
         }
 
+        String path;
+        try {
+            path = file.getCanonicalPath();
+            String sdCardPath = getSdCardRootPath(context, path);
+            if (sdCardPath != null) {
+                if (sdCardPath.equals(path)) {
+                    return treeRoot;
+                }
+                path = path.substring(sdCardPath.length() + 1);
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Log.d("StorageUtil", "path: " + path);
+
         if (treeRoot != null) {
             treeRoot = DocumentFile.fromTreeUri(context, treeUri);
-            path = path.replace("/storage/", "");
             String[] pathParts = path.split("/");
-            Log.d("StorageUtil", "pathParts: " + Arrays.toString(pathParts));
-
-            DocumentFile file = treeRoot;
-            for (int i = 1; i < pathParts.length; i++) {
-                Log.d("StorageUtil", "pathParts[i]: " + pathParts[i]);
-                if (file != null) {
-                    file = file.findFile(pathParts[i]);
+            DocumentFile documentFile = treeRoot;
+            for (int i = 0; i < pathParts.length; i++) {
+                if (documentFile != null) {
+                    documentFile = documentFile.findFile(pathParts[i]);
                 } else {
-                    Log.d("StorageUtil", "could find file: " + pathParts[i]);
-                    break;
+                    return null;
                 }
             }
-            return file;
+            return documentFile;
         }
         return null;
     }
 
     public static DocumentFile createDocumentFile(Context context, Uri treeUri, String path, String mimeType) {
         int index = path.lastIndexOf("/");
-        DocumentFile file = parseDocumentFile(context, treeUri, path.substring(0, index));
-
+        String dirPath = path.substring(0, index);
+        DocumentFile file = parseDocumentFile(context, treeUri, new File(dirPath));
         if (file != null) {
-            file = file.createFile(mimeType, path.substring(index));
+            String name = path.substring(index + 1);
+            file = file.createFile(mimeType, name);
         }
         return file;
     }
 
     public static DocumentFile createDocumentDir(Context context, Uri treeUri, String path) {
         int index = path.lastIndexOf("/");
-        DocumentFile file = parseDocumentFile(context, treeUri, path.substring(0, index));
-
+        String dirPath = path.substring(0, index);
+        DocumentFile file = parseDocumentFile(context, treeUri, new File(dirPath));
         if (file != null) {
-            file = file.createDirectory(path.substring(index));
+            String name = path.substring(index + 1);
+            file = file.createDirectory(name);
         }
         return file;
     }

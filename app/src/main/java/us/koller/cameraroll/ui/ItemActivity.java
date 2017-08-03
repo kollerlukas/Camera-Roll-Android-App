@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -125,7 +126,7 @@ public class ItemActivity extends ThemeableActivity {
     private final TransitionListenerAdapter transitionListener
             = new TransitionListenerAdapter() {
         @Override
-        public void onTransitionStart(Transition transition) {
+        public void onTransitionStart(@NonNull Transition transition) {
             //hide toolbar & statusbar
             float toolbar_translationY = -(toolbar.getHeight());
             float bottomBar_translationY = ((View) bottomBar.getParent()).getHeight();
@@ -135,7 +136,7 @@ public class ItemActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onTransitionEnd(Transition transition) {
+        public void onTransitionEnd(@NonNull Transition transition) {
             ViewHolder viewHolder = ((ViewPagerAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             if (viewHolder == null) {
@@ -146,9 +147,7 @@ public class ItemActivity extends ThemeableActivity {
                 onShowViewHolder(viewHolder);
             }
 
-            if (transition != null) {
-                super.onTransitionEnd(transition);
-            }
+            super.onTransitionEnd(transition);
             albumItem.isSharedElement = false;
             showUI(!isReturning);
         }
@@ -356,7 +355,9 @@ public class ItemActivity extends ThemeableActivity {
         getMenuInflater().inflate(R.menu.item, menu);
         this.menu = menu;
         if (view_only) {
-            menu.findItem(R.id.delete).setVisible(false);
+            menu.findItem(R.id.copy).setVisible(false);
+            menu.findItem(R.id.move).setVisible(false);
+            menu.findItem(R.id.rename).setVisible(false);
         }
         return true;
     }
@@ -571,49 +572,53 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     public void renameAlbumItem() {
-        File_POJO file = new File_POJO(albumItem.getPath(), true);
+        File_POJO file = new File_POJO(albumItem.getPath(), true).setName(albumItem.getName());
         Rename.Util.getRenameDialog(this, file, new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //refresh data
-                final Activity activity = ItemActivity.this;
+                switch (intent.getAction()) {
+                    case FileOperation.RESULT_DONE:
+                        //refresh data
+                        final Activity activity = ItemActivity.this;
 
-                String newFilePath = intent.getStringExtra(Rename.NEW_FILE_PATH);
-                int index = newFilePath.lastIndexOf("/");
-                final String albumPath = newFilePath.substring(0, index);
-                getIntent().putExtra(ALBUM_PATH, albumPath);
+                        String newFilePath = intent.getStringExtra(Rename.NEW_FILE_PATH);
+                        int index = newFilePath.lastIndexOf("/");
+                        final String albumPath = newFilePath.substring(0, index);
+                        getIntent().putExtra(ALBUM_PATH, albumPath);
 
-                boolean hiddenFolders = Settings.getInstance(activity).getHiddenFolders();
-                new MediaProvider(activity).loadAlbums(activity, hiddenFolders,
-                        new MediaProvider.OnMediaLoadedCallback() {
-                            @Override
-                            public void onMediaLoaded(ArrayList<Album> albums) {
-                                //reload activity
-                                MediaProvider.loadAlbum(activity, albumPath,
-                                        new MediaProvider.OnAlbumLoadedCallback() {
-                                            @Override
-                                            public void onAlbumLoaded(Album album) {
-                                                ItemActivity.this.albumItem = null;
-                                                ItemActivity.this.album = album;
-                                                ItemActivity.this.onAlbumLoaded(null);
+                        boolean hiddenFolders = Settings.getInstance(activity).getHiddenFolders();
+                        new MediaProvider(activity).loadAlbums(activity, hiddenFolders,
+                                new MediaProvider.OnMediaLoadedCallback() {
+                                    @Override
+                                    public void onMediaLoaded(ArrayList<Album> albums) {
+                                        //reload activity
+                                        MediaProvider.loadAlbum(activity, albumPath,
+                                                new MediaProvider.OnAlbumLoadedCallback() {
+                                                    @Override
+                                                    public void onAlbumLoaded(Album album) {
+                                                        ItemActivity.this.albumItem = null;
+                                                        ItemActivity.this.album = album;
+                                                        ItemActivity.this.onAlbumLoaded(null);
 
-                                                //notify AlbumActivity
-                                                LocalBroadcastManager.getInstance(ItemActivity.this)
-                                                        .sendBroadcast(new Intent(AlbumActivity.ALBUM_ITEM_RENAMED));
-                                            }
-                                        });
-                            }
+                                                        //notify AlbumActivity
+                                                        LocalBroadcastManager.getInstance(ItemActivity.this)
+                                                                .sendBroadcast(new Intent(AlbumActivity.ALBUM_ITEM_RENAMED));
+                                                    }
+                                                });
+                                    }
 
-                            @Override
-                            public void timeout() {
-                                finish();
-                            }
+                                    @Override
+                                    public void timeout() {
+                                        finish();
+                                    }
 
-                            @Override
-                            public void needPermission() {
-                                finish();
-                            }
-                        });
+                                    @Override
+                                    public void needPermission() {
+                                        finish();
+                                    }
+                                });
+                        break;
+                }
             }
         }).show();
     }

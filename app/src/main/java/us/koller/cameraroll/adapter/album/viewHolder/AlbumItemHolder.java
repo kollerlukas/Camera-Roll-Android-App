@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import us.koller.cameraroll.R;
@@ -72,10 +71,6 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
     }
 
     public void loadImage(final ImageView imageView, final AlbumItem albumItem) {
-        RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder)
-                .signature(albumItem.getGlideSignature());
-
         Glide.with(imageView.getContext())
                 .asBitmap()
                 .load(albumItem.getPath())
@@ -97,7 +92,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
                         return false;
                     }
                 })
-                .apply(options)
+                .apply(albumItem.getGlideRequestOptions())
                 .into(imageView);
     }
 

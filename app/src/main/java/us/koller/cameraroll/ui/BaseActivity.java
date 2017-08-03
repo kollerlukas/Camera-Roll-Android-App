@@ -84,7 +84,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     Uri treeUri = data.getData();
                     getContentResolver().takePersistableUriPermission(treeUri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     Settings.getInstance(this).setRemovableStorageTreeUri(this, treeUri);
 
                     workIntent.putExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI, treeUri.toString());
@@ -201,14 +201,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public void postponeEnterTransition() {
-        super.postponeEnterTransition();
         enterTransitionPostponed = true;
+        super.postponeEnterTransition();
     }
 
     @Override
     public void startPostponedEnterTransition() {
-        super.startPostponedEnterTransition();
         enterTransitionPostponed = false;
+        super.startPostponedEnterTransition();
     }
 
     boolean enterTransitionPostponed() {

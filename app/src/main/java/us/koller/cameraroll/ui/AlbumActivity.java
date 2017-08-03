@@ -24,7 +24,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -417,24 +416,19 @@ public class AlbumActivity extends ThemeableActivity
         Log.d("AlbumActivity", "onActivityReenter: " + this);
         super.onActivityReenter(requestCode, data);
         if (data != null) {
-            Bundle tmpReenterState = new Bundle(data.getExtras());
-            sharedElementReturnPosition = tmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
-            if (sharedElementReturnPosition >= 0
-                    && sharedElementReturnPosition < album.getAlbumItems().size()
-                    && album.getAlbumItems().size() > 0) {
+            sharedElementReturnPosition = data.getIntExtra(EXTRA_CURRENT_ALBUM_POSITION, -1);
+            if (sharedElementReturnPosition > -1 && sharedElementReturnPosition < album.getAlbumItems().size()) {
                 album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
-                if (recyclerView.getAdapter().getItemCount() > 0) {
-                    postponeEnterTransition();
-                    recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                        @Override
-                        public void onLayoutChange(View v, int l, int t, int r, int b,
-                                                   int oL, int oT, int oR, int oB) {
-                            recyclerView.removeOnLayoutChangeListener(this);
-                            startPostponedEnterTransition();
-                        }
-                    });
-                    recyclerView.scrollToPosition(sharedElementReturnPosition);
-                }
+                postponeEnterTransition();
+                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int l, int t, int r, int b,
+                                               int oL, int oT, int oR, int oB) {
+                        recyclerView.removeOnLayoutChangeListener(this);
+                        startPostponedEnterTransition();
+                    }
+                });
+                recyclerView.scrollToPosition(sharedElementReturnPosition);
             }
         }
     }
@@ -555,7 +549,7 @@ public class AlbumActivity extends ThemeableActivity
                 item.setChecked(album.pinned);
                 break;
             case R.id.rename:
-                File_POJO file = new File_POJO(album.getPath(), false);
+                File_POJO file = new File_POJO(album.getPath(), false).setName(album.getName());
                 Rename.Util.getRenameDialog(this, file, new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
@@ -1092,18 +1086,6 @@ public class AlbumActivity extends ThemeableActivity
                         }
                         break;
                     case ALBUM_ITEM_REMOVED:
-                        /*final AlbumItem albumItem = intent.getParcelableExtra(ItemActivity.ALBUM_ITEM);
-                        int index = -1;
-                        for (int i = 0; i < album.getAlbumItems().size(); i++) {
-                            if (album.getAlbumItems().get(i).getPath().equals(albumItem.getPath())) {
-                                index = i;
-                                break;
-                            }
-                        }
-                        if (index > -1) {
-                            album.getAlbumItems().remove(index);
-                            recyclerView.getAdapter().notifyDataSetChanged();
-                        }*/
                         String path = intent.getStringExtra(ItemActivity.ALBUM_ITEM_PATH);
                         removeAlbumItem(path);
                         break;

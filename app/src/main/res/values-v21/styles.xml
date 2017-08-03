@@ -31,9 +31,7 @@
     <!--PhotoView Theme-->
     <style name="Theme.CameraRoll.PhotoView" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@color/black</item>
-        <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition
-        </item>
-        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
+        <item name="android:windowSharedElementEnterTransition">@transition/album_item_transition
         </item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
@@ -43,9 +41,7 @@
 
     <style name="Theme.CameraRoll.Light.PhotoView" parent="Theme.CameraRoll.Light">
         <item name="android:windowBackground">@color/black</item>
-        <item name="android:windowSharedElementEnterTransition">@transition/albumitem_transition
-        </item>
-        <item name="android:windowSharedElementExitTransition">@transition/albumitem_transition
+        <item name="android:windowSharedElementEnterTransition">@transition/album_item_transition
         </item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
@@ -77,6 +73,12 @@
         <item name="android:windowTranslucentNavigation">false</item>
     </style>
 
+    <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
+        <item name="android:windowBackground">@null</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+    </style>
+
     <!--ExifEditor Theme-->
     <style name="Theme.CameraRoll.ExifEditor" parent="Theme.CameraRoll">
         <item name="android:windowBackground">@null</item>
@@ -98,10 +100,5 @@
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
-
-    <style name="Theme.CameraRoll.Light.Settings" parent="Theme.CameraRoll.Light">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:windowTranslucentNavigation">false</item>
     </style>
 </resources>

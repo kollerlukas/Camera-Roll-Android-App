@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -138,6 +139,7 @@ public class Copy extends FileOperation {
     //for files on removable storage
     static boolean copyFileOntoRemovableStorage(Context context, Uri treeUri,
                                                 String path, String destination) throws IOException {
+        Log.d("Copy", "copyFileOntoRemovableStorage() called with: path = [" + path + "], destination = [" + destination + "]");
         String mimeType = MediaType.getMimeType(path);
         DocumentFile file = DocumentFile.fromFile(new File(destination));
         if (file.exists()) {

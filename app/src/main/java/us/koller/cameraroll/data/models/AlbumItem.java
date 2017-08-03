@@ -7,10 +7,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.bumptech.glide.load.Key;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
 
 import java.io.File;
 
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
@@ -232,4 +234,11 @@ public abstract class AlbumItem
     }
 
     public abstract String getType();
+
+    public RequestOptions getGlideRequestOptions() {
+        return new RequestOptions()
+                .error(R.drawable.error_placeholder)
+                .skipMemoryCache(true)
+                .signature(getGlideSignature());
+    }
 }

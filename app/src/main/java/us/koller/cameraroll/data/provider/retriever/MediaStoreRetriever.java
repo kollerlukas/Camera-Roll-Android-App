@@ -1,9 +1,11 @@
 package us.koller.cameraroll.data.provider.retriever;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
@@ -25,7 +27,8 @@ public class MediaStoreRetriever extends Retriever {
             MediaStore.Files.FileColumns.DATA,
             MediaStore.Files.FileColumns.PARENT,
             MediaStore.Images.ImageColumns.DATE_TAKEN,
-            MediaStore.Video.VideoColumns.DATE_TAKEN};
+            MediaStore.Video.VideoColumns.DATE_TAKEN,
+            BaseColumns._ID};
 
     @Override
     void loadAlbums(final Activity context, boolean hiddenFolders) {
@@ -69,10 +72,13 @@ public class MediaStoreRetriever extends Retriever {
                 if (cursor.moveToFirst()) {
                     String path;
                     long dateTaken;
+                    long id;
                     int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+                    int idColumn = cursor.getColumnIndex(BaseColumns._ID);
 
                     do {
                         path = cursor.getString(pathColumn);
+                        id = cursor.getLong(idColumn);
                         AlbumItem albumItem = AlbumItem.getInstance(path);
                         if (albumItem != null) {
                             //set dateTaken
@@ -82,6 +88,9 @@ public class MediaStoreRetriever extends Retriever {
                                             MediaStore.Video.VideoColumns.DATE_TAKEN);
                             dateTaken = cursor.getLong(dateTakenColumn);
                             albumItem.setDate(dateTaken);
+                            Uri uri = ContentUris.withAppendedId(
+                                    MediaStore.Files.getContentUri("external"), id);
+                            albumItem.setUri(uri);
 
                             //search bucket
                             boolean foundBucket = false;

@@ -219,7 +219,7 @@ public class SettingsActivity extends ThemeableActivity {
 
             initThemePref(settings.getTheme());
             initStylePref(settings.getStyle(getContext(), false));
-            initColumnCountPref(settings.getColumnCount(getContext()));
+            initColumnCountPref(settings.getRealColumnCount());
             initMediaRetrieverPref(settings.useStorageRetriever());
             init8BitColorPref(settings.use8BitColor());
             initCameraShortcutPref(settings.getCameraShortcut());

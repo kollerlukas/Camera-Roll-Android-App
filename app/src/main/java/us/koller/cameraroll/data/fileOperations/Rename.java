@@ -1,12 +1,16 @@
 package us.koller.cameraroll.data.fileOperations;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,6 +22,7 @@ import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.BaseActivity;
+import us.koller.cameraroll.util.StorageUtil;
 
 public class Rename extends FileOperation {
 
@@ -31,7 +36,18 @@ public class Rename extends FileOperation {
         final String newFileName = workIntent.getStringExtra(FileOperation.NEW_FILE_NAME);
         if (files.length > 0 && newFileName != null) {
             final File_POJO file = files[0];
-            boolean result = renameFile(file.getPath(), newFileName);
+            boolean result/* = renameFile(file.getPath(), newFileName)*/;
+            if (FileOperation.Util.isOnRemovableStorage(file.getPath())) {
+                //file is on removable storage
+                Uri treeUri = getTreeUri(workIntent, file.getPath());
+                if (treeUri == null) {
+                    return;
+                }
+                result = renameFileRemovableStorage(getApplicationContext(), treeUri, file.getPath(), newFileName);
+            } else {
+                result = renameFile(file.getPath(), newFileName);
+            }
+
             if (!result) {
                 sendFailedBroadcast(workIntent, file.getPath());
             } else {
@@ -93,6 +109,23 @@ public class Rename extends FileOperation {
         return success;
     }
 
+    private boolean renameFileRemovableStorage(Context context, Uri treeUri, String path, String newFileName) {
+        //keep old paths to remove them from MediaStore afterwards
+        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), path);
+
+        newFilePath = getNewFilePath(path, newFileName);
+        boolean success = false;
+        DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, new File(path));
+        if (file != null) {
+            success = file.renameTo(new File(newFilePath).getName());
+        }
+
+        //re-scan all paths
+        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), newFilePath);
+        addPathsToScan(oldPaths);
+        addPathsToScan(newPaths);
+        return success;
+    }
 
     public static class Util {
 
@@ -113,7 +146,7 @@ public class Rename extends FileOperation {
 
             Theme theme = Settings.getInstance(activity).getThemeInstance(activity);
 
-            return new AlertDialog.Builder(activity, theme.getDialogThemeRes())
+            AlertDialog dialog = new AlertDialog.Builder(activity, theme.getDialogThemeRes())
                     .setTitle(R.string.rename)
                     .setView(dialogLayout)
                     .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
@@ -133,6 +166,9 @@ public class Rename extends FileOperation {
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .create();
+            //noinspection ConstantConditions
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            return dialog;
         }
     }
 }

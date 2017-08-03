@@ -14,6 +14,8 @@ public class File_POJO
         implements Parcelable, SortUtil.Sortable {
 
     private String path;
+    private String name;
+
     private ArrayList<File_POJO> children;
     public boolean isMedia;
     public boolean excluded;
@@ -32,8 +34,16 @@ public class File_POJO
         children.add(file);
     }
 
+    public File_POJO setName(String name) {
+        this.name = name;
+        return this;
+    }
+
     @Override
     public String getName() {
+        if (name != null) {
+            return name;
+        }
         String[] s = getPath().split("/");
         return s[s.length - 1];
     }
@@ -70,6 +80,7 @@ public class File_POJO
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(path);
+        parcel.writeString(name);
         parcel.writeString(String.valueOf(isMedia));
         File_POJO[] children = new File_POJO[this.children.size()];
         for (int k = 0; k < children.length; k++) {
@@ -82,6 +93,7 @@ public class File_POJO
     @SuppressWarnings("unchecked")
     public File_POJO(Parcel parcel) {
         path = parcel.readString();
+        name = parcel.readString();
         isMedia = Boolean.valueOf(parcel.readString());
         children = parcel.createTypedArrayList(CREATOR);
         excluded = Boolean.valueOf(parcel.readString());

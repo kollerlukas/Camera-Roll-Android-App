@@ -26,6 +26,7 @@ import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
+import us.koller.cameraroll.util.StorageUtil;
 
 //loading media by searching through Storage
 //advantage: all items, disadvantage: slower than MediaStore
@@ -105,13 +106,12 @@ public class StorageRetriever extends Retriever {
     public static StorageRoot[] loadRoots(Activity context) {
         ArrayList<StorageRoot> temp = new ArrayList<>();
 
-        StorageRoot externalStorage
-                = new StorageRoot(Environment
-                .getExternalStorageDirectory().getPath());
+        StorageRoot externalStorage = new StorageRoot(
+                Environment.getExternalStorageDirectory().getPath());
         externalStorage.setName(context.getString(R.string.storage));
         temp.add(externalStorage);
 
-        File[] removableStorageRoots = getRemovableStorageRoots(context);
+        File[] removableStorageRoots = StorageUtil.getRemovableStorageRoots(context);
         for (int i = 0; i < removableStorageRoots.length; i++) {
             temp.add(new StorageRoot(removableStorageRoots[i].getPath()));
         }
@@ -231,7 +231,7 @@ public class StorageRetriever extends Retriever {
         //handle removable storage (e.g. SDCards)
         ArrayList<File> temp = new ArrayList<>();
         temp.addAll(Arrays.asList(dirs));
-        File[] removableStorageRoots = getRemovableStorageRoots(context);
+        File[] removableStorageRoots = StorageUtil.getRemovableStorageRoots(context);
         for (int i = 0; i < removableStorageRoots.length; i++) {
             File root = removableStorageRoots[i];
             File[] files = root.listFiles(filter);
@@ -245,28 +245,6 @@ public class StorageRetriever extends Retriever {
             dirs[i] = temp.get(i);
         }
         return dirs;
-    }
-
-    private static File[] getRemovableStorageRoots(Context context) {
-        File[] roots = context.getExternalFilesDirs("external");
-        ArrayList<File> rootsArrayList = new ArrayList<>();
-
-        for (int i = 0; i < roots.length; i++) {
-            if (roots[i] != null) {
-                String path = roots[i].getPath();
-                int index = path.lastIndexOf("/Android/data/");
-                if (index > 0) {
-                    path = path.substring(0, index);
-                    if (!path.equals(Environment.getExternalStorageDirectory().getPath())) {
-                        rootsArrayList.add(new File(path));
-                    }
-                }
-            }
-        }
-
-        roots = new File[rootsArrayList.size()];
-        rootsArrayList.toArray(roots);
-        return roots;
     }
 
     private File[][] divideDirs(File[] dirs) {
