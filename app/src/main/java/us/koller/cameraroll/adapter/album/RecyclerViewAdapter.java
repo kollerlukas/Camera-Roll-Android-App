@@ -140,7 +140,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     Context context = holder.itemView.getContext();
                     Intent intent = new Intent(context, ItemActivity.class);
                     intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
-                    //intent.putExtra(ItemActivity.ALBUM, getAlbum());
                     intent.putExtra(ItemActivity.ALBUM_PATH, album.getPath());
                     intent.putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
 

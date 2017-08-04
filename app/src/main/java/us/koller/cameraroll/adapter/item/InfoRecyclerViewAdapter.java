@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
@@ -297,12 +299,18 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             if (uri == null) {
                 return;
             }
+
+            RequestOptions options = new RequestOptions()
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE);
+
             Glide.with(itemView.getContext())
                     .asBitmap()
                     .load(uri)
+                    .apply(options)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
-                        public void onResourceReady(Bitmap bitmap, com.bumptech.glide.request
+                        public void onResourceReady(final Bitmap bitmap, com.bumptech.glide.request
                                 .transition.Transition<? super Bitmap> transition) {
                             // Do something with bitmap here.
                             Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {

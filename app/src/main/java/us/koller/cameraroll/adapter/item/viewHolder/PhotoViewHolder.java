@@ -50,6 +50,7 @@ public class PhotoViewHolder extends ViewHolder {
             view.setVisibility(View.VISIBLE);
             bindImageView(view, transitionView);
         } else {
+            transitionView.setTranslationX(0);
             view.setVisibility(View.INVISIBLE);
             transitionView.setVisibility(View.VISIBLE);
         }
@@ -150,11 +151,10 @@ public class PhotoViewHolder extends ViewHolder {
 
     @Override
     public void onDestroy() {
-        /*final SubsamplingScaleImageView imageView = itemView.findViewById(R.id.subsampling);
+        final SubsamplingScaleImageView imageView = itemView.findViewById(R.id.subsampling);
         if (imageView != null) {
             imageView.recycle();
-        }*/
-
+        }
         super.onDestroy();
     }
 

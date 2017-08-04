@@ -132,20 +132,6 @@ public class MediaProvider extends Provider {
         return albums;
     }
 
-    /*public static Album loadAlbum(String path) {
-        if (albums == null) {
-            return getErrorAlbum();
-        }
-
-        for (int i = 0; i < albums.size(); i++) {
-            if (albums.get(i).getPath().equals(path)) {
-                return albums.get(i);
-            }
-        }
-
-        return getErrorAlbum();
-    }*/
-
     public static void loadAlbum(final Activity context, final String path,
                                  final OnAlbumLoadedCallback callback) {
         if (albums == null) {

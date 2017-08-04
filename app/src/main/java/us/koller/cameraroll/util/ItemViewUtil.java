@@ -17,7 +17,6 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
@@ -42,6 +41,8 @@ public class ItemViewUtil {
 
     public static void bindSubsamplingImageView(SubsamplingScaleImageView imageView, Photo photo,
                                                 SubsamplingScaleImageView.DefaultOnImageEventListener onImageEventListener) {
+        imageView.recycle();
+
         ImageViewState imageViewState = null;
         if (photo.getImageViewSavedState() != null) {
             imageViewState = (ImageViewState) photo.getImageViewSavedState();
@@ -58,8 +59,6 @@ public class ItemViewUtil {
     }
 
     public static void bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
-        ViewCompat.setTransitionName(imageView, albumItem.getPath());
-
         //handle timeOut
         if (albumItem.isSharedElement
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -73,13 +72,8 @@ public class ItemViewUtil {
                 }
             }, 100);
         }
-
-        RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder)
-                .signature(albumItem.getGlideSignature());
-
+        ViewCompat.setTransitionName(imageView, albumItem.getPath());
         Context context = imageView.getContext();
-
         Glide.with(context)
                 .asBitmap()
                 .load(albumItem.getUri(context))
@@ -108,22 +102,15 @@ public class ItemViewUtil {
                         return false;
                     }
                 })
-                .apply(options)
+                .apply(albumItem.getGlideRequestOptions())
                 .into(imageView);
     }
 
     public static void bindGif(final GifViewHolder gifViewHolder,
                                final ImageView imageView,
                                final AlbumItem albumItem) {
-
         ViewCompat.setTransitionName(imageView, albumItem.getPath());
-
-        RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder)
-                .signature(albumItem.getGlideSignature());
-
         Context context = imageView.getContext();
-
         Glide.with(context)
                 .asGif()
                 .load(albumItem.getUri(context))
@@ -142,7 +129,7 @@ public class ItemViewUtil {
                         return false;
                     }
                 })
-                .apply(options)
+                .apply(albumItem.getGlideRequestOptions())
                 .into(imageView);
     }
 }

@@ -335,7 +335,7 @@ public class AlbumActivity extends ThemeableActivity
                             });
         }
 
-        onNewIntent(getIntent());
+        //onNewIntent(getIntent());
 
         //needed for transparent statusBar
         setSystemUiFlags();
@@ -355,6 +355,7 @@ public class AlbumActivity extends ThemeableActivity
                         AlbumActivity.this.onAlbumLoaded(savedInstanceState);
                     }
                 });
+
     }
 
     private void onAlbumLoaded(Bundle savedInstanceState) {
@@ -380,15 +381,16 @@ public class AlbumActivity extends ThemeableActivity
                         @Override
                         public void onGlobalLayout() {
                             rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            if (manager.isSelectorModeActive())
+                            if (manager.isSelectorModeActive()) {
                                 adapter.restoreSelectedItems();
+                            }
                         }
                     });
 
         }
     }
 
-    @Override
+    /*@Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         switch (intent.getAction()) {
@@ -408,17 +410,18 @@ public class AlbumActivity extends ThemeableActivity
             default:
                 break;
         }
-    }
+    }*/
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onActivityReenter(int requestCode, Intent data) {
+        /*super.onActivityReenter(requestCode, data);*/
         Log.d("AlbumActivity", "onActivityReenter: " + this);
-        super.onActivityReenter(requestCode, data);
         if (data != null) {
             sharedElementReturnPosition = data.getIntExtra(EXTRA_CURRENT_ALBUM_POSITION, -1);
             if (sharedElementReturnPosition > -1 && sharedElementReturnPosition < album.getAlbumItems().size()) {
-                album.getAlbumItems().get(sharedElementReturnPosition).isSharedElement = true;
+                AlbumItem albumItem = album.getAlbumItems().get(sharedElementReturnPosition);
+                albumItem.isSharedElement = true;
                 postponeEnterTransition();
                 recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                     @Override
@@ -431,6 +434,7 @@ public class AlbumActivity extends ThemeableActivity
                 recyclerView.scrollToPosition(sharedElementReturnPosition);
             }
         }
+        super.onActivityReenter(requestCode, data);
     }
 
     @Override
@@ -608,8 +612,12 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data != null && data.getAction() != null) {
-            onNewIntent(data);
+        switch (resultCode) {
+            default:
+                if (data != null && data.getAction() != null) {
+                    onNewIntent(data);
+                }
+                break;
         }
     }
 

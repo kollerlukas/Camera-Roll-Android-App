@@ -31,6 +31,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,6 +111,7 @@ public class ItemActivity extends ThemeableActivity {
             if (isReturning) {
                 ViewGroup v = viewPager.findViewWithTag(albumItem.getPath());
                 View sharedElement = v.findViewById(R.id.image);
+                Log.d("ItemActivity", "onMapSharedElements: " + sharedElement);
                 if (sharedElement == null) {
                     names.clear();
                     sharedElements.clear();
@@ -166,10 +168,10 @@ public class ItemActivity extends ThemeableActivity {
 
         view_only = getIntent().getBooleanExtra(VIEW_ONLY, false);
 
-        if (!view_only
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && savedInstanceState == null) {
-            postponeEnterTransition();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (!view_only && savedInstanceState == null) {
+                postponeEnterTransition();
+            }
             setEnterSharedElementCallback(sharedElementCallback);
             getWindow().getSharedElementEnterTransition().addListener(transitionListener);
         }
