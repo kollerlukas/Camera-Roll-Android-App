@@ -144,6 +144,10 @@ public class InfoUtil {
         String focalLength;
         if (focalLengthObject != null) {
             focalLength = String.valueOf(focalLengthObject);
+            Rational r = Rational.parseRational(focalLength);
+            if (r != null) {
+                focalLength = String.valueOf(r.floatValue()) + " mm";
+            }
         } else {
             focalLength = ExifUtil.NO_DATA;
         }

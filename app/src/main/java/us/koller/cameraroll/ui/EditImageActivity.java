@@ -46,7 +46,6 @@ public class EditImageActivity extends AppCompatActivity {
     public static final int JPEG_QUALITY = 90;
 
     private String imagePath;
-    private boolean currentlyAnimatingRotation = false;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -113,7 +112,7 @@ public class EditImageActivity extends AppCompatActivity {
                             actionArea.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
                     imageView.setPadding(imageView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            imageView.getPaddingTop()/* + insets.getSystemWindowInsetTop()*/,
+                            imageView.getPaddingTop() + insets.getSystemWindowInsetTop(),
                             imageView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             imageView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
@@ -148,7 +147,7 @@ public class EditImageActivity extends AppCompatActivity {
                                             actionArea.getPaddingBottom() + windowInsets[3]);
 
                                     imageView.setPadding(imageView.getPaddingStart() + windowInsets[0],
-                                            imageView.getPaddingTop()/* + windowInsets[1]*/,
+                                            imageView.getPaddingTop() + windowInsets[1],
                                             imageView.getPaddingEnd() + windowInsets[2],
                                             imageView.getPaddingBottom() + windowInsets[3]);
                                 }
@@ -265,13 +264,11 @@ public class EditImageActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.rotate:
-                if (!currentlyAnimatingRotation) {
-                    Drawable d = item.getIcon();
-                    if (d instanceof Animatable && !((Animatable) d).isRunning()) {
-                        ((Animatable) d).start();
-                    }
-                    animate90DegreeRotation();
+                Drawable d = item.getIcon();
+                if (d instanceof Animatable && !((Animatable) d).isRunning()) {
+                    ((Animatable) d).start();
                 }
+                rotate90Degrees();
                 break;
             case R.id.done:
                 done(item.getActionView());
@@ -282,47 +279,14 @@ public class EditImageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("unused")
-    private void animate90DegreeRotation() {
-        /*final CropImageView cropImageView = findViewById(R.id.cropImageView);
-        final Rect cropRect = cropImageView.getCropRect();
-        final int oldDegree = cropImageView.getRotatedDegrees();
-        int newDegree = oldDegree + 90;
-        if (newDegree > 360) {
-            newDegree = newDegree % 360;
+    private void rotate90Degrees() {
+        final CropImageView imageView = findViewById(R.id.cropImageView);
+        final int imageRotation = imageView.getImageRotation();
+        int newImageRotation = imageRotation + 90;
+        if (newImageRotation >= 360) {
+            newImageRotation = newImageRotation % 360;
         }
-
-        ValueAnimator animator = ValueAnimator.ofInt(oldDegree, newDegree);
-        animator.setDuration(600);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int degree = (int) valueAnimator.getAnimatedValue();
-                cropImageView.setRotatedDegrees(degree);
-            }
-        });
-
-        animator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        super.onAnimationStart(animation);
-                        currentlyAnimatingRotation = true;
-
-                        cropImageView.setFixedAspectRatio(true);
-                        //cropImageView.setShowCropOverlay(false);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        currentlyAnimatingRotation = false;
-
-                        cropImageView.setFixedAspectRatio(false);
-                        //cropImageView.setShowCropOverlay(true);
-                    }
-                });
-        animator.start();*/
+        imageView.setImageRotation(newImageRotation);
     }
 
     @Override

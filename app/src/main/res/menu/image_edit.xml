@@ -6,8 +6,7 @@
         android:id="@+id/rotate"
         android:title="@string/rotate"
         android:icon="@drawable/ic_rotate_90_degrees_ccw_white_24dp"
-        app:showAsAction="always"
-        android:visible="false" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/done"

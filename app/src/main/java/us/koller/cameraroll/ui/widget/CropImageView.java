@@ -2,6 +2,8 @@ package us.koller.cameraroll.ui.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -13,12 +15,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
@@ -54,6 +60,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private Paint cropRectCornerPaint;
     private Paint guidelinePaint;
     private Paint backgroundPaint;
+
+    private int imageRotation = 0;
 
     private int touchedCorner = NO_CORNER;
     private boolean touching = false;
@@ -166,10 +174,20 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     protected void onImageLoaded() {
         super.onImageLoaded();
         if (cropRect == null) {
-            cropRect = new Rect(0, 0, getSWidth(), getSHeight());
+            cropRect = getImageRect();
         } else {
             autoZoom();
         }
+    }
+
+    public int getImageRotation() {
+        return imageRotation;
+    }
+
+    public void setImageRotation(int imageRotation) {
+        this.imageRotation = imageRotation;
+        setOrientation(imageRotation);
+        cropRect = getImageRect();
     }
 
     public void getCroppedBitmap(final OnResultListener onResultListener) {
@@ -177,9 +195,27 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
             @Override
             public void run() {
                 try {
-                    RAWImageBitmapRegionDecoder decoder = new RAWImageBitmapRegionDecoder();
-                    decoder.init(getContext(), getImageUri());
-                    Bitmap croppedBitmap = decoder.decodeRegion(cropRect, 1);
+                    Bitmap bitmap = new GlideImageDecoder().decode(getContext(), imageUri);
+
+                    //rotate image
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(imageRotation);
+
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                            bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                    byte[] bitmapData = outputStream.toByteArray();
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(bitmapData);
+
+                    BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
+
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 1;
+                    options.inJustDecodeBounds = false;
+
+                    Bitmap croppedBitmap = decoder.decodeRegion(cropRect, options);
                     decoder.recycle();
 
                     Result result = new Result(imageUri, croppedBitmap);
@@ -431,7 +467,13 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     private Rect getImageRect() {
-        return new Rect(0, 0, getSWidth(), getSHeight());
+        switch (imageRotation) {
+            case 90:
+            case 270:
+                return new Rect(0, 0, getSHeight(), getSWidth());
+            default:
+                return new Rect(0, 0, getSWidth(), getSHeight());
+        }
     }
 
     @Override
@@ -443,6 +485,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         // Don't draw anything before image is ready.
         if (!isReady() || cropRect == null) {
             return;
@@ -459,6 +502,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private void drawRect(Canvas canvas) {
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
+        if (topLeft == null || bottomRight == null) {
+            return;
+        }
         canvas.drawRect(
                 topLeft.x + strokeWidth / 2,
                 topLeft.y + strokeWidth / 2,
@@ -470,6 +516,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private void drawCorners(Canvas canvas) {
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
+        if (topLeft == null || bottomRight == null) {
+            return;
+        }
 
         Matrix matrix;
         RectF bounds = new RectF();
@@ -508,13 +557,6 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     @SuppressWarnings("SuspiciousNameCombination")
     private Path getCornerPath() {
         Path corner = new Path();
-        /*corner.moveTo(0, 0);
-        corner.lineTo(cornerLength, 0);
-        corner.lineTo(cornerLength, cornerStrokeWidth);
-        corner.lineTo(cornerStrokeWidth, cornerStrokeWidth);
-        corner.lineTo(cornerStrokeWidth, cornerLength);
-        corner.lineTo(0, cornerLength);
-        corner.close();*/
         corner.moveTo(cornerStrokeWidth / 2, cornerLength - cornerStrokeWidth / 2);
         corner.lineTo(cornerStrokeWidth / 2, cornerStrokeWidth / 2);
         corner.lineTo(cornerLength - cornerStrokeWidth / 2, cornerStrokeWidth / 2);
@@ -524,6 +566,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private void drawBackground(Canvas canvas) {
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
+        if (topLeft == null || bottomRight == null) {
+            return;
+        }
 
         Path background = new Path();
         background.moveTo(0, 0);
@@ -547,6 +592,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private void drawGuidelines(Canvas canvas) {
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
+        if (topLeft == null || bottomRight == null) {
+            return;
+        }
 
         float width = bottomRight.x - topLeft.x;
         float height = bottomRight.y - topLeft.y;
