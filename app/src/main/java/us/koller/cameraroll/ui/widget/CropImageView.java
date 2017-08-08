@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -99,15 +98,25 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
     public static class State extends ImageViewState {
 
-        private Rect cropRect;
+        private int[] cropRect;
+        private int rotation;
 
-        State(ImageViewState imageViewState, Rect cropRect) {
+        State(ImageViewState imageViewState, Rect cropRect, int rotation) {
             super(imageViewState.getScale(), imageViewState.getCenter(), imageViewState.getOrientation());
-            this.cropRect = cropRect;
+            this.cropRect = new int[]{
+                    cropRect.left, cropRect.top,
+                    cropRect.right, cropRect.bottom};
+            this.rotation = rotation;
         }
 
         Rect getCropRect() {
-            return cropRect;
+            return new Rect(
+                    cropRect[0], cropRect[1],
+                    cropRect[2], cropRect[3]);
+        }
+
+        int getRotation() {
+            return rotation;
         }
     }
 
@@ -161,6 +170,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     public void loadImage(Uri uri, State state) {
         imageUri = uri;
         if (state != null) {
+            setImageRotation(state.getRotation());
             cropRect = state.getCropRect();
         }
         setImage(ImageSource.uri(uri), state);
@@ -615,6 +625,6 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     public State getCropImageViewState() {
-        return new State(getState(), cropRect);
+        return new State(getState(), cropRect, imageRotation);
     }
 }
