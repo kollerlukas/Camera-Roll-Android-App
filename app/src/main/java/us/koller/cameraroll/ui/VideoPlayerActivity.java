@@ -155,7 +155,6 @@ public class VideoPlayerActivity extends ThemeableActivity {
                         playPause.setImageResource(R.drawable.ic_play_arrow_white_24dp);
                     }
                 }
-
             }
         });
 

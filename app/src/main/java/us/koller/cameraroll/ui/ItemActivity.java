@@ -69,7 +69,7 @@ import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.util.ParallaxTransformer;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
-import us.koller.cameraroll.util.TransitionListenerAdapter;
+import us.koller.cameraroll.util.SimpleTransitionListener;
 import us.koller.cameraroll.util.Util;
 
 public class ItemActivity extends ThemeableActivity {
@@ -125,8 +125,8 @@ public class ItemActivity extends ThemeableActivity {
         }
     };
 
-    private final TransitionListenerAdapter transitionListener
-            = new TransitionListenerAdapter() {
+    private final SimpleTransitionListener transitionListener
+            = new SimpleTransitionListener() {
         @Override
         public void onTransitionStart(@NonNull Transition transition) {
             //hide toolbar & statusbar
@@ -168,8 +168,8 @@ public class ItemActivity extends ThemeableActivity {
 
         view_only = getIntent().getBooleanExtra(VIEW_ONLY, false);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (!view_only && savedInstanceState == null) {
+        if (!view_only && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (savedInstanceState == null) {
                 postponeEnterTransition();
             }
             setEnterSharedElementCallback(sharedElementCallback);

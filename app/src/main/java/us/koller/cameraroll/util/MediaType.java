@@ -4,8 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-import us.koller.cameraroll.ui.SetWallpaperActivity;
-
 public class MediaType {
 
     private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp"};
@@ -20,8 +18,8 @@ public class MediaType {
     private static String[] rawExtensions = {"dng", "cr2", "arw"};
     private static String[] rawMimeTypes = {"image/x-adobe-dng", "image/x-canon-cr2", "image/arw", "image/x-sony-arw"};
 
-    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "dng", "cr2", "arw"};
-    private static String[] exifMimeTypes = {"image/jpeg", "image/x-adobe-dng", "image/x-canon-cr2", "image/arw", "image/x-sony-arw"};
+    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "dng", "cr2"/*, "arw"*/};
+    private static String[] exifMimeTypes = {"image/jpeg", "image/x-adobe-dng", "image/x-canon-cr2"/*, "image/arw", "image/x-sony-arw"*/};
 
     private static String[] wallpaperMimeTypes = {"image/jpeg", "image/png"};
 

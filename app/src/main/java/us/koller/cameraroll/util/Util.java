@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +67,10 @@ public class Util {
             BitmapFactory.decodeStream(is, new Rect(0, 0, 0, 0), options);
             dimensions[0] = options.outWidth;
             dimensions[1] = options.outHeight;
+
+            if (is != null) {
+                is.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -232,5 +237,10 @@ public class Util {
             locale = context.getResources().getConfiguration().locale;
         }
         return locale;
+    }
+
+    public static int dpToPx(Context context, int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

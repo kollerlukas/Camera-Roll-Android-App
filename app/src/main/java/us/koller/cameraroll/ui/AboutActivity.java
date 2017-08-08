@@ -250,4 +250,9 @@ public class AboutActivity extends ThemeableActivity
     public int getLightThemeRes() {
         return R.style.Theme_CameraRoll_Translucent_Light_About;
     }
+
+    @Override
+    public int getTaskDescriptionColor() {
+        return accentColor;
+    }
 }

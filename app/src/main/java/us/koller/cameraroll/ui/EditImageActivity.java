@@ -1,11 +1,7 @@
 package us.koller.cameraroll.ui;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -30,8 +26,6 @@ import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.theartofdev.edmodo.cropper.CropImageView;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,6 +33,7 @@ import java.io.OutputStream;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.ui.widget.CropImageView;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.Util;
@@ -46,11 +41,12 @@ import us.koller.cameraroll.util.Util;
 public class EditImageActivity extends AppCompatActivity {
 
     public static final String IMAGE_PATH = "IMAGE_PATH";
+    public static final String IMAGE_VIEW_STATE = "IMAGE_VIEW_STATE";
 
-    private static final int JPEG_QUALITY = 90;
+    public static final int JPEG_QUALITY = 90;
 
     private String imagePath;
-    private boolean animating90DegreeRotation = false;
+    private boolean currentlyAnimatingRotation = false;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -70,18 +66,21 @@ public class EditImageActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        final CropImageView cropImageView = findViewById(R.id.cropImageView);
-
         Uri uri = intent.getData();
         if (uri == null) {
             finish();
+            return;
         }
 
         imagePath = intent.getStringExtra(IMAGE_PATH);
 
-        if (savedInstanceState == null) {
-            cropImageView.setImageUriAsync(uri);
+        final CropImageView imageView = findViewById(R.id.cropImageView);
+
+        CropImageView.State state = null;
+        if (savedInstanceState != null) {
+            state = (CropImageView.State) savedInstanceState.getSerializable(IMAGE_VIEW_STATE);
         }
+        imageView.loadImage(uri, state);
 
         final Button doneButton = findViewById(R.id.done_button);
         doneButton.setOnClickListener(new View.OnClickListener() {
@@ -113,10 +112,10 @@ public class EditImageActivity extends AppCompatActivity {
                             actionArea.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             actionArea.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    /*cropImageView.setPadding(cropImageView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            cropImageView.getPaddingTop(),
-                            cropImageView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            cropImageView.getPaddingBottom());*/
+                    imageView.setPadding(imageView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                            imageView.getPaddingTop()/* + insets.getSystemWindowInsetTop()*/,
+                            imageView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            imageView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
                     return insets.consumeSystemWindowInsets();
                 }
@@ -148,26 +147,13 @@ public class EditImageActivity extends AppCompatActivity {
                                             actionArea.getPaddingEnd() + windowInsets[2],
                                             actionArea.getPaddingBottom() + windowInsets[3]);
 
-                                    /*cropImageView.setPadding(cropImageView.getPaddingStart() + windowInsets[0],
-                                            cropImageView.getPaddingTop(),
-                                            cropImageView.getPaddingEnd() + windowInsets[2],
-                                            cropImageView.getPaddingBottom());*/
+                                    imageView.setPadding(imageView.getPaddingStart() + windowInsets[0],
+                                            imageView.getPaddingTop()/* + windowInsets[1]*/,
+                                            imageView.getPaddingEnd() + windowInsets[2],
+                                            imageView.getPaddingBottom() + windowInsets[3]);
                                 }
                             });
         }
-
-        /*rootView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                        cropImageView.setPadding(cropImageView.getPaddingStart(),
-                                cropImageView.getPaddingTop() + toolbar.getHeight(),
-                                cropImageView.getPaddingEnd(),
-                                cropImageView.getPaddingBottom() + actionArea.getHeight());
-                    }
-                });*/
 
         //needed to achieve transparent navBar
         getWindow().getDecorView().setSystemUiVisibility(
@@ -180,13 +166,12 @@ public class EditImageActivity extends AppCompatActivity {
     public void done(View v) {
         CropImageView cropImageView = findViewById(R.id.cropImageView);
         final ExifUtil.ExifItem[] exifData = ExifUtil.retrieveExifData(this, cropImageView.getImageUri());
-        cropImageView.setOnCropImageCompleteListener(new CropImageView.OnCropImageCompleteListener() {
+        cropImageView.getCroppedBitmap(new CropImageView.OnResultListener() {
             @Override
-            public void onCropImageComplete(CropImageView view, CropImageView.CropResult result) {
-                saveCroppedImage(result.getOriginalUri(), result.getBitmap(), exifData);
+            public void onResult(CropImageView.Result result) {
+                saveCroppedImage(result.getImageUri(), result.getCroppedBitmap(), exifData);
             }
         });
-        cropImageView.getCroppedImageAsync();
     }
 
     private void saveCroppedImage(final Uri uri, final Bitmap bitmap, final ExifUtil.ExifItem[] exifData) {
@@ -280,13 +265,16 @@ public class EditImageActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.rotate:
-                if (!animating90DegreeRotation) {
+                if (!currentlyAnimatingRotation) {
                     Drawable d = item.getIcon();
                     if (d instanceof Animatable && !((Animatable) d).isRunning()) {
                         ((Animatable) d).start();
                     }
                     animate90DegreeRotation();
                 }
+                break;
+            case R.id.done:
+                done(item.getActionView());
                 break;
             default:
                 break;
@@ -296,7 +284,7 @@ public class EditImageActivity extends AppCompatActivity {
 
     @SuppressWarnings("unused")
     private void animate90DegreeRotation() {
-        final CropImageView cropImageView = findViewById(R.id.cropImageView);
+        /*final CropImageView cropImageView = findViewById(R.id.cropImageView);
         final Rect cropRect = cropImageView.getCropRect();
         final int oldDegree = cropImageView.getRotatedDegrees();
         int newDegree = oldDegree + 90;
@@ -319,21 +307,28 @@ public class EditImageActivity extends AppCompatActivity {
                     @Override
                     public void onAnimationStart(Animator animation) {
                         super.onAnimationStart(animation);
-                        animating90DegreeRotation = true;
+                        currentlyAnimatingRotation = true;
 
                         cropImageView.setFixedAspectRatio(true);
-                        cropImageView.setShowCropOverlay(false);
+                        //cropImageView.setShowCropOverlay(false);
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        animating90DegreeRotation = false;
+                        currentlyAnimatingRotation = false;
 
                         cropImageView.setFixedAspectRatio(false);
-                        cropImageView.setShowCropOverlay(true);
+                        //cropImageView.setShowCropOverlay(true);
                     }
                 });
-        animator.start();
+        animator.start();*/
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        CropImageView imageView = findViewById(R.id.cropImageView);
+        outState.putSerializable(IMAGE_VIEW_STATE, imageView.getCropImageViewState());
     }
 }

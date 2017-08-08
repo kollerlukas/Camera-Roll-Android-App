@@ -1,40 +1,51 @@
 package us.koller.cameraroll.imageDecoder;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
-import java.io.InputStream;
-
-import us.koller.cameraroll.util.Util;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 //simple RegionDecoder using BitmapFactory.decodeStream(..., rect,...),
 //because BitmapRegionDecoder doesn't support RAW(.dng) images
 public class RAWImageBitmapRegionDecoder implements ImageRegionDecoder {
 
-    private InputStream inputStream;
+    private static final int JPEG_QUALITY = 90;
+
+    private BitmapRegionDecoder decoder;
     private final Object decoderLock = new Object();
     private boolean ready = false;
 
+    private File cacheFile;
+
     @Override
     public Point init(Context context, Uri uri) throws Exception {
-        ContentResolver contentResolver = context.getContentResolver();
-        this.inputStream = contentResolver.openInputStream(uri);
-        if (inputStream == null) {
-            throw new NullPointerException("inputStream = null");
-        }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 1;
+        options.inJustDecodeBounds = false;
 
-        int[] imageDimens = Util.getImageDimensions(context, uri);
+        Bitmap bitmap = new GlideImageDecoder().decode(context, uri);
+
+        String filename = String.valueOf(uri.toString().hashCode());
+        cacheFile = new File(context.getCacheDir(), filename);
+        FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, fileOutputStream);
+
+        FileInputStream fileInputStream = new FileInputStream(cacheFile);
+        this.decoder = BitmapRegionDecoder.newInstance(fileInputStream, false);
+        Point p = new Point(decoder.getWidth(), decoder.getHeight());
 
         ready = true;
 
-        return new Point(imageDimens[0], imageDimens[1]);
+        return p;
     }
 
     @Override
@@ -42,8 +53,12 @@ public class RAWImageBitmapRegionDecoder implements ImageRegionDecoder {
         synchronized (this.decoderLock) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = sampleSize;
-            options.inJustDecodeBounds = false;
-            return BitmapFactory.decodeStream(inputStream, rect, options);
+            Bitmap bitmap = this.decoder.decodeRegion(rect, options);
+            if (bitmap == null) {
+                throw new RuntimeException("Region decoder returned null bitmap - image format may not be supported");
+            } else {
+                return bitmap;
+            }
         }
     }
 
@@ -54,6 +69,8 @@ public class RAWImageBitmapRegionDecoder implements ImageRegionDecoder {
 
     @Override
     public void recycle() {
-        inputStream = null;
+        decoder.recycle();
+        //noinspection ResultOfMethodCallIgnored
+        cacheFile.delete();
     }
 }

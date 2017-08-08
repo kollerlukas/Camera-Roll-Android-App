@@ -238,7 +238,7 @@ public abstract class AlbumItem
     public RequestOptions getGlideRequestOptions() {
         return new RequestOptions()
                 .error(R.drawable.error_placeholder)
-                .skipMemoryCache(true)
+                /*.skipMemoryCache(true)*/
                 .signature(getGlideSignature());
     }
 }

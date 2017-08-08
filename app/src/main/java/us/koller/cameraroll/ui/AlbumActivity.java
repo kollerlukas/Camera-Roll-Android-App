@@ -390,28 +390,6 @@ public class AlbumActivity extends ThemeableActivity
         }
     }
 
-    /*@Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        switch (intent.getAction()) {
-            case VIEW_ALBUM:
-                if (!pick_photos) {
-                    String path = getIntent().getStringExtra(ALBUM_PATH);
-                    MediaProvider.loadAlbum(this, path,
-                            new MediaProvider.OnAlbumLoadedCallback() {
-                                @Override
-                                public void onAlbumLoaded(Album album) {
-                                    AlbumActivity.this.album = album;
-                                    AlbumActivity.this.onAlbumLoaded(null);
-                                }
-                            });
-                }
-                break;
-            default:
-                break;
-        }
-    }*/
-
     @Override
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onActivityReenter(int requestCode, Intent data) {

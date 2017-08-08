@@ -180,9 +180,16 @@ public abstract class ThemeableActivity extends BaseActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupTaskDescription() {
-        int colorRes = theme.isBaseLight() ? R.color.colorPrimary_light : R.color.colorPrimary;
-        int color = ContextCompat.getColor(this, colorRes);
+        int color = getTaskDescriptionColor();
 
+        Bitmap overviewIcon = getIcon();
+
+        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
+                overviewIcon, color));
+        overviewIcon.recycle();
+    }
+
+    public Bitmap getIcon() {
         //getting the app icon as a bitmap
         Drawable icon = getApplicationInfo().loadIcon(getPackageManager());
         Bitmap overviewIcon = Bitmap.createBitmap(icon.getIntrinsicWidth(),
@@ -190,10 +197,12 @@ public abstract class ThemeableActivity extends BaseActivity {
         Canvas canvas = new Canvas(overviewIcon);
         icon.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         icon.draw(canvas);
+        return overviewIcon;
+    }
 
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name),
-                overviewIcon, color));
-        overviewIcon.recycle();
+    public int getTaskDescriptionColor() {
+        int colorRes = theme.isBaseLight() ? R.color.colorPrimary_light : R.color.colorPrimary;
+        return ContextCompat.getColor(this, colorRes);
     }
 
     public int getStatusBarColor() {

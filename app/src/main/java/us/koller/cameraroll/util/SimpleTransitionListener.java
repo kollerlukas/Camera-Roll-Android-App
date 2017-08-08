@@ -2,7 +2,7 @@ package us.koller.cameraroll.util;
 
 import android.transition.Transition;
 
-public class TransitionListenerAdapter implements Transition.TransitionListener {
+public class SimpleTransitionListener implements Transition.TransitionListener {
     @Override
     public void onTransitionStart(Transition transition) {
 

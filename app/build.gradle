@@ -62,6 +62,4 @@ dependencies {
     implementation 'com.pacioianu.david:ink-page-indicator:1.2.0'
 
     implementation 'com.github.pluscubed:recycler-fast-scroll:0.3.2@aar'
-
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
 }
