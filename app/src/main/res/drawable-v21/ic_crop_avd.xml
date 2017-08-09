@@ -1,0 +1,82 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:name="path_top_right"
+                android:pathData="M 1 6 L 7 6 M 9 6 L 18 6 L 18 15 M 18 17 L 18 23"
+                android:strokeColor="@color/white"
+                android:strokeWidth="2"
+                android:strokeLineJoin="round" />
+            <group android:name="group">
+                <path
+                    android:name="path_bottom_left"
+                    android:pathData="M 6 1 L 6 18 L 23 18"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="2"
+                    android:strokeLineJoin="round" />
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="group">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android">
+                <objectAnimator
+                    android:propertyName="translateX"
+                    android:duration="200"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+                <objectAnimator
+                    android:propertyName="translateY"
+                    android:duration="200"
+                    android:valueFrom="0"
+                    android:valueTo="-1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+                <objectAnimator
+                    android:propertyName="translateX"
+                    android:startOffset="200"
+                    android:duration="100"
+                    android:valueFrom="1"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+                <objectAnimator
+                    android:propertyName="translateY"
+                    android:startOffset="200"
+                    android:duration="100"
+                    android:valueFrom="-1"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="path_top_right">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android">
+                <objectAnimator
+                    android:propertyName="pathData"
+                    android:duration="200"
+                    android:valueFrom="M 1 6 L 7 6 M 9 6 L 18 6 L 18 15 M 18 17 L 18 23"
+                    android:valueTo="M 0 7 L 8 7 M 10 7 L 17 7 L 17 14 M 17 16 L 17 23"
+                    android:valueType="pathType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+                <objectAnimator
+                    android:propertyName="pathData"
+                    android:startOffset="200"
+                    android:duration="100"
+                    android:valueFrom="M 0 7 L 8 7 M 10 7 L 17 7 L 17 14 M 17 16 L 17 23"
+                    android:valueTo="M 1 6 L 7 6 M 9 6 L 18 6 L 18 15 M 18 17 L 18 23"
+                    android:valueType="pathType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

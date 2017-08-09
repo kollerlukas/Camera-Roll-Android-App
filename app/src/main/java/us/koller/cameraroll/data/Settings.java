@@ -143,8 +143,6 @@ public class Settings {
         Resources res = context.getResources();
         if (style == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
-        } else if (style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
-            return (int) res.getDimension(R.dimen.album_grid_spacing);
         }
         return 0;
     }
