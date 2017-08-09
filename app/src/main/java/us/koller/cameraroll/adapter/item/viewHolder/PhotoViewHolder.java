@@ -56,7 +56,7 @@ public class PhotoViewHolder extends ViewHolder {
         }
     }
 
-    private void bindImageView(View view, final View transitionView) {
+    void bindImageView(View view, final View transitionView) {
         if (albumItem.error) {
             transitionView.setVisibility(View.VISIBLE);
             ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
@@ -105,6 +105,7 @@ public class PhotoViewHolder extends ViewHolder {
                         super.onImageLoaded();
                         transitionView.setVisibility(View.INVISIBLE);
                         imageViewWasBound = true;
+                        PhotoViewHolder.this.onImageLoaded();
                     }
                 });
     }
@@ -166,5 +167,9 @@ public class PhotoViewHolder extends ViewHolder {
 
     public Class<? extends ImageRegionDecoder> getBitmapRegionDecoderClass() {
         return CustomRegionDecoder.class;
+    }
+
+    public void onImageLoaded() {
+
     }
 }
