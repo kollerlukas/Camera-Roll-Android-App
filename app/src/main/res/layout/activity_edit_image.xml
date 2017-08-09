@@ -14,6 +14,13 @@
         android:paddingTop="?android:attr/actionBarSize"
         android:layerType="software" />
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/action_area"
         android:layout_width="match_parent"

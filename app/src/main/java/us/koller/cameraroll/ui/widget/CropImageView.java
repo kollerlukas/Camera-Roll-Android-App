@@ -18,6 +18,8 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
@@ -161,6 +163,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     public void loadImage(Uri uri, State state) {
+        setProgressBarVisibility(VISIBLE);
+
         imageUri = uri;
 
         setBitmapDecoderClass(GlideImageDecoder.class);
@@ -189,6 +193,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         } else {
             autoZoom(true);
         }
+
+        setProgressBarVisibility(GONE);
     }
 
     public void rotate90Degree() {
@@ -202,6 +208,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     public void getCroppedBitmap(final OnResultListener onResultListener) {
+        setProgressBarVisibility(VISIBLE);
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -229,8 +236,14 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                     Bitmap croppedBitmap = decoder.decodeRegion(cropRect, options);
                     decoder.recycle();
 
-                    Result result = new Result(imageUri, croppedBitmap);
-                    onResultListener.onResult(result);
+                    final Result result = new Result(imageUri, croppedBitmap);
+                    CropImageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onResultListener.onResult(result);
+                            setProgressBarVisibility(GONE);
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -642,5 +655,17 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
     public State getCropImageViewState() {
         return new State(getState(), cropRect);
+    }
+
+    private ProgressBar getProgressBar() {
+        ViewGroup parent = (ViewGroup) getParent();
+        return parent.findViewById(R.id.progress_bar);
+    }
+
+    private void setProgressBarVisibility(int visibility) {
+        ProgressBar progressBar = getProgressBar();
+        if (progressBar != null) {
+            progressBar.setVisibility(visibility);
+        }
     }
 }
