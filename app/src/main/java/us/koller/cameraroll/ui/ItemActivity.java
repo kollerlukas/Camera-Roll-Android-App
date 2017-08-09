@@ -189,6 +189,9 @@ public class ItemActivity extends ThemeableActivity {
         if (view_only) {
             ImageView delete = findViewById(R.id.delete_button);
             ((View) delete.getParent()).setVisibility(View.GONE);
+
+            ImageView edit = findViewById(R.id.edit_button);
+            ((View) edit.getParent()).setVisibility(View.GONE);
         }
 
         final ViewGroup rootView = findViewById(R.id.root_view);

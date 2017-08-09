@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -26,8 +27,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
 import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
 import us.koller.cameraroll.imageDecoder.RAWImageBitmapRegionDecoder;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
 public class CropImageView extends SubsamplingScaleImageView implements View.OnTouchListener {
@@ -59,8 +62,6 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private Paint cropRectCornerPaint;
     private Paint guidelinePaint;
     private Paint backgroundPaint;
-
-    private int imageRotation = 0;
 
     private int touchedCorner = NO_CORNER;
     private boolean touching = false;
@@ -99,24 +100,18 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     public static class State extends ImageViewState {
 
         private int[] cropRect;
-        private int rotation;
 
-        State(ImageViewState imageViewState, Rect cropRect, int rotation) {
+        State(ImageViewState imageViewState, Rect cropRect) {
             super(imageViewState.getScale(), imageViewState.getCenter(), imageViewState.getOrientation());
             this.cropRect = new int[]{
                     cropRect.left, cropRect.top,
                     cropRect.right, cropRect.bottom};
-            this.rotation = rotation;
         }
 
         Rect getCropRect() {
             return new Rect(
                     cropRect[0], cropRect[1],
                     cropRect[2], cropRect[3]);
-        }
-
-        int getRotation() {
-            return rotation;
         }
     }
 
@@ -133,9 +128,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         setZoomEnabled(false);
         setPanEnabled(false);
         setPanLimit(PAN_LIMIT_CENTER);
-        setBitmapDecoderClass(GlideImageDecoder.class);
-        setRegionDecoderClass(RAWImageBitmapRegionDecoder.class);
-        setMinimumTileDpi(196);
+        setMinimumTileDpi(50);
         setMinScale(2.0f);
 
         setOnTouchListener(this);
@@ -169,8 +162,16 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
     public void loadImage(Uri uri, State state) {
         imageUri = uri;
+
+        setBitmapDecoderClass(GlideImageDecoder.class);
+        String mimeType = MediaType.getMimeType(getContext(), imageUri);
+        if (MediaType.checkRAWMimeType(mimeType)) {
+            setRegionDecoderClass(RAWImageBitmapRegionDecoder.class);
+        } else {
+            setRegionDecoderClass(CustomRegionDecoder.class);
+        }
+
         if (state != null) {
-            setImageRotation(state.getRotation());
             cropRect = state.getCropRect();
         }
         setImage(ImageSource.uri(uri), state);
@@ -186,18 +187,18 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         if (cropRect == null) {
             cropRect = getImageRect();
         } else {
-            autoZoom();
+            autoZoom(true);
         }
     }
 
-    public int getImageRotation() {
-        return imageRotation;
-    }
-
-    public void setImageRotation(int imageRotation) {
-        this.imageRotation = imageRotation;
-        setOrientation(imageRotation);
-        cropRect = getImageRect();
+    public void rotate90Degree() {
+        cropRect = rotateRect90Degree(cropRect);
+        int orientation = getOrientation() + 90;
+        if (orientation >= 360) {
+            orientation = orientation % 360;
+        }
+        setOrientation(orientation);
+        autoZoom(false);
     }
 
     public void getCroppedBitmap(final OnResultListener onResultListener) {
@@ -209,7 +210,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
                     //rotate image
                     Matrix matrix = new Matrix();
-                    matrix.postRotate(imageRotation);
+                    matrix.postRotate(getOrientation() + getRotation());
 
                     bitmap = Bitmap.createBitmap(bitmap, 0, 0,
                             bitmap.getWidth(), bitmap.getHeight(), matrix, true);
@@ -263,7 +264,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                 break;
             case MotionEvent.ACTION_UP:
                 //auto-zoom
-                autoZoom();
+                autoZoom(true);
                 touching = false;
                 touchedCorner = NO_CORNER;
                 invalidate();
@@ -288,19 +289,26 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         return scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
     }
 
-    private void autoZoom() {
+    private void autoZoom(boolean animate) {
         //auto-zoom
         float scale = getNewScale();
         PointF center = getCenterOfCropRect();
-        animateScaleAndCenter(scale, center)
-                .withDuration(300)
-                .withInterruptible(false)
-                .start();
+        if (animate) {
+            animateScaleAndCenter(scale, center)
+                    .withDuration(300)
+                    .withInterruptible(false)
+                    .start();
+        } else {
+            setScaleAndCenter(scale, center);
+        }
     }
 
     private int getTouchedCorner(MotionEvent motionEvent) {
-        PointF currentTouchPos = viewToSourceCoord(
-                motionEvent.getX(), motionEvent.getY());
+        PointF currentTouchPos = new PointF(motionEvent.getX(), motionEvent.getY());
+        PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
+        PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
+        Rect cropRect = new Rect((int) topLeft.x, (int) topLeft.y,
+                (int) bottomRight.x, (int) bottomRight.y);
 
         if (currentTouchPos.x > cropRect.left - touchDelta
                 && currentTouchPos.x < cropRect.left + touchDelta
@@ -401,9 +409,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
     private Rect checkRectBounds(Rect cropRect, boolean resize) {
         Rect image = getImageRect();
-
         Rect newCropRect = cropRect;
-
         //check if inside image
         int width = newCropRect.right - newCropRect.left,
                 height = newCropRect.bottom - newCropRect.top;
@@ -477,13 +483,23 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     private Rect getImageRect() {
-        switch (imageRotation) {
+        switch (getOrientation()) {
             case 90:
             case 270:
                 return new Rect(0, 0, getSHeight(), getSWidth());
             default:
                 return new Rect(0, 0, getSWidth(), getSHeight());
         }
+    }
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    private Rect rotateRect90Degree(Rect cropRect) {
+        Rect imageRect = getImageRect();
+        int newWidth = cropRect.height();
+        int newHeight = cropRect.width();
+        Point newTopLeft = new Point(imageRect.height() - (cropRect.top + cropRect.height()), cropRect.left);
+        return new Rect(newTopLeft.x, newTopLeft.y,
+                newTopLeft.x + newWidth, newTopLeft.y + newHeight);
     }
 
     @Override
@@ -625,6 +641,6 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     public State getCropImageViewState() {
-        return new State(getState(), cropRect, imageRotation);
+        return new State(getState(), cropRect);
     }
 }

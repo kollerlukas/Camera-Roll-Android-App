@@ -324,8 +324,8 @@ public class MainActivity extends ThemeableActivity {
                                             recyclerView.getPaddingEnd() + windowInsets[2],
                                             recyclerView.getPaddingBottom() + windowInsets[3]);
 
-                                    fab.setTranslationY(-windowInsets[2]);
-                                    fab.setTranslationX(-windowInsets[3]);
+                                    fab.setTranslationX(-windowInsets[2]);
+                                    fab.setTranslationY(-windowInsets[3]);
                                 }
                             });
         }

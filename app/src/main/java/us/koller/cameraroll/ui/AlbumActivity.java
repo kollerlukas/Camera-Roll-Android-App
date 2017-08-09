@@ -327,8 +327,8 @@ public class AlbumActivity extends ThemeableActivity
                                             recyclerView.getPaddingBottom() + windowInsets[3]);
                                     recyclerView.scrollToPosition(0);
 
-                                    fab.setTranslationY(-windowInsets[2]);
-                                    fab.setTranslationX(-windowInsets[3]);
+                                    fab.setTranslationX(-windowInsets[2]);
+                                    fab.setTranslationY(-windowInsets[3]);
 
                                     rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 }

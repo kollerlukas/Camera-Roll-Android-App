@@ -89,10 +89,9 @@ public class EditImageActivity extends AppCompatActivity {
             }
         });
 
-        final View actionArea = findViewById(R.id.action_area);
-
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
+        final View actionArea = findViewById(R.id.action_area);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
@@ -281,12 +280,7 @@ public class EditImageActivity extends AppCompatActivity {
 
     private void rotate90Degrees() {
         final CropImageView imageView = findViewById(R.id.cropImageView);
-        final int imageRotation = imageView.getImageRotation();
-        int newImageRotation = imageRotation + 90;
-        if (newImageRotation >= 360) {
-            newImageRotation = newImageRotation % 360;
-        }
-        imageView.setImageRotation(newImageRotation);
+        imageView.rotate90Degree();
     }
 
     @Override
