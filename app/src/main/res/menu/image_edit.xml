@@ -4,12 +4,18 @@
 
     <item
         android:id="@+id/rotate"
-        android:title="@string/rotate"
         android:icon="@drawable/ic_rotate_90_degrees_ccw_white_24dp"
+        android:title="@string/rotate"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/done"
         android:title="@string/done"
+        android:visible="false"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/restore"
+        android:title="@string/restore"
+        app:showAsAction="never" />
 </menu>

@@ -371,17 +371,9 @@ public class ExifUtil {
     }
 
     private static int getTypeForTag(String tag) {
-        int type;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            List<String> tags = Arrays.asList(exifTags_v24);
-            int index = tags.indexOf(tag);
-            type = exifTypes_v24[index];
-        } else {
-            List<String> tags = Arrays.asList(exifTags);
-            int index = tags.indexOf(tag);
-            type = exifTypes[index];
-        }
-        return type;
+        List<String> tags = Arrays.asList(getExifTags());
+        int index = tags.indexOf(tag);
+        return getExifTypes()[index];
     }
 
     public static String[] getExifTags() {
@@ -389,6 +381,14 @@ public class ExifUtil {
             return exifTags_v24;
         } else {
             return exifTags;
+        }
+    }
+
+    private static int[] getExifTypes() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return exifTypes_v24;
+        } else {
+            return exifTypes;
         }
     }
 

@@ -67,7 +67,7 @@
                 android:contentDescription="@string/edit"
                 android:onClick="bottomBarOnClick"
                 android:padding="8dp"
-                android:src="@drawable/ic_crop_white_24dp" />
+                android:src="@drawable/ic_edit_white_24dp" />
         </RelativeLayout>
 
         <RelativeLayout

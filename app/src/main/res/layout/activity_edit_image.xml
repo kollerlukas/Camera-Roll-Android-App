@@ -27,8 +27,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@drawable/transparent_to_dark_gradient"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
+
+        <!--<SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:max="90"
+            android:progress="45"/>-->
 
         <Button
             android:id="@+id/done_button"

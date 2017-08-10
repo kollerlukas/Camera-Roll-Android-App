@@ -179,6 +179,7 @@ public class SetWallpaperActivity extends AppCompatActivity {
             this.finish();
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 

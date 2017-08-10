@@ -58,6 +58,8 @@ dependencies {
     implementation 'com.github.MFlisar:DragSelectRecyclerView:0.3'
 
     implementation 'com.google.android.exoplayer:exoplayer:r2.3.1'
+    /*compile 'com.google.android.exoplayer:exoplayer-core:r2.4.4'
+    compile 'com.google.android.exoplayer:exoplayer-ui:r2.4.4'*/
 
     implementation 'com.pacioianu.david:ink-page-indicator:1.2.0'
 

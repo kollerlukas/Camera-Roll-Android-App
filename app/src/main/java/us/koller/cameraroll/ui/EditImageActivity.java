@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
@@ -89,6 +90,25 @@ public class EditImageActivity extends AppCompatActivity {
             }
         });
 
+        /*SeekBar seekBar = findViewById(R.id.seekbar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                int rotationAngle = progress - 45;
+                imageView.setRotationAngle(rotationAngle);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });*/
+
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
         final View actionArea = findViewById(R.id.action_area);
@@ -111,9 +131,9 @@ public class EditImageActivity extends AppCompatActivity {
                             actionArea.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
                     imageView.setPadding(imageView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            imageView.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            imageView.getPaddingTop()/* + insets.getSystemWindowInsetTop()*/,
                             imageView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            imageView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                            imageView.getPaddingBottom()/* + insets.getSystemWindowInsetBottom()*/);
 
                     return insets.consumeSystemWindowInsets();
                 }
@@ -146,12 +166,24 @@ public class EditImageActivity extends AppCompatActivity {
                                             actionArea.getPaddingBottom() + windowInsets[3]);
 
                                     imageView.setPadding(imageView.getPaddingStart() + windowInsets[0],
-                                            imageView.getPaddingTop() + windowInsets[1],
+                                            imageView.getPaddingTop()/* + windowInsets[1]*/,
                                             imageView.getPaddingEnd() + windowInsets[2],
-                                            imageView.getPaddingBottom() + windowInsets[3]);
+                                            imageView.getPaddingBottom()/* + windowInsets[3]*/);
                                 }
                             });
         }
+
+        imageView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        imageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        imageView.setPadding(imageView.getPaddingStart(),
+                                imageView.getPaddingTop() + toolbar.getHeight(),
+                                imageView.getPaddingEnd(),
+                                imageView.getPaddingBottom() + actionArea.getHeight());
+                    }
+                });
 
         //needed to achieve transparent navBar
         getWindow().getDecorView().setSystemUiVisibility(
@@ -272,6 +304,10 @@ public class EditImageActivity extends AppCompatActivity {
             case R.id.done:
                 done(item.getActionView());
                 break;
+            case R.id.restore:
+                CropImageView imageView = findViewById(R.id.cropImageView);
+                imageView.restore();
+                break;
             default:
                 break;
         }
@@ -279,7 +315,7 @@ public class EditImageActivity extends AppCompatActivity {
     }
 
     private void rotate90Degrees() {
-        final CropImageView imageView = findViewById(R.id.cropImageView);
+        CropImageView imageView = findViewById(R.id.cropImageView);
         imageView.rotate90Degree();
     }
 
