@@ -295,6 +295,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                 touchedCorner = NO_CORNER;
                 invalidate();
                 break;
+            default:
+                break;
         }
         // Use parent to handle pinch and two-finger pan.
         return consumed || super.onTouchEvent(motionEvent);

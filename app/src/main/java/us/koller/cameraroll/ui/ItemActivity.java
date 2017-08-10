@@ -623,6 +623,8 @@ public class ItemActivity extends ThemeableActivity {
                                     }
                                 });
                         break;
+                    default:
+                        break;
                 }
             }
         }).show();

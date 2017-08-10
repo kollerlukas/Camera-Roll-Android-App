@@ -1086,6 +1086,8 @@ public class AlbumActivity extends ThemeableActivity
                                     }
                                 });
                         break;
+                    default:
+                        break;
                 }
             }
         };
