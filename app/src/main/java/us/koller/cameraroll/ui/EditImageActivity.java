@@ -24,7 +24,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
@@ -36,6 +35,7 @@ import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.ui.widget.CropImageView;
 import us.koller.cameraroll.util.ExifUtil;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.Util;
 
@@ -72,6 +72,12 @@ public class EditImageActivity extends AppCompatActivity {
             return;
         }
 
+        String mimeType = MediaType.getMimeType(this, uri);
+        if (!(MediaType.checkImageMimeType(mimeType) || MediaType.checkRAWMimeType(mimeType))) {
+            Toast.makeText(this, R.string.editing_file_format_not_supported, Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
         imagePath = intent.getStringExtra(IMAGE_PATH);
 
         final CropImageView imageView = findViewById(R.id.cropImageView);
@@ -89,25 +95,6 @@ public class EditImageActivity extends AppCompatActivity {
                 done(view);
             }
         });
-
-        /*SeekBar seekBar = findViewById(R.id.seekbar);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                int rotationAngle = progress - 45;
-                imageView.setRotationAngle(rotationAngle);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });*/
 
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);

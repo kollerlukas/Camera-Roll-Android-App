@@ -62,6 +62,13 @@
             <br>
                 <b><a href=\"https://fonts.google.com/specimen/Roboto+Mono?selection.family=Roboto+Mono\">Roboto Mono Font</a></b>, by Christian Robertson
             <br>
+            <br/>
+            <br/>
+            Translators:<br/>
+            <br>
+                French: <a href=\"https://github.com/Primokorn\">Primokorn</a>, <a href=\"https://github.com/kkfong\">kkfong</a><br>
+                Italian: Silvano Numelli
+            <br>
         ]]>
     </string>
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>

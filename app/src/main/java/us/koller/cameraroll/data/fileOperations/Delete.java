@@ -33,7 +33,7 @@ public class Delete extends FileOperation {
                 if (treeUri == null) {
                     return;
                 }
-                result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
+                result = deleteFileOnRemovableStorage(this, treeUri, files[i].getPath());
                 Log.d("Delete", "execute: deleteFileOnRemovableStorage()");
             } else {
                 result = deleteFile(files[i].getPath());

@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -177,9 +179,14 @@ public abstract class BaseActivity extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             BaseActivity.this.workIntent = workIntent;
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                                Intent requestIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                                                startActivityForResult(requestIntent, MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
+                                            try {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                                    Intent requestIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                                    startActivityForResult(requestIntent, MainActivity.REMOVABLE_STORAGE_PERMISSION_REQUEST_CODE);
+                                                }
+                                            } catch (ActivityNotFoundException e) {
+                                                Toast.makeText(BaseActivity.this, "Error!!!", Toast.LENGTH_SHORT).show();
+                                                e.printStackTrace();
                                             }
                                             dialog.dismiss();
                                         }

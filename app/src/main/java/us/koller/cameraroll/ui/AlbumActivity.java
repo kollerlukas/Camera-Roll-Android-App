@@ -388,6 +388,26 @@ public class AlbumActivity extends ThemeableActivity
                     });
 
         }
+
+        if (!pick_photos && menu != null) {
+            setupMenu();
+        }
+    }
+
+    private void setupMenu() {
+        //setup exclude checkbox
+        boolean enabled = !Provider
+                .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
+                        Provider.getExcludedPaths());
+        menu.findItem(R.id.exclude).setEnabled(enabled);
+        menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
+
+        menu.findItem(R.id.pin).setChecked(album.pinned);
+
+        if (recyclerView.getAdapter() instanceof RecyclerViewAdapter &&
+                ((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
+            handleMenuVisibilityForSelectorMode(true);
+        }
     }
 
     @Override
@@ -420,27 +440,15 @@ public class AlbumActivity extends ThemeableActivity
         getMenuInflater().inflate(R.menu.album, menu);
         this.menu = menu;
 
-        if (!pick_photos) {
-            //setup exclude checkbox
-            boolean enabled = !Provider
-                    .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
-                            Provider.getExcludedPaths());
-            menu.findItem(R.id.exclude).setEnabled(enabled);
-            menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
-
-            menu.findItem(R.id.pin).setChecked(album.pinned);
-
-            if (recyclerView.getAdapter() instanceof RecyclerViewAdapter &&
-                    ((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
-                handleMenuVisibilityForSelectorMode(true);
-            }
-        } else {
+        if (pick_photos) {
             menu.findItem(R.id.share).setVisible(false);
             menu.findItem(R.id.exclude).setVisible(false);
             menu.findItem(R.id.pin).setVisible(false);
             menu.findItem(R.id.rename).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
+        } else if (album != null) {
+            setupMenu();
         }
 
         int sort_by = Settings.getInstance(this).sortAlbumBy();

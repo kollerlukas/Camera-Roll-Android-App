@@ -116,5 +116,7 @@
 
     <string name="success">Successo!</string>
     <string name="wallpaper_file_format_not_supported">This file format is not supported for wallpapers</string>
+    <string name="editing_file_format_not_supported">This file format is not supported for editing</string>
     <string name="restore">Restore</string>
+    <string name="move_error">Moving files to/from removable Storage doesn\'t work. Please just copy and delete the file</string>
 </resources>

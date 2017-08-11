@@ -47,7 +47,7 @@ public class Copy extends FileOperation {
         }
 
         for (int i = files.length - 1; i >= 0; i--) {
-            boolean result = copyFilesRecursively(getApplicationContext(), treeUri,
+            boolean result = copyFilesRecursively(this, treeUri,
                     files[i].getPath(), target.getPath(), true);
             success_count += result ? 1 : 0;
             onProgress(s, success_count, files.length);

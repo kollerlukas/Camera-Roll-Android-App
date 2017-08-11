@@ -71,7 +71,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
         if (autoSendDoneBroadcast()) {
             if (pathsToScan.size() > 0) {
-                scanPaths(getApplicationContext(), new Util.MediaScannerCallback() {
+                scanPaths(this, new Util.MediaScannerCallback() {
                     @Override
                     public void onAllPathsScanned() {
                         sendDoneBroadcast();

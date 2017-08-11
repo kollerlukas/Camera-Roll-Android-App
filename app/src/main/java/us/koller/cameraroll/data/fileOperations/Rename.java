@@ -43,7 +43,7 @@ public class Rename extends FileOperation {
                 if (treeUri == null) {
                     return;
                 }
-                result = renameFileRemovableStorage(getApplicationContext(), treeUri, file.getPath(), newFileName);
+                result = renameFileRemovableStorage(this, treeUri, file.getPath(), newFileName);
             } else {
                 result = renameFile(file.getPath(), newFileName);
             }

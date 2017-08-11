@@ -377,6 +377,9 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         .load(albumItem.getPath())
                         .apply(options)
                         .into((ImageView) holder.itemView.findViewById(R.id.image));
+
+                ImageView removableStorageIndicator = holder.itemView.findViewById(R.id.removable_storage_indicator);
+                removableStorageIndicator.setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
