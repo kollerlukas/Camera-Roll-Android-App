@@ -1059,6 +1059,7 @@ public class AlbumActivity extends ThemeableActivity
         IntentFilter filter = FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
         filter.addAction(ALBUM_ITEM_REMOVED);
         filter.addAction(ALBUM_ITEM_RENAMED);
+        filter.addAction(DATA_CHANGED);
         return filter;
     }
 
@@ -1084,6 +1085,7 @@ public class AlbumActivity extends ThemeableActivity
                         removeAlbumItem(path);
                         break;
                     case ALBUM_ITEM_RENAMED:
+                    case DATA_CHANGED:
                         String albumPath = getIntent().getStringExtra(ALBUM_PATH);
                         MediaProvider.loadAlbum(AlbumActivity.this, albumPath,
                                 new MediaProvider.OnAlbumLoadedCallback() {

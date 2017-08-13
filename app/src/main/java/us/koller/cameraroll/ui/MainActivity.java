@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.ContentObserver;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
@@ -109,6 +112,8 @@ public class MainActivity extends ThemeableActivity {
     private Snackbar snackbar;
 
     private MediaProvider mediaProvider;
+
+    private ContentObserver observer;
 
     private boolean hiddenFolders;
 
@@ -666,6 +671,23 @@ public class MainActivity extends ThemeableActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        observer = new ContentObserver(new Handler());
+        observer.setListener(new ContentObserver.Listener() {
+            @Override
+            public void onChange(boolean selfChange, Uri uri) {
+                Log.d("MainActivity", "onChange()");
+                MediaProvider.dataChanged = true;
+                //observer.unregister(MainActivity.this);
+                //observer = null;
+            }
+        });
+        observer.register(this);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //not able to save albums in Bundle, --> TransactionTooLargeException
@@ -689,6 +711,10 @@ public class MainActivity extends ThemeableActivity {
         super.onDestroy();
         if (mediaProvider != null) {
             mediaProvider.onDestroy();
+        }
+
+        if (observer != null) {
+            observer.unregister(this);
         }
     }
 
@@ -734,6 +760,10 @@ public class MainActivity extends ThemeableActivity {
                     case RESORT:
                         resortAlbums();
                         break;
+                    case DATA_CHANGED:
+                        albums = MediaProvider.getAlbums();
+                        recyclerViewAdapter.setAlbums(albums);
+                        recyclerViewAdapter.notifyDataSetChanged();
                     default:
                         break;
                 }
@@ -745,6 +775,7 @@ public class MainActivity extends ThemeableActivity {
     public IntentFilter getBroadcastIntentFilter() {
         IntentFilter filter = FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
         filter.addAction(RESORT);
+        filter.addAction(DATA_CHANGED);
         return filter;
     }
 }

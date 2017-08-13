@@ -420,20 +420,14 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         if (historySize > 0) {
             PointF oldTouchPos = viewToSourceCoord(motionEvent.getHistoricalX(0),
                     motionEvent.getHistoricalY(0));
-            float deltaX = oldTouchPos.x - currentTouchPos.x;
-            float deltaY = oldTouchPos.y - currentTouchPos.y;
-
-            /*double hypLength = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            double deltaAngle = Math.atan(deltaX / deltaY);
-            double radians = Math.toRadians(rotationAngle + deltaAngle);
-            deltaX = (float) (Math.cos(radians) * hypLength);
-            deltaY = (float) (Math.sin(radians) * hypLength);*/
+            int deltaX = (int) (oldTouchPos.x - currentTouchPos.x);
+            int deltaY = (int) (oldTouchPos.y - currentTouchPos.y);
 
             Rect newCropRect = new Rect(
-                    (int) (cropRect.left + deltaX),
-                    (int) (cropRect.top + deltaY),
-                    (int) (cropRect.right + deltaX),
-                    (int) (cropRect.bottom + deltaY));
+                    cropRect.left + deltaX,
+                    cropRect.top + deltaY,
+                    cropRect.right + deltaX,
+                    cropRect.bottom + deltaY);
             return checkRectBounds(newCropRect, false);
         } else {
             return cropRect;
@@ -444,8 +438,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         Rect image = getImageRect();
         Rect newCropRect = cropRect;
         //check if inside image
-        int width = newCropRect.right - newCropRect.left,
-                height = newCropRect.bottom - newCropRect.top;
+        int width = newCropRect.width();
+        int height = newCropRect.height();
 
         if (image.left > newCropRect.left) {
             newCropRect = new Rect(image.left, newCropRect.top,
@@ -626,25 +620,30 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     private void drawBackground(Canvas canvas) {
+        Rect imageRect = getImageRect();
+        PointF topLeftImageRect = sourceToViewCoord(imageRect.left, imageRect.top);
+        PointF bottomRightImageRect = sourceToViewCoord(imageRect.left, imageRect.top);
+
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
-        if (topLeft == null || bottomRight == null) {
+        if (topLeftImageRect == null || bottomRightImageRect == null ||
+                topLeft == null || bottomRight == null) {
             return;
         }
 
         Path background = new Path();
-        background.moveTo(0, 0);
-        background.lineTo(getSWidth(), 0);
-        background.lineTo(getSWidth(), getSHeight());
-        background.lineTo(0, getSHeight());
-        background.close();
-
+        background.setFillType(Path.FillType.INVERSE_EVEN_ODD);
         background.moveTo(topLeft.x, topLeft.y);
         background.lineTo(bottomRight.x, topLeft.y);
         background.lineTo(bottomRight.x, bottomRight.y);
         background.lineTo(topLeft.x, bottomRight.y);
         background.close();
-        background.setFillType(Path.FillType.EVEN_ODD);
+
+        background.moveTo(topLeftImageRect.x, topLeftImageRect.y);
+        background.lineTo(bottomRightImageRect.x, topLeftImageRect.y);
+        background.lineTo(bottomRightImageRect.x, bottomRightImageRect.y);
+        background.lineTo(topLeftImageRect.x, bottomRightImageRect.y);
+        background.close();
 
         backgroundPaint.setAlpha(touching ? 100 : 200);
 

@@ -25,11 +25,14 @@ import java.util.ArrayList;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.util.Util;
 
 //simple BaseActivity that handles LocalBroadcastReceivers, need for communication with FileOperationServices
 public abstract class BaseActivity extends AppCompatActivity {
+
+    public static final String DATA_CHANGED = "DATA_CHANGED";
 
     private ArrayList<BroadcastReceiver> broadcastReceivers;
 
@@ -68,6 +71,31 @@ public abstract class BaseActivity extends AppCompatActivity {
             broadcastReceivers.add(removableStoragePermissionRequestBroadcastReceiver);
             LocalBroadcastManager.getInstance(this)
                     .registerReceiver(removableStoragePermissionRequestBroadcastReceiver, filter);
+        }
+
+        if (MediaProvider.dataChanged) {
+            MediaProvider.dataChanged = false;
+            Settings s = Settings.getInstance(this);
+            boolean hiddenFolders = s.getHiddenFolders();
+            MediaProvider provider = new MediaProvider(this);
+            provider.loadAlbums(this, hiddenFolders,
+                    new MediaProvider.OnMediaLoadedCallback() {
+                        @Override
+                        public void onMediaLoaded(ArrayList<Album> albums) {
+                            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(BaseActivity.this);
+                            manager.sendBroadcast(new Intent().setAction(DATA_CHANGED));
+                        }
+
+                        @Override
+                        public void timeout() {
+
+                        }
+
+                        @Override
+                        public void needPermission() {
+                            MediaProvider.checkPermission(BaseActivity.this);
+                        }
+                    });
         }
     }
 
@@ -142,7 +170,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 unregisterLocalBroadcastReceiver(broadcastReceiver);
             }
         }
-
         super.onDestroy();
     }
 

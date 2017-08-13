@@ -1,7 +1,6 @@
 package us.koller.cameraroll.data.fileOperations;
 
 import android.content.Intent;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,6 +13,8 @@ public class Move extends FileOperation {
     public static final String MOVED_FILES_PATHS = "MOVED_FILES_PATHS";
 
     private ArrayList<String> movedFilePaths;
+
+    private boolean failed = false;
 
     @Override
     public void execute(Intent workIntent) {
@@ -36,29 +37,28 @@ public class Move extends FileOperation {
         boolean movingOntoRemovableStorage = Util.isOnRemovableStorage(target.getPath());
 
         if (movingOntoRemovableStorage) {
+            failed = true;
+        } else {
+            for (int i = files.length - 1; i >= 0; i--) {
+                boolean movingFromRemovableStorage = Util.isOnRemovableStorage(files[i].getPath());
+
+                if (movingFromRemovableStorage) {
+                    failed = true;
+                    break;
+                }
+
+                boolean result = moveFile(files[i].getPath(), target.getPath());
+                if (result) {
+                    movedFilePaths.add(files[i].getPath());
+                }
+                success_count += result ? 1 : 0;
+                onProgress(s, success_count, files.length);
+            }
+        }
+
+        if (failed) {
             showRemovableStorageToast();
-            sendFailedBroadcast(workIntent, null);
-            return;
-        }
-
-        for (int i = files.length - 1; i >= 0; i--) {
-            boolean movingFromRemovableStorage = Util.isOnRemovableStorage(files[i].getPath());
-
-            if (movingFromRemovableStorage) {
-                showRemovableStorageToast();
-                sendFailedBroadcast(workIntent, null);
-                return;
-            }
-
-            boolean result = moveFile(files[i].getPath(), target.getPath());
-            if (result) {
-                movedFilePaths.add(files[i].getPath());
-            }
-            success_count += result ? 1 : 0;
-            onProgress(s, success_count, files.length);
-        }
-
-        if (success_count == 0) {
+        } else if (success_count == 0) {
             onProgress(s, success_count, files.length);
         }
     }
@@ -97,7 +97,17 @@ public class Move extends FileOperation {
     }
 
     private void showRemovableStorageToast() {
-        String message = getString(R.string.move_error);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String message = getString(R.string.move_error);
+                sendMessage(message);
+            }
+        });
+    }
+
+    @Override
+    public boolean autoSendDoneBroadcast() {
+        return !failed;
     }
 }

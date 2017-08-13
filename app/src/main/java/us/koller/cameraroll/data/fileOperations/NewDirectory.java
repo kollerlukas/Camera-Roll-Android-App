@@ -33,7 +33,7 @@ public class NewDirectory extends FileOperation {
             if (!writingOntoRemovableStorage) {
                 result = createNewFolder(file.getPath());
             } else {
-                result = StorageUtil.createDocumentDir(this, treeUri, file.getPath()) != null;
+                result = StorageUtil.createDocumentDir(getApplicationContext(), treeUri, file.getPath()) != null;
             }
 
             if (!result) {

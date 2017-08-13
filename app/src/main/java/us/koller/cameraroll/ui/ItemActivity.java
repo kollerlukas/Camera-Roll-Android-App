@@ -271,22 +271,24 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     private void onAlbumLoaded(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            int position = getIntent().getIntExtra(ITEM_POSITION, 0);
-            if (album != null && position < album.getAlbumItems().size()) {
-                albumItem = album.getAlbumItems().get(position);
-                albumItem.isSharedElement = true;
-            }
-        } else {
-            albumItem = savedInstanceState.getParcelable(ALBUM_ITEM);
-            if (albumItem != null && albumItem instanceof Photo) {
-                Photo photo = (Photo) albumItem;
-                ImageViewState imageViewState
-                        = (ImageViewState) savedInstanceState.getSerializable(IMAGE_VIEW_SAVED_STATE);
-                photo.putImageViewSavedState(imageViewState);
-            }
-            if (savedInstanceState.getBoolean(INFO_DIALOG_SHOWN, false)) {
-                showInfoDialog();
+        if (albumItem == null) {
+            if (savedInstanceState == null) {
+                int position = getIntent().getIntExtra(ITEM_POSITION, 0);
+                if (album != null && position < album.getAlbumItems().size()) {
+                    albumItem = album.getAlbumItems().get(position);
+                    albumItem.isSharedElement = true;
+                }
+            } else {
+                albumItem = savedInstanceState.getParcelable(ALBUM_ITEM);
+                if (albumItem != null && albumItem instanceof Photo) {
+                    Photo photo = (Photo) albumItem;
+                    ImageViewState imageViewState
+                            = (ImageViewState) savedInstanceState.getSerializable(IMAGE_VIEW_SAVED_STATE);
+                    photo.putImageViewSavedState(imageViewState);
+                }
+                if (savedInstanceState.getBoolean(INFO_DIALOG_SHOWN, false)) {
+                    showInfoDialog();
+                }
             }
         }
 
@@ -341,7 +343,6 @@ public class ItemActivity extends ThemeableActivity {
                             }
                         });
             }
-
         }
     }
 
@@ -885,7 +886,9 @@ public class ItemActivity extends ThemeableActivity {
 
     @Override
     public IntentFilter getBroadcastIntentFilter() {
-        return FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
+        IntentFilter filter = FileOperation.Util.getIntentFilter(super.getBroadcastIntentFilter());
+        filter.addAction(DATA_CHANGED);
+        return filter;
     }
 
     @Override
@@ -909,6 +912,52 @@ public class ItemActivity extends ThemeableActivity {
                                 finish();
                             }
                         }
+                        break;
+                    case DATA_CHANGED:
+                        final int albumItemIndex = album.getAlbumItems().indexOf(albumItem);
+                        String albumPath = getIntent().getStringExtra(ALBUM_PATH);
+                        MediaProvider.loadAlbum(ItemActivity.this, albumPath,
+                                new MediaProvider.OnAlbumLoadedCallback() {
+                                    @Override
+                                    public void onAlbumLoaded(Album album) {
+                                        int index = albumItemIndex;
+                                        ItemActivity.this.album = album;
+                                        if (index >= album.getAlbumItems().size()) {
+                                            index = album.getAlbumItems().size() - 1;
+                                        }
+                                        if (index >= 0) {
+                                            ((ViewPagerAdapter) viewPager.getAdapter()).setAlbum(album);
+                                            albumItem = album.getAlbumItems().get(index);
+                                            viewPager.getAdapter().notifyDataSetChanged();
+                                            viewPager.setCurrentItem(index);
+
+                                            final ActionBar actionBar = getSupportActionBar();
+                                            if (actionBar != null) {
+                                                actionBar.setTitle(albumItem.getName());
+                                            }
+
+                                            ViewPagerAdapter adapter = (ViewPagerAdapter) viewPager.getAdapter();
+                                            ViewHolder viewHolder = adapter.findViewHolderByTag(albumItem.getPath());
+                                            if (viewHolder != null) {
+                                                onShowViewHolder(viewHolder);
+                                            } else {
+                                                ((ViewPagerAdapter) viewPager.getAdapter())
+                                                        .addOnInstantiateItemCallback(new ViewPagerOnInstantiateItemCallback() {
+                                                            @Override
+                                                            public boolean onInstantiateItem(ViewHolder viewHolder) {
+                                                                if (viewHolder.albumItem.getPath().equals(albumItem.getPath())) {
+                                                                    onShowViewHolder(viewHolder);
+                                                                    return false;
+                                                                }
+                                                                return true;
+                                                            }
+                                                        });
+                                            }
+                                        } else {
+                                            finish();
+                                        }
+                                    }
+                                });
                         break;
                     default:
                         break;

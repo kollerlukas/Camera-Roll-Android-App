@@ -27,6 +27,8 @@ public class MediaProvider extends Provider {
     public static final String FILE_TYPE_NO_MEDIA = ".nomedia";
     public static final int PERMISSION_REQUEST_CODE = 16;
 
+    public static boolean dataChanged = false;
+
     public abstract static class OnMediaLoadedCallback implements Provider.Callback {
         public abstract void onMediaLoaded(ArrayList<Album> albums);
     }

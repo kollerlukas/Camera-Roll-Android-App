@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.ContentObserver;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
@@ -67,11 +68,13 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
+        ContentObserver.selfChange = true;
+
         execute(workIntent);
 
         if (autoSendDoneBroadcast()) {
             if (pathsToScan.size() > 0) {
-                scanPaths(this, new Util.MediaScannerCallback() {
+                scanPaths(getApplicationContext(), new Util.MediaScannerCallback() {
                     @Override
                     public void onAllPathsScanned() {
                         sendDoneBroadcast();
@@ -80,6 +83,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             } else {
                 sendDoneBroadcast();
             }
+        } else {
+            ContentObserver.selfChange = false;
         }
     }
 
@@ -98,6 +103,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     public void sendDoneBroadcast() {
+        ContentObserver.selfChange = false;
         onProgress("", -1, -1);
         Intent intent = getDoneIntent();
         sendLocalBroadcast(intent);
@@ -123,7 +129,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     public void sendLocalBroadcast(Intent intent) {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
     public abstract int getType();
@@ -143,6 +149,19 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                 @Override
                 public void run() {
                     updater.onProgress(action, progress, totalNumber);
+                }
+            });
+        }
+    }
+
+    public void sendMessage(final String message) {
+        if (updater != null) {
+            Log.d("FileOperation", "sendMessage: " + message);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("FileOperation", "run() called");
+                    updater.sendMessage(message);
                 }
             });
         }
@@ -251,6 +270,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     interface ProgressUpdater {
         void onProgress(String action, int progress, int totalNumber);
+
+        void sendMessage(String message);
     }
 
     private static class ToastUpdater implements ProgressUpdater {
@@ -281,6 +302,20 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         } else {
                             toast.setText(text);
                         }
+                        toast.show();
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void sendMessage(final String message) {
+            Log.d("ToastUpdater", "sendMessage() called with: message = [" + message + "]");
+            if (toast != null) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        toast.setText(message);
                         toast.show();
                     }
                 });

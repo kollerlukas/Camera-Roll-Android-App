@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -378,8 +379,12 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         .apply(options)
                         .into((ImageView) holder.itemView.findViewById(R.id.image));
 
+                boolean onRemovableStorage = false;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    onRemovableStorage = Environment.isExternalStorageRemovable(new File(album.getPath()));
+                }
                 ImageView removableStorageIndicator = holder.itemView.findViewById(R.id.removable_storage_indicator);
-                removableStorageIndicator.setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
+                removableStorageIndicator.setVisibility(onRemovableStorage ? View.VISIBLE : View.GONE);
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
