@@ -16,7 +16,6 @@ import android.os.PowerManager;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.media.ExifInterface;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
@@ -222,12 +221,17 @@ public class Util {
     }
 
     public static boolean hasWifiConnection(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-        return isConnected && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+            return isConnected && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     static Locale getLocale(Context context) {

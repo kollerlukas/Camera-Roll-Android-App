@@ -101,6 +101,9 @@ public class MediaType {
 
     @SuppressWarnings("DefaultLocale")
     private static boolean checkExtension(String path, String[] extensions) {
+        if (path == null) {
+            return false;
+        }
         for (int i = 0; i < extensions.length; i++) {
             if (path.toLowerCase().endsWith(extensions[i])) {
                 return true;

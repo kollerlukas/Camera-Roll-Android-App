@@ -206,7 +206,12 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
             orientation = orientation % 360;
         }
         setOrientation(orientation);
-        autoZoom(false);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                autoZoom(false);
+            }
+        });
     }
 
     /*public void setRotationAngle(int rotationAngle) {
@@ -282,18 +287,22 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                     consumed = true;
                 }
 
-                PointF center = getCenterOfCropRect();
-                float scale = getScale();
-                float newScale = getNewScale();
-                setScaleAndCenter(newScale < scale ? newScale : scale, center);
-                invalidate();
+                if (cropRect != null) {
+                    PointF center = getCenterOfCropRect();
+                    float scale = getScale();
+                    float newScale = getNewScale();
+                    setScaleAndCenter(newScale < scale ? newScale : scale, center);
+                    invalidate();
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 //auto-zoom
-                autoZoom(true);
-                touching = false;
-                touchedCorner = NO_CORNER;
-                invalidate();
+                if (cropRect != null) {
+                    autoZoom(true);
+                    touching = false;
+                    touchedCorner = NO_CORNER;
+                    invalidate();
+                }
                 break;
             default:
                 break;
@@ -333,6 +342,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
     private int getTouchedCorner(MotionEvent motionEvent) {
         PointF currentTouchPos = new PointF(motionEvent.getX(), motionEvent.getY());
+        if (cropRect == null) {
+            return NO_CORNER;
+        }
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
         Rect cropRect = new Rect((int) topLeft.x, (int) topLeft.y,
@@ -413,6 +425,10 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     private Rect getMovedRect(MotionEvent motionEvent) {
+        if (cropRect == null) {
+            return null;
+        }
+
         PointF currentTouchPos = viewToSourceCoord(motionEvent.getX(),
                 motionEvent.getY());
 

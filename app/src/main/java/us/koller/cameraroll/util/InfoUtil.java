@@ -59,7 +59,8 @@ public class InfoUtil {
         //retrieve file name
         try {
             Cursor cursor = context.getContentResolver().query(uri,
-                    null, null, null, null);
+                    new String[]{OpenableColumns.DISPLAY_NAME},
+                    null, null, null);
             if (cursor != null) {
                 int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                 cursor.moveToFirst();
