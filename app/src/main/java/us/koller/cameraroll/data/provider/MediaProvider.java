@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
-import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
 import us.koller.cameraroll.util.SortUtil;
 
 public class MediaProvider extends Provider {

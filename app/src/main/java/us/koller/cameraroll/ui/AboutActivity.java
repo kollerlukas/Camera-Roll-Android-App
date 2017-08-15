@@ -97,21 +97,27 @@ public class AboutActivity extends ThemeableActivity
 
         final View rootView = findViewById(R.id.root_view);
 
-        if (!theme.darkStatusBarIcons()) {
-            final NestedScrollView scrollView = findViewById(R.id.scroll_view);
-            scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY,
-                                           int oldScrollX, int oldScrollY) {
-                    int statusBarHeight = toolbar.getPaddingTop();
-                    if (scrollY > header.getHeight() - statusBarHeight / 2) {
-                        Util.setLightStatusBarIcons(rootView);
-                    } else {
+        final NestedScrollView scrollView = findViewById(R.id.scroll_view);
+        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY,
+                                       int oldScrollX, int oldScrollY) {
+                int statusBarHeight = toolbar.getPaddingTop();
+                if (scrollY > header.getHeight() - statusBarHeight / 2) {
+                    if (theme.darkStatusBarIcons()) {
                         Util.setDarkStatusBarIcons(rootView);
+                    } else {
+                        Util.setLightStatusBarIcons(rootView);
+                    }
+                } else {
+                    if (theme.darkStatusBarIconsInSelectorMode()) {
+                        Util.setDarkStatusBarIcons(rootView);
+                    } else {
+                        Util.setLightStatusBarIcons(rootView);
                     }
                 }
-            });
-        }
+            }
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
@@ -217,16 +223,16 @@ public class AboutActivity extends ThemeableActivity
     @Override
     public void onSwipeProcess(float percent) {
         getWindow().getDecorView().setBackgroundColor(SwipeBackCoordinatorLayout.getBackgroundColor(percent));
-        if (!theme.darkStatusBarIcons()) {
-            SwipeBackCoordinatorLayout layout = findViewById(R.id.swipeBackView);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            View rootView = findViewById(R.id.root_view);
-            int translationY = (int) layout.getTranslationY();
-            int statusBarHeight = toolbar.getPaddingTop();
-            if (translationY > statusBarHeight * 0.5) {
-                Util.setLightStatusBarIcons(rootView);
-            } else {
+        SwipeBackCoordinatorLayout layout = findViewById(R.id.swipeBackView);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        View rootView = findViewById(R.id.root_view);
+        int translationY = (int) layout.getTranslationY();
+        int statusBarHeight = toolbar.getPaddingTop();
+        if (translationY > statusBarHeight * 0.5) {
+            if (theme.darkStatusBarIcons()) {
                 Util.setDarkStatusBarIcons(rootView);
+            } else {
+                Util.setLightStatusBarIcons(rootView);
             }
         }
     }

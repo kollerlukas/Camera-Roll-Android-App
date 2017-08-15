@@ -300,8 +300,12 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 return;
             }
 
+            int[] imageDimens = Util
+                    .getImageDimensions(itemView.getContext(), uri);
+
             RequestOptions options = new RequestOptions()
                     .skipMemoryCache(true)
+                    .override((int) (imageDimens[0] * 0.1f), (int) (imageDimens[1] * 0.1f))
                     .diskCacheStrategy(DiskCacheStrategy.NONE);
 
             Glide.with(itemView.getContext())

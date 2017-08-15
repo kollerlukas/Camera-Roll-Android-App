@@ -37,8 +37,6 @@ import us.koller.cameraroll.data.Settings;
 
 public class Util {
 
-    private static Drawable selectorOverlay;
-
     public static int[] getImageDimensions(Context context, Uri uri) {
         int[] dimensions = new int[]{0, 0};
 
@@ -185,15 +183,17 @@ public class Util {
     }
 
     public static Drawable getAlbumItemSelectorOverlay(Context context) {
+        Drawable selectorOverlay = AppCompatResources.getDrawable(context,
+                R.drawable.album_item_selected_indicator);
+
         if (selectorOverlay == null) {
-            selectorOverlay = AppCompatResources.getDrawable(context,
-                    R.drawable.album_item_selected_indicator);
+            return null;
         }
 
         Settings s = Settings.getInstance(context);
         Theme theme = s.getThemeInstance(context);
 
-        int tintColor = theme.getAccentColor(context);
+        int tintColor = theme.getAccentColorLight(context);
         selectorOverlay = DrawableCompat.wrap(selectorOverlay);
         DrawableCompat.setTint(selectorOverlay, tintColor);
         return selectorOverlay;

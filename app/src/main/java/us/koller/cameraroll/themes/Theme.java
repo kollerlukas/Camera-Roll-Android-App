@@ -34,6 +34,8 @@ public abstract class Theme {
 
     public abstract int getAccentColorRes();
 
+    public abstract int getAccentColorLightRes();
+
     public abstract int getAccentTextColorRes();
 
 
@@ -55,6 +57,10 @@ public abstract class Theme {
 
     public int getAccentColor(Context context) {
         return getColor(context, getAccentColorRes());
+    }
+
+    public int getAccentColorLight(Context context) {
+        return getColor(context, getAccentColorLightRes());
     }
 
     public int getAccentTextColor(Context context) {

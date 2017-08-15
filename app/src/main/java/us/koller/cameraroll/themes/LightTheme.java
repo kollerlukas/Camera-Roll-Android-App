@@ -26,7 +26,7 @@ public class LightTheme extends Theme {
 
     @Override
     public boolean darkStatusBarIconsInSelectorMode() {
-        return true;
+        return false;
     }
 
     @Override
@@ -52,6 +52,11 @@ public class LightTheme extends Theme {
     @Override
     public int getAccentColorRes() {
         return R.color.colorAccent_light;
+    }
+
+    @Override
+    public int getAccentColorLightRes() {
+        return R.color.colorAccentLight_light;
     }
 
     @Override

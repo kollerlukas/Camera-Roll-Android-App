@@ -39,7 +39,7 @@ public class RAWImageViewHolder extends PhotoViewHolder {
     }
 
     private void addProgressBar() {
-        if (!imageLoaded) {
+        if (!imageLoaded && progressBar == null) {
             ViewGroup itemView = (ViewGroup) this.itemView;
             progressBar = new ProgressBar(itemView.getContext());
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(

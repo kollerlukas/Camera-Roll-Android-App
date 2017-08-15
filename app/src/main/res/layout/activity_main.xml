@@ -14,7 +14,7 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="fabClicked"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="?attr/colorAccent"
         app:elevation="6dp"
         app:fabSize="normal" />
 </android.support.design.widget.CoordinatorLayout>

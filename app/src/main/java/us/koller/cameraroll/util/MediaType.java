@@ -31,6 +31,9 @@ public class MediaType {
     }
 
     public static String getMimeType(String path) {
+        if (path == null) {
+            return null;
+        }
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(path);
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
     }

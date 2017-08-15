@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/camera_shortcut"
-        android:icon="@drawable/ic_camera_white_24dp"
+        android:icon="@drawable/ic_camera_lens_avd"
         android:title="@string/camera_shortcut"
         app:showAsAction="always" />
 
@@ -16,8 +16,8 @@
 
     <item
         android:id="@+id/sort_by"
-          android:icon="@drawable/ic_sort_white_24dp"
-          android:title="@string/sort_by"
+        android:icon="@drawable/ic_sort_white_24dp"
+        android:title="@string/sort_by"
         app:showAsAction="never">
 
         <menu>

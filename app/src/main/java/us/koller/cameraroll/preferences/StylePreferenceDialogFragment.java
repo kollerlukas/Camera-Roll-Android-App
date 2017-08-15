@@ -129,7 +129,7 @@ public class StylePreferenceDialogFragment
 
             Context context = container.getContext();
             Settings s = Settings.getInstance(context);
-            int accentColor = s.getThemeInstance(context).getAccentColor(context);
+            int accentColor = s.getThemeInstance(context).getAccentColorLight(context);
             imageView.setColorFilter(accentColor);
 
             container.addView(view);

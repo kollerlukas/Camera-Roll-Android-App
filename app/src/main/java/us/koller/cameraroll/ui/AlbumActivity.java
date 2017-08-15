@@ -59,6 +59,7 @@ import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.ui.widget.FastScrollerRecyclerView;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.SortUtil;
@@ -204,11 +205,7 @@ public class AlbumActivity extends ThemeableActivity
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(gridLayoutManager);
         float albumGridSpacing = getResources().getDimension(R.dimen.album_grid_spacing);
-        recyclerView.setPadding(
-                (int) (recyclerView.getPaddingLeft() + albumGridSpacing / 2),
-                (int) (recyclerView.getPaddingTop() + albumGridSpacing / 2),
-                (int) (recyclerView.getPaddingRight() + albumGridSpacing / 2),
-                (int) (recyclerView.getPaddingBottom() + albumGridSpacing / 2));
+        ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing((int) (albumGridSpacing / 2));
         recyclerView.addItemDecoration(new GridMarginDecoration((int) albumGridSpacing));
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {
@@ -227,7 +224,7 @@ public class AlbumActivity extends ThemeableActivity
                     return;
                 }
 
-                float translationY = toolbar.getTranslationY() - dy * 0.5f;
+                float translationY = toolbar.getTranslationY() - dy;
                 if (-translationY > toolbar.getHeight()) {
                     translationY = -toolbar.getHeight();
                 } else if (translationY > 0) {

@@ -17,7 +17,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -209,7 +208,6 @@ public class MainActivity extends ThemeableActivity {
                 });
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            /*private float scrollY = 0.0f;*/
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -219,17 +217,18 @@ public class MainActivity extends ThemeableActivity {
                 }
 
                 //hiding toolbar on scroll
-                float translationY = toolbar.getTranslationY() - dy * 0.5f;
+                float translationY = toolbar.getTranslationY() - dy;
                 if (-translationY > toolbar.getHeight()) {
                     translationY = -toolbar.getHeight();
                 } else if (translationY > 0) {
                     translationY = 0;
                 }
-
                 toolbar.setTranslationY(translationY);
 
                 //animate statusBarIcon color
-                if (!((RecyclerViewAdapter) recyclerView.getAdapter()).getSelectorManager().isSelectorModeActive()
+                boolean selectorModeActive = ((RecyclerViewAdapter) recyclerView.getAdapter())
+                        .getSelectorManager().isSelectorModeActive();
+                if (!selectorModeActive
                         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && theme.isBaseLight()) {
                     //only animate statusBar icons color, when not in selectorMode
@@ -244,7 +243,7 @@ public class MainActivity extends ThemeableActivity {
         });
 
         final FloatingActionButton fab = findViewById(R.id.fab);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
                     R.drawable.ic_camera_lens_avd);
             fab.setImageDrawable(d);
@@ -262,7 +261,8 @@ public class MainActivity extends ThemeableActivity {
 
         if (pick_photos || !settings.getCameraShortcut()) {
             fab.setVisibility(View.GONE);
-        }
+        }*/
+        fab.setVisibility(View.GONE);
 
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
@@ -514,6 +514,15 @@ public class MainActivity extends ThemeableActivity {
             menu.findItem(R.id.sort_by_most_recent).setChecked(true);
         }
 
+        Settings s = Settings.getInstance(this);
+        MenuItem cameraShortcut = menu.findItem(R.id.camera_shortcut);
+        cameraShortcut.setVisible(s.getCameraShortcut() && !pick_photos);
+        Drawable cameraIcon = cameraShortcut.getIcon().mutate();
+        DrawableCompat.wrap(cameraIcon);
+        DrawableCompat.setTint(cameraIcon, theme.getTextColorSecondary(this));
+        DrawableCompat.unwrap(cameraIcon);
+        cameraShortcut.setIcon(cameraIcon);
+
         if (pick_photos) {
             menu.findItem(R.id.file_explorer).setVisible(false);
             menu.findItem(R.id.settings).setVisible(false);
@@ -526,6 +535,14 @@ public class MainActivity extends ThemeableActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.camera_shortcut:
+                Drawable d = item.getIcon();
+                if (d instanceof Animatable
+                        && !((Animatable) d).isRunning()) {
+                    ((Animatable) d).start();
+                    fabClicked(null);
+                }
+                break;
             case R.id.refresh:
                 refreshPhotos();
                 break;

@@ -1,5 +1,6 @@
 package us.koller.cameraroll.util;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -16,7 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.data.models.Video;
 
 //workarounds to handle removable storage
@@ -94,6 +97,23 @@ public class StorageUtil {
             cursor.close();
             return uri;
         }
+    }
+
+    public static StorageRoot[] loadRoots(Activity context) {
+        ArrayList<StorageRoot> temp = new ArrayList<>();
+
+        StorageRoot externalStorage = new StorageRoot(
+                Environment.getExternalStorageDirectory().getPath());
+        externalStorage.setName(context.getString(R.string.storage));
+        temp.add(externalStorage);
+
+        File[] removableStorageRoots = getRemovableStorageRoots(context);
+        for (int i = 0; i < removableStorageRoots.length; i++) {
+            temp.add(new StorageRoot(removableStorageRoots[i].getPath()));
+        }
+
+        StorageRoot[] roots = new StorageRoot[temp.size()];
+        return temp.toArray(roots);
     }
 
     public static File[] getRemovableStorageRoots(Context context) {

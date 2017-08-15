@@ -55,6 +55,11 @@ public class DarkTheme extends Theme {
     }
 
     @Override
+    public int getAccentColorLightRes() {
+        return R.color.colorAccentLight;
+    }
+
+    @Override
     public int getAccentTextColorRes() {
         return R.color.colorAccent_text;
     }

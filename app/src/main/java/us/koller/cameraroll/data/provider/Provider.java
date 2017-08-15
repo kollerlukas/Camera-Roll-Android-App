@@ -4,14 +4,18 @@ import android.content.Context;
 import android.os.Environment;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import us.koller.cameraroll.data.provider.retriever.Retriever;
+import us.koller.cameraroll.util.StorageUtil;
 
 public abstract class Provider {
 
@@ -298,5 +302,36 @@ public abstract class Provider {
                 = context.openFileOutput(filename, Context.MODE_PRIVATE);
         fos.write(data.getBytes());
         fos.close();
+    }
+
+    public static File[] getDirectoriesToSearch(Context context) {
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file != null && Provider.searchDir(file.getPath());
+            }
+        };
+
+        //external Directory
+        File dir = Environment.getExternalStorageDirectory();
+        File[] dirs = dir.listFiles(filter);
+
+        //handle removable storage (e.g. SDCards)
+        ArrayList<File> temp = new ArrayList<>();
+        temp.addAll(Arrays.asList(dirs));
+        File[] removableStorageRoots = StorageUtil.getRemovableStorageRoots(context);
+        for (int i = 0; i < removableStorageRoots.length; i++) {
+            File root = removableStorageRoots[i];
+            File[] files = root.listFiles(filter);
+            if (files != null) {
+                Collections.addAll(temp, files);
+            }
+        }
+
+        dirs = new File[temp.size()];
+        for (int i = 0; i < dirs.length; i++) {
+            dirs[i] = temp.get(i);
+        }
+        return dirs;
     }
 }
