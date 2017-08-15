@@ -28,7 +28,6 @@ import java.io.InputStream;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
-import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
@@ -71,7 +70,6 @@ public class SetWallpaperActivity extends AppCompatActivity {
         imageView.setMinimumTileDpi(196);
 
         // use custom decoders
-        imageView.setBitmapDecoderClass(GlideImageDecoder.class);
         imageView.setRegionDecoderClass(CustomRegionDecoder.class);
 
         imageView.setImage(ImageSource.uri(imageUri), imageViewState);

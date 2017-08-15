@@ -7,7 +7,7 @@
     android:layout_margin="8dp"
     android:stateListAnimator="@animator/lift_up"
     app:cardBackgroundColor="@color/grey_900"
-    app:cardElevation="0dp">
+    app:cardElevation="2dp">
 
     <ImageView
         android:id="@+id/image"

@@ -25,7 +25,8 @@ public class MediaStoreRetriever extends Retriever {
 
     private static final String[] projection = new String[]{
             MediaStore.Files.FileColumns.DATA,
-            MediaStore.Files.FileColumns.PARENT,
+            /*MediaStore.Files.FileColumns.PARENT,*/
+            MediaStore.Files.FileColumns.MIME_TYPE,
             MediaStore.Images.ImageColumns.DATE_TAKEN,
             MediaStore.Video.VideoColumns.DATE_TAKEN,
             BaseColumns._ID};
@@ -71,14 +72,12 @@ public class MediaStoreRetriever extends Retriever {
             public void run() {
                 if (cursor.moveToFirst()) {
                     String path;
-                    long dateTaken;
-                    long id;
+                    long dateTaken, id;
                     int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
                     int idColumn = cursor.getColumnIndex(BaseColumns._ID);
 
                     do {
                         path = cursor.getString(pathColumn);
-                        id = cursor.getLong(idColumn);
                         AlbumItem albumItem = AlbumItem.getInstance(path);
                         if (albumItem != null) {
                             //set dateTaken
@@ -88,6 +87,8 @@ public class MediaStoreRetriever extends Retriever {
                                             MediaStore.Video.VideoColumns.DATE_TAKEN);
                             dateTaken = cursor.getLong(dateTakenColumn);
                             albumItem.setDate(dateTaken);
+
+                            id = cursor.getLong(idColumn);
                             Uri uri = ContentUris.withAppendedId(
                                     MediaStore.Files.getContentUri("external"), id);
                             albumItem.setUri(uri);

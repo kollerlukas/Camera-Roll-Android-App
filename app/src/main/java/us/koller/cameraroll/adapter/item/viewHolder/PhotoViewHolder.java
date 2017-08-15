@@ -14,7 +14,7 @@ import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.Photo;
-import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
+import us.koller.cameraroll.imageDecoder.CustomImageDecoder;
 import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
 import us.koller.cameraroll.ui.ItemActivity;
 import us.koller.cameraroll.util.ItemViewUtil;
@@ -163,7 +163,7 @@ public class PhotoViewHolder extends ViewHolder {
 
     @SuppressWarnings("WeakerAccess")
     public Class<? extends ImageDecoder> getImageDecoderClass() {
-        return GlideImageDecoder.class;
+        return CustomImageDecoder.class;
     }
 
     public Class<? extends ImageRegionDecoder> getBitmapRegionDecoderClass() {

@@ -203,8 +203,13 @@ public class AlbumActivity extends ThemeableActivity
         final int columnCount = Settings.getInstance(this).getColumnCount(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.addItemDecoration(new GridMarginDecoration((int)
-                getResources().getDimension(R.dimen.album_grid_spacing)));
+        float albumGridSpacing = getResources().getDimension(R.dimen.album_grid_spacing);
+        recyclerView.setPadding(
+                (int) (recyclerView.getPaddingLeft() + albumGridSpacing / 2),
+                (int) (recyclerView.getPaddingTop() + albumGridSpacing / 2),
+                (int) (recyclerView.getPaddingRight() + albumGridSpacing / 2),
+                (int) (recyclerView.getPaddingBottom() + albumGridSpacing / 2));
+        recyclerView.addItemDecoration(new GridMarginDecoration((int) albumGridSpacing));
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(RECYCLER_VIEW_SCROLL_STATE)) {
             recyclerView.getLayoutManager().onRestoreInstanceState(

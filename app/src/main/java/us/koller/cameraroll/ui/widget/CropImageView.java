@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui.widget;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,10 +28,10 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
-import us.koller.cameraroll.imageDecoder.GlideImageDecoder;
 import us.koller.cameraroll.imageDecoder.RAWImageBitmapRegionDecoder;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -169,7 +170,6 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
         imageUri = uri;
 
-        setBitmapDecoderClass(GlideImageDecoder.class);
         String mimeType = MediaType.getMimeType(getContext(), imageUri);
         if (MediaType.checkRAWMimeType(mimeType)) {
             setRegionDecoderClass(RAWImageBitmapRegionDecoder.class);
@@ -231,7 +231,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
             @Override
             public void run() {
                 try {
-                    Bitmap bitmap = new GlideImageDecoder().decode(getContext(), imageUri);
+                    ContentResolver resolver = getContext().getContentResolver();
+                    InputStream inputStream = resolver.openInputStream(imageUri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
                     //rotate image
                     Matrix matrix = new Matrix();
@@ -243,9 +245,10 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
                     byte[] bitmapData = outputStream.toByteArray();
-                    ByteArrayInputStream inputStream = new ByteArrayInputStream(bitmapData);
+                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bitmapData);
 
-                    BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
+                    BitmapRegionDecoder decoder = BitmapRegionDecoder.
+                            newInstance(byteArrayInputStream, false);
 
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 1;

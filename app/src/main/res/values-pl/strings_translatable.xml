@@ -1,6 +1,6 @@
 <resources>
     <!--translatable-->
-    <string name="read_permission_denied">Camera Roll needs the permission access your Storage to depict your pictures.</string>
+    <string name="read_permission_denied">Camera Roll wymaga uprawnienia dostępu do pamięci, aby wyświetlać zdjęcia.</string>
 
     <string name="refresh">Odśwież</string>
     <string name="sort_by">Sortuj wg…</string>
@@ -69,7 +69,7 @@
     <string name="other">Inne</string>
 
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Ręcznie przeszukaj pamięć dla mediów, zamiast polegać na MediaStore Api. Może pomóc, jeśli uważasz, że brakuje części plików.</string>
+    <string name="media_retriever_summary">Ręcznie przeszukaj pamięć, zamiast polegać na MediaStore Api. Może pomóc, jeśli uważasz, że brakuje części plików.</string>
 
     <string name="use_8_bit_color">8-Bitowe kolory</string>
     <string name="use_8_bit_color_summary">Użyj 8-Bitowej palety kolorów, podczas wyświetlania obrazów. Ładowanie ich może zająć więcej czasu. Również zwiększa ilość używanej pamięci, gdy aplikacja jest uruchomiona.</string>
