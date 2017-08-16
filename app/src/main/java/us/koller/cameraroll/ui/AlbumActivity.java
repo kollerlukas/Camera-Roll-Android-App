@@ -227,8 +227,15 @@ public class AlbumActivity extends ThemeableActivity
                 float translationY = toolbar.getTranslationY() - dy;
                 if (-translationY > toolbar.getHeight()) {
                     translationY = -toolbar.getHeight();
+                    if (theme.elevatedToolbar()) {
+                        toolbar.setActivated(true);
+                    }
                 } else if (translationY > 0) {
                     translationY = 0;
+                    if (theme.elevatedToolbar() &&
+                            !recyclerView.canScrollVertically(-1)) {
+                        toolbar.setActivated(false);
+                    }
                 }
                 toolbar.setTranslationY(translationY);
 
@@ -1040,7 +1047,6 @@ public class AlbumActivity extends ThemeableActivity
         final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(toolbarColor);
         toolbar.setTitleTextColor(textColorPrimary);
-        toolbar.setActivated(theme.elevatedToolbar());
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));

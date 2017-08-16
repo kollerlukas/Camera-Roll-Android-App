@@ -14,7 +14,7 @@
     <color name="colorAccent_text">#8A212121</color>
 
     <!--light theme colors-->
-    <color name="colorPrimary_light">#F5F5F5</color>
+    <color name="colorPrimary_light">#FAFAFA</color>
     <color name="colorPrimaryDark_light">#E0E0E0</color>
     <color name="light_bg">#FAFAFA</color>
 

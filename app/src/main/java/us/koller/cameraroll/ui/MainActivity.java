@@ -220,8 +220,15 @@ public class MainActivity extends ThemeableActivity {
                 float translationY = toolbar.getTranslationY() - dy;
                 if (-translationY > toolbar.getHeight()) {
                     translationY = -toolbar.getHeight();
+                    if (theme.elevatedToolbar()) {
+                        toolbar.setActivated(true);
+                    }
                 } else if (translationY > 0) {
                     translationY = 0;
+                    if (theme.elevatedToolbar() &&
+                            !recyclerView.canScrollVertically(-1)) {
+                        toolbar.setActivated(false);
+                    }
                 }
                 toolbar.setTranslationY(translationY);
 
@@ -243,6 +250,7 @@ public class MainActivity extends ThemeableActivity {
         });
 
         final FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setVisibility(View.GONE);
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
                     R.drawable.ic_camera_lens_avd);
@@ -262,7 +270,6 @@ public class MainActivity extends ThemeableActivity {
         if (pick_photos || !settings.getCameraShortcut()) {
             fab.setVisibility(View.GONE);
         }*/
-        fab.setVisibility(View.GONE);
 
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
@@ -752,11 +759,13 @@ public class MainActivity extends ThemeableActivity {
         }
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setActivated(theme.elevatedToolbar());
+        toolbar.setBackgroundColor(toolbarColor);
+        toolbar.setTitleTextColor(textColorPrimary);
 
-        if (theme.darkStatusBarIcons() &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (theme.darkStatusBarIcons()) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+        } else {
+            Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
         if (theme.statusBarOverlay()) {

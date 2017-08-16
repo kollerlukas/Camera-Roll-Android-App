@@ -1,0 +1,122 @@
+<resources>
+    <!--translatable-->
+    <string name="read_permission_denied">Camera Roll braucht die Erlaubnis auf den Speicher zugreifen zu dürfen um dir deine Bilder zu zeigen.</string>
+
+    <string name="refresh">Neu laden</string>
+    <string name="sort_by">Sortieren nach…</string>
+    <string name="hidden_folders">Versteckte Ordner</string>
+    <string name="file_explorer">Datei Explorer</string>
+    <string name="about">Über</string>
+    <string name="settings">Einstellungen</string>
+
+    <string name="set_as">Verwenden als…</string>
+    <string name="info">Info</string>
+    <string name="share">Teilen</string>
+    <string name="share_photo">Foto teilen</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="print">Drucken</string>
+
+    <string name="delete">Löschen</string>
+    <string name="photo_deleted">Foto gelöscht</string>
+    <string name="photos_deleted">Fotos gelöscht</string>
+    <string name="successfully_deleted">"erfolgreich gelöscht "</string>
+
+    <string name="move">Bewegen</string>
+    <string name="copy">Kopieren</string>
+    <string name="create">Erstellen</string>
+    <string name="new_folder">Neuer Ordner</string>
+    <string name="rename">Umbenennen</string>
+    <string name="paste">Einfügen</string>
+    <string name="to">" nach"</string>
+    <string name="successfully_moved">"erfolgreich bewegt "</string>
+    <string name="successfully_copied">"erfolgreich kopiert "</string>
+    <string name="successfully_created_new_folder">Erfolgreich neuen Ordner erstellt</string>
+    <string name="successfully_renamed_file">Datei erfolgreich umbenannt</string>
+
+    <string name="pick_photo">Wähle ein Foto</string>
+    <string name="pick_photos">Wähle Fotos</string>
+
+    <string name="item">" Item"</string>
+    <string name="items">" Items"</string>
+    <string name="files">Dateien</string>
+    <string name="file">Datei</string>
+
+    <string name="loading">Laden…</string>
+    <string name="loading_failed">Laden fehlgeschlagen</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="no">Nein</string>
+
+    <string name="undo">Rückgängig</string>
+    <string name="done">Fertig</string>
+    <string name="retry">Wiederholen</string>
+
+    <string name="error">Fehler</string>
+
+    <string name="photo">Foto</string>
+
+    <string name="no_files">Keine Dateien</string>
+    <string name="storage">Speicher</string>
+
+    <string name="exclude">Ausschließen</string>
+    <string name="excluded">Ausgeschlossen</string>
+
+    <string name="appearance">Aussehen</string>
+    <string name="theme">Theme</string>
+    <string name="style">Style</string>
+    <string name="column_count">Anzahl der Spalten</string>
+    <string name="other">Sonstig</string>
+
+    <string name="media_retriever">MediaRetriever</string>
+    <string name="media_retriever_summary">Den Speicher manuell durchsuchen anstatt sich auf die MediaStore Api zu verlassen. Dies hilft vielleich wenn Bilder nicht angezeigt werden.</string>
+
+    <string name="use_8_bit_color">8-Bit Farben</string>
+    <string name="use_8_bit_color_summary">Bilder in 8-Bit Farben anzeigen. Dauert vielleicht etwas länger die Bilder zu laden. Außerdem erhöht dies die Speicherbelatung während die App verwendet wird.</string>
+
+    <string name="camera_shortcut">Kamera Shortcut</string>
+
+    <string name="edit_space">"Bearbeiten "</string>
+    <string name="copied_to_clipboard">In die Zwischenablage kopiert</string>
+    <string name="exif_editor">Exif Editor</string>
+    <string name="edit_exif">Exif bearbeiten</string>
+    <string name="save">speichern</string>
+    <string name="changes_saved">Änderungen gespeichert</string>
+
+    <!--ImageView ContentDescription-->
+    <string name="image">Bild</string>
+
+    <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
+    <string name="minus">Minus</string>
+    <string name="plus">Plus</string>
+    <string name="by_name">Name</string>
+    <string name="by_size">Größe</string>
+    <string name="by_date">Datum</string><!--Last Modified-->
+    <string name="pin_album">Album anheften</string>
+    <string name="grant_removable_storage_permission">Zugriff auf entfernbaren Speicher gewähren</string>
+    <string name="grant_removable_storage_permission_message">Bitte wählen Sie auf den nächsten Bildschirm den Stamm-Ordner des entfernbaren Speicher-Mediums aus(z.B. SD Card).</string>
+    <string name="open_with">Öffnen mit…</string>
+    <string name="rotate">Drehen</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="set_wallpaper">Wallpaper setzten</string>
+
+    <!--info Dialog Strings-->
+    <string name="info_filename">Name: </string>
+    <string name="info_filepath">Pfad: </string>
+    <string name="info_size">Größe: </string>
+    <string name="info_dimensions">Dimensionen: </string>
+    <string name="info_date">Datum: </string>
+    <string name="info_location">Ort: </string>
+    <string name="info_focal_length">Brennweite: </string>
+    <string name="info_exposure">Belichtung: </string>
+    <string name="info_camera_model">Kamera Model: </string>
+    <string name="info_aperture">Blende: </string>
+    <string name="info_iso">ISO: </string>
+    <string name="info_frame_rate">Bildrate: </string>
+
+    <string name="success">Success!</string>
+    <string name="wallpaper_file_format_not_supported">Dieses Dateiformat kann nicht als Wallpaper verwendet werden</string>
+    <string name="editing_file_format_not_supported">Dieses Dateiformat kann nicht bearbeitet werden</string>
+    <string name="restore">Zurücksetzen</string>
+    <string name="move_error">Das Bewegen von Dateien auf oder von entfernbaren Speicher funktioiert nicht. Anstatt dessen kopieren und löschen Sie bitte die Dateien.</string>
+</resources>

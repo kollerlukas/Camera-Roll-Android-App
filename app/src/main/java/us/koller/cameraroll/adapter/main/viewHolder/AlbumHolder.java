@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -60,9 +61,15 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         if (album.pinned) {
             pinIndicator = AppCompatResources
                     .getDrawable(getContext(), R.drawable.pin_indicator);
+            if (pinIndicator != null) {
+                int color = nameTv.getTextColors().getDefaultColor();
+                DrawableCompat.wrap(pinIndicator);
+                DrawableCompat.setTint(pinIndicator, color);
+                DrawableCompat.unwrap(pinIndicator);
+            }
         }
         nameTv.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                pinIndicator, null, null, null);
+                null, null, pinIndicator, null);
 
         try {
             Provider.loadExcludedPaths(getContext());
