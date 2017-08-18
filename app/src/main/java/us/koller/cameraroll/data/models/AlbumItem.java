@@ -233,7 +233,7 @@ public abstract class AlbumItem
         return albumItem;
     }
 
-    public abstract String getType();
+    public abstract String getType(Context context);
 
     public RequestOptions getGlideRequestOptions() {
         return new RequestOptions()

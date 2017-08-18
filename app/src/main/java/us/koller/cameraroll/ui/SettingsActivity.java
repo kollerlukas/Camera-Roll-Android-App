@@ -30,6 +30,7 @@ import us.koller.cameraroll.preferences.StylePreference;
 import us.koller.cameraroll.preferences.StylePreferenceDialogFragment;
 import us.koller.cameraroll.util.Util;
 
+//TODO add Excluded Paths item
 public class SettingsActivity extends ThemeableActivity {
 
     private static boolean recreated = false;

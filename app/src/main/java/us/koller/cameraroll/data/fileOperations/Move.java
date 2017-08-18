@@ -27,11 +27,9 @@ public class Move extends FileOperation {
             return;
         }
 
-        String s = getString(R.string.successfully_moved);
-
         int success_count = 0;
 
-        onProgress(s, success_count, files.length);
+        onProgress(success_count, files.length);
 
         //check if file is on removable storage
         boolean movingOntoRemovableStorage = Util.isOnRemovableStorage(target.getPath());
@@ -52,20 +50,25 @@ public class Move extends FileOperation {
                     movedFilePaths.add(files[i].getPath());
                 }
                 success_count += result ? 1 : 0;
-                onProgress(s, success_count, files.length);
+                onProgress(success_count, files.length);
             }
         }
 
         if (failed) {
             showRemovableStorageToast();
         } else if (success_count == 0) {
-            onProgress(s, success_count, files.length);
+            onProgress(success_count, files.length);
         }
     }
 
     @Override
     public int getType() {
         return FileOperation.MOVE;
+    }
+
+    @Override
+    public int getActionStringRes() {
+        return R.string.successfully_moved;
     }
 
     private boolean moveFile(String path, String destination) {

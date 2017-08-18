@@ -508,7 +508,7 @@ public class AlbumActivity extends ThemeableActivity
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(Intent.createChooser(intent, getString(R.string.share_photo)));
+                    startActivity(Intent.createChooser(intent, getString(R.string.share)));
                 }
                 break;
             case R.id.copy:
@@ -644,9 +644,8 @@ public class AlbumActivity extends ThemeableActivity
             }
         }
 
-        String message = selected_items.length == 1 ?
-                selected_items.length + " " + getString(R.string.photo_deleted) :
-                selected_items.length + " " + getString(R.string.photos_deleted);
+        int messageRes = selected_items.length == 1 ? R.string.file_deleted : R.string.files_deleted;
+        String message = getString(messageRes, selected_items.length);
 
         //noinspection deprecation
         snackbar = Snackbar.make(findViewById(R.id.root_view), message, Snackbar.LENGTH_LONG)
@@ -868,10 +867,8 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     public void onItemSelected(int selectedItemCount) {
         if (selectedItemCount != 0) {
-            final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
-                    getString(R.string.items) : getString(R.string.item));
             Toolbar toolbar = findViewById(R.id.toolbar);
-
+            final String title = getString(R.string.selected_count, selectedItemCount);
             ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override

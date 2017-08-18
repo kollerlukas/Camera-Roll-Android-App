@@ -734,10 +734,13 @@ public class FileExplorerActivity extends ThemeableActivity
                 case FileOperation.DELETE:
                     resetToolbar();
 
-                    String title = getString(R.string.delete) + " "
-                            + String.valueOf(selected_items.length)
-                            + " " + (selected_items.length > 1 ?
-                            getString(R.string.files) : getString(R.string.file));
+                    String title;
+                    int count = selected_items.length;
+                    if (count == 1) {
+                        title = getString(R.string.delete_file, count);
+                    } else {
+                        title = getString(R.string.delete_files, count);
+                    }
 
                     new AlertDialog.Builder(this, theme.getDialogThemeRes())
                             .setTitle(title)
@@ -769,9 +772,7 @@ public class FileExplorerActivity extends ThemeableActivity
     public void onItemSelected(int count) {
         if (count != 0) {
             Toolbar toolbar = findViewById(R.id.toolbar);
-            final String title = String.valueOf(count) + (count > 1 ?
-                    getString(R.string.items) : getString(R.string.item));
-
+            final String title = getString(R.string.selected_count, count);
             ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor,
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
@@ -792,9 +793,26 @@ public class FileExplorerActivity extends ThemeableActivity
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
-                            toolbar.setTitle(fileOpIntent.getAction() + " "
-                                    + String.valueOf(count)
-                                    + (count > 1 ? getString(R.string.items) : getString(R.string.item)));
+                            String title = "";
+                            int action = FileOperation.Util.getActionInt(
+                                    FileExplorerActivity.this, fileOpIntent.getAction());
+                            switch (action) {
+                                case FileOperation.COPY:
+                                    if (count == 1) {
+                                        title = getString(R.string.copy_file, count);
+                                    } else {
+                                        title = getString(R.string.copy_files, count);
+                                    }
+                                    break;
+                                case FileOperation.MOVE:
+                                    if (count == 1) {
+                                        title = getString(R.string.move_file, count);
+                                    } else {
+                                        title = getString(R.string.move_files, count);
+                                    }
+                                    break;
+                            }
+                            toolbar.setTitle(title);
                         }
                     });
         }

@@ -142,8 +142,22 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        String title = (action.equals(ACTION_COPY) ? getString(R.string.copy) : getString(R.string.move)) +
-                " " + files.length + (files.length > 1 ? getString(R.string.items) : getString(R.string.item)) + getString(R.string.to) + ":";
+        int stringRes;
+        boolean oneItem = files.length == 1;
+        if (action.equals(ACTION_COPY)) {
+            if (oneItem) {
+                stringRes = R.string.copy_item_to;
+            } else {
+                stringRes = R.string.copy_items_to;
+            }
+        } else {
+            if (oneItem) {
+                stringRes = R.string.move_item_to;
+            } else {
+                stringRes = R.string.move_items_to;
+            }
+        }
+        String title = getString(stringRes, files.length);
 
         dialog = new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(title)
@@ -317,10 +331,12 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         @Override
                         public void run() {
                             imageView.getOverlay().clear();
-                            selectorOverlay.setBounds(0, 0,
-                                    imageView.getWidth(),
-                                    imageView.getHeight());
-                            imageView.getOverlay().add(selectorOverlay);
+                            if (selectorOverlay != null) {
+                                selectorOverlay.setBounds(0, 0,
+                                        imageView.getWidth(),
+                                        imageView.getHeight());
+                                imageView.getOverlay().add(selectorOverlay);
+                            }
                         }
                     });
                 } else {

@@ -54,6 +54,11 @@ public class NewDirectory extends FileOperation {
         return FileOperation.NEW_DIR;
     }
 
+    @Override
+    public int getActionStringRes() {
+        return R.string.successfully_created_new_folder;
+    }
+
     private static boolean createNewFolder(String newFolderPath) {
         File dir = new File(newFolderPath);
         return !dir.exists() && dir.mkdirs();

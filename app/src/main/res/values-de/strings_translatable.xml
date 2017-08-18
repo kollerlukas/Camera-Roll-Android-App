@@ -1,4 +1,5 @@
 <resources>
+    <!--TODO update (Translator pleae remove this when updated)-->
     <!--translatable-->
     <string name="read_permission_denied">Camera Roll braucht die Erlaubnis auf den Speicher zugreifen zu dürfen um dir deine Bilder zu zeigen.</string>
 
@@ -11,14 +12,14 @@
 
     <string name="set_as">Verwenden als…</string>
     <string name="info">Info</string>
-    <string name="share">Teilen</string>
-    <string name="share_photo">Foto teilen</string>
+    <string name="share">%s teilen</string>
+    <!--<string name="share_photo">Foto teilen</string>-->
     <string name="edit">Bearbeiten</string>
     <string name="print">Drucken</string>
 
     <string name="delete">Löschen</string>
-    <string name="photo_deleted">Foto gelöscht</string>
-    <string name="photos_deleted">Fotos gelöscht</string>
+    <!--<string name="photo_deleted">Foto gelöscht</string>
+    <string name="photos_deleted">Fotos gelöscht</string>-->
     <string name="successfully_deleted">"erfolgreich gelöscht "</string>
 
     <string name="move">Bewegen</string>

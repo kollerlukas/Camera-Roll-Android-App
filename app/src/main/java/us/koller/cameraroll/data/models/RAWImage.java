@@ -3,6 +3,7 @@ package us.koller.cameraroll.data.models;
 import android.content.Context;
 import android.os.Parcel;
 
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.Util;
 
 public class RAWImage extends Photo {
@@ -21,7 +22,7 @@ public class RAWImage extends Photo {
     }
 
     @Override
-    public String getType() {
-        return "RAW Image";
+    public String getType(Context context) {
+        return context.getString(R.string.raw_image);
     }
 }

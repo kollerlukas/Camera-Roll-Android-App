@@ -17,18 +17,17 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.data.models.Album;
@@ -166,8 +165,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             final Toolbar toolbar = rootView
                     .findViewWithTag(SelectorModeUtil.SELECTOR_TOOLBAR_TAG);
 
-            final String title = String.valueOf(selectedItemCount) + (selectedItemCount > 1 ?
-                    getContext().getString(R.string.items) : getContext().getString(R.string.item));
+            final String title = getContext().getString(R.string.selected_count, selectedItemCount);
 
             ColorFade.fadeToolbarTitleColor(toolbar,
                     theme.getAccentTextColor(getContext()),
@@ -221,14 +219,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         super.setAlbum(album);
 
         this.album = album;
-
-        //album not excluded
-        String count = album.getAlbumItems().size()
-                + (album.getAlbumItems().size() > 1 ?
-                getContext().getString(R.string.items) :
-                getContext().getString(R.string.item));
-        //noinspection deprecation
-        ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
         int oldHeight = nestedRecyclerView.getHeight();
 
@@ -329,7 +319,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-                    a.startActivity(Intent.createChooser(intent, getContext().getString(R.string.share_photo)));
+                    a.startActivity(Intent.createChooser(intent, getContext().getString(R.string.share)));
                 }
                 break;
             case R.id.copy:
@@ -346,10 +336,14 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             case R.id.delete:
                 Context c = getContext();
 
-                String title = c.getString(R.string.delete) + " "
-                        + String.valueOf(paths.length)
-                        + " " + (paths.length > 1 ?
-                        c.getString(R.string.files) : c.getString(R.string.file));
+                String title;
+                if (paths.length == 1) {
+                    AlbumItem albumItem = AlbumItem.getInstance(paths[0]);
+                    title = getContext().getString(R.string.delete_item,
+                            albumItem.getType(getContext()));
+                } else {
+                    title = getContext().getString(R.string.delete_files, paths.length);
+                }
 
                 new AlertDialog.Builder(c, theme.getDialogThemeRes())
                         .setTitle(title)

@@ -466,7 +466,7 @@ public class ItemActivity extends ThemeableActivity {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App found to view your " + albumItem.getType(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.open_with_error, albumItem.getType(this)), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -480,25 +480,25 @@ public class ItemActivity extends ThemeableActivity {
                 .getIntent();
 
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        String title = getString(R.string.share_item, albumItem.getType(this));
         if (shareIntent.resolveActivity(getPackageManager()) != null) {
-            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_photo)));
+            startActivity(Intent.createChooser(shareIntent, title));
         } else {
-            Toast.makeText(this, "No App found to share your " + albumItem.getType(), Toast.LENGTH_SHORT).show();
+            String error = getString(R.string.share_error, albumItem.getType(this));
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void printPhoto() {
         if (!(albumItem instanceof Photo)) {
-            Toast.makeText(this, "Printing of " + albumItem.getType()
-                    + "s not supported", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             return;
         }
 
         PrintHelper photoPrinter = new PrintHelper(this);
         photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
         try {
-            photoPrinter.printBitmap(
-                    albumItem.getPath(),
+            photoPrinter.printBitmap(albumItem.getPath(),
                     albumItem.getUri(this));
         } catch (FileNotFoundException e) {
             Toast.makeText(this, "Error (FileNotFoundException)", Toast.LENGTH_SHORT).show();
@@ -516,11 +516,11 @@ public class ItemActivity extends ThemeableActivity {
 
         try {
             if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(Intent.createChooser(intent,
-                        getString(R.string.edit_space) + albumItem.getType()));
+                String title = getString(R.string.edit_item, albumItem.getType(this));
+                startActivity(Intent.createChooser(intent, title));
             } else {
-                Toast.makeText(this, "No App found to edit your "
-                        + albumItem.getType(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.edit_error, albumItem.getType(this)),
+                        Toast.LENGTH_SHORT).show();
             }
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
@@ -530,7 +530,7 @@ public class ItemActivity extends ThemeableActivity {
 
     public void showDeleteDialog() {
         new AlertDialog.Builder(this, theme.getDialogThemeRes())
-                .setTitle(getString(R.string.delete) + " " + albumItem.getType() + "?")
+                .setTitle(getString(R.string.delete_item, albumItem.getType(this)) + "?")
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
                     @Override

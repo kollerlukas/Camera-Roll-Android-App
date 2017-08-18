@@ -18,9 +18,9 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="16dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="@string/minus"
             android:padding="8dp"
-            android:src="@drawable/ic_remove_white_24dp" />
+            android:src="@drawable/ic_remove_white_24dp"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/column_count"
@@ -37,8 +37,8 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="16dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="@string/plus"
             android:padding="8dp"
-            android:src="@drawable/ic_add_white_24dp" />
+            android:src="@drawable/ic_add_white_24dp"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 </FrameLayout>

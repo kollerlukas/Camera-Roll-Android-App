@@ -1,4 +1,5 @@
 <resources>
+    <!--TODO update (Translator pleae remove this when updated)-->
     <!--translatable-->
     <string name="read_permission_denied">Camera Roll wymaga uprawnienia dostępu do pamięci, aby wyświetlać zdjęcia.</string>
 
