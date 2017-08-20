@@ -876,12 +876,12 @@ public class ItemActivity extends ThemeableActivity {
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_PhotoView;
+        return R.style.CameraRoll_Theme_PhotoView;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Light_PhotoView;
+        return R.style.CameraRoll_Theme_Light_PhotoView;
     }
 
     @Override

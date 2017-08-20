@@ -66,6 +66,6 @@ public class DarkTheme extends Theme {
 
     @Override
     public int getDialogThemeRes() {
-        return R.style.Theme_CameraRoll_Dialog;
+        return R.style.CameraRoll_Theme_Dialog;
     }
 }

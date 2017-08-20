@@ -288,18 +288,17 @@ public class ExifEditorActivity extends ThemeableActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         outState.putParcelableArrayList(EDITED_ITEMS, editedItems);
     }
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_ExifEditor;
+        return R.style.CameraRoll_Theme_ExifEditor;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Light_ExifEditor;
+        return R.style.CameraRoll_Theme_Light_ExifEditor;
     }
 
     @Override

@@ -1027,12 +1027,12 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_Translucent_Album;
+        return R.style.CameraRoll_Theme_Translucent_Album;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Translucent_Light_Album;
+        return R.style.CameraRoll_Theme_Light_Translucent_Album;
     }
 
     @Override

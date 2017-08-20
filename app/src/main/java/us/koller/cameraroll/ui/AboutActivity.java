@@ -249,12 +249,12 @@ public class AboutActivity extends ThemeableActivity
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_Translucent_About;
+        return R.style.CameraRoll_Theme_Translucent_About;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Translucent_Light_About;
+        return R.style.CameraRoll_Theme_Translucent_Light_About;
     }
 
     @Override

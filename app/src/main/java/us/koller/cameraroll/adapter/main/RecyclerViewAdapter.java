@@ -72,7 +72,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder = null;
+        RecyclerView.ViewHolder viewHolder;
         Resources res = parent.getContext().getResources();
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
@@ -84,17 +84,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         } else if (viewType == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
             View v = inflater.inflate(R.layout.album_cover_card_2, parent, false);
             viewHolder = new SimpleAlbumHolder(v);
-        } else if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
+        } else /*if (viewType == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE))*/ {
             View v = inflater.inflate(R.layout.album_cover_nested_recyclerview, parent, false);
             viewHolder = new NestedRecyclerViewAlbumHolder(v).setSelectorModeManager(selectorManager);
         }
-
-        if (viewHolder != null) {
-            Context context = viewHolder.itemView.getContext();
-            Theme theme = Settings.getInstance(context).getThemeInstance(context);
-            ThemeableActivity.checkTags((ViewGroup) viewHolder.itemView, theme);
-        }
-
+        Context context = viewHolder.itemView.getContext();
+        Theme theme = Settings.getInstance(context).getThemeInstance(context);
+        ThemeableActivity.checkTags((ViewGroup) viewHolder.itemView, theme);
         return viewHolder;
     }
 

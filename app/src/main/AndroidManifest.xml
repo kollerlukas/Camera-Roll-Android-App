@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CameraRoll">
+        android:theme="@style/CameraRoll.Theme">
 
         <!--To make use of extra screen real-estate on phones, like LG G6, Samsung Galaxy S8, ...-->
         <meta-data
@@ -28,7 +28,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Main">
+            android:theme="@style/CameraRoll.Theme.Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -38,57 +38,57 @@
         <activity
             android:name=".ui.AlbumActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.Album" />
+            android:theme="@style/CameraRoll.Theme.Translucent.Album" />
 
         <activity
             android:name=".ui.ItemActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.PhotoView" />
+            android:theme="@style/CameraRoll.Theme.PhotoView" />
 
         <activity
             android:name=".ui.VideoPlayerActivity"
             android:configChanges="screenSize|orientation"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.VideoPlayer" />
+            android:theme="@style/CameraRoll.Theme.VideoPlayer" />
 
         <activity
             android:name=".ui.SettingsActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Settings" />
+            android:theme="@style/CameraRoll.Theme.Settings" />
 
         <activity
             android:name=".ui.AboutActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.About" />
+            android:theme="@style/CameraRoll.Theme.Translucent.About" />
 
         <activity
             android:name=".ui.FileExplorerActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.FileExplorer" />
+            android:theme="@style/CameraRoll.Theme.Translucent.FileExplorer" />
 
         <activity
             android:name=".ui.FileOperationDialogActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.Translucent.FileOperationDialog" />
+            android:theme="@style/CameraRoll.Theme.Translucent.FileOperationDialog" />
 
         <activity
             android:name=".ui.ExifEditorActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.ExifEditor"
+            android:theme="@style/CameraRoll.Theme.ExifEditor"
             android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".ui.EditImageActivity"
             android:label="@string/edit"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.CameraRoll.EditImage" />
+            android:theme="@style/CameraRoll.Theme.EditImage" />
 
         <activity
             android:name=".ui.SetWallpaperActivity"
             android:label="@string/wallpaper"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.CameraRoll.SetWallpaper">
+            android:theme="@style/CameraRoll.Theme.SetWallpaper">
 
             <intent-filter>
                 <action android:name="android.intent.action.ATTACH_DATA" />
@@ -96,6 +96,12 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.ExcludePathsActivity"
+            android:label="@string/edit"
+            android:launchMode="singleTop"
+            android:theme="@style/CameraRoll.Theme.ExcludePaths" />
 
         <activity android:name=".IntentReceiver">
             <intent-filter tools:ignore="AppLinkUrlError">

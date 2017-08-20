@@ -102,6 +102,8 @@
     <string name="edit_exif">edit Exif</string>
     <string name="save">Save</string>
     <string name="changes_saved">Changes saved</string>
+    <!--ExcludedPathsActivity-->
+    <string name="excluded_paths">Excluded Paths</string>
     <!--info Dialog Strings-->
     <string name="info_filename">Filename: </string>
     <string name="info_filepath">Filepath: </string>

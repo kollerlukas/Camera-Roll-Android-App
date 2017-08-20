@@ -744,12 +744,12 @@ public class MainActivity extends ThemeableActivity {
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_Main;
+        return R.style.CameraRoll_Theme_Main;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Light_Main;
+        return R.style.CameraRoll_Theme_Light_Main;
     }
 
     @Override

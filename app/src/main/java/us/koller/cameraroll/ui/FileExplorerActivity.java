@@ -55,7 +55,6 @@ import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.FilesProvider;
 import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.models.StorageRoot;
-import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.Util;
@@ -151,7 +150,6 @@ public class FileExplorerActivity extends ThemeableActivity
         }
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new RecyclerViewAdapter(
                 new OnDirectoryChangeCallback() {
@@ -941,12 +939,12 @@ public class FileExplorerActivity extends ThemeableActivity
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_Translucent_FileExplorer;
+        return R.style.CameraRoll_Theme_Translucent_FileExplorer;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Light_Translucent_FileExplorer;
+        return R.style.CameraRoll_Theme_Light_Translucent_FileExplorer;
     }
 
     @Override

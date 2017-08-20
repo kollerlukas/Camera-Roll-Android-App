@@ -66,6 +66,6 @@ public class LightTheme extends Theme {
 
     @Override
     public int getDialogThemeRes() {
-        return R.style.Theme_CameraRoll_Light_Dialog;
+        return R.style.CameraRoll_Theme_Light_Dialog;
     }
 }

@@ -1,45 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/appearance">
+    <!--suppress AndroidElementNotAllowed -->
+    <Preference
+        android:key="@string/pref_key_excluded_paths"
+        android:title="@string/excluded_paths" />
 
+    <PreferenceCategory android:title="@string/appearance">
         <ListPreference
+            android:defaultValue="@string/DARK_THEME_VALUE"
             android:entries="@array/theme_names"
             android:entryValues="@array/theme_values"
             android:key="@string/pref_key_theme"
-            android:title="@string/theme"
-            android:defaultValue="@string/DARK_THEME_VALUE" />
+            android:title="@string/theme" />
 
+        <!--suppress AndroidElementNotAllowed -->
         <us.koller.cameraroll.preferences.StylePreference
-            style="@style/Theme.CameraRoll.DialogPreference"
+            style="@style/CameraRoll.Theme.DialogPreference"
+            android:defaultValue="@integer/STYLE_PARALLAX_VALUE"
             android:key="@string/pref_key_style"
-            android:title="@string/style"
-            android:defaultValue="@integer/STYLE_PARALLAX_VALUE" />
+            android:title="@string/style" />
 
+        <!--suppress AndroidElementNotAllowed -->
         <us.koller.cameraroll.preferences.ColumnCountPreference
-            style="@style/Theme.CameraRoll.DialogPreference"
+            style="@style/CameraRoll.Theme.DialogPreference"
+            android:defaultValue="4"
             android:key="@string/pref_key_column_count"
-            android:title="@string/column_count"
-            android:defaultValue="4" />
+            android:title="@string/excluded_paths" />
 
         <SwitchPreference
+            android:defaultValue="false"
             android:key="@string/pref_key_camera_shortcut"
-            android:title="@string/camera_shortcut"
-            android:defaultValue="false" />
+            android:title="@string/camera_shortcut" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/other">
-
         <SwitchPreference
+            android:defaultValue="false"
             android:key="@string/pref_key_media_retriever"
             android:summary="@string/media_retriever_summary"
-            android:title="@string/media_retriever"
-            android:defaultValue="false" />
+            android:title="@string/media_retriever" />
 
         <SwitchPreference
+            android:defaultValue="false"
             android:key="@string/pref_key_8_bit_color"
             android:summary="@string/use_8_bit_color_summary"
-            android:title="@string/use_8_bit_color"
-            android:defaultValue="false" />
+            android:title="@string/use_8_bit_color" />
     </PreferenceCategory>
 </PreferenceScreen>

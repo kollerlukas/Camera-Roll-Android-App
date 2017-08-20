@@ -102,6 +102,8 @@
     <string name="edit_exif">Exif bearbeiten</string>
     <string name="save">speichren</string>
     <string name="changes_saved">Änderungen gespeichert</string>
+    <!--ExcludedPathsActivity-->
+    <string name="excluded_paths">Ausgeschlossene Dateipfade</string>
     <!--info Dialog Strings-->
     <string name="info_filename">Dateiname: </string>
     <string name="info_filepath">Dateipfad: </string>

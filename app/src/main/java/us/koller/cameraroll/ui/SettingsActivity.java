@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,7 +31,6 @@ import us.koller.cameraroll.preferences.StylePreference;
 import us.koller.cameraroll.preferences.StylePreferenceDialogFragment;
 import us.koller.cameraroll.util.Util;
 
-//TODO add Excluded Paths item
 public class SettingsActivity extends ThemeableActivity {
 
     private static boolean recreated = false;
@@ -169,12 +169,12 @@ public class SettingsActivity extends ThemeableActivity {
 
     @Override
     public int getDarkThemeRes() {
-        return R.style.Theme_CameraRoll_Settings;
+        return R.style.CameraRoll_Theme_Settings;
     }
 
     @Override
     public int getLightThemeRes() {
-        return R.style.Theme_CameraRoll_Light_Settings;
+        return R.style.CameraRoll_Theme_Light_Settings;
     }
 
     @Override
@@ -218,6 +218,7 @@ public class SettingsActivity extends ThemeableActivity {
 
             Settings settings = Settings.getInstance(getContext());
 
+            initExcludedPathsPref();
             initThemePref(settings.getTheme());
             initStylePref(settings.getStyle(getContext(), false));
             initColumnCountPref(settings.getRealColumnCount());
@@ -239,6 +240,21 @@ public class SettingsActivity extends ThemeableActivity {
                     onDisplayPreferenceDialog(preference);
                 }
             }
+        }
+
+        private void initExcludedPathsPref() {
+            Preference pref = findPreference(getString(R.string.pref_key_excluded_paths));
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (callback != null) {
+                        callback.onSettingChanged();
+                    }
+                    Intent intent = new Intent(getContext(), ExcludePathsActivity.class);
+                    getContext().startActivity(intent);
+                    return false;
+                }
+            });
         }
 
         private void initThemePref(String theme) {
@@ -339,12 +355,12 @@ public class SettingsActivity extends ThemeableActivity {
         @Override
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
-
             outState.putInt(SHOWN_DIALOG_FRAGMENT, shownDialogFragment);
         }
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
+            Log.d("SettingsActivity", "onPreferenceChange() called with: preference = [" + preference + "], o = [" + o + "]");
             if (callback != null) {
                 callback.onSettingChanged();
             }

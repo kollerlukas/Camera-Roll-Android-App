@@ -67,14 +67,15 @@
             Translators:<br/>
             <br>
                 French: <a href=\"https://github.com/Primokorn\">Primokorn</a>, <a href=\"https://github.com/kkfong\">kkfong</a><br>
-                Italian: Silvano Numelli
-                Polish: Marcin Głowacki
+                Italian: Silvano Numelli<br>
+                Polish: Marcin Głowacki<br>
             <br>
         ]]>
     </string>
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
 
     <!--Preference Keys-->
+    <string name="pref_key_excluded_paths" translatable="false">KEY_EXCLUDED_PATHS</string>
     <string name="pref_key_theme" translatable="false">KEY_THEME</string>
     <string name="pref_key_media_retriever" translatable="false">KEY_MEDIA_RETRIEVER</string>
     <string name="pref_key_style" translatable="false">KEY_STYLE</string>
