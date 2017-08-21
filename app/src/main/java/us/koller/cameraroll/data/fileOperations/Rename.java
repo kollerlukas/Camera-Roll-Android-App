@@ -36,7 +36,7 @@ public class Rename extends FileOperation {
         final String newFileName = workIntent.getStringExtra(FileOperation.NEW_FILE_NAME);
         if (files.length > 0 && newFileName != null) {
             final File_POJO file = files[0];
-            boolean result/* = renameFile(file.getPath(), newFileName)*/;
+            boolean result;
             if (FileOperation.Util.isOnRemovableStorage(file.getPath())) {
                 //file is on removable storage
                 Uri treeUri = getTreeUri(workIntent, file.getPath());
@@ -72,6 +72,11 @@ public class Rename extends FileOperation {
     @Override
     public int getType() {
         return FileOperation.RENAME;
+    }
+
+    @Override
+    public int getActionStringRes() {
+        return R.string.successfully_renamed_file;
     }
 
     private static String getFileExtension(String filename) {

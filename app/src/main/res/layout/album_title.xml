@@ -25,7 +25,8 @@
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/count"

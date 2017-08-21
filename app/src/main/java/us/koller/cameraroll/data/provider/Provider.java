@@ -2,6 +2,7 @@ package us.koller.cameraroll.data.provider;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -153,7 +154,7 @@ public abstract class Provider {
         return permanentlyExcluded;
     }
 
-    public static boolean searchDir(String path) {
+    private static boolean searchDir(String path) {
         if (path == null) {
             return false;
         }
@@ -221,7 +222,6 @@ public abstract class Provider {
         if (excludedPaths == null) {
             excludedPaths = loadExcludedPaths(context);
         }
-
         if (!excludedPaths.contains(path)) {
             excludedPaths.add(path);
         }
@@ -231,9 +231,7 @@ public abstract class Provider {
         if (excludedPaths == null) {
             excludedPaths = loadExcludedPaths(context);
         }
-
         excludedPaths.remove(path);
-
     }
 
     public static ArrayList<String> loadExcludedPaths(Context context) {

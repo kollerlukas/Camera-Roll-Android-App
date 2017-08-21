@@ -85,14 +85,14 @@ public class MediaProvider extends Provider {
                     new OnMediaLoadedCallback() {
                         @Override
                         public void onMediaLoaded(ArrayList<Album> albums) {
-                            if (!hiddenFolders) {
+                            //if (!hiddenFolders) {
                                 //remove excluded albums
                                 for (int i = albums.size() - 1; i >= 0; i--) {
                                     if (albums.get(i).excluded) {
                                         albums.remove(i);
                                     }
                                 }
-                            }
+                            //}
 
                             SortUtil.sortAlbums(context, albums);
 

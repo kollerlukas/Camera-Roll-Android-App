@@ -1,105 +1,107 @@
 <resources>
-    <!--translatable-->
+    <!--error messages-->
     <string name="read_permission_denied">Camera Roll wymaga uprawnienia dostępu do pamięci, aby wyświetlać zdjęcia.</string>
-
+    <string name="grant_removable_storage_permission">Przyznaj uprawnienie dostępu do pamięci zewnętrznej</string>
+    <string name="grant_removable_storage_permission_message">Wybierz folder główny pamięci urządzenia (np. karta SD) na następnym ekranie.</string>
+    <!--general-->
+    <string name="photo">Zdjęcie</string>
+    <string name="raw_image">Obraz RAW</string>
+    <string name="gif">Gif</string>
+    <string name="video">Film</string>
+    <string name="pick_photo">Wybierz zdjęcie</string>
+    <string name="pick_photos">Wybierz zdjęcia</string>
+    <string name="loading">Ładowanie…</string>
+    <string name="loading_failed">Nie udało się załadować</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Anuluj</string>
+    <string name="no">Nie</string>
+    <string name="undo">Cofnij</string>
+    <string name="done">Gotowe</string>
+    <string name="retry">Ponów</string>
+    <string name="excluded">Wykluczone</string>
+    <string name="error">Błąd</string>
+    <string name="selected_count">%1$d wybrano</string>
+    <!--MainActivity-->
     <string name="refresh">Odśwież</string>
     <string name="sort_by">Sortuj wg…</string>
+    <string name="by_name">Nazwa</string>
+    <string name="by_size">Rozmiar</string>
+    <string name="by_date">Data</string>
     <string name="hidden_folders">Ukryte foldery</string>
     <string name="file_explorer">Menedżer plików</string>
     <string name="about">O aplikacji</string>
     <string name="settings">Ustawienia</string>
-
+    <string name="camera_shortcut">Skrót aparatu</string>
+    <string name="item_count">%1$d element</string>
+    <string name="items_count">%1$d elementy/ów</string>
+    <!--AlbumActivity-->
+    <string name="exclude">Wyklucz</string>
+    <string name="pin_album">Przypnij album</string>
+    <string name="file_deleted">%1$d plik usunięto</string>
+    <string name="files_deleted">%1$d pliki/ów usunięto</string>
+    <!--ItemActivity-->
     <string name="set_as">Ustaw jako…</string>
+    <string name="open_with">Otwórz przez…</string>
+    <string name="open_with_error">Nie znaleziono aplikacji, aby wyświetlić %1$s</string>
+    <string name="print">Drukuj</string>
     <string name="info">Info</string>
     <string name="share">Udostępnij</string>
-    <string name="share_photo">Udostępnij zdjęcie</string>
+    <string name="share_item">Udostępnij %1$s</string>
+    <string name="share_error">Nie znaleziono aplikacji, aby udostępnić %1$s</string>
     <string name="edit">Edytuj</string>
-    <string name="print">Drukuj</string>
-
+    <string name="edit_item">Edytuj %1$s</string>
+    <string name="edit_error">Nie znaleziono aplikacji, aby edytować %1$s</string>
     <string name="delete">Usuń</string>
-    <string name="photo_deleted">Zdjęcie usunięto</string>
-    <string name="photos_deleted">Zdjęcia usunięto</string>
-    <string name="successfully_deleted">"pomyślnie usunięto"</string>
-
+    <string name="delete_item">Usuń %1$s</string>
+    <string name="delete_files">Usuń %1$d pliki/ów</string>
     <string name="move">Przenieś</string>
+    <string name="move_item_to">Przenieś %1$d element do:</string>
+    <string name="move_items_to">Przenieś %1$d elementy/ów do:</string>
+    <string name="move_error">Przenoszenie plików do/z pamięci zewnętrznej nie działa. Skopiuj i usuń plik</string>
     <string name="copy">Kopiuj</string>
+    <string name="copy_item_to">Kopiuj %1$d element do:</string>
+    <string name="copy_items_to">Kopiuj %1$d elementy/ów do:</string>
     <string name="create">Utwórz</string>
     <string name="new_folder">Nowy folder</string>
     <string name="rename">Zmień nazwę</string>
     <string name="paste">Wklej</string>
-    <string name="to">"do"</string>
-    <string name="successfully_moved">"pomyślnie przeniesiono"</string>
-    <string name="successfully_copied">"pomyślnie skopiowano"</string>
-    <string name="successfully_created_new_folder">Pomyślnie utworzono nowy folder</string>
-    <string name="successfully_renamed_file">Pomyślnie zmieniono nazwę pliku</string>
-
-    <string name="pick_photo">Wybierz zdjęcie</string>
-    <string name="pick_photos">Wybierz zdjęcia</string>
-
-    <string name="item">"element"</string>
-    <string name="items">"elementy/ów"</string>
-    <string name="files">Pliki</string>
-    <string name="file">Plik</string>
-
-    <string name="loading">Ładowanie…</string>
-    <string name="loading_failed">Nie udało się załadować</string>
-
-    <string name="ok">OK</string>
-    <string name="cancel">Anuluj</string>
-    <string name="no">Nie</string>
-
-    <string name="undo">Cofnij</string>
-    <string name="done">Gotowe</string>
-    <string name="retry">Ponów</string>
-
-    <string name="error">Błąd</string>
-
-    <string name="photo">Zdjęcie</string>
-
+    <string name="successfully_deleted">pomyślnie usunięto %1$d/%1$d</string>
+    <string name="successfully_moved">pomyślnie przeniesiono %1$d/%1$d</string>
+    <string name="successfully_copied">pomyślnie skopiowano %1$d/%1$d</string>
+    <string name="successfully_created_new_folder">pomyślnie utworzono nowy folder</string>
+    <string name="successfully_renamed_file">pomyślnie zmieniono nazwę pliku</string>
+    <!--FileExplorerActivity-->
     <string name="no_files">BRAK PLIKÓW</string>
     <string name="storage">Pamięć</string>
-
-    <string name="exclude">Wyklucz</string>
-    <string name="excluded">Wykluczone</string>
-
+    <string name="copy_file">Kopiuj %1$d plik</string>
+    <string name="copy_files">Kopiuj %1$d pliki/ów</string>
+    <string name="move_file">Przenieś %1$d plik</string>
+    <string name="move_files">Przenieś %1$d pliki/ów</string>
+    <string name="delete_file">Usuń %1$d plik</string>
+    <!--SettingsActivity-->
     <string name="appearance">Wygląd</string>
     <string name="theme">Motyw</string>
     <string name="style">Styl</string>
     <string name="column_count">Liczba kolumn</string>
     <string name="other">Inne</string>
-
     <string name="media_retriever">MediaRetriever</string>
     <string name="media_retriever_summary">Ręcznie przeszukaj pamięć, zamiast polegać na MediaStore Api. Może pomóc, jeśli uważasz, że brakuje części plików.</string>
-
     <string name="use_8_bit_color">8-Bitowe kolory</string>
     <string name="use_8_bit_color_summary">Użyj 8-Bitowej palety kolorów, podczas wyświetlania obrazów. Ładowanie ich może zająć więcej czasu. Również zwiększa ilość używanej pamięci, gdy aplikacja jest uruchomiona.</string>
-
-    <string name="camera_shortcut">Skrót aparatu</string>
-
-    <string name="edit_space">"Edytuj "</string>
-    <string name="copied_to_clipboard">Skopiowano do schowka</string>
+    <!--EditImageActivity-->
+    <string name="rotate">Obróć</string>
+    <string name="restore">Przywróć</string>
+    <string name="editing_file_format_not_supported">Ten format pliku nie jest obsługiwany do edycji</string>
+    <string name="success">Powodzenie!</string>
+    <!--SetWallpaperActivity-->
+    <string name="wallpaper">Tapeta</string>
+    <string name="set_wallpaper">Ustaw tapetę</string>
+    <string name="wallpaper_file_format_not_supported">Ten format pliku nie jest obsługiwany w przypadku tapet</string>
+    <!--ExifEditorActivity-->
     <string name="exif_editor">Edytor Exif</string>
     <string name="edit_exif">Edytuj Exif</string>
     <string name="save">Zapisz</string>
     <string name="changes_saved">Zmiany zapisano</string>
-
-    <!--ImageView ContentDescription-->
-    <string name="image">Obraz</string>
-
-    <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
-    <string name="minus">Minus</string>
-    <string name="plus">Plus</string>
-    <string name="by_name">Nazwa</string>
-    <string name="by_size">Rozmiar</string>
-    <string name="by_date">Data</string><!--Last Modified-->
-    <string name="pin_album">Przypnij album</string>
-    <string name="grant_removable_storage_permission">Przyznaj uprawnienie dostępu do pamięci zewnętrznej</string>
-    <string name="grant_removable_storage_permission_message">Wybierz folder główny pamięci urządzenia (np. karta SD) na następnym ekranie.</string>
-    <string name="open_with">Otwórz przez…</string>
-    <string name="rotate">Obróć</string>
-    <string name="wallpaper">Tapeta</string>
-    <string name="set_wallpaper">Ustaw tapetę</string>
-
     <!--info Dialog Strings-->
     <string name="info_filename">Nazwa pliku: </string>
     <string name="info_filepath">Ścieżka pliku: </string>
@@ -113,10 +115,5 @@
     <string name="info_aperture">Przesłona: </string>
     <string name="info_iso">ISO: </string>
     <string name="info_frame_rate">Liczba klatek: </string>
-
-    <string name="success">Powodzenie!</string>
-    <string name="wallpaper_file_format_not_supported">Ten format pliku nie jest obsługiwany w przypadku tapet</string>
-    <string name="editing_file_format_not_supported">Ten format pliku nie jest obsługiwany do edycji</string>
-    <string name="restore">Przywróć</string>
-    <string name="move_error">Przenoszenie plików do/z pamięci zewnętrznej nie działa. Skopiuj i usuń plik</string>
+    <string name="copied_to_clipboard">Skopiowano do schowka</string>
 </resources>

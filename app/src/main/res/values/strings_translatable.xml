@@ -1,105 +1,109 @@
 <resources>
-    <!--translatable-->
+    <!--error messages-->
     <string name="read_permission_denied">Camera Roll needs the permission access your Storage to depict your pictures.</string>
-
+    <string name="grant_removable_storage_permission">Grant removable Storage Permission</string>
+    <string name="grant_removable_storage_permission_message">Please select the root folder of your removable Storage device (e.g. SD Card) on the next screen.</string>
+    <!--general-->
+    <string name="photo">Photo</string>
+    <string name="raw_image">RAW Image</string>
+    <string name="gif">Gif</string>
+    <string name="video">Video</string>
+    <string name="pick_photo">Pick Photo</string>
+    <string name="pick_photos">Pick Photos</string>
+    <string name="loading">Loading…</string>
+    <string name="loading_failed">Loading failed</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="no">No</string>
+    <string name="undo">Undo</string>
+    <string name="done">Done</string>
+    <string name="retry">Retry</string>
+    <string name="excluded">Excluded</string>
+    <string name="error">Error</string>
+    <string name="selected_count">%1$d selected</string>
+    <!--MainActivity-->
     <string name="refresh">Refresh</string>
     <string name="sort_by">Sort by…</string>
+    <string name="by_name">Name</string>
+    <string name="by_size">Size</string>
+    <string name="by_date">Date</string>
     <string name="hidden_folders">Hidden Folders</string>
     <string name="file_explorer">File Explorer</string>
     <string name="about">About</string>
     <string name="settings">Settings</string>
-
+    <string name="camera_shortcut">Camera Shortcut</string>
+    <string name="item_count">%1$d Item</string>
+    <string name="items_count">%1$d Items</string>
+    <!--AlbumActivity-->
+    <string name="exclude">Exclude</string>
+    <string name="pin_album">Pin Album</string>
+    <string name="file_deleted">%1$d file deleted</string>
+    <string name="files_deleted">%1$d files deleted</string>
+    <!--ItemActivity-->
     <string name="set_as">Set as…</string>
+    <string name="open_with">Open with…</string>
+    <string name="open_with_error">No App found to view your %1$s</string>
+    <string name="print">Print</string>
     <string name="info">Info</string>
     <string name="share">Share</string>
-    <string name="share_photo">Share Photo</string>
+    <string name="share_item">Share %1$s</string>
+    <string name="share_error">No App found to share your %1$s</string>
     <string name="edit">Edit</string>
-    <string name="print">Print</string>
-
+    <string name="edit_item">Edit %1$s</string>
+    <string name="edit_error">No App found to edit your %1$s</string>
     <string name="delete">Delete</string>
-    <string name="photo_deleted">Photo deleted</string>
-    <string name="photos_deleted">Photos deleted</string>
-    <string name="successfully_deleted">"successfully deleted "</string>
-
+    <string name="delete_item">Delete %1$s</string>
+    <string name="delete_files">Delete %1$d files</string>
     <string name="move">Move</string>
+    <string name="move_item_to">Move %1$d Item to:</string>
+    <string name="move_items_to">Move %1$d Items to:</string>
+    <string name="move_error">Moving files to/from removable Storage doesn\'t work. Please just copy and delete the file</string>
     <string name="copy">Copy</string>
+    <string name="copy_item_to">Copy %1$d Item to:</string>
+    <string name="copy_items_to">Copy %1$d Items to:</string>
     <string name="create">Create</string>
     <string name="new_folder">New Folder</string>
     <string name="rename">Rename</string>
     <string name="paste">Paste</string>
-    <string name="to">" to"</string>
-    <string name="successfully_moved">"successfully moved "</string>
-    <string name="successfully_copied">"successfully copied "</string>
-    <string name="successfully_created_new_folder">Successfully created new Folder</string>
-    <string name="successfully_renamed_file">Successfully renamed file</string>
-
-    <string name="pick_photo">Pick Photo</string>
-    <string name="pick_photos">Pick Photos</string>
-
-    <string name="item">" Item"</string>
-    <string name="items">" Items"</string>
-    <string name="files">Files</string>
-    <string name="file">File</string>
-
-    <string name="loading">Loading…</string>
-    <string name="loading_failed">Loading failed</string>
-
-    <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
-    <string name="no">No</string>
-
-    <string name="undo">Undo</string>
-    <string name="done">Done</string>
-    <string name="retry">Retry</string>
-
-    <string name="error">Error</string>
-
-    <string name="photo">Photo</string>
-
+    <string name="successfully_deleted">successfully deleted %1$d/%1$d</string>
+    <string name="successfully_moved">successfully moved %1$d/%1$d</string>
+    <string name="successfully_copied">successfully copied %1$d/%1$d</string>
+    <string name="successfully_created_new_folder">successfully created a new folder</string>
+    <string name="successfully_renamed_file">successfully renamed file</string>
+    <!--FileExplorerActivity-->
     <string name="no_files">NO FILES</string>
     <string name="storage">Storage</string>
-
-    <string name="exclude">Exclude</string>
-    <string name="excluded">Excluded</string>
-
+    <string name="copy_file">Copy %1$d file</string>
+    <string name="copy_files">Copy %1$d files</string>
+    <string name="move_file">Move %1$d file</string>
+    <string name="move_files">Move %1$d files</string>
+    <string name="delete_file">Delete %1$d file</string>
+    <!--SettingsActivity-->
     <string name="appearance">Appearance</string>
     <string name="theme">Theme</string>
     <string name="style">Style</string>
     <string name="column_count">Column Count</string>
     <string name="other">Other</string>
-
     <string name="media_retriever">MediaRetriever</string>
     <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api. This might help if you are missing some picture.</string>
-
     <string name="use_8_bit_color">8-Bit Color</string>
     <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images. Images might take longer to load. This also increases the amount of memory is used, when the app is running.</string>
-
-    <string name="camera_shortcut">Camera Shortcut</string>
-
-    <string name="edit_space">"Edit "</string>
-    <string name="copied_to_clipboard">Copied to Clipboard</string>
+    <!--EditImageActivity-->
+    <string name="rotate">Rotate</string>
+    <string name="restore">Restore</string>
+    <string name="editing_file_format_not_supported">This file format is not supported for editing</string>
+    <string name="success">Success!</string>
+    <!--SetWallpaperActivity-->
+    <string name="wallpaper">Wallpaper</string>
+    <string name="set_wallpaper">Set Wallpaper</string>
+    <string name="wallpaper_file_format_not_supported">This file format is not supported for wallpapers</string>
+    <!--ExifEditorActivity-->
     <string name="exif_editor">Exif Editor</string>
     <string name="edit_exif">edit Exif</string>
     <string name="save">Save</string>
     <string name="changes_saved">Changes saved</string>
-
-    <!--ImageView ContentDescription-->
-    <string name="image">Image</string>
-
-    <string name="play_pause"><![CDATA[Play & Pause Button]]></string>
-    <string name="minus">Minus</string>
-    <string name="plus">Plus</string>
-    <string name="by_name">Name</string>
-    <string name="by_size">Size</string>
-    <string name="by_date">Date</string><!--Last Modified-->
-    <string name="pin_album">Pin Album</string>
-    <string name="grant_removable_storage_permission">Grant removable Storage Permission</string>
-    <string name="grant_removable_storage_permission_message">Please select the root folder of your removable Storage device (e.g. SD Card) on the next screen.</string>
-    <string name="open_with">Open with…</string>
-    <string name="rotate">Rotate</string>
-    <string name="wallpaper">Wallpaper</string>
-    <string name="set_wallpaper">Set Wallpaper</string>
-
+    <!--ExcludedPathsActivity-->
+    <string name="excluded_paths">Excluded Paths</string>
     <!--info Dialog Strings-->
     <string name="info_filename">Filename: </string>
     <string name="info_filepath">Filepath: </string>
@@ -113,10 +117,5 @@
     <string name="info_aperture">Aperture: </string>
     <string name="info_iso">ISO: </string>
     <string name="info_frame_rate">Frame rate: </string>
-
-    <string name="success">Success!</string>
-    <string name="wallpaper_file_format_not_supported">This file format is not supported for wallpapers</string>
-    <string name="editing_file_format_not_supported">This file format is not supported for editing</string>
-    <string name="restore">Restore</string>
-    <string name="move_error">Moving files to/from removable Storage doesn\'t work. Please just copy and delete the file</string>
+    <string name="copied_to_clipboard">Copied to Clipboard</string>
 </resources>

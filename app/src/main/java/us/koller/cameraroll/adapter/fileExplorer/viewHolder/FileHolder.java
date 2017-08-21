@@ -24,6 +24,7 @@ public class FileHolder extends RecyclerView.ViewHolder {
     }
 
     public void setFile(File_POJO file) {
+        setSelected(false);
         ImageView folderIndicator = itemView.findViewById(R.id.folder_indicator);
         if (file instanceof StorageRoot) {
             if (file.getName().equals(itemView.getContext().getString(R.string.storage))) {
@@ -42,7 +43,6 @@ public class FileHolder extends RecyclerView.ViewHolder {
         } else {
             folderIndicator.setImageResource(R.drawable.ic_photo_white_24dp);
         }
-
         TextView textView = itemView.findViewById(R.id.text);
         textView.setText(file.getName());
     }

@@ -104,7 +104,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public void sendDoneBroadcast() {
         ContentObserver.selfChange = false;
-        onProgress("", -1, -1);
+        onProgress(-1, -1);
         Intent intent = getDoneIntent();
         sendLocalBroadcast(intent);
     }
@@ -143,12 +143,14 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         this.updater = updater;
     }
 
-    public void onProgress(final String action, final int progress, final int totalNumber) {
+    public abstract int getActionStringRes();
+
+    public void onProgress(final int progress, final int totalNumber) {
         if (updater != null) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    updater.onProgress(action, progress, totalNumber);
+                    updater.onProgress(getActionStringRes(), progress, totalNumber);
                 }
             });
         }
@@ -156,11 +158,9 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public void sendMessage(final String message) {
         if (updater != null) {
-            Log.d("FileOperation", "sendMessage: " + message);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("FileOperation", "run() called");
                     updater.sendMessage(message);
                 }
             });
@@ -269,7 +269,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
 
     interface ProgressUpdater {
-        void onProgress(String action, int progress, int totalNumber);
+        void onProgress(int actionStringRes, int progress, int totalNumber);
 
         void sendMessage(String message);
     }
@@ -290,9 +290,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         }
 
         @Override
-        public void onProgress(String action, final int progress, final int totalNumber) {
-            final String text = action + String.valueOf(progress) + "/"
-                    + String.valueOf(totalNumber);
+        public void onProgress(final int actionStringRes, final int progress, final int totalNumber) {
             if (toast != null) {
                 handler.post(new Runnable() {
                     @Override
@@ -300,6 +298,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         if (progress == totalNumber) {
                             toast.setText(R.string.done);
                         } else {
+                            Context context = toast.getView().getContext();
+                            String text = context.getString(actionStringRes, progress, totalNumber);
                             toast.setText(text);
                         }
                         toast.show();

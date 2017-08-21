@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.Util;
 
 public class Photo extends AlbumItem implements Parcelable {
@@ -33,12 +34,7 @@ public class Photo extends AlbumItem implements Parcelable {
     }
 
     @Override
-    public String toString() {
-        return "Photo: " + super.toString();
-    }
-
-    @Override
-    public String getType() {
-        return "Photo";
+    public String getType(Context context) {
+        return context.getString(R.string.photo);
     }
 }

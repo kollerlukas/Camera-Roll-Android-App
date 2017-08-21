@@ -6,8 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,14 +28,12 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.animators.ColorFade;
 
 public abstract class AlbumHolder extends RecyclerView.ViewHolder {
 
     private Album album;
-    boolean excluded;
 
     AlbumHolder(View itemView) {
         super(itemView);
@@ -60,18 +60,22 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         if (album.pinned) {
             pinIndicator = AppCompatResources
                     .getDrawable(getContext(), R.drawable.pin_indicator);
+            if (pinIndicator != null) {
+                int color = nameTv.getTextColors().getDefaultColor();
+                DrawableCompat.wrap(pinIndicator);
+                DrawableCompat.setTint(pinIndicator, color);
+                DrawableCompat.unwrap(pinIndicator);
+            }
         }
         nameTv.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                pinIndicator, null, null, null);
+                null, null, pinIndicator, null);
 
-        try {
-            Provider.loadExcludedPaths(getContext());
-            excluded = Provider.isDirExcluded(album.getPath(), MediaProvider.getExcludedPaths())
-                    || Provider.isDirExcludedBecauseParentDirIsExcluded(album.getPath(), Provider.getExcludedPaths());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            excluded = false;
-        }
+        //set album itemCount
+        int itemCount = album.getAlbumItems().size();
+        boolean oneItem = itemCount == 1;
+        String count = getContext().getString(oneItem ?
+                R.string.item_count : R.string.items_count, itemCount);
+        ((TextView) itemView.findViewById(R.id.count)).setText(Html.fromHtml(count));
 
         ImageView hiddenFolderIndicator = itemView.findViewById(R.id.hidden_folder_indicator);
         if (hiddenFolderIndicator != null) {

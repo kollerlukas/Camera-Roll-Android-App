@@ -18,11 +18,9 @@ public class Delete extends FileOperation {
     public void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
 
-        String s = getString(R.string.successfully_deleted);
-
         int success_count = 0;
 
-        onProgress(s, success_count, files.length);
+        onProgress(success_count, files.length);
 
         for (int i = 0; i < files.length; i++) {
             boolean result;
@@ -42,20 +40,25 @@ public class Delete extends FileOperation {
 
             if (result) {
                 success_count++;
-                onProgress(s, success_count, files.length);
+                onProgress(success_count, files.length);
             } else {
                 sendFailedBroadcast(workIntent, files[i].getPath());
             }
         }
 
         if (success_count == 0) {
-            onProgress(s, success_count, files.length);
+            onProgress(success_count, files.length);
         }
     }
 
     @Override
     public int getType() {
         return FileOperation.DELETE;
+    }
+
+    @Override
+    public int getActionStringRes() {
+        return R.string.successfully_deleted;
     }
 
     public boolean deleteFile(String path) {

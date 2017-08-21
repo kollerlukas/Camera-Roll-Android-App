@@ -9,7 +9,7 @@ import android.os.Parcelable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.Util;
 
 public class Video extends AlbumItem implements Parcelable {
@@ -60,7 +60,7 @@ public class Video extends AlbumItem implements Parcelable {
     }
 
     @Override
-    public String getType() {
-        return "Video";
+    public String getType(Context context) {
+        return context.getString(R.string.video);
     }
 }

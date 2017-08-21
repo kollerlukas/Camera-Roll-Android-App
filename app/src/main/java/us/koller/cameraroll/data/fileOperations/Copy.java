@@ -30,11 +30,9 @@ public class Copy extends FileOperation {
             return;
         }
 
-        String s = getString(R.string.successfully_copied);
-
         int success_count = 0;
 
-        onProgress(s, success_count, files.length);
+        onProgress(success_count, files.length);
 
         boolean copyingOntoRemovableStorage = Util.isOnRemovableStorage(target.getPath());
 
@@ -50,17 +48,22 @@ public class Copy extends FileOperation {
             boolean result = copyFilesRecursively(getApplicationContext(), treeUri,
                     files[i].getPath(), target.getPath(), true);
             success_count += result ? 1 : 0;
-            onProgress(s, success_count, files.length);
+            onProgress(success_count, files.length);
         }
 
         if (success_count == 0) {
-            onProgress(s, success_count, files.length);
+            onProgress(success_count, files.length);
         }
     }
 
     @Override
     public int getType() {
         return FileOperation.COPY;
+    }
+
+    @Override
+    public int getActionStringRes() {
+        return R.string.successfully_copied;
     }
 
     private static String getCopyFileName(String destinationPath) {
