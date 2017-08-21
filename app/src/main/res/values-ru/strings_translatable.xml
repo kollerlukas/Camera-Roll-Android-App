@@ -28,7 +28,7 @@
     <string name="by_size">По размеру</string>
     <string name="by_date">По дате</string>
     <string name="hidden_folders">Скрытые папки</string>
-    <string name="file_explorer">Файовый менеджер</string>
+    <string name="file_explorer">Файловый менеджер</string>
     <string name="about">О программе</string>
     <string name="settings">Настройки</string>
     <string name="camera_shortcut">Ярлык камеры</string>
@@ -103,7 +103,7 @@
     <string name="save">Сохранить</string>
     <string name="changes_saved">Изменения сохранены</string>
     <!--info Dialog Strings-->
-	<string name="info_filename">Имя файла: </string>
+    	<string name="info_filename">Имя файла: </string>
     <string name="info_filepath">Путь: </string>
     <string name="info_size">Размер: </string>
     <string name="info_dimensions">Плотность пикс: </string>
