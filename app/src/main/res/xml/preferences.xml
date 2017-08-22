@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--suppress AndroidElementNotAllowed -->
-    <Preference
-        android:key="@string/pref_key_excluded_paths"
-        android:title="@string/excluded_paths" />
-
     <PreferenceCategory android:title="@string/appearance">
         <ListPreference
             android:defaultValue="@string/DARK_THEME_VALUE"
@@ -26,7 +21,7 @@
             style="@style/CameraRoll.Theme.DialogPreference"
             android:defaultValue="4"
             android:key="@string/pref_key_column_count"
-            android:title="@string/excluded_paths" />
+            android:title="@string/column_count" />
 
         <SwitchPreference
             android:defaultValue="false"
@@ -35,6 +30,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/other">
+        <!--suppress AndroidElementNotAllowed -->
+        <Preference
+            android:key="@string/pref_key_excluded_paths"
+            android:title="@string/excluded_paths" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_key_media_retriever"
