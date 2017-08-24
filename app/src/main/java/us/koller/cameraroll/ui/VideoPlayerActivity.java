@@ -25,7 +25,6 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -36,9 +35,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -49,10 +46,10 @@ import us.koller.cameraroll.R;
 
 public class VideoPlayerActivity extends ThemeableActivity {
 
-    public static final String POSITION = "POSITION";
-    public static final String PLAY_WHEN_READY = "PLAY_WHEN_READY";
+    private Uri videoUri;
 
     private SimpleExoPlayer player;
+    private long playerPosition = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,48 +57,10 @@ public class VideoPlayerActivity extends ThemeableActivity {
         setContentView(R.layout.activity_video_player);
 
         Intent intent = getIntent();
-        Uri videoUri = intent.getData();
+        videoUri = intent.getData();
 
         if (videoUri == null) {
             return;
-        }
-
-        // 1. Create a default TrackSelector
-        TrackSelection.Factory videoTrackSelectionFactory =
-                new AdaptiveTrackSelection.Factory(null);
-        TrackSelector trackSelector =
-                new DefaultTrackSelector(videoTrackSelectionFactory);
-
-        // Produces DataSource instances through which media data is loaded.
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this,
-                Util.getUserAgent(this, getString(R.string.app_name)), null);
-        // Produces Extractor instances for parsing the media data.
-        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-        // This is the MediaSource representing the media to be played.
-        MediaSource videoSource = new ExtractorMediaSource(videoUri,
-                dataSourceFactory, extractorsFactory, null, null);
-
-        // Loops the video indefinitely.
-        LoopingMediaSource loopingSource = new LoopingMediaSource(videoSource);
-
-        // 2. Create a default LoadControl
-        LoadControl loadControl = new DefaultLoadControl();
-
-        // 3. Create the player
-        player = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
-
-        // Bind the player to the view.
-        SimpleExoPlayerView simpleExoPlayerView = findViewById(R.id.simpleExoPlayerView);
-        simpleExoPlayerView.setPlayer(player);
-
-        // Prepare the player with the source.
-        player.prepare(loopingSource);
-
-        if (savedInstanceState != null) {
-            player.seekTo(savedInstanceState.getLong(POSITION));
-            player.setPlayWhenReady(savedInstanceState.getBoolean(PLAY_WHEN_READY));
-        } else {
-            player.setPlayWhenReady(true);
         }
 
         //needed to achieve transparent navBar
@@ -118,7 +77,9 @@ public class VideoPlayerActivity extends ThemeableActivity {
         playPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                player.setPlayWhenReady(!player.getPlayWhenReady());
+                if (player != null) {
+                    player.setPlayWhenReady(!player.getPlayWhenReady());
+                }
             }
         });
 
@@ -132,31 +93,6 @@ public class VideoPlayerActivity extends ThemeableActivity {
         }
 
         setWindowInsets();
-
-        player.addListener(new SimpleEventListener() {
-            @Override
-            public void onPlayerStateChanged(boolean b, int i) {
-                //update PlayPause-Button
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (player.getPlayWhenReady()) {
-                        playPause.setImageResource(R.drawable.play_to_pause_avd);
-                    } else {
-                        playPause.setImageResource(R.drawable.pause_to_play_avd);
-                    }
-
-                    Drawable d = playPause.getDrawable();
-                    if (d instanceof Animatable) {
-                        ((Animatable) d).start();
-                    }
-                } else {
-                    if (player.getPlayWhenReady()) {
-                        playPause.setImageResource(R.drawable.ic_pause_white_24dp);
-                    } else {
-                        playPause.setImageResource(R.drawable.ic_play_arrow_white_24dp);
-                    }
-                }
-            }
-        });
 
         //hide & show Nav-/StatusBar together with controls
         final PlaybackControlView playbackControlView = (PlaybackControlView)
@@ -291,10 +227,65 @@ public class VideoPlayerActivity extends ThemeableActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(POSITION, player.getCurrentPosition());
-        outState.putBoolean(PLAY_WHEN_READY, player.getPlayWhenReady());
+    protected void onResume() {
+        super.onResume();
+
+        initPlayer();
+        if (playerPosition != -1) {
+            player.seekTo(playerPosition);
+        }
+    }
+
+    private void initPlayer() {
+        // Produces DataSource instances through which media data is loaded.
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this,
+                Util.getUserAgent(this, getString(R.string.app_name)), null);
+        // Produces Extractor instances for parsing the media data.
+        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+        // This is the MediaSource representing the media to be played.
+        MediaSource videoSource = new ExtractorMediaSource(videoUri,
+                dataSourceFactory, extractorsFactory, null, null);
+
+        // Loops the video indefinitely.
+        LoopingMediaSource loopingSource = new LoopingMediaSource(videoSource);
+
+        // Create the player
+        player = ExoPlayerFactory.newSimpleInstance(this,
+                new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(null)),
+                new DefaultLoadControl());
+
+        // Bind the player to the view.
+        SimpleExoPlayerView simpleExoPlayerView = findViewById(R.id.simpleExoPlayerView);
+        simpleExoPlayerView.setPlayer(player);
+
+        // Prepare the player with the source.
+        player.prepare(loopingSource);
+
+        final ImageButton playPause = findViewById(R.id.play_pause);
+        player.addListener(new SimpleEventListener() {
+            @Override
+            public void onPlayerStateChanged(boolean b, int i) {
+                //update PlayPause-Button
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (player.getPlayWhenReady()) {
+                        playPause.setImageResource(R.drawable.play_to_pause_avd);
+                    } else {
+                        playPause.setImageResource(R.drawable.pause_to_play_avd);
+                    }
+
+                    Drawable d = playPause.getDrawable();
+                    if (d instanceof Animatable) {
+                        ((Animatable) d).start();
+                    }
+                } else {
+                    if (player.getPlayWhenReady()) {
+                        playPause.setImageResource(R.drawable.ic_pause_white_24dp);
+                    } else {
+                        playPause.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -302,16 +293,10 @@ public class VideoPlayerActivity extends ThemeableActivity {
         super.onStop();
 
         if (player != null) {
+            playerPosition = player.getCurrentPosition();
             player.stop();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (player != null) {
             player.release();
+            player = null;
         }
     }
 
