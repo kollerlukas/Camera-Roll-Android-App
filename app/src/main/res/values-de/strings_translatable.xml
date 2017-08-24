@@ -21,6 +21,8 @@
     <string name="excluded">Ausgesclossen</string>
     <string name="error">Fehler</string>
     <string name="selected_count">%1$d ausgewählt</string>
+    <string name="file_op_channel_name">Datei Operationen</string>
+    <string name="file_op_channel_description">Zeigt Dir den aktuellen Stand der Datei Operationen.</string>
     <!--MainActivity-->
     <string name="refresh">Neu laden</string>
     <string name="sort_by">Sortieren nach…</string>
@@ -39,6 +41,7 @@
     <string name="pin_album">Album anheften</string>
     <string name="file_deleted">%1$d Datei gelöscht</string>
     <string name="files_deleted">%1$d Dateien gelöscht</string>
+    <string name="select_all">Alle auswählen</string>
     <!--ItemActivity-->
     <string name="set_as">Verwenden als…</string>
     <string name="open_with">Öffnen mit…</string>
@@ -65,9 +68,6 @@
     <string name="new_folder">Neuer Ordner</string>
     <string name="rename">Umbenennen</string>
     <string name="paste">Einfügen</string>
-    <string name="successfully_deleted">erfolgreich gelöscht %1$d/%1$d</string>
-    <string name="successfully_moved">erfolgreich bewegt %1$d/%1$d</string>
-    <string name="successfully_copied">erfolgreich kopiert %1$d/%1$d</string>
     <string name="successfully_created_new_folder">Neuer Ordner erfolgreich erstellt</string>
     <string name="successfully_renamed_file">Datei erfolgreich umbenannt</string>
     <!--FileExplorerActivity-->
@@ -112,7 +112,7 @@
     <string name="info_date">Datum: </string>
     <string name="info_location">Ort: </string>
     <string name="info_focal_length">Brennweite: </string>
-    <string name="info_exposure">Belichtung: </string>
+    <string name="info_exposure">Belichtungszeit: </string>
     <string name="info_camera_model">Kamera Model: </string>
     <string name="info_aperture">Blende: </string>
     <string name="info_iso">ISO: </string>

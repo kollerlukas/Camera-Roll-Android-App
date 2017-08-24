@@ -20,11 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/CameraRoll.Theme">
 
-        <!--To make use of extra screen real-estate on phones, like LG G6, Samsung Galaxy S8, ...-->
-        <meta-data
-            android:name="android.max_aspect"
-            android:value="2.1" />
-
         <activity
             android:name=".ui.MainActivity"
             android:launchMode="singleTop"

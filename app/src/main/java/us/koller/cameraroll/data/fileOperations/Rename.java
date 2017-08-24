@@ -31,6 +31,16 @@ public class Rename extends FileOperation {
     private String newFilePath;
 
     @Override
+    String getNotificationTitle() {
+        return getString(R.string.rename);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_text_format_white_24dp;
+    }
+
+    @Override
     public void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
         final String newFileName = workIntent.getStringExtra(FileOperation.NEW_FILE_NAME);
@@ -72,11 +82,6 @@ public class Rename extends FileOperation {
     @Override
     public int getType() {
         return FileOperation.RENAME;
-    }
-
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_renamed_file;
     }
 
     private static String getFileExtension(String filename) {

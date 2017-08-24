@@ -15,6 +15,16 @@ import us.koller.cameraroll.util.StorageUtil;
 public class Delete extends FileOperation {
 
     @Override
+    String getNotificationTitle() {
+        return getString(R.string.delete);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_delete_white_24dp;
+    }
+
+    @Override
     public void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
 
@@ -54,11 +64,6 @@ public class Delete extends FileOperation {
     @Override
     public int getType() {
         return FileOperation.DELETE;
-    }
-
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_deleted;
     }
 
     public boolean deleteFile(String path) {

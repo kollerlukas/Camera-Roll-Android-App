@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 
-import com.bumptech.glide.load.DecodeFormat;
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
 import java.io.InputStream;

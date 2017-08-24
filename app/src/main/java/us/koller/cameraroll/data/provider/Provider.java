@@ -2,7 +2,6 @@ package us.koller.cameraroll.data.provider;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;

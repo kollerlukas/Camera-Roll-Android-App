@@ -111,13 +111,13 @@ public class InfoUtil {
             String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
             try {
                 Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
-                String formattedDate = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale).format(date);
+                String formattedDate = new SimpleDateFormat("EEE d MMM yyyy HH:mm", locale).format(date);
                 return new InfoItem(context.getString(R.string.info_date), formattedDate);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-        String formattedDate = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", locale)
+        String formattedDate = new SimpleDateFormat("EEE d MMM yyyy HH:mm", locale)
                 .format(new Date(albumItem.getDate()));
         return new InfoItem(context.getString(R.string.info_date), formattedDate);
     }

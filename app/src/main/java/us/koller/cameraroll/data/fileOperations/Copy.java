@@ -22,6 +22,16 @@ import us.koller.cameraroll.util.StorageUtil;
 public class Copy extends FileOperation {
 
     @Override
+    String getNotificationTitle() {
+        return getString(R.string.copy);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_content_copy_white_24dp;
+    }
+
+    @Override
     public void execute(Intent workIntent) {
         File_POJO[] files = getFiles(workIntent);
         File_POJO target = workIntent.getParcelableExtra(TARGET);
@@ -59,11 +69,6 @@ public class Copy extends FileOperation {
     @Override
     public int getType() {
         return FileOperation.COPY;
-    }
-
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_copied;
     }
 
     private static String getCopyFileName(String destinationPath) {

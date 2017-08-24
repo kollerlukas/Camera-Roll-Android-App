@@ -467,6 +467,12 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.sort_by_name).setChecked(true);
         }
 
+        MenuItem selectAll = menu.findItem(R.id.select_all);
+        Drawable d = selectAll.getIcon();
+        DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, accentTextColor);
+        DrawableCompat.unwrap(d);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -481,6 +487,7 @@ public class AlbumActivity extends ThemeableActivity
             //show copy & move button
             menu.findItem(R.id.copy).setVisible(selectorModeActive);
             menu.findItem(R.id.move).setVisible(selectorModeActive);
+            menu.findItem(R.id.select_all).setVisible(selectorModeActive);
         }
     }
 
@@ -489,6 +496,16 @@ public class AlbumActivity extends ThemeableActivity
         final String[] selected_items_paths;
         Intent intent;
         switch (item.getItemId()) {
+            case R.id.select_all:
+                RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+                SelectorModeManager manager = adapter.getSelectorManager();
+                String[] paths = new String[album.getAlbumItems().size()];
+                for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                    paths[i] = album.getAlbumItems().get(i).getPath();
+                }
+                manager.selectAll(paths);
+                adapter.notifyItemRangeChanged(0, paths.length - 1);
+                break;
             case R.id.share:
                 //share multiple items
                 selected_items_paths =

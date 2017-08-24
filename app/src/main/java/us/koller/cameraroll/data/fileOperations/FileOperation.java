@@ -1,7 +1,9 @@
 package us.koller.cameraroll.data.fileOperations;
 
-import android.annotation.SuppressLint;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,6 +15,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
@@ -30,6 +34,8 @@ import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.util.StorageUtil;
 
 public abstract class FileOperation extends IntentService implements Parcelable {
+
+    private static final int NOTIFICATION_ID = 6;
 
     public static final String RESULT_DONE = "us.koller.cameraroll.data.FileOperations.FileOperation.RESULT_DONE";
     public static final String FAILED = "us.koller.cameraroll.data.FileOperations.FileOperation.FAILED";
@@ -49,7 +55,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     public static final String NEW_FILE_NAME = "NEW_FILE_NAME";
     public static final String REMOVABLE_STORAGE_TREE_URI = "REMOVABLE_STORAGE_TREE_URI";
 
-    private ProgressUpdater updater;
+    private NotificationCompat.Builder notifBuilder;
 
     private ArrayList<String> pathsToScan;
 
@@ -57,36 +63,71 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         super("");
 
         pathsToScan = new ArrayList<>();
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setUpdater(new ToastUpdater(getApplicationContext()));
-            }
-        });
     }
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
+        notifBuilder = createNotificationBuilder();
+        notifBuilder.setProgress(1, 0, false);
+        Notification notification = notifBuilder.build();
+        startForeground(NOTIFICATION_ID, notification);
+        NotificationManager manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(NOTIFICATION_ID, notification);
+
         ContentObserver.selfChange = true;
 
         execute(workIntent);
 
         if (autoSendDoneBroadcast()) {
             if (pathsToScan.size() > 0) {
+                onProgress(-1, -1);
                 scanPaths(getApplicationContext(), new Util.MediaScannerCallback() {
                     @Override
                     public void onAllPathsScanned() {
                         sendDoneBroadcast();
+                        stopForeground(true);
+
                     }
                 });
             } else {
                 sendDoneBroadcast();
+                stopForeground(true);
             }
         } else {
             ContentObserver.selfChange = false;
+            stopForeground(true);
         }
     }
+
+    private NotificationCompat.Builder createNotificationBuilder() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+        return new NotificationCompat.Builder(this, getString(R.string.file_op_channel_id))
+                .setContentTitle(getNotificationTitle())
+                .setSmallIcon(getNotificationSmallIconRes());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel mChannel = new NotificationChannel(
+                getString(R.string.file_op_channel_id),
+                getString(R.string.file_op_channel_name),
+                NotificationManager.IMPORTANCE_LOW);
+        mChannel.setDescription(getString(R.string.file_op_channel_description));
+        mNotificationManager.createNotificationChannel(mChannel);
+    }
+
+    private NotificationCompat.Builder getNotificationBuilder() {
+        return notifBuilder;
+    }
+
+    abstract String getNotificationTitle();
+
+    public abstract int getNotificationSmallIconRes();
 
     public abstract void execute(Intent workIntent);
 
@@ -104,7 +145,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public void sendDoneBroadcast() {
         ContentObserver.selfChange = false;
-        onProgress(-1, -1);
+        showToast(getString(R.string.done));
         Intent intent = getDoneIntent();
         sendLocalBroadcast(intent);
     }
@@ -139,32 +180,25 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         return 0;
     }
 
-    public void setUpdater(ProgressUpdater updater) {
-        this.updater = updater;
-    }
-
-    public abstract int getActionStringRes();
-
     public void onProgress(final int progress, final int totalNumber) {
-        if (updater != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updater.onProgress(getActionStringRes(), progress, totalNumber);
-                }
-            });
+        NotificationCompat.Builder notifBuilder = getNotificationBuilder();
+        if (progress >= 0) {
+            notifBuilder.setProgress(totalNumber, progress, false);
+        } else {
+            notifBuilder.setProgress(0, 0, true);
         }
+        NotificationManager manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(NOTIFICATION_ID, notifBuilder.build());
     }
 
-    public void sendMessage(final String message) {
-        if (updater != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updater.sendMessage(message);
-                }
-            });
-        }
+    public void showToast(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void runOnUiThread(Runnable r) {
@@ -265,62 +299,6 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             return treeUri;
         }
         return null;
-    }
-
-
-    interface ProgressUpdater {
-        void onProgress(int actionStringRes, int progress, int totalNumber);
-
-        void sendMessage(String message);
-    }
-
-    private static class ToastUpdater implements ProgressUpdater {
-
-        private Toast toast;
-
-        private Handler handler;
-
-        @SuppressLint("ShowToast")
-        ToastUpdater(Context context) {
-            handler = new Handler(Looper.getMainLooper());
-
-            if (toast == null) {
-                toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
-            }
-        }
-
-        @Override
-        public void onProgress(final int actionStringRes, final int progress, final int totalNumber) {
-            if (toast != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (progress == totalNumber) {
-                            toast.setText(R.string.done);
-                        } else {
-                            Context context = toast.getView().getContext();
-                            String text = context.getString(actionStringRes, progress, totalNumber);
-                            toast.setText(text);
-                        }
-                        toast.show();
-                    }
-                });
-            }
-        }
-
-        @Override
-        public void sendMessage(final String message) {
-            Log.d("ToastUpdater", "sendMessage() called with: message = [" + message + "]");
-            if (toast != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        toast.setText(message);
-                        toast.show();
-                    }
-                });
-            }
-        }
     }
 
     void scanPaths(Context context, Util.MediaScannerCallback callback) {

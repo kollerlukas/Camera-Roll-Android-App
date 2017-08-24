@@ -21,6 +21,8 @@
     <string name="excluded">Excluded</string>
     <string name="error">Error</string>
     <string name="selected_count">%1$d selected</string>
+    <string name="file_op_channel_name">File Operations</string>
+    <string name="file_op_channel_description">Shows the current state of a file operation.</string>
     <!--MainActivity-->
     <string name="refresh">Refresh</string>
     <string name="sort_by">Sort by…</string>
@@ -39,6 +41,7 @@
     <string name="pin_album">Pin Album</string>
     <string name="file_deleted">%1$d file deleted</string>
     <string name="files_deleted">%1$d files deleted</string>
+    <string name="select_all">Select All</string>
     <!--ItemActivity-->
     <string name="set_as">Set as…</string>
     <string name="open_with">Open with…</string>
@@ -65,9 +68,6 @@
     <string name="new_folder">New Folder</string>
     <string name="rename">Rename</string>
     <string name="paste">Paste</string>
-    <string name="successfully_deleted">successfully deleted %1$d/%1$d</string>
-    <string name="successfully_moved">successfully moved %1$d/%1$d</string>
-    <string name="successfully_copied">successfully copied %1$d/%1$d</string>
     <string name="successfully_created_new_folder">successfully created a new folder</string>
     <string name="successfully_renamed_file">successfully renamed file</string>
     <!--FileExplorerActivity-->
