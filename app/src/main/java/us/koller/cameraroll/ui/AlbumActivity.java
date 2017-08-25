@@ -504,7 +504,7 @@ public class AlbumActivity extends ThemeableActivity
                     paths[i] = album.getAlbumItems().get(i).getPath();
                 }
                 manager.selectAll(paths);
-                adapter.notifyItemRangeChanged(0, paths.length - 1);
+                adapter.notifyItemRangeChanged(0, paths.length);
                 break;
             case R.id.share:
                 //share multiple items

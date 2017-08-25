@@ -375,7 +375,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         View recyclerView = rootView.findViewById(R.id.recyclerView);
         if (recyclerView instanceof RecyclerView) {
             RecyclerView.Adapter adapter = ((RecyclerView) recyclerView).getAdapter();
-            adapter.notifyItemRangeChanged(0, adapter.getItemCount() - 1);
+            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
         }
     }
 
