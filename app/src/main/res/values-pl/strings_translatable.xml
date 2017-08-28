@@ -21,6 +21,8 @@
     <string name="excluded">Wykluczone</string>
     <string name="error">Błąd</string>
     <string name="selected_count">%1$d wybrano</string>
+    <string name="file_op_channel_name">Operacje na plikach</string>
+    <string name="file_op_channel_description">Pokazuje obecny stan operacji na plikach.</string>
     <!--MainActivity-->
     <string name="refresh">Odśwież</string>
     <string name="sort_by">Sortuj wg…</string>
@@ -39,6 +41,7 @@
     <string name="pin_album">Przypnij album</string>
     <string name="file_deleted">%1$d plik usunięto</string>
     <string name="files_deleted">%1$d pliki/ów usunięto</string>
+    <string name="select_all">Wybierz wszystko</string>
     <!--ItemActivity-->
     <string name="set_as">Ustaw jako…</string>
     <string name="open_with">Otwórz przez…</string>
@@ -99,6 +102,8 @@
     <string name="edit_exif">Edytuj Exif</string>
     <string name="save">Zapisz</string>
     <string name="changes_saved">Zmiany zapisano</string>
+    <!--ExcludedPathsActivity-->
+    <string name="excluded_paths">Wykluczone ścieżki</string>
     <!--info Dialog Strings-->
     <string name="info_filename">Nazwa pliku: </string>
     <string name="info_filepath">Ścieżka pliku: </string>
