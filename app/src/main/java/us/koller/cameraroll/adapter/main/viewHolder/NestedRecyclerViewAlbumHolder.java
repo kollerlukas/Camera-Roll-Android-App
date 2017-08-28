@@ -52,8 +52,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     public RecyclerView nestedRecyclerView;
 
-    public Album album;
-
     public int sharedElementReturnPosition = -1;
 
     private EqualSpacesItemDecoration itemDecoration;
@@ -80,8 +78,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     .findViewById(R.id.root_view);
 
             final Toolbar toolbar = rootView.findViewById(R.id.toolbar);
-
-            toolbar.setActivated(false);
 
             if (theme.darkStatusBarIconsInSelectorMode()) {
                 Util.setDarkStatusBarIcons(rootView);
@@ -143,8 +139,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
 
-                            Toolbar toolbar = rootView.findViewById(R.id.toolbar);
-                            toolbar.setActivated(theme.elevatedToolbar());
                             if (theme.darkStatusBarIcons()) {
                                 Util.setDarkStatusBarIcons(rootView);
                             } else {
@@ -197,7 +191,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             manager.setOnBackPressedCallback(onBackPressedCallback);
         }
 
-        //checking if OnMediaLoadedCallback is already attached, if not attach it
+        //checking if SelectorCallback is already attached, if not attach it
         boolean callbackAttached = false;
         ArrayList<SelectorModeManager.Callback> callbacks = manager.getCallbacks();
         if (callbacks != null) {
@@ -211,22 +205,41 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         if (!callbackAttached) {
             manager.addCallback(callback);
         }
+
+        manager.addCallback(new SelectorModeManager.Callback() {
+            @Override
+            public void onSelectorModeEnter() {
+
+            }
+
+            @Override
+            public void onSelectorModeExit() {
+                RecyclerView.Adapter adapter = nestedRecyclerView.getAdapter();
+                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+            }
+
+            @Override
+            public void onItemSelected(int selectedItemCount) {
+
+            }
+        });
         return this;
     }
 
     @Override
     public void setAlbum(Album album) {
+        Album oldAlbum = getAlbum();
         super.setAlbum(album);
-
-        this.album = album;
+        if (album.equals(oldAlbum)) {
+            onItemChanged();
+            return;
+        }
 
         int oldHeight = nestedRecyclerView.getHeight();
-
         //make RecyclerView either single ore double lined, depending on the album size
         int lineCount = album.getAlbumItems().size() > SINGLE_LINE_MAX_ITEM_COUNT ? 2 : 1;
         int height = (int) getContext().getResources()
                 .getDimension(R.dimen.nested_recyclerView_line_height) * lineCount;
-
         if (oldHeight != height) {
             LinearLayout.LayoutParams params
                     = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
@@ -249,7 +262,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         if (nestedRecyclerView.getAdapter() != null) {
             RecyclerViewAdapter adapter = (RecyclerViewAdapter) nestedRecyclerView.getAdapter();
             adapter.setAlbum(album);
-            adapter.setSelectorModeManager(manager);
             adapter.notifyDataSetChanged();
         } else {
             RecyclerViewAdapter adapter = new RecyclerViewAdapter(callback,
@@ -368,14 +380,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         if (nestedRecyclerView.getAdapter() instanceof RecyclerViewAdapter) {
             ((RecyclerViewAdapter) nestedRecyclerView.getAdapter())
                     .cancelSelectorMode((Activity) getContext());
-        }
-
-        //update other ViewHolders
-        final View rootView = ((Activity) nestedRecyclerView.getContext()).findViewById(R.id.root_view);
-        View recyclerView = rootView.findViewById(R.id.recyclerView);
-        if (recyclerView instanceof RecyclerView) {
-            RecyclerView.Adapter adapter = ((RecyclerView) recyclerView).getAdapter();
-            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
         }
     }
 

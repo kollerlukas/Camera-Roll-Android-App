@@ -111,7 +111,6 @@ public class ItemActivity extends ThemeableActivity {
             if (isReturning) {
                 ViewGroup v = viewPager.findViewWithTag(albumItem.getPath());
                 View sharedElement = v.findViewById(R.id.image);
-                Log.d("ItemActivity", "onMapSharedElements: " + sharedElement);
                 if (sharedElement == null) {
                     names.clear();
                     sharedElements.clear();

@@ -2,12 +2,9 @@ package us.koller.cameraroll.adapter.main.viewHolder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
@@ -56,7 +53,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         //to fix ellipsize
         nameTv.requestLayout();
         //pinned indicator
-        Drawable pinIndicator = null;
+        /*Drawable pinIndicator = null;
         if (album.pinned) {
             pinIndicator = AppCompatResources
                     .getDrawable(getContext(), R.drawable.pin_indicator);
@@ -68,7 +65,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
             }
         }
         nameTv.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                null, null, pinIndicator, null);
+                null, null, pinIndicator, null);*/
 
         //set album itemCount
         int itemCount = album.getAlbumItems().size();

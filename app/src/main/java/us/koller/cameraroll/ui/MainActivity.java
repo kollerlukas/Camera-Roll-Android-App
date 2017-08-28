@@ -75,7 +75,7 @@ public class MainActivity extends ThemeableActivity {
             }
 
             if (sharedElementViewHolder.sharedElementReturnPosition != -1) {
-                String newTransitionName = sharedElementViewHolder.album.getAlbumItems()
+                String newTransitionName = sharedElementViewHolder.getAlbum().getAlbumItems()
                         .get(sharedElementViewHolder.sharedElementReturnPosition).getPath();
                 View layout = sharedElementViewHolder.nestedRecyclerView.findViewWithTag(newTransitionName);
                 View newSharedElement = layout != null ? layout.findViewById(R.id.image) : null;
@@ -178,9 +178,8 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setAdapter(recyclerViewAdapter);
 
         int spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
-        //recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
         if (recyclerView instanceof FastScrollerRecyclerView) {
-            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing/* / 2*/);
+            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing);
         }
 
         //disable default change animation

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
@@ -26,6 +27,7 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -639,13 +641,10 @@ public class AlbumActivity extends ThemeableActivity
         this.finish();
     }
 
-    public void deleteAlbumItemsSnackbar() {
+    public void deleteAlbumItemsSnackbar(String[] selected_items) {
         if (!MediaProvider.checkPermission(this)) {
             return;
         }
-
-        final String[] selected_items
-                = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(this);
 
         final int[] indices = new int[selected_items.length];
         final AlbumItem[] deletedItems = new AlbumItem[selected_items.length];
@@ -916,7 +915,20 @@ public class AlbumActivity extends ThemeableActivity
             @Override
             public void run() {
                 if (!pick_photos) {
-                    deleteAlbumItemsSnackbar();
+                    //deleteAlbumItemsSnackbar();
+                    final String[] selected_items
+                            = ((RecyclerViewAdapter) recyclerView.getAdapter())
+                            .cancelSelectorMode(AlbumActivity.this);
+                    new AlertDialog.Builder(AlbumActivity.this, theme.getDialogThemeRes())
+                            .setTitle(getString(R.string.delete_files, selected_items.length) + "?")
+                            .setNegativeButton(getString(R.string.no), null)
+                            .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    deleteAlbumItemsSnackbar(selected_items);
+                                }
+                            })
+                            .create().show();
                 } else {
                     setPhotosResult();
                 }

@@ -90,7 +90,7 @@
     <string name="use_8_bit_color_summary">8-Bit Farbe zu anzeigen der Bilder verwenden. Das Laden von Bildern braucht etwas länger. Dies erhöht auch die Speicherbelastung wenn die App verwendet wird.</string>
     <!--EditImageActivity-->
     <string name="rotate">Rotieren</string>
-    <string name="restore">Wiederherstellen</string>
+    <string name="restore">Zurücksetzten</string>
     <string name="editing_file_format_not_supported">Das Dateiformat kann nicht bearbeitet werden</string>
     <string name="success">Success!</string>
     <!--SetWallpaperActivity-->
