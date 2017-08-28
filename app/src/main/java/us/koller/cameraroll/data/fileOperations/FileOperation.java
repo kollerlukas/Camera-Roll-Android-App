@@ -388,7 +388,6 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
                             Log.d("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
-
                             pathsScanned++;
                             if (callback != null && pathsScanned == paths.length) {
                                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
-import android.util.Log;
 
 import java.io.File;
 
@@ -42,10 +41,8 @@ public class Delete extends FileOperation {
                     return;
                 }
                 result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
-                Log.d("Delete", "execute: deleteFileOnRemovableStorage()");
             } else {
                 result = deleteFile(files[i].getPath());
-                Log.d("Delete", "execute: deleteFile()");
             }
 
             if (result) {
@@ -68,7 +65,6 @@ public class Delete extends FileOperation {
 
     public boolean deleteFile(String path) {
         boolean success;
-        Log.d("Delete", "deleteFile: java.io.File");
         File file = new File(path);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -85,12 +81,8 @@ public class Delete extends FileOperation {
         boolean success = false;
         DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, new File(path));
         if (file != null) {
-            Log.d("Delete", "execute: file is on removable storage" + ", canWrite(): " + String.valueOf(file.canWrite()));
             success = file.delete();
-        } else {
-            Log.d("Delete", "execute: file is on removable storage" + ", file = null");
         }
-
         //remove from MediaStore
         addPathToScan(path);
         return success;
