@@ -5,7 +5,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
-
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.ui.ItemActivity;

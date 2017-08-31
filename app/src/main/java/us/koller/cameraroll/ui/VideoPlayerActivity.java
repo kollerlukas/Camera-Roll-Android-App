@@ -22,9 +22,11 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageButton;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -249,8 +251,10 @@ public class VideoPlayerActivity extends ThemeableActivity {
         // Loops the video indefinitely.
         LoopingMediaSource loopingSource = new LoopingMediaSource(videoSource);
 
+        DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this);
+
         // Create the player
-        player = ExoPlayerFactory.newSimpleInstance(this,
+        player = ExoPlayerFactory.newSimpleInstance(renderersFactory,
                 new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(null)),
                 new DefaultLoadControl());
 
@@ -310,7 +314,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
         return R.style.CameraRoll_Theme_Light_VideoPlayer;
     }
 
-    public static class SimpleEventListener implements ExoPlayer.EventListener {
+    public static class SimpleEventListener implements Player.EventListener {
 
         @Override
         public void onTimelineChanged(Timeline timeline, Object o) {
@@ -333,12 +337,22 @@ public class VideoPlayerActivity extends ThemeableActivity {
         }
 
         @Override
+        public void onRepeatModeChanged(int repeatMode) {
+
+        }
+
+        @Override
         public void onPlayerError(ExoPlaybackException e) {
 
         }
 
         @Override
         public void onPositionDiscontinuity() {
+
+        }
+
+        @Override
+        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
         }
     }

@@ -210,7 +210,9 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             @Override
             public void onSelectorModeExit() {
                 RecyclerView.Adapter adapter = nestedRecyclerView.getAdapter();
-                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                if (adapter != null) {
+                    adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                }
             }
         });
         return this;
