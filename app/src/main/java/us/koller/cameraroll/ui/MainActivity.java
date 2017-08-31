@@ -17,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -249,8 +250,7 @@ public class MainActivity extends ThemeableActivity {
         });
 
         final FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setVisibility(View.GONE);
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
                     R.drawable.ic_camera_lens_avd);
             fab.setImageDrawable(d);
@@ -268,7 +268,7 @@ public class MainActivity extends ThemeableActivity {
 
         if (pick_photos || !settings.getCameraShortcut()) {
             fab.setVisibility(View.GONE);
-        }*/
+        }
 
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
@@ -520,14 +520,14 @@ public class MainActivity extends ThemeableActivity {
             menu.findItem(R.id.sort_by_most_recent).setChecked(true);
         }
 
-        Settings s = Settings.getInstance(this);
+        /*Settings s = Settings.getInstance(this);
         MenuItem cameraShortcut = menu.findItem(R.id.camera_shortcut);
         cameraShortcut.setVisible(s.getCameraShortcut() && !pick_photos);
         Drawable cameraIcon = cameraShortcut.getIcon().mutate();
         DrawableCompat.wrap(cameraIcon);
         DrawableCompat.setTint(cameraIcon, theme.getTextColorSecondary(this));
         DrawableCompat.unwrap(cameraIcon);
-        cameraShortcut.setIcon(cameraIcon);
+        cameraShortcut.setIcon(cameraIcon);*/
 
         if (pick_photos) {
             menu.findItem(R.id.file_explorer).setVisible(false);

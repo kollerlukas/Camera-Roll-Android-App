@@ -206,21 +206,11 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             manager.addCallback(callback);
         }
 
-        manager.addCallback(new SelectorModeManager.Callback() {
-            @Override
-            public void onSelectorModeEnter() {
-
-            }
-
+        manager.addCallback(new SelectorModeManager.SimpleCallback() {
             @Override
             public void onSelectorModeExit() {
                 RecyclerView.Adapter adapter = nestedRecyclerView.getAdapter();
                 adapter.notifyItemRangeChanged(0, adapter.getItemCount());
-            }
-
-            @Override
-            public void onItemSelected(int selectedItemCount) {
-
             }
         });
         return this;
