@@ -73,11 +73,14 @@
     <!--FileExplorerActivity-->
     <string name="no_files">KEINE DATEIEN</string>
     <string name="storage">Speicher</string>
+    <string name="scan">Scannen</string>
+    <string name="scanning">Scanning…</string>
     <string name="copy_file">%1$d Datei kopieren</string>
     <string name="copy_files">%1$d Dateien kopieren</string>
     <string name="move_file">%1$d Datei bewegen</string>
     <string name="move_files">%1$d Dateien bewegen</string>
     <string name="delete_file">%1$d Datei löschen</string>
+    <string name="paste_error">Hierhin können keine Dateien eingefügt werden!</string>
     <!--SettingsActivity-->
     <string name="appearance">Erscheinungsbild</string>
     <string name="theme">Theme</string>

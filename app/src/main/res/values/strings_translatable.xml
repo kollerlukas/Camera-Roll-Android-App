@@ -73,11 +73,14 @@
     <!--FileExplorerActivity-->
     <string name="no_files">NO FILES</string>
     <string name="storage">Storage</string>
+    <string name="scan">Scan</string>
+    <string name="scanning">Scanning…</string>
     <string name="copy_file">Copy %1$d file</string>
     <string name="copy_files">Copy %1$d files</string>
     <string name="move_file">Move %1$d file</string>
     <string name="move_files">Move %1$d files</string>
     <string name="delete_file">Delete %1$d file</string>
+    <string name="paste_error">You can\'t paste files here!</string>
     <!--SettingsActivity-->
     <string name="appearance">Appearance</string>
     <string name="theme">Theme</string>

@@ -1,5 +1,6 @@
 package us.koller.cameraroll.data.fileOperations;
 
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -23,6 +24,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -359,7 +361,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             return false;
         }
 
-        static ArrayList<String> getAllChildPaths(ArrayList<String> paths, String path) {
+        public static ArrayList<String> getAllChildPaths(ArrayList<String> paths, String path) {
             File file = new File(path);
             if (file.exists()) {
                 if (file.isDirectory()) {
@@ -396,6 +398,35 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                                         callback.onAllPathsScanned();
                                     }
                                 }, 100);
+                            }
+                        }
+                    });
+        }
+
+        public static void scanPathsWithToast(final Context context, final String[] paths) {
+            @SuppressLint("ShowToast") final WeakReference<Toast> toastWeakReference = new WeakReference<>(
+                    Toast.makeText(context, R.string.scanning, Toast.LENGTH_SHORT));
+            MediaScannerConnection.scanFile(context.getApplicationContext(),
+                    paths,
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        int pathsScanned;
+
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.d("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast toast = toastWeakReference.get();
+                                    if (toast != null) {
+                                        toastWeakReference.get().show();
+                                    }
+                                }
+                            });
+                            pathsScanned++;
+                            if (pathsScanned == paths.length) {
+                                toastWeakReference.clear();
                             }
                         }
                     });

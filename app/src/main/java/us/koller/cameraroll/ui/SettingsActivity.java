@@ -154,7 +154,6 @@ public class SettingsActivity extends ThemeableActivity {
     @Override
     public void recreate() {
         recreated = true;
-
         super.recreate();
     }
 
@@ -163,7 +162,6 @@ public class SettingsActivity extends ThemeableActivity {
         if (recreated) {
             setResult(RESULT_OK);
         }
-
         super.onBackPressed();
     }
 

@@ -10,6 +10,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/scan"
+        android:title="@string/scan"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/paste"
         android:icon="@drawable/ic_content_paste_white_24dp"
         android:title="@string/paste"
