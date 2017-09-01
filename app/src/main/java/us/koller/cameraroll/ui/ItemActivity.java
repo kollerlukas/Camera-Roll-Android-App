@@ -65,7 +65,6 @@ import us.koller.cameraroll.data.models.Photo;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Video;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.ParallaxTransformer;
 import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.MediaType;
@@ -317,8 +316,9 @@ public class ItemActivity extends ThemeableActivity {
 
                 ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
                         .findViewHolderByTag(albumItem.getPath());
-
-                onShowViewHolder(viewHolder);
+                if (viewHolder != null) {
+                    onShowViewHolder(viewHolder);
+                }
             }
         });
 
