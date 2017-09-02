@@ -15,11 +15,15 @@
                 <path
                     android:name="left_top"
                     android:fillColor="@color/white"
-                    android:pathData="M 8 5 L 8 12 L 19 12 L 19 12 Z" />
+                    android:pathData="M 8 5 L 8 12 L 19 12 L 19 12 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
                 <path
                     android:name="right_bottom"
                     android:fillColor="@color/white"
-                    android:pathData="M 8 12 L 8 19 L 19 12 L 19 12 Z" />
+                    android:pathData="M 8 12 L 8 19 L 19 12 L 19 12 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
             </group>
         </vector>
     </aapt:attr>
