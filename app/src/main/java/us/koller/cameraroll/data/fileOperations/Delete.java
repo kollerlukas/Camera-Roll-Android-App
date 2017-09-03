@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
+import android.util.Log;
 
 import java.io.File;
 
@@ -43,6 +44,10 @@ public class Delete extends FileOperation {
                 result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
             } else {
                 result = deleteFile(files[i].getPath());
+                String parentPath = Util.getParentPath(files[i].getPath());
+                if (result && Util.isDirectoryEmpty(parentPath)) {
+                    deleteFile(parentPath);
+                }
             }
 
             if (result) {

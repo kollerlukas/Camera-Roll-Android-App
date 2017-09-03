@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -533,7 +534,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
         final EditText editText = dialogLayout.findViewById(R.id.edit_text);
 
-        new AlertDialog.Builder(this, theme.getDialogThemeRes())
+        AlertDialog dialog = new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(R.string.new_folder)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -559,7 +560,10 @@ public class FileExplorerActivity extends ThemeableActivity
                         animateFab(true);
                     }
                 })
-                .create().show();
+                .create();
+        //noinspection ConstantConditions
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
     }
 
     public void animateFab(final boolean show) {

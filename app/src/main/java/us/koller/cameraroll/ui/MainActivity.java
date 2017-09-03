@@ -167,7 +167,9 @@ public class MainActivity extends ThemeableActivity {
             });
 
             Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
-            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            if (theme.darkStatusBarIconsInSelectorMode()) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            }
         }
 
         recyclerView = findViewById(R.id.recyclerView);

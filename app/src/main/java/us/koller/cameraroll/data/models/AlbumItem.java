@@ -12,11 +12,11 @@ import com.bumptech.glide.signature.ObjectKey;
 
 import java.io.File;
 
-import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;
+import us.koller.cameraroll.util.Util;
 
 public abstract class AlbumItem
         implements Parcelable, SortUtil.Sortable {
@@ -235,9 +235,9 @@ public abstract class AlbumItem
 
     public abstract String getType(Context context);
 
-    public RequestOptions getGlideRequestOptions() {
+    public RequestOptions getGlideRequestOptions(Context context) {
         return new RequestOptions()
-                .error(R.drawable.error_placeholder)
+                .error(Util.getErrorPlaceholder(context))
                 /*.skipMemoryCache(true)*/
                 .signature(getGlideSignature());
     }

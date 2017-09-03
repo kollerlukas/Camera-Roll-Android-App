@@ -431,5 +431,15 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         }
                     });
         }
+
+        public static String getParentPath(String path) {
+            return new File(path).getParent();
+        }
+
+        static boolean isDirectoryEmpty(String path) {
+            File file = new File(path);
+            File[] files = file.listFiles();
+            return files.length == 0;
+        }
     }
 }

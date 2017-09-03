@@ -13,11 +13,11 @@ import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 
+import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.util.Util;
 
 //loading media through MediaStore
 //advantage: speed, disadvantage: might be missing some items
@@ -96,7 +96,7 @@ public class MediaStoreRetriever extends Retriever {
                             //search bucket
                             boolean foundBucket = false;
                             for (int i = 0; i < albums.size(); i++) {
-                                if (albums.get(i).getPath().equals(Util.getParentPath(path))) {
+                                if (albums.get(i).getPath().equals(FileOperation.Util.getParentPath(path))) {
                                     albums.get(i).getAlbumItems().add(0, albumItem);
                                     foundBucket = true;
                                     break;
@@ -105,7 +105,7 @@ public class MediaStoreRetriever extends Retriever {
 
                             if (!foundBucket) {
                                 //no bucket found
-                                String bucketPath = Util.getParentPath(path);
+                                String bucketPath = FileOperation.Util.getParentPath(path);
                                 if (bucketPath != null) {
                                     albums.add(new Album().setPath(bucketPath));
                                     albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);

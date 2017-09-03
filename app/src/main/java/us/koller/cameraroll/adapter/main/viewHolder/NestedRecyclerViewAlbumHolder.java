@@ -378,7 +378,9 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
     @Override
     public void onItemChanged() {
         RecyclerView.Adapter adapter = nestedRecyclerView.getAdapter();
-        adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+        if (adapter != null) {
+            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+        }
     }
 
     private void deleteItems(String[] paths) {

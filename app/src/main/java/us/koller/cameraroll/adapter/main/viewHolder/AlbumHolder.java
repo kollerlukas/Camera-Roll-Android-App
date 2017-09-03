@@ -114,7 +114,6 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
                         coverImage.error = true;
-
                         if (image instanceof ParallaxImageView) {
                             ((ParallaxImageView) image).setParallaxTranslation();
                         }
@@ -135,7 +134,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                         return false;
                     }
                 })
-                .apply(coverImage.getGlideRequestOptions())
+                .apply(coverImage.getGlideRequestOptions(getContext()))
                 .into(image);
     }
 

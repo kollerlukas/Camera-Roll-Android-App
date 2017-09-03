@@ -81,6 +81,7 @@ public class ItemViewUtil {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
+                        albumItem.error = true;
                         if (albumItem.isSharedElement
                                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
@@ -102,7 +103,7 @@ public class ItemViewUtil {
                         return false;
                     }
                 })
-                .apply(albumItem.getGlideRequestOptions())
+                .apply(albumItem.getGlideRequestOptions(imageView.getContext()))
                 .into(imageView);
     }
 
@@ -118,6 +119,7 @@ public class ItemViewUtil {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<GifDrawable> target, boolean isFirstResource) {
+                        albumItem.error = true;
                         return false;
                     }
 
@@ -129,7 +131,7 @@ public class ItemViewUtil {
                         return false;
                     }
                 })
-                .apply(albumItem.getGlideRequestOptions())
+                .apply(albumItem.getGlideRequestOptions(imageView.getContext()))
                 .into(imageView);
     }
 }

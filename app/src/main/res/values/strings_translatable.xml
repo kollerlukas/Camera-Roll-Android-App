@@ -8,7 +8,7 @@
     <string name="raw_image">RAW Image</string>
     <string name="gif">Gif</string>
     <string name="video">Video</string>
-    <string name="pick_photo">Pick Photo</string>
+    <string name="pick_photo">Pick a Photo</string>
     <string name="pick_photos">Pick Photos</string>
     <string name="loading">Loading…</string>
     <string name="loading_failed">Loading failed</string>

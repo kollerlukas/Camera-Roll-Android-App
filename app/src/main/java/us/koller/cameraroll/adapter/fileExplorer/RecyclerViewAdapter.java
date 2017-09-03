@@ -186,7 +186,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 callback.onPickTargetModeExit();
             }
         }
-        notifyItemRangeChanged(0, getItemCount() - 1);
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     public File_POJO[] getSelectedItems() {

@@ -22,7 +22,6 @@ public class Settings {
     private String theme;
     private boolean storageRetriever;
     private int style;
-    private int styleColumnCount;
     private int columnCount;
     private int sort_albums_by;
     private int sort_album_by;
@@ -55,8 +54,6 @@ public class Settings {
         style = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_style),
                 context.getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE));
-
-        styleColumnCount = getDefaultStyleColumnCount(context, style);
 
         columnCount = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_column_count),
@@ -131,6 +128,7 @@ public class Settings {
     public int getStyleColumnCount(Context context, int style) {
         Resources res = context.getResources();
         boolean landscape = res.getBoolean(R.bool.landscape);
+        int styleColumnCount = getDefaultStyleColumnCount(context, style);
         if (landscape &&
                 (style == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
                         style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE))) {
@@ -145,10 +143,6 @@ public class Settings {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
         }
         return 0;
-    }
-
-    public void setStyleColumnCount(int styleColumnCount) {
-        this.styleColumnCount = styleColumnCount;
     }
 
     public int getColumnCount(Context context) {

@@ -375,13 +375,8 @@ public class SettingsActivity extends ThemeableActivity {
                 getActivity().recreate();
             } else if (preference.getKey().equals(getString(R.string.pref_key_style))) {
                 settings.setStyle((int) o);
-
                 String style_name = Settings.Utils.getStyleName(getActivity(), (int) o);
                 preference.setSummary(style_name);
-
-                //update Style column count
-                int columnCount = Settings.getDefaultStyleColumnCount(getActivity(), (int) o);
-                Settings.getInstance(getActivity()).setStyleColumnCount(columnCount);
 
             } else if (preference.getKey().equals(getString(R.string.pref_key_column_count))) {
                 settings.setColumnCount((int) o);

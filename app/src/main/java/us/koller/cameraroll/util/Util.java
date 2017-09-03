@@ -147,10 +147,6 @@ public class Util {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && v.getSystemUiVisibility() != 0;
     }
 
-    public static String getParentPath(String path) {
-        return new File(path).getParent();
-    }
-
     public static void showSnackbar(Snackbar snackbar) {
         snackbar.show();
         TextView textView = snackbar.getView()
@@ -189,14 +185,27 @@ public class Util {
         if (selectorOverlay == null) {
             return null;
         }
+        return tintDrawableWithAccentColor(context, selectorOverlay);
+    }
 
+    public static Drawable getErrorPlaceholder(Context context) {
+        Drawable errorPlaceholder = AppCompatResources.getDrawable(context,
+                R.drawable.error_placeholder);
+
+        if (errorPlaceholder == null) {
+            return null;
+        }
+        return tintDrawableWithAccentColor(context, errorPlaceholder);
+    }
+
+    private static Drawable tintDrawableWithAccentColor(Context context, Drawable d) {
         Settings s = Settings.getInstance(context);
         Theme theme = s.getThemeInstance(context);
 
         int tintColor = theme.getAccentColorLight(context);
-        selectorOverlay = DrawableCompat.wrap(selectorOverlay);
-        DrawableCompat.setTint(selectorOverlay, tintColor);
-        return selectorOverlay;
+        d = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, tintColor);
+        return d;
     }
 
     //int[left, top, right, bottom]

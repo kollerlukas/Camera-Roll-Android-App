@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -91,6 +92,7 @@ public class Copy extends FileOperation {
     //treeUri only needed for removable storage
     private boolean copyFilesRecursively(Context context, Uri treeUri, String path,
                                          String destination, boolean result) {
+        Log.d("Copy", "copyFilesRecursively() path = [" + path + "]");
         File file = new File(path);
         String destinationFilePath = getCopyFileName(new File(destination, new File(path).getName()).getPath());
         try {
@@ -126,19 +128,16 @@ public class Copy extends FileOperation {
 
     //for files on non-removable storage
     private static boolean copyFile(String path, String destination) throws IOException {
-        boolean result;
         //create output directory if it doesn't exist
         File dir = new File(destination);
         if (new File(path).isDirectory()) {
-            result = dir.mkdirs();
+            return dir.mkdirs();
         } else {
-            result = dir.createNewFile();
-        }
-
-        if (result) {
-            InputStream inputStream = new FileInputStream(path);
-            OutputStream outputStream = new FileOutputStream(dir);
-            return writeStream(inputStream, outputStream);
+            if (dir.createNewFile()) {
+                InputStream inputStream = new FileInputStream(path);
+                OutputStream outputStream = new FileOutputStream(dir);
+                return writeStream(inputStream, outputStream);
+            }
         }
         return false;
     }
