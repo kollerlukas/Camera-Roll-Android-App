@@ -450,7 +450,7 @@ public class ExifUtil {
                 exif.setAttribute(exifItem.getTag(), exifItem.getValue());
             }
             exif.saveAttributes();
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
     }

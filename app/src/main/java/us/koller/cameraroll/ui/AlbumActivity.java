@@ -158,7 +158,7 @@ public class AlbumActivity extends ThemeableActivity
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
@@ -194,8 +194,12 @@ public class AlbumActivity extends ThemeableActivity
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
-                    ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(null);
+                RecyclerViewAdapter adapter = null;
+                if (recyclerView != null) {
+                    adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+                }
+                if (adapter != null && adapter.isSelectorModeActive()) {
+                    adapter.cancelSelectorMode(null);
                 } else {
                     onBackPressed();
                 }
@@ -987,7 +991,8 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onBackPressed() {
-        if (((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
+        if (recyclerView != null && recyclerView.getAdapter() != null &&
+                ((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
             animateFab(false, false);
         } else if (snackbar != null) {
             snackbar.dismiss();

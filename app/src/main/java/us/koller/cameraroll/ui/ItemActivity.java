@@ -850,15 +850,17 @@ public class ItemActivity extends ThemeableActivity {
             this.finish();
         } else {
             showUI(false);
-            ViewHolder viewHolder = ((ViewPagerAdapter)
-                    viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
-            if (viewHolder != null) {
-                viewHolder.onSharedElementExit(new ItemActivity.Callback() {
-                    @Override
-                    public void done() {
-                        setResultAndFinish();
-                    }
-                });
+            if (viewPager != null && viewPager.getAdapter() != null && albumItem != null) {
+                ViewHolder viewHolder = ((ViewPagerAdapter)
+                        viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
+                if (viewHolder != null) {
+                    viewHolder.onSharedElementExit(new ItemActivity.Callback() {
+                        @Override
+                        public void done() {
+                            setResultAndFinish();
+                        }
+                    });
+                }
             }
         }
     }

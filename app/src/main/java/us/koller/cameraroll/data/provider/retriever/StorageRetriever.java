@@ -70,7 +70,9 @@ public class StorageRetriever extends Retriever {
 
                             @Override
                             public void onThreadResult(ItemLoader.Result result) {
-                                albums.addAll(result.albums);
+                                if (result != null) {
+                                    albums.addAll(result.albums);
+                                }
                             }
 
                             @Override

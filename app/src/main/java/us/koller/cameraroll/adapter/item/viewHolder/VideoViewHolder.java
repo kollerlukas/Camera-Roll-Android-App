@@ -1,7 +1,8 @@
 package us.koller.cameraroll.adapter.item.viewHolder;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,9 +38,13 @@ public class VideoViewHolder extends ViewHolder {
     public void onSharedElementEnter() {
         final View view = itemView.findViewById(R.id.image);
 
-        final Drawable playOverlay
-                = ContextCompat.getDrawable(itemView.getContext(),
-                R.drawable.play_indicator);
+        Resources res = itemView.getContext().getResources();
+        final Drawable playOverlay = VectorDrawableCompat.create(res,
+                R.drawable.play_indicator, itemView.getContext().getTheme());
+
+        if (playOverlay == null) {
+            return;
+        }
 
         view.post(new Runnable() {
             @Override
