@@ -265,8 +265,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                             setProgressBarVisibility(GONE);
                         }
                     });
-                } catch (Exception e) {
+                } catch (Exception | OutOfMemoryError e) {
                     e.printStackTrace();
+                    onResultListener.onResult(new Result(getImageUri(), null));
                 }
             }
         });
