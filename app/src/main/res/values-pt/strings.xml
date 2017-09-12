@@ -1,0 +1,124 @@
+<resources>
+    <!--error messages-->
+    <string name="read_permission_denied">O Camera Roll precisa de permissão para acessar seu Armazenamento e exibir suas fotos.</string>
+    <string name="grant_removable_storage_permission">Conceder permissão de acesso ao Armazenamento Externo</string>
+    <string name="grant_removable_storage_permission_message">Por favor selecione a pasta raiz do seu Armazenamento Externo (ex. SD Card) na próxima tela.</string>
+    <!--general-->
+    <string name="photo">Foto</string>
+    <string name="raw_image">Imagem RAW</string>
+    <string name="gif">Gif</string>
+    <string name="video">Vídeo</string>
+    <string name="pick_photo">Selecionar Foto</string>
+    <string name="pick_photos">Selecionar Fotos</string>
+    <string name="loading">Carregando…</string>
+    <string name="loading_failed">Falha ao carregar</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
+    <string name="no">Não</string>
+    <string name="undo">Desfazer</string>
+    <string name="done">Feito</string>
+    <string name="retry">Repetir</string>
+    <string name="excluded">Excluída</string>
+    <string name="error">Erro</string>
+    <string name="selected_count">Seleção: %1$d</string>
+    <string name="file_op_channel_name">Operações em Arquivos</string>
+    <string name="file_op_channel_description">Mostrar a situação atual de uma operação em arquivos.</string>
+    <!--MainActivity-->
+    <string name="refresh">Atualizar</string>
+    <string name="sort_by">Ordenar por…</string>
+    <string name="by_name">Nome</string>
+    <string name="by_size">Tamanho</string>
+    <string name="by_date">Data</string>
+    <string name="hidden_folders">Pastas Ocultas</string>
+    <string name="file_explorer">Explorador de Arquivos</string>
+    <string name="about">Sobre</string>
+    <string name="settings">Configurações</string>
+    <string name="camera_shortcut">Atalho para a Câmera</string>
+    <string name="item_count">%1$d item</string>
+    <string name="items_count">%1$d itens</string>
+    <!--AlbumActivity-->
+    <string name="exclude">Excluir</string>
+    <string name="pin_album">Fixar Álbum</string>
+    <string name="file_deleted">%1$d arquivo excluído</string>
+    <string name="files_deleted">%1$d arquivos excluídos</string>
+    <string name="select_all">Selecionar Todos</string>
+    <!--ItemActivity-->
+    <string name="set_as">Definir como…</string>
+    <string name="open_with">Abrir com…</string>
+    <string name="open_with_error">Nenhum app encontrado para abrir o arquivo de %1$s</string>
+    <string name="print">Imprimir</string>
+    <string name="info">Detalhes</string>
+    <string name="share">Compartilhar</string>
+    <string name="share_item">Compartilhar %1$s</string>
+    <string name="share_error">Nenhum app encontrado para compartilhar o arquivo de %1$s</string>
+    <string name="edit">Editar</string>
+    <string name="edit_item">Editar %1$s</string>
+    <string name="edit_error">Nenhum app encontrado para editar o arquivo de %1$s</string>
+    <string name="delete">Ecluir</string>
+    <string name="delete_item">Excluir %1$s</string>
+    <string name="delete_files">Excluir %1$d arquivos</string>
+    <string name="move">Mover</string>
+    <string name="move_item_to">Mover %1$d item para:</string>
+    <string name="move_items_to">Mover %1$d itens para:</string>
+    <string name="move_error">Mover arquivos de/para o armazenamento externo não funciona. Por favor copie e exclua os arquivos</string>
+    <string name="copy">Copiar</string>
+    <string name="copy_item_to">Coiar %1$d item para:</string>
+    <string name="copy_items_to">Copiar %1$d itens para:</string>
+    <string name="create">Criar</string>
+    <string name="new_folder">Nova Pasta</string>
+    <string name="rename">Renomear</string>
+    <string name="paste">Colar</string>
+    <string name="successfully_created_new_folder">nova pasta criada com sucesso</string>
+    <string name="successfully_renamed_file">Arquivo renomeado com sucesso</string>
+    <!--FileExplorerActivity-->
+    <string name="no_files">NENHUM ARQUIVO</string>
+    <string name="storage">Armazenamento</string>
+    <string name="scan">Escanear</string>
+    <string name="scanning">Escaneando…</string>
+    <string name="copy_file">Copiar %1$d arquivo</string>
+    <string name="copy_files">Copiar %1$d arquivos</string>
+    <string name="move_file">Mover %1$d arquivo</string>
+    <string name="move_files">Mover %1$d arquivos</string>
+    <string name="delete_file">Excluir %1$d arquivo</string>
+    <string name="paste_error">Você não pode colar arquivos aqui!</string>
+    <!--SettingsActivity-->
+    <string name="appearance">Aparência</string>
+    <string name="theme">Tema</string>
+    <string name="style">Estilo</string>
+    <string name="column_count">Quantidade de Colunas</string>
+    <string name="other">Outras</string>
+    <string name="media_retriever">MediaRetriever</string>
+    <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api. This might help if you are missing some picture.</string>
+    <string name="use_8_bit_color">Cores em 8-Bits</string>
+    <string name="use_8_bit_color_summary">Usar Cores em 8-Bits ao exibir imagens. As imagens podem demorar mais para carregar. Também pode fazer o app usar mais memória quando em execução.</string>
+    <!--EditImageActivity-->
+    <string name="rotate">Girar</string>
+    <string name="restore">Restaurar</string>
+    <string name="editing_file_format_not_supported">Este formato de arquivo não é suportado para edição</string>
+    <string name="success">Sucesso!</string>
+    <!--SetWallpaperActivity-->
+    <string name="wallpaper">Papel de Parede</string>
+    <string name="set_wallpaper">Definir Papel de Parede</string>
+    <string name="wallpaper_file_format_not_supported">Este formato de arquivo não pode ser usado como papel de parede</string>
+    <!--ExifEditorActivity-->
+    <string name="exif_editor">Editor Exif</string>
+    <string name="edit_exif">editar Exif</string>
+    <string name="save">Salvar</string>
+    <string name="changes_saved">Mudanças salvas</string>
+    <!--ExcludedPathsActivity-->
+    <string name="excluded_paths">Caminhos Ignorados</string>
+    <!--info Dialog Strings-->
+    <string name="info_filename">Nome de arquivo: </string>
+    <string name="info_filepath">Caminho: </string>
+    <string name="info_size">Tamanho: </string>
+    <string name="info_dimensions">Dimensões: </string>
+    <string name="info_date">Data: </string>
+    <string name="info_location">Local: </string>
+    <string name="info_focal_length">Diâmetro focal: </string>
+    <string name="info_exposure">Exposição: </string>
+    <string name="info_camera_model">Modelo da câmera: </string>
+    <string name="info_aperture">Abertura: </string>
+    <string name="info_iso">ISO: </string>
+    <string name="info_frame_rate">Taxa de bits: </string>
+    <string name="copied_to_clipboard">Copiado para a área de transferência</string>
+</resources>
