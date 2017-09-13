@@ -4,7 +4,7 @@
     <string name="grant_removable_storage_permission">Conceder permiso de acceso al almacenamiento</string>
     <string name="grant_removable_storage_permission_message">Por favor seleccione la carpeta raíz de su dispositivo de almacenamiento externo (por ejemplo, la tarjeta SD) en la siguiente pantalla.</string>
     <!--general-->
-    <string name="photo">Foto</string>
+    <string name="photo">foto</string>
     <string name="raw_image">Imagen RAW</string>
     <string name="gif">Gif</string>
     <string name="video">Video</string>
@@ -24,10 +24,10 @@
     <string name="file_op_channel_name">Operaciones de archivo</string>
     <string name="file_op_channel_description">Muestra el estado actual de una operación de archivo.</string>
     <!--MainActivity-->
-    <string name="refresh">Refrezcar</string>
+    <string name="refresh">Refrescar</string>
     <string name="sort_by">Ordenar por…</string>
     <string name="by_name">Nombre</string>
-    <string name="by_size">Tamaño</string>
+    <string name="by_size">Peso</string>
     <string name="by_date">Fecha</string>
     <string name="hidden_folders">Carpetas ocultas</string>
     <string name="file_explorer">Explorador de archivos</string>
@@ -55,8 +55,8 @@
     <string name="edit_item">Editar %1$s</string>
     <string name="edit_error">No se encontró ninguna aplicación para editar %1$s</string>
     <string name="delete">Eliminar</string>
-    <string name="delete_item">Eliminar %1$s</string>
-    <string name="delete_files">Eliminar %1$d archivos</string>
+    <string name="delete_item">¿Eliminar %1$s</string>
+    <string name="delete_files">¿Eliminar %1$d archivo(s)</string>
     <string name="move">Mover</string>
     <string name="move_item_to">Mover %1$d archivo a:</string>
     <string name="move_items_to">Mover %1$d archivos a:</string>
@@ -80,7 +80,7 @@
     <string name="move_file">Mover %1$d archivo</string>
     <string name="move_files">Mover %1$d archivos</string>
     <string name="delete_file">Eliminar %1$d archivo</string>
-    <string name="paste_error">¡No pueden pegar archivos aquí!</string>
+    <string name="paste_error">¡No se pueden pegar archivos aquí!</string>
     <!--SettingsActivity-->
     <string name="appearance">Apariencia</string>
     <string name="theme">Tema</string>
@@ -88,7 +88,7 @@
     <string name="column_count">Número de columnas</string>
     <string name="other">Otros</string>
     <string name="media_retriever">Recuperación de archivos</string>
-    <string name="media_retriever_summary">Busque manualmente el almacenamiento en lugar de depender de la API de MediaStore. Estro podría ayudarle si le falta alguna imagen.</string>
+    <string name="media_retriever_summary">Busque manualmente el almacenamiento en lugar de depender de la API de MediaStore. Esto podría ayudarle si le falta alguna imagen.</string>
     <string name="use_8_bit_color">Color de 8-Bits</string>
     <string name="use_8_bit_color_summary">Utilice Color de 8-Bits al mostrar las imágenes. Las imágenes pueden tardar más en cargarse. Esto también aumenta la cantidad de memoria que se utiliza cuando la aplicación se está ejecutando.</string>
     <!--EditImageActivity-->
@@ -110,8 +110,8 @@
     <!--info Dialog Strings-->
     <string name="info_filename">Nombre del archivo: </string>
     <string name="info_filepath">Ruta del archivo: </string>
-    <string name="info_size">Tamaño: </string>
-    <string name="info_dimensions">Resolución: </string>
+    <string name="info_size">Peso: </string>
+    <string name="info_dimensions">Tamaño: </string>
     <string name="info_date">Fecha: </string>
     <string name="info_location">Ubicación: </string>
     <string name="info_focal_length">Longitud focal: </string>

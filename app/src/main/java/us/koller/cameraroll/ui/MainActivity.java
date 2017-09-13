@@ -252,6 +252,12 @@ public class MainActivity extends ThemeableActivity {
         });
 
         final FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fabClicked(view);
+            }
+        });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
                     R.drawable.ic_camera_lens_avd);

@@ -42,9 +42,12 @@
 
         <activity
             android:name=".ui.VideoPlayerActivity"
-            android:configChanges="screenSize|orientation"
-            android:launchMode="singleTop"
-            android:theme="@style/CameraRoll.Theme.VideoPlayer" />
+            android:configChanges="screenSize|smallestScreenSize|orientation|screenLayout"
+            android:launchMode="singleTask"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/CameraRoll.Theme.VideoPlayer"
+            tools:targetApi="n" />
+        <!--android:resizeableActivity="true"-->
 
         <activity
             android:name=".ui.SettingsActivity"

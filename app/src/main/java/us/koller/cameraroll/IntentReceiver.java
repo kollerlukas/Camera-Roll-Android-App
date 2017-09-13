@@ -71,7 +71,6 @@ public class IntentReceiver extends AppCompatActivity {
             Intent view_video = new Intent(this, VideoPlayerActivity.class)
                     .setData(uri);
             startActivity(view_video);
-            this.finish();
         } else {
             Intent view_photo = new Intent(this, ItemActivity.class)
                     .setData(uri)
@@ -81,8 +80,8 @@ public class IntentReceiver extends AppCompatActivity {
                     .putExtra(ItemActivity.ITEM_POSITION, album.getAlbumItems().indexOf(albumItem))
                     .addFlags(intent.getFlags());
             startActivity(view_photo);
-            this.finish();
         }
+        this.finish();
     }
 
     private void pick(Intent intent) {

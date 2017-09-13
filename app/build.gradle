@@ -23,6 +23,7 @@ android {
 
         debug {
             applicationIdSuffix ".debug"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "app_name", "Camera Roll (debug)"
         }
     }
@@ -59,7 +60,7 @@ dependencies {
 
     implementation 'com.github.MFlisar:DragSelectRecyclerView:0.3'
 
-    implementation 'com.google.android.exoplayer:exoplayer:r2.5.1'
+    implementation 'com.google.android.exoplayer:exoplayer:r2.5.2'
 
     implementation 'com.pacioianu.david:ink-page-indicator:1.2.0'
 

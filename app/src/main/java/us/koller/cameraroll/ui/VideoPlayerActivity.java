@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageButton;
 
@@ -32,7 +33,6 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -57,6 +57,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
         videoUri = intent.getData();
@@ -220,7 +221,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish();
+                onBackPressed();
                 break;
             default:
                 break;
@@ -229,9 +230,8 @@ public class VideoPlayerActivity extends ThemeableActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    protected void onStart() {
+        super.onStart();
         initPlayer();
         if (playerPosition != -1) {
             player.seekTo(playerPosition);
@@ -248,9 +248,6 @@ public class VideoPlayerActivity extends ThemeableActivity {
         MediaSource videoSource = new ExtractorMediaSource(videoUri,
                 dataSourceFactory, extractorsFactory, null, null);
 
-        // Loops the video indefinitely.
-        LoopingMediaSource loopingSource = new LoopingMediaSource(videoSource);
-
         DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this);
 
         // Create the player
@@ -263,12 +260,14 @@ public class VideoPlayerActivity extends ThemeableActivity {
         simpleExoPlayerView.setPlayer(player);
 
         // Prepare the player with the source.
-        player.prepare(loopingSource);
+        player.prepare(videoSource);
+        player.setRepeatMode(Player.REPEAT_MODE_ONE);
+        player.setPlayWhenReady(true);
 
         final ImageButton playPause = findViewById(R.id.play_pause);
         player.addListener(new SimpleEventListener() {
             @Override
-            public void onPlayerStateChanged(boolean b, int i) {
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 //update PlayPause-Button
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (player.getPlayWhenReady()) {
@@ -290,6 +289,34 @@ public class VideoPlayerActivity extends ThemeableActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                && player.getPlayWhenReady()) {
+            enterPictureInPictureMode();
+        }
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+        SimpleExoPlayerView simpleExoPlayerView = findViewById(R.id.simpleExoPlayerView);
+        if (isInPictureInPictureMode) {
+            // Hide the controls in picture-in-picture mode.
+            simpleExoPlayerView.hideController();
+        } else {
+            // Restore the playback UI based on the playback status.
+            simpleExoPlayerView.showController();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 
     @Override
@@ -317,7 +344,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
     public static class SimpleEventListener implements Player.EventListener {
 
         @Override
-        public void onTimelineChanged(Timeline timeline, Object o) {
+        public void onTimelineChanged(Timeline timeline, Object manifest) {
 
         }
 
@@ -327,12 +354,12 @@ public class VideoPlayerActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onLoadingChanged(boolean b) {
+        public void onLoadingChanged(boolean isLoading) {
 
         }
 
         @Override
-        public void onPlayerStateChanged(boolean b, int i) {
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
         }
 
@@ -342,7 +369,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onPlayerError(ExoPlaybackException e) {
+        public void onPlayerError(ExoPlaybackException error) {
 
         }
 

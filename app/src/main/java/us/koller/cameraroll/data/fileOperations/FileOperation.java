@@ -389,7 +389,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.d("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
+                            Log.i("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
                             pathsScanned++;
                             if (callback != null && pathsScanned == paths.length) {
                                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -414,7 +414,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.d("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
+                            Log.i("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -434,12 +434,6 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
         public static String getParentPath(String path) {
             return new File(path).getParent();
-        }
-
-        static boolean isDirectoryEmpty(String path) {
-            File file = new File(path);
-            File[] files = file.listFiles();
-            return files.length == 0;
         }
     }
 }

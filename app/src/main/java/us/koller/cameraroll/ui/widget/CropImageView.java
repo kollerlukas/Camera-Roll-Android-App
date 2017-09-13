@@ -15,6 +15,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -258,7 +260,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                     decoder.recycle();
 
                     final Result result = new Result(imageUri, croppedBitmap);
-                    CropImageView.this.post(new Runnable() {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             onResultListener.onResult(result);

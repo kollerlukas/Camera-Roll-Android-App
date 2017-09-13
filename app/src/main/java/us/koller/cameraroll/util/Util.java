@@ -37,6 +37,8 @@ import us.koller.cameraroll.data.Settings;
 
 public class Util {
 
+    public static final String SNACKBAR = "SNACKBAR";
+
     public static int[] getImageDimensions(Context context, Uri uri) {
         int[] dimensions = new int[]{0, 0};
 
@@ -148,10 +150,11 @@ public class Util {
     }
 
     public static void showSnackbar(Snackbar snackbar) {
-        snackbar.show();
+        snackbar.getView().setTag(SNACKBAR);
         TextView textView = snackbar.getView()
                 .findViewById(android.support.design.R.id.snackbar_text);
         textView.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
+        snackbar.show();
     }
 
     public static Snackbar getPermissionDeniedSnackbar(final View rootView) {

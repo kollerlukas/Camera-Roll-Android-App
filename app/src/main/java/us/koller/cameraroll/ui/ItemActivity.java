@@ -445,9 +445,9 @@ public class ItemActivity extends ThemeableActivity {
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App found to set your photo", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+        } catch (ActivityNotFoundException anfe) {
+            Toast.makeText(this, "No App found", Toast.LENGTH_SHORT).show();
+            anfe.printStackTrace();
         }
     }
 
@@ -464,9 +464,9 @@ public class ItemActivity extends ThemeableActivity {
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
-        } catch (ActivityNotFoundException e) {
+        } catch (ActivityNotFoundException anfe) {
             Toast.makeText(this, getString(R.string.open_with_error, albumItem.getType(this)), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+            anfe.printStackTrace();
         }
     }
 
