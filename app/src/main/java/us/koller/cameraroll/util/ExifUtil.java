@@ -12,18 +12,6 @@ import java.util.List;
 
 import us.koller.cameraroll.data.models.AlbumItem;
 
-import static android.support.media.ExifInterface.ORIENTATION_FLIP_HORIZONTAL;
-import static android.support.media.ExifInterface.ORIENTATION_FLIP_VERTICAL;
-import static android.support.media.ExifInterface.ORIENTATION_NORMAL;
-import static android.support.media.ExifInterface.ORIENTATION_ROTATE_180;
-import static android.support.media.ExifInterface.ORIENTATION_ROTATE_270;
-import static android.support.media.ExifInterface.ORIENTATION_ROTATE_90;
-import static android.support.media.ExifInterface.ORIENTATION_TRANSPOSE;
-import static android.support.media.ExifInterface.ORIENTATION_TRANSVERSE;
-import static android.support.media.ExifInterface.ORIENTATION_UNDEFINED;
-import static android.support.media.ExifInterface.WHITEBALANCE_AUTO;
-import static android.support.media.ExifInterface.WHITEBALANCE_MANUAL;
-
 public class ExifUtil {
 
     public static final String NO_DATA = "Unknown";
@@ -565,6 +553,21 @@ public class ExifUtil {
             exif.saveAttributes();
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static int getExifOrientationAngle(Context context, AlbumItem albumItem) {
+        ExifInterface exif = getExifInterface(context, albumItem);
+        int orientation = (int) getCastValue(exif, ExifInterface.TAG_ORIENTATION);
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return 90;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return 180;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return 270;
+            default:
+                return 0;
         }
     }
 

@@ -17,6 +17,7 @@ import us.koller.cameraroll.data.models.Photo;
 import us.koller.cameraroll.imageDecoder.CustomImageDecoder;
 import us.koller.cameraroll.imageDecoder.CustomRegionDecoder;
 import us.koller.cameraroll.ui.ItemActivity;
+import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.ItemViewUtil;
 
 public class PhotoViewHolder extends ViewHolder {
@@ -78,7 +79,9 @@ public class PhotoViewHolder extends ViewHolder {
         imageView.setMinimumDpi(80);
         imageView.setDoubleTapZoomDpi(196);
 
-        imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
+        //imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
+        int orientation = ExifUtil.getExifOrientationAngle(view.getContext(), albumItem);
+        imageView.setOrientation(orientation);
 
         final GestureDetector gestureDetector
                 = new GestureDetector(imageView.getContext(),
