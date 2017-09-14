@@ -799,12 +799,14 @@ public class AlbumActivity extends ThemeableActivity
                     Drawable d;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                                ContextCompat.getDrawable(AlbumActivity.this, R.drawable.cancel_to_back_avd);
+                                ContextCompat.getDrawable(AlbumActivity.this,
+                                        R.drawable.cancel_to_back_avd);
                         //mutating avd to reset it
                         drawable.mutate();
                         d = drawable;
                     } else {
-                        d = ContextCompat.getDrawable(AlbumActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                        d = ContextCompat.getDrawable(AlbumActivity.this,
+                                R.drawable.ic_clear_black_24dp);
                     }
                     d = DrawableCompat.wrap(d);
                     DrawableCompat.setTint(d.mutate(), accentTextColor);
@@ -866,12 +868,14 @@ public class AlbumActivity extends ThemeableActivity
                 Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                            ContextCompat.getDrawable(AlbumActivity.this, R.drawable.back_to_cancel_avd);
+                            ContextCompat.getDrawable(AlbumActivity.this,
+                                    R.drawable.back_to_cancel_avd);
                     //mutating avd to reset it
                     drawable.mutate();
                     d = drawable;
                 } else {
-                    d = ContextCompat.getDrawable(AlbumActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                    d = ContextCompat.getDrawable(AlbumActivity.this,
+                            R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);

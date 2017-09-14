@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--"app_name" defined in build.gradle to have different names for .debug and normal version
+    <string name="app_name" translatable="false">Camera Roll</string>-->
+    <string name="task_description_label">@string/app_name</string>
+    <string name="toolbar_title">@string/app_name</string>
+
+    <!--About Text-->
     <string name="about_text" translatable="false">
         <![CDATA[
             © 2017 Lukas Koller, Munich, Germany<br/>
@@ -77,6 +83,8 @@
             <br>
         ]]>
     </string>
+
+    <!--Toolbar transitionName-->
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
 
     <!--Preference Keys-->

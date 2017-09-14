@@ -146,8 +146,8 @@ public class MainActivity extends ThemeableActivity {
         toolbar.setBackgroundColor(!pick_photos ? toolbarColor : accentColor);
         toolbar.setTitleTextColor(!pick_photos ? textColorPrimary : accentTextColor);
 
+        ActionBar actionBar = getSupportActionBar();
         if (pick_photos) {
-            ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) : getString(R.string.pick_photo));
             }
@@ -169,6 +169,10 @@ public class MainActivity extends ThemeableActivity {
             Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
             if (theme.darkStatusBarIconsInSelectorMode()) {
                 Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            }
+        } else {
+            if (actionBar != null) {
+                actionBar.setTitle(getString(R.string.toolbar_title));
             }
         }
 

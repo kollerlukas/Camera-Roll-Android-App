@@ -721,7 +721,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     d = drawable;
                 } else {
                     d = ContextCompat.getDrawable(FileExplorerActivity.this,
-                            R.drawable.ic_arrow_back_white_24dp);
+                            R.drawable.ic_clear_black_24dp);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), accentTextColor);
@@ -937,12 +937,14 @@ public class FileExplorerActivity extends ThemeableActivity
                 Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                            ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.back_to_cancel_avd);
+                            ContextCompat.getDrawable(FileExplorerActivity.this,
+                                    R.drawable.back_to_cancel_avd);
                     //mutating avd to reset it
                     drawable.mutate();
                     d = drawable;
                 } else {
-                    d = ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                    d = ContextCompat.getDrawable(FileExplorerActivity.this,
+                            R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);

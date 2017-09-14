@@ -60,15 +60,19 @@ public class AboutActivity extends ThemeableActivity
         header.setBackgroundColor(theme.getAccentColor(this));
 
         ImageView headerImage = findViewById(R.id.header_image);
-        headerImage.setColorFilter(theme.getAccentTextColor(this));
+        if (Util.hasWifiConnection(this)) {
+            headerImage.setColorFilter(theme.getAccentTextColor(this));
 
-        RequestOptions options = new RequestOptions()
-                .error(R.drawable.error_placeholder);
+            RequestOptions options = new RequestOptions()
+                    .error(R.drawable.error_placeholder);
 
-        Glide.with(this)
-                .load("https://raw.githubusercontent.com/kollerlukas/Camera-Roll-Android-App/master/camera_roll_logo.png")
-                .apply(options)
-                .into(headerImage);
+            Glide.with(this)
+                    .load("https://raw.githubusercontent.com/kollerlukas/Camera-Roll-Android-App/master/camera_roll_logo.png")
+                    .apply(options)
+                    .into(headerImage);
+        } else {
+            headerImage.setVisibility(View.GONE);
+        }
 
         TextView version = findViewById(R.id.version);
         try {
