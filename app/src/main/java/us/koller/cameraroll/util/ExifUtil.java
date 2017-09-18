@@ -558,6 +558,9 @@ public class ExifUtil {
 
     public static int getExifOrientationAngle(Context context, AlbumItem albumItem) {
         ExifInterface exif = getExifInterface(context, albumItem);
+        if (exif == null) {
+            return 0;
+        }
         int orientation = (int) getCastValue(exif, ExifInterface.TAG_ORIENTATION);
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:

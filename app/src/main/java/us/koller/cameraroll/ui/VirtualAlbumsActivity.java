@@ -37,6 +37,7 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
     private ArrayList<VirtualAlbum> virtualAlbums;
 
     private RecyclerViewAdapter adapter;
+    private RecyclerViewAdapter.OnVirtualAlbumChangedListener onVirtualAlbumChangedListener;
 
     private Menu menu;
 
@@ -66,37 +67,37 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewAdapter(virtualAlbums);
-        adapter.setOnVirtualAlbumChangedListener(
-                new RecyclerViewAdapter.OnVirtualAlbumChangedListener() {
-                    @Override
-                    public void onVirtualAlbumChanged(VirtualAlbum album) {
-                        menu.findItem(R.id.add_virtual_album).setVisible(album == null);
+        onVirtualAlbumChangedListener = new RecyclerViewAdapter.OnVirtualAlbumChangedListener() {
+            @Override
+            public void onVirtualAlbumChanged(VirtualAlbum album) {
+                menu.findItem(R.id.add_virtual_album).setVisible(album == null);
 
-                        if (album != null) {
-                            toolbar.setTitle(album.getName());
-                            toolbar.setTitleTextColor(accentColor);
-                        } else {
-                            toolbar.setTitle(toolbarTitle);
-                            toolbar.setTitleTextColor(toolbarTitleColor);
-                        }
+                if (album != null) {
+                    toolbar.setTitle(album.getName());
+                    toolbar.setTitleTextColor(accentColor);
+                } else {
+                    toolbar.setTitle(toolbarTitle);
+                    toolbar.setTitleTextColor(toolbarTitleColor);
+                }
 
-                        if (album == null) {
-                            if (virtualAlbums.size() == 0) {
-                                emptyStateText.setText(R.string.no_virtual_albums);
-                                emptyStateText.setVisibility(View.VISIBLE);
-                            } else {
-                                emptyStateText.setVisibility(View.GONE);
-                            }
-                        } else {
-                            if (album.getDirectories().size() == 0) {
-                                emptyStateText.setText(R.string.no_paths);
-                                emptyStateText.setVisibility(View.VISIBLE);
-                            } else {
-                                emptyStateText.setVisibility(View.GONE);
-                            }
-                        }
+                if (album == null) {
+                    if (virtualAlbums.size() == 0) {
+                        emptyStateText.setText(R.string.no_virtual_albums);
+                        emptyStateText.setVisibility(View.VISIBLE);
+                    } else {
+                        emptyStateText.setVisibility(View.GONE);
                     }
-                });
+                } else {
+                    if (album.getDirectories().size() == 0) {
+                        emptyStateText.setText(R.string.no_paths);
+                        emptyStateText.setVisibility(View.VISIBLE);
+                    } else {
+                        emptyStateText.setVisibility(View.GONE);
+                    }
+                }
+            }
+        };
+        adapter.setOnVirtualAlbumChangedListener(onVirtualAlbumChangedListener);
         recyclerView.setAdapter(adapter);
 
         final ViewGroup rootView = findViewById(R.id.root_view);
@@ -179,6 +180,7 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
                             public void onVirtualAlbumCreated(VirtualAlbum virtualAlbum) {
                                 virtualAlbums = Provider.getVirtualAlbums(VirtualAlbumsActivity.this);
                                 adapter.notifyDataSetChanged();
+                                onVirtualAlbumChangedListener.onVirtualAlbumChanged(null);
                             }
                         });
                 dialog.show();

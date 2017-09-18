@@ -294,7 +294,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && player.getPlayWhenReady()) {
             enterPictureInPictureMode();
         }

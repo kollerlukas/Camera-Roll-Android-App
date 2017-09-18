@@ -2,7 +2,6 @@ package us.koller.cameraroll.data.provider;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,9 +37,7 @@ public abstract class Provider {
 
     // default virtual directories:
     // not expecting relevant media in alarms, music or ringtone folder
-    private static final VirtualAlbum[] defaultVirtualAlbums = {
-            new VirtualAlbum("Camera", new String[]{
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath()})};
+    private static final VirtualAlbum[] defaultVirtualAlbums = {};
 
     Retriever retriever;
 
@@ -144,7 +141,6 @@ public abstract class Provider {
     }
 
     public static ArrayList<String> getPinnedPaths() {
-        Log.d("Provider", "getPinnedPaths: " + pinnedPaths);
         return pinnedPaths;
     }
 

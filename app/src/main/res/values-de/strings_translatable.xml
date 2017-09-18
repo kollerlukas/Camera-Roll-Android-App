@@ -114,7 +114,7 @@
     <string name="virtual_album_different_name">Bitte wähle einen anderen Namen</string>
     <string name="add_path_to_virtual_album">Pfad zu Virtuellem Album hinzufügen</string>
     <string name="added_path_to_virtual_album">Pfad zu Virtuellem Album %1$s hinzugefügt</string>
-    <string name="virtual_album_deleted">Virtuelles Album gelöscht</string>
+    <string name="virtual_album_deleted">Virtuelles Album %1$s gelöscht</string>
     <string name="path_removed">Pfad entfernt</string>
     <string name="no_paths">Keine Pfade vorhanden</string>
     <string name="no_virtual_albums">Keine Virtuellen Alben</string>

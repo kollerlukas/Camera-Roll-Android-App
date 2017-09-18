@@ -11,7 +11,8 @@ import us.koller.cameraroll.util.Util;
 @SuppressWarnings("unused")
 public class FabSnackbarBehaviour extends CoordinatorLayout.Behavior<FloatingActionButton> {
 
-    private float fabTranslation = -1;
+    private float fabTranslationY = -1;
+    private float fabBottom = -1;
 
     public FabSnackbarBehaviour(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -25,17 +26,24 @@ public class FabSnackbarBehaviour extends CoordinatorLayout.Behavior<FloatingAct
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton fab, View dependency) {
         if (Util.SNACKBAR.equals(dependency.getTag())) {
-            if (fabTranslation == -1) {
-                fabTranslation = fab.getTranslationY();
+            if (fabTranslationY == -1) {
+                fabTranslationY = fab.getTranslationY();
+                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+                int fabBottomMargin = lp.bottomMargin;
+                fabBottom = fab.getY() + fab.getHeight() + fabBottomMargin;
             }
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-            int fabBottomMargin = lp.bottomMargin;
 
-            float fabBottom = fab.getY() + fab.getHeight() + fabBottomMargin;
-            float delta = dependency.getY() - fabBottom;
-            float translationY = fab.getTranslationY() + delta;
-            fab.setTranslationY(translationY < fabTranslation ?
-                    translationY : fabTranslation);
+            if (dependency.getVisibility() == View.INVISIBLE || dependency.getVisibility() == View.GONE) {
+                fab.animate()
+                        .translationY(fabTranslationY)
+                        .start();
+            } else if (dependency.getY() < fabBottom) {
+                float delta = fabBottom - dependency.getY();
+                float translationY = fabTranslationY - delta;
+                fab.setTranslationY(translationY);
+            } else {
+                fab.setTranslationY(fabTranslationY);
+            }
         }
         return true;
     }

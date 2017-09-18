@@ -47,7 +47,6 @@
             android:supportsPictureInPicture="true"
             android:theme="@style/CameraRoll.Theme.VideoPlayer"
             tools:targetApi="n" />
-        <!--android:resizeableActivity="true"-->
 
         <activity
             android:name=".ui.SettingsActivity"

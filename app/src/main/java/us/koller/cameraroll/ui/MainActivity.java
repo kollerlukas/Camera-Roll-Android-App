@@ -291,10 +291,16 @@ public class MainActivity extends ThemeableActivity {
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
+                    Log.d("MainActivity", "onApplyWindowInsets()"
+                            + "[" +
+                            insets.getSystemWindowInsetLeft() + ", " +
+                            insets.getSystemWindowInsetTop() + ", " +
+                            insets.getSystemWindowInsetRight() + ", " +
+                            insets.getSystemWindowInsetBottom() + "]");
 
-                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
                             toolbar.getPaddingBottom());
 
                     ViewGroup.MarginLayoutParams toolbarParams
