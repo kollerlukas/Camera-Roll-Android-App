@@ -449,7 +449,7 @@ public class ExifUtil {
             null,
             null,
             null,
-            null,
+            null
     };
 
     public static ExifInterface getExifInterface(Context context, AlbumItem albumItem) {

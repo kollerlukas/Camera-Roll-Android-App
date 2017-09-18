@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--suppress AndroidElementNotAllowed -->
+    <Preference
+        android:key="@string/pref_key_excluded_paths"
+        android:title="@string/excluded_paths" />
+
+    <!--suppress AndroidElementNotAllowed -->
+    <Preference
+        android:key="@string/pref_key_virtual_directories"
+        android:title="@string/virtual_albums" />
+
     <PreferenceCategory android:title="@string/appearance">
         <ListPreference
             android:defaultValue="@string/DARK_THEME_VALUE"
@@ -30,10 +40,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/other">
-        <!--suppress AndroidElementNotAllowed -->
-        <Preference
-            android:key="@string/pref_key_excluded_paths"
-            android:title="@string/excluded_paths" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_key_media_retriever"

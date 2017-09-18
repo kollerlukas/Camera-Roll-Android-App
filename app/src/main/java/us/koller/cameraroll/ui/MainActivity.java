@@ -374,6 +374,7 @@ public class MainActivity extends ThemeableActivity {
                 String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
                 final int sharedElementReturnPosition = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
                 int index = -1;
+                ArrayList<Album> albums = MediaProvider.getAlbumsWithVirtualDirectories(this);
                 for (int i = 0; i < albums.size(); i++) {
                     if (albums.get(i).getPath().equals(albumPath)) {
                         index = i;
@@ -464,12 +465,14 @@ public class MainActivity extends ThemeableActivity {
                 = new MediaProvider.OnMediaLoadedCallback() {
             @Override
             public void onMediaLoaded(final ArrayList<Album> albums) {
+                final ArrayList<Album> albumsWithVirtualDirs =
+                        MediaProvider.getAlbumsWithVirtualDirectories(MainActivity.this);
                 if (albums != null) {
                     MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            MainActivity.this.albums = albums;
-                            recyclerViewAdapter.setAlbums(albums);
+                            MainActivity.this.albums = albumsWithVirtualDirs;
+                            recyclerViewAdapter.setAlbums(albumsWithVirtualDirs);
                             recyclerViewAdapter.notifyDataSetChanged();
 
                             snackbar.dismiss();

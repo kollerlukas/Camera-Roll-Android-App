@@ -2,6 +2,7 @@ package us.koller.cameraroll.data.provider;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.retriever.Retriever;
 import us.koller.cameraroll.util.StorageUtil;
 
@@ -32,7 +34,13 @@ public abstract class Provider {
 
     // by default pinned folders:
     @SuppressWarnings("MismatchedReadAndWriteOfArray")
-    private static final String[] defaultPinnedPaths = {}; /*Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath()*/
+    private static final String[] defaultPinnedPaths = {};
+
+    // default virtual directories:
+    // not expecting relevant media in alarms, music or ringtone folder
+    private static final VirtualAlbum[] defaultVirtualAlbums = {
+            new VirtualAlbum("Camera", new String[]{
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath()})};
 
     Retriever retriever;
 
@@ -45,6 +53,10 @@ public abstract class Provider {
     //handle excluded paths
     private static final String EXCLUDED_PATHS_NAME = "excluded_paths.txt";
     private static ArrayList<String> excludedPaths;
+
+    //virtual directories
+    private static final String VIRTUAL_DIRECTORIES_NAME = "virtual_directories.txt";
+    private static ArrayList<VirtualAlbum> virtualAlbums;
 
     public interface Callback {
         void timeout();
@@ -82,7 +94,57 @@ public abstract class Provider {
         }
     }
 
+    public static ArrayList<VirtualAlbum> getVirtualAlbums(Context context) {
+        if (virtualAlbums == null) {
+            virtualAlbums = loadVirtualAlbums(context);
+        }
+        return virtualAlbums;
+    }
+
+    private static ArrayList<VirtualAlbum> loadVirtualAlbums(Context context) {
+        virtualAlbums = new ArrayList<>();
+
+        try {
+            ArrayList<String> temp = loadPathsArrayList(context, VIRTUAL_DIRECTORIES_NAME);
+            for (int i = 0; i < temp.size(); i++) {
+                virtualAlbums.add(new VirtualAlbum(temp.get(i)));
+            }
+        } catch (IOException e) {
+            // no file found
+            virtualAlbums.addAll(Arrays.asList(defaultVirtualAlbums));
+        }
+
+        return virtualAlbums;
+    }
+
+    public static void addVirtualAlbum(Context context, VirtualAlbum virtualAlbum) {
+        if (virtualAlbums == null) {
+            virtualAlbums = loadVirtualAlbums(context);
+        }
+        virtualAlbums.add(virtualAlbum);
+    }
+
+    public static void removeVirtualAlbum(Context context, VirtualAlbum virtualAlbum) {
+        if (virtualAlbums == null) {
+            virtualAlbums = loadVirtualAlbums(context);
+        }
+        virtualAlbums.remove(virtualAlbum);
+    }
+
+    public static void saveVirtualAlbums(Context context) {
+        try {
+            ArrayList<String> temp = new ArrayList<>();
+            for (int i = 0; i < virtualAlbums.size(); i++) {
+                temp.add(virtualAlbums.get(i).toString());
+            }
+            savePathsArrayList(context, temp, VIRTUAL_DIRECTORIES_NAME);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static ArrayList<String> getPinnedPaths() {
+        Log.d("Provider", "getPinnedPaths: " + pinnedPaths);
         return pinnedPaths;
     }
 
@@ -128,7 +190,6 @@ public abstract class Provider {
         } catch (IOException e) {
             // no file found
             pinnedPaths.addAll(Arrays.asList(defaultPinnedPaths));
-            pinnedPaths.remove(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath());
         }
 
         return excludedPaths;

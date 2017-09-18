@@ -50,6 +50,7 @@ import java.util.Map;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.fileOperations.Move;
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
@@ -410,12 +411,17 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     private void setupMenu() {
-        //setup exclude checkbox
-        boolean enabled = !Provider
-                .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
-                        Provider.getExcludedPaths());
-        menu.findItem(R.id.exclude).setEnabled(enabled);
-        menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
+        if (album instanceof VirtualAlbum) {
+            menu.findItem(R.id.exclude).setVisible(false);
+            menu.findItem(R.id.rename).setVisible(false);
+        } else {
+            //setup exclude checkbox
+            boolean enabled = !Provider
+                    .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
+                            Provider.getExcludedPaths());
+            menu.findItem(R.id.exclude).setEnabled(enabled);
+            menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
+        }
 
         menu.findItem(R.id.pin).setChecked(album.pinned);
 
@@ -880,7 +886,6 @@ public class AlbumActivity extends ThemeableActivity
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);
                 toolbar.setNavigationIcon(d);
-
                 handleMenuVisibilityForSelectorMode(false);
             }
         }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);

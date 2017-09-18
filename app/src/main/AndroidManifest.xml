@@ -97,9 +97,15 @@
 
         <activity
             android:name=".ui.ExcludePathsActivity"
-            android:label="@string/edit"
+            android:label="@string/excluded_paths"
             android:launchMode="singleTop"
             android:theme="@style/CameraRoll.Theme.ExcludePaths" />
+
+        <activity
+            android:name=".ui.VirtualAlbumsActivity"
+            android:label="@string/virtual_albums"
+            android:launchMode="singleTop"
+            android:theme="@style/CameraRoll.Theme.VirtualDirectories" />
 
         <activity android:name=".IntentReceiver">
             <intent-filter tools:ignore="AppLinkUrlError">

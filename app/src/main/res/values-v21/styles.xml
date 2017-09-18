@@ -106,12 +106,21 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
-    <!--ExifEditor Theme-->
+    <!--ExcludePaths Theme-->
     <style name="CameraRoll.Theme.ExcludePaths" parent="CameraRoll.Theme">
         <item name="android:windowBackground">@null</item>
     </style>
 
     <style name="CameraRoll.Theme.Light.ExcludePaths" parent="CameraRoll.Theme.Light">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <!--VirtualDirectories Theme-->
+    <style name="CameraRoll.Theme.VirtualDirectories" parent="CameraRoll.Theme">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="CameraRoll.Theme.Light.VirtualDirectories" parent="CameraRoll.Theme.Light">
         <item name="android:windowBackground">@null</item>
     </style>
 </resources>

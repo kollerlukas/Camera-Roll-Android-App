@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
     android:orientation="horizontal"
     android:padding="12dp"
     android:paddingEnd="16dp"
@@ -15,6 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_folder_white_24dp"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -24,12 +27,18 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
+        android:ellipsize="start"
         android:fontFamily="@font/roboto_mono_regular"
-        android:textSize="18sp" />
+        android:singleLine="true"
+        android:textSize="16sp" />
 
-    <CheckBox
-        android:id="@+id/checkbox"
+    <ImageView
+        android:id="@+id/delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_clear_black_24dp"
+        tools:ignore="ContentDescription" />
 </LinearLayout>

@@ -260,7 +260,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                     decoder.recycle();
 
                     final Result result = new Result(imageUri, croppedBitmap);
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    CropImageView.this.post(new Runnable() {
                         @Override
                         public void run() {
                             onResultListener.onResult(result);

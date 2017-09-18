@@ -217,6 +217,7 @@ public class SettingsActivity extends ThemeableActivity {
             Settings settings = Settings.getInstance(getContext());
 
             initExcludedPathsPref();
+            initVirtualDirectoriesPref();
             initThemePref(settings.getTheme());
             initStylePref(settings.getStyle(getContext(), false));
             initColumnCountPref(settings.getRealColumnCount());
@@ -249,6 +250,21 @@ public class SettingsActivity extends ThemeableActivity {
                         callback.onSettingChanged();
                     }
                     Intent intent = new Intent(getContext(), ExcludePathsActivity.class);
+                    getContext().startActivity(intent);
+                    return false;
+                }
+            });
+        }
+
+        private void initVirtualDirectoriesPref() {
+            Preference pref = findPreference(getString(R.string.pref_key_virtual_directories));
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (callback != null) {
+                        callback.onSettingChanged();
+                    }
+                    Intent intent = new Intent(getContext(), VirtualAlbumsActivity.class);
                     getContext().startActivity(intent);
                     return false;
                 }

@@ -57,10 +57,10 @@
     <string name="delete">Löschen</string>
     <string name="delete_item">%1$s löschen</string>
     <string name="delete_files">%1$d Dateien löschen</string>
-    <string name="move">Bewegen</string>
-    <string name="move_item_to">%1$d Datei bewegen nach:</string>
-    <string name="move_items_to">%1$d Dateien bewegen nach:</string>
-    <string name="move_error">Das Bewegen von Dateien auf/von entfernbaren Speicher funktioniert nicht. Bitte kopieren und löschen Sie die Dateien stattdessen.</string>
+    <string name="move">Verschieben</string>
+    <string name="move_item_to">%1$d Datei verschieben nach:</string>
+    <string name="move_items_to">%1$d Dateien verschieben nach:</string>
+    <string name="move_error">Das Verschieben von Dateien auf/von entfernbaren Speicher funktioniert nicht. Bitte kopieren und löschen Sie die Dateien stattdessen.</string>
     <string name="copy">Kopieren</string>
     <string name="copy_item_to">%1$d Datei kopieren nach:</string>
     <string name="copy_items_to">%1$d Dateien kopieren nach:</string>
@@ -77,8 +77,8 @@
     <string name="scanning">Scanning…</string>
     <string name="copy_file">%1$d Datei kopieren</string>
     <string name="copy_files">%1$d Dateien kopieren</string>
-    <string name="move_file">%1$d Datei bewegen</string>
-    <string name="move_files">%1$d Dateien bewegen</string>
+    <string name="move_file">%1$d Datei verschoben</string>
+    <string name="move_files">%1$d Dateien verschoben</string>
     <string name="delete_file">%1$d Datei löschen</string>
     <string name="paste_error">Hierhin können keine Dateien eingefügt werden!</string>
     <!--SettingsActivity-->

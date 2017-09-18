@@ -29,6 +29,7 @@ public class Settings {
     private boolean use8BitColor;
     private boolean cameraShortcut;
     private Uri removableStorageTreeUri;
+    private boolean virtualDirectories;
 
     private static Settings instance;
 
@@ -82,6 +83,10 @@ public class Settings {
         removableStorageTreeUri = Uri.parse(sharedPreferences.getString(
                 context.getString(R.string.pref_key_removable_storage_treeUri),
                 ""));
+
+        virtualDirectories = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_virtual_directories),
+                true);
     }
 
     /*Getter & Setter*/
@@ -233,6 +238,16 @@ public class Settings {
     public Uri getRemovableStorageTreeUri() {
         Log.d("Settings", "getRemovableStorageTreeUri: " + removableStorageTreeUri);
         return removableStorageTreeUri;
+    }
+
+    public boolean getVirtualDirectories() {
+        return virtualDirectories;
+    }
+
+    public void setVirtualDirectories(Context context, boolean virtualDirectories) {
+        this.virtualDirectories = virtualDirectories;
+        saveBoolean(context, context.getString(R.string.pref_key_virtual_directories),
+                virtualDirectories);
     }
 
     public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {

@@ -48,6 +48,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
 import us.koller.cameraroll.data.fileOperations.Copy;
@@ -456,6 +457,9 @@ public class FileExplorerActivity extends ThemeableActivity
                     case R.id.scan:
                         item.setVisible(!currentDir.getPath().equals(STORAGE_ROOTS));
                         break;
+                    case R.id.add_to_virtual_album:
+                        item.setVisible(!currentDir.getPath().equals(STORAGE_ROOTS));
+                        break;
                     default:
                         item.setVisible(false);
                         break;
@@ -491,6 +495,11 @@ public class FileExplorerActivity extends ThemeableActivity
                 String[] pathsArray = new String[paths.size()];
                 paths.toArray(pathsArray);
                 FileOperation.Util.scanPathsWithToast(this, pathsArray);
+                break;
+            case R.id.add_to_virtual_album:
+                String path = currentDir.getPath();
+                AlertDialog dialog = VirtualAlbum.Util.getAddToVirtualAlbumDialog(this, path);
+                dialog.show();
                 break;
             case R.id.paste:
                 if (!currentDir.getPath().equals(STORAGE_ROOTS)) {

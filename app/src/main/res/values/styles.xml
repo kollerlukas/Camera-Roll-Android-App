@@ -148,6 +148,17 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <!--VirtualDirectories Theme-->
+    <style name="CameraRoll.Theme.VirtualDirectories" parent="CameraRoll.Theme">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="CameraRoll.Theme.Light.VirtualDirectories" parent="CameraRoll.Theme.Light">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
     <!--Dialog Style-->
     <style name="CameraRoll.Theme.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>

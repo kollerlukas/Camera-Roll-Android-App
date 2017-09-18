@@ -182,13 +182,15 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         return 0;
     }
 
+    @SuppressWarnings("unused")
     public void onProgress(final int progress, final int totalNumber) {
         NotificationCompat.Builder notifBuilder = getNotificationBuilder();
-        if (progress >= 0) {
+        /*if (progress >= 0) {
             notifBuilder.setProgress(totalNumber, progress, false);
         } else {
             notifBuilder.setProgress(0, 0, true);
-        }
+        }*/
+        notifBuilder.setProgress(0, 0, true);
         NotificationManager manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(NOTIFICATION_ID, notifBuilder.build());

@@ -677,13 +677,13 @@ public class ItemActivity extends ThemeableActivity {
                         ItemActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
-                                final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
-
                                 RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemActivity.this);
                                 recyclerView.setLayoutManager(linearLayoutManager);
                                 recyclerView.setAdapter(adapter);
+
+                                final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
+                                final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
 
                                 recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                                     @Override

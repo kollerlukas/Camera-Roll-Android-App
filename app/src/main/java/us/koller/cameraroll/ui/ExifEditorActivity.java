@@ -458,8 +458,15 @@ public class ExifEditorActivity extends ThemeableActivity {
                     }
                 });
 
-                int selection = Integer.parseInt(editedItem == null ?
-                        exifInterface.getAttribute(tag) : editedItem.newValue);
+                int selection = 0;
+                if (editedItem == null) {
+                    String value = exifInterface.getAttribute(tag);
+                    if (value != null) {
+                        selection = Integer.parseInt(value);
+                    }
+                } else {
+                    selection = Integer.parseInt(editedItem.newValue);
+                }
                 spinner.setSelection(selection);
             } else {
                 final EditText value = holder.itemView.findViewById(R.id.value);
