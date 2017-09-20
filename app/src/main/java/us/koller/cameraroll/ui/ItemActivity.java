@@ -272,7 +272,7 @@ public class ItemActivity extends ThemeableActivity {
         if (albumItem == null) {
             if (savedInstanceState == null) {
                 int position = getIntent().getIntExtra(ITEM_POSITION, 0);
-                if (album != null && position < album.getAlbumItems().size()) {
+                if (album != null && position >= 0 && position < album.getAlbumItems().size()) {
                     albumItem = album.getAlbumItems().get(position);
                     albumItem.isSharedElement = true;
                 }
@@ -297,7 +297,8 @@ public class ItemActivity extends ThemeableActivity {
 
         viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(new ViewPagerAdapter(album));
-        viewPager.setCurrentItem(album.getAlbumItems().indexOf(albumItem), false);
+        int currentItem = album.getAlbumItems().indexOf(albumItem);
+        viewPager.setCurrentItem(currentItem >= 0 ? currentItem : 0, false);
         viewPager.setPageTransformer(false, new ParallaxTransformer());
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             private final int color = ContextCompat.getColor(ItemActivity.this, R.color.white);
@@ -816,6 +817,7 @@ public class ItemActivity extends ThemeableActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (albumItem instanceof Photo) {
             View itemView = viewPager.findViewWithTag(albumItem.getPath());
             if (itemView != null) {

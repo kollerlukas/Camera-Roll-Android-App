@@ -2,6 +2,7 @@ package us.koller.cameraroll.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.PictureInPictureParams;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Animatable;
@@ -294,9 +295,10 @@ public class VideoPlayerActivity extends ThemeableActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && player.getPlayWhenReady()) {
-            enterPictureInPictureMode();
+        if (player.getPlayWhenReady() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PictureInPictureParams params = new PictureInPictureParams.Builder()
+                    .build();
+            enterPictureInPictureMode(params);
         }
     }
 
@@ -314,12 +316,6 @@ public class VideoPlayerActivity extends ThemeableActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        this.finish();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
 
@@ -329,6 +325,12 @@ public class VideoPlayerActivity extends ThemeableActivity {
             player.release();
             player = null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 
     @Override

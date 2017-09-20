@@ -1013,12 +1013,14 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         //outState.putParcelable(ALBUM, album);
-        outState.putParcelable(RECYCLER_VIEW_SCROLL_STATE,
-                recyclerView.getLayoutManager().onSaveInstanceState());
-
-        RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
-        adapter.saveInstanceState(outState);
+        if (recyclerView != null) {
+            outState.putParcelable(RECYCLER_VIEW_SCROLL_STATE,
+                    recyclerView.getLayoutManager().onSaveInstanceState());
+            RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
+            adapter.saveInstanceState(outState);
+        }
     }
 
     @Override

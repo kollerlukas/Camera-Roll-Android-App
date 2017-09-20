@@ -116,7 +116,10 @@ public class MediaType {
     }
 
     public static boolean suitableAsWallpaper(Context context, Uri uri) {
-        String mimeType = getMimeType(context, uri);
-        return mimeType != null && checkExtension(mimeType, wallpaperMimeTypes);
+        if (uri != null) {
+            String mimeType = getMimeType(context, uri);
+            return mimeType != null && checkExtension(mimeType, wallpaperMimeTypes);
+        }
+        return false;
     }
 }

@@ -75,7 +75,9 @@ public class MainActivity extends ThemeableActivity {
                 return;
             }
 
-            if (sharedElementViewHolder.sharedElementReturnPosition != -1) {
+            if (sharedElementViewHolder.sharedElementReturnPosition != -1
+                    && sharedElementViewHolder.sharedElementReturnPosition <
+                    sharedElementViewHolder.getAlbum().getAlbumItems().size()) {
                 String newTransitionName = sharedElementViewHolder.getAlbum().getAlbumItems()
                         .get(sharedElementViewHolder.sharedElementReturnPosition).getPath();
                 View layout = sharedElementViewHolder.nestedRecyclerView.findViewWithTag(newTransitionName);
@@ -87,7 +89,6 @@ public class MainActivity extends ThemeableActivity {
                     sharedElements.put(newTransitionName, newSharedElement);
                 }
                 sharedElementViewHolder.sharedElementReturnPosition = -1;
-
             } else {
                 View v = sharedElementViewHolder.itemView.getRootView();
                 View navigationBar = v.findViewById(android.R.id.navigationBarBackground);
@@ -292,21 +293,20 @@ public class MainActivity extends ThemeableActivity {
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
                     Log.d("MainActivity", "onApplyWindowInsets()"
-                            + "[" +
-                            insets.getSystemWindowInsetLeft() + ", " +
+                            + "[" + insets.getSystemWindowInsetLeft() + ", " +
                             insets.getSystemWindowInsetTop() + ", " +
                             insets.getSystemWindowInsetRight() + ", " +
                             insets.getSystemWindowInsetBottom() + "]");
 
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                    toolbar.setPadding(toolbar.getPaddingStart(),
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                            toolbar.getPaddingEnd(),
                             toolbar.getPaddingBottom());
 
                     ViewGroup.MarginLayoutParams toolbarParams
                             = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                    toolbarParams.leftMargin = insets.getSystemWindowInsetLeft();
+                    toolbarParams.rightMargin = insets.getSystemWindowInsetRight();
                     toolbar.setLayoutParams(toolbarParams);
 
                     recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
