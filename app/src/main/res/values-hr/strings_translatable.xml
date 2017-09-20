@@ -108,7 +108,7 @@
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Izuzmi puteve</string>
     <!--VirtualAlbumsActivity-->
-    <string name="virtual_albums">Virtualni albumi<string>
+    <string name="virtual_albums">Virtualni albumi</string>
     <string name="create_virtual_album">Stvori virtualni album</string>
     <string name="virtual_album_created">Virtualni album %1$s je stvoren</string>
     <string name="virtual_album_different_name">Molimo odaberite drugačiji naziv</string>
