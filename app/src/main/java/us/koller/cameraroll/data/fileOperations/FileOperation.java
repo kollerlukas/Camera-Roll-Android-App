@@ -406,6 +406,9 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         }
 
         public static void scanPathsWithToast(final Context context, final String[] paths) {
+            if (paths == null) {
+                return;
+            }
             @SuppressLint("ShowToast") final WeakReference<Toast> toastWeakReference = new WeakReference<>(
                     Toast.makeText(context, R.string.scanning, Toast.LENGTH_SHORT));
             MediaScannerConnection.scanFile(context.getApplicationContext(),

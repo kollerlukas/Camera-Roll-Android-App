@@ -179,6 +179,10 @@ public class MediaProvider extends Provider {
 
     public static void loadAlbum(final Activity context, final String path,
                                  final OnAlbumLoadedCallback callback) {
+        if (path == null) {
+            return;
+        }
+
         if (albums == null) {
             Settings s = Settings.getInstance(context);
             boolean hiddenFolders = s.getHiddenFolders();

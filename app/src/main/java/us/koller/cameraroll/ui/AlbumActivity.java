@@ -529,9 +529,9 @@ public class AlbumActivity extends ThemeableActivity
                     uris.add(StorageUtil.getContentUri(this, selected_items_paths[i]));
                 }
 
-                intent = new Intent();
-                intent.setAction(Intent.ACTION_SEND_MULTIPLE)
-                        .setType(MediaType.getMimeType(selected_items_paths[0]))
+                intent = new Intent()
+                        .setAction(Intent.ACTION_SEND_MULTIPLE)
+                        .setType(MediaType.getMimeType(this, uris.get(0)))
                         .putExtra(Intent.EXTRA_STREAM, uris);
 
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -735,7 +735,7 @@ public class AlbumActivity extends ThemeableActivity
     private ClipData createClipData(AlbumItem[] items) {
         String[] mimeTypes = new String[items.length];
         for (int i = 0; i < items.length; i++) {
-            mimeTypes[i] = MediaType.getMimeType(items[i].getPath());
+            mimeTypes[i] = MediaType.getMimeType(this, items[i].getUri(this));
         }
 
         ClipData clipData =

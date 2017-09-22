@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.support.media.ExifInterface;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -469,8 +470,10 @@ public class ExifUtil {
             } else {
                 exif = new ExifInterface(albumItem.getPath());
             }
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             e.printStackTrace();
+            Toast.makeText(context, "SecurityException", Toast.LENGTH_SHORT).show();
+            return null;
         }
         return exif;
     }

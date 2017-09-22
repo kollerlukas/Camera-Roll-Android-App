@@ -369,6 +369,9 @@ public abstract class Provider {
         //external Directory
         File dir = Environment.getExternalStorageDirectory();
         File[] dirs = dir.listFiles(filter);
+        if (dirs == null) {
+            dirs = new File[]{};
+        }
 
         //handle removable storage (e.g. SDCards)
         ArrayList<File> temp = new ArrayList<>();

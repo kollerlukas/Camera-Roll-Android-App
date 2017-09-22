@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.media.ExifInterface;
 import android.support.v4.content.res.ResourcesCompat;
@@ -21,7 +22,9 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Locale;
 
 import us.koller.cameraroll.R;
@@ -151,6 +155,20 @@ public class Util {
 
     public static void showSnackbar(Snackbar snackbar) {
         snackbar.getView().setTag(SNACKBAR);
+        // fixing SnackBar animation, when AccessibilityManager is enabled
+        // Solution from: https://stackoverflow.com/a/43811447/8378871
+        try {
+            Field mAccessibilityManagerField = BaseTransientBottomBar.class.getDeclaredField("mAccessibilityManager");
+            mAccessibilityManagerField.setAccessible(true);
+            AccessibilityManager accessibilityManager = (AccessibilityManager) mAccessibilityManagerField.get(snackbar);
+            Field mIsEnabledField = AccessibilityManager.class.getDeclaredField("mIsEnabled");
+            mIsEnabledField.setAccessible(true);
+            mIsEnabledField.setBoolean(accessibilityManager, false);
+            mAccessibilityManagerField.set(snackbar, accessibilityManager);
+        } catch (Exception e) {
+            Log.d("Snackbar", "Reflection error: " + e.toString());
+        }
+
         TextView textView = snackbar.getView()
                 .findViewById(android.support.design.R.id.snackbar_text);
         textView.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));

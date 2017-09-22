@@ -317,7 +317,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE)
-                        .setType(MediaType.getMimeType(paths[0]))
+                        .setType(MediaType.getMimeType(getContext(), uris.get(0)))
                         .putExtra(Intent.EXTRA_STREAM, uris);
 
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION

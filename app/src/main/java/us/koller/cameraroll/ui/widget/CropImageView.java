@@ -269,7 +269,13 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                     });
                 } catch (Exception | OutOfMemoryError e) {
                     e.printStackTrace();
-                    onResultListener.onResult(new Result(getImageUri(), null));
+                    CropImageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onResultListener.onResult(new Result(getImageUri(), null));
+                            setProgressBarVisibility(GONE);
+                        }
+                    });
                 }
             }
         });
