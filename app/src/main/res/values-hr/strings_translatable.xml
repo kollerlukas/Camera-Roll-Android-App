@@ -106,7 +106,7 @@
     <string name="save">Spremi</string>
     <string name="changes_saved">Promjene su spremljene</string>
     <!--ExcludedPathsActivity-->
-    <string name="excluded_paths">Izuzmi puteve</string>
+    <string name="excluded_paths">Isključi puteve</string>
     <!--VirtualAlbumsActivity-->
     <string name="virtual_albums">Virtualni albumi</string>
     <string name="create_virtual_album">Stvori virtualni album</string>
