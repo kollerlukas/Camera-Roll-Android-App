@@ -47,4 +47,12 @@ public class FabSnackbarBehaviour extends CoordinatorLayout.Behavior<FloatingAct
         }
         return true;
     }
+
+    @Override
+    public void onDependentViewRemoved(CoordinatorLayout parent, FloatingActionButton fab, View dependency) {
+        super.onDependentViewRemoved(parent, fab, dependency);
+        if (Util.SNACKBAR.equals(dependency.getTag()) && fabTranslationY != -1) {
+            fab.animate().translationY(fabTranslationY).start();
+        }
+    }
 }

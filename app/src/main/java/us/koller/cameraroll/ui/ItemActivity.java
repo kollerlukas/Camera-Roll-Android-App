@@ -588,6 +588,9 @@ public class ItemActivity extends ThemeableActivity {
                         final Activity activity = ItemActivity.this;
 
                         String newFilePath = intent.getStringExtra(Rename.NEW_FILE_PATH);
+                        if (newFilePath == null) {
+                            return;
+                        }
                         int index = newFilePath.lastIndexOf("/");
                         final String albumPath = newFilePath.substring(0, index);
                         getIntent().putExtra(ALBUM_PATH, albumPath);
