@@ -2,7 +2,6 @@ package us.koller.cameraroll.util;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.support.media.ExifInterface;
 import android.widget.Toast;
 
@@ -460,19 +459,13 @@ public class ExifUtil {
 
         ExifInterface exif = null;
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri uri = albumItem.getUri(context);
-                InputStream is = context.getContentResolver().openInputStream(uri);
-                if (is != null) {
-                    exif = new ExifInterface(is);
-                }
-
-            } else {
-                exif = new ExifInterface(albumItem.getPath());
+            Uri uri = albumItem.getUri(context);
+            InputStream is = context.getContentResolver().openInputStream(uri);
+            if (is != null) {
+                exif = new ExifInterface(is);
             }
         } catch (IOException | SecurityException e) {
             e.printStackTrace();
-            Toast.makeText(context, "SecurityException", Toast.LENGTH_SHORT).show();
             return null;
         }
         return exif;

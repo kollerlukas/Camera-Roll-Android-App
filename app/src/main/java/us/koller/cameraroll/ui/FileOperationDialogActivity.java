@@ -397,7 +397,11 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
                 boolean onRemovableStorage = false;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    onRemovableStorage = Environment.isExternalStorageRemovable(new File(album.getPath()));
+                    try {
+                        onRemovableStorage = Environment.isExternalStorageRemovable(new File(album.getPath()));
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
                 }
                 ImageView removableStorageIndicator = holder.itemView.findViewById(R.id.removable_storage_indicator);
                 removableStorageIndicator.setVisibility(onRemovableStorage ? View.VISIBLE : View.GONE);

@@ -438,7 +438,8 @@ public class AlbumActivity extends ThemeableActivity
         Log.d("AlbumActivity", "onActivityReenter: " + this);
         if (data != null) {
             sharedElementReturnPosition = data.getIntExtra(EXTRA_CURRENT_ALBUM_POSITION, -1);
-            if (sharedElementReturnPosition > -1 && sharedElementReturnPosition < album.getAlbumItems().size()) {
+            if (sharedElementReturnPosition > -1 && album != null
+                    && sharedElementReturnPosition < album.getAlbumItems().size()) {
                 AlbumItem albumItem = album.getAlbumItems().get(sharedElementReturnPosition);
                 albumItem.isSharedElement = true;
                 postponeEnterTransition();
@@ -715,7 +716,12 @@ public class AlbumActivity extends ThemeableActivity
                         String path = intent.getStringExtra(FileOperation.FILES);
                         for (int i = 0; i < selected_items.length; i++) {
                             if (selected_items[i].getPath().equals(path)) {
-                                album.getAlbumItems().add(indices[i], selected_items[i]);
+                                int index = indices[i];
+                                if (index < album.getAlbumItems().size()) {
+                                    album.getAlbumItems().add(index, selected_items[i]);
+                                } else {
+                                    album.getAlbumItems().add(selected_items[i]);
+                                }
                                 recyclerView.getAdapter().notifyItemInserted(indices[i]);
                                 break;
                             }
@@ -1019,7 +1025,9 @@ public class AlbumActivity extends ThemeableActivity
             outState.putParcelable(RECYCLER_VIEW_SCROLL_STATE,
                     recyclerView.getLayoutManager().onSaveInstanceState());
             RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
-            adapter.saveInstanceState(outState);
+            if (adapter != null) {
+                adapter.saveInstanceState(outState);
+            }
         }
     }
 

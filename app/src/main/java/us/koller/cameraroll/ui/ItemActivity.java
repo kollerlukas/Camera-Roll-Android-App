@@ -290,6 +290,10 @@ public class ItemActivity extends ThemeableActivity {
             }
         }
 
+        if (albumItem == null) {
+            return;
+        }
+
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(albumItem.getName());
