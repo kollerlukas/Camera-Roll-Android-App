@@ -151,7 +151,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return albums.size();
+        return albums != null ? albums.size() : 0;
     }
 
     public boolean onBackPressed() {

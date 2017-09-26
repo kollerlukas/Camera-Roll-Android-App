@@ -16,6 +16,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import us.koller.cameraroll.data.Settings;
+
 public class ColorFade {
 
     private static AnimatorSet toolbarTitleAnimSet;
@@ -62,6 +64,10 @@ public class ColorFade {
 
     // imageView saturation fade
     public static void fadeSaturation(final ImageView imageView) {
+        if (!Settings.getInstance(imageView.getContext()).fadeImages()) {
+            return;
+        }
+
         // code from: https://github.com/nickbutcher/plaid/blob/master/app/src/main/java/io/plaidapp/ui/FeedAdapter.java
         imageView.setHasTransientState(true);
         final AnimUtils.ObservableColorMatrix matrix = new AnimUtils.ObservableColorMatrix();

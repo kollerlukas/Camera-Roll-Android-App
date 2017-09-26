@@ -30,6 +30,7 @@ public class Settings {
     private boolean cameraShortcut;
     private Uri removableStorageTreeUri;
     private boolean virtualDirectories;
+    private boolean fadeImages = false;
 
     private static Settings instance;
 
@@ -173,7 +174,7 @@ public class Settings {
         this.columnCount = columnCount;
     }
 
-    public static int getDefaultStyleColumnCount(Context context, int style) {
+    private static int getDefaultStyleColumnCount(Context context, int style) {
         Resources res = context.getResources();
         if (style == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
             return res.getInteger(R.integer.STYLE_PARALLAX_COLUMN_COUNT);
@@ -244,10 +245,15 @@ public class Settings {
         return virtualDirectories;
     }
 
+    @SuppressWarnings("unused")
     public void setVirtualDirectories(Context context, boolean virtualDirectories) {
         this.virtualDirectories = virtualDirectories;
         saveBoolean(context, context.getString(R.string.pref_key_virtual_directories),
                 virtualDirectories);
+    }
+
+    public boolean fadeImages() {
+        return fadeImages;
     }
 
     public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {

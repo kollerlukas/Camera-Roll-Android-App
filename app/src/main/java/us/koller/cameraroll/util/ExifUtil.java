@@ -3,7 +3,6 @@ package us.koller.cameraroll.util;
 import android.content.Context;
 import android.net.Uri;
 import android.support.media.ExifInterface;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;

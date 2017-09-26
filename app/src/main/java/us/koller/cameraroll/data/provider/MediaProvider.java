@@ -89,7 +89,7 @@ public class MediaProvider extends Provider {
                             //if (!hiddenFolders) {
                             //remove excluded albums
                             for (int i = albums.size() - 1; i >= 0; i--) {
-                                if (albums.get(i).excluded) {
+                                if (albums.get(i) == null || albums.get(i).excluded) {
                                     albums.remove(i);
                                 }
                             }
