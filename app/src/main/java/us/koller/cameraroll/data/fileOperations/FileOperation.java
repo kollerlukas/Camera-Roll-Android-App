@@ -425,8 +425,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
                             if (uri == null) {
-                                Log.i("FileOperation", "MediaScannerConnection.scanFile() !FAILED! path = [" + path + "]");
                                 if (new File(path).exists()) {
+                                    Log.i("FileOperation", "MediaScannerConnection.scanFile() !FAILED! path = [" + path + "]");
                                     AlbumItem albumItem = AlbumItem.getInstance(path);
                                     ContentValues values = new ContentValues();
                                     if (albumItem instanceof Video) {

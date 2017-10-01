@@ -37,10 +37,15 @@ public class AlphanumNameComparator implements Comparator<SortUtil.Sortable> {
     }
 
     public int compare(SortUtil.Sortable sortable1, SortUtil.Sortable sortable2) {
-        String name1 = sortable1.getName(), name2 = sortable2.getName();
-        if ((name1 == null) || (name2 == null)) {
+        if ((sortable1 == null) || (sortable2 == null)) {
             return 0;
         }
+
+        if (sortable1.pinned() ^ sortable2.pinned()) {
+            return sortable2.pinned() ? 1 : -1;
+        }
+
+        String name1 = sortable1.getName(), name2 = sortable2.getName();
 
         int thisMarker = 0;
         int thatMarker = 0;
