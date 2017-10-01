@@ -6,6 +6,7 @@ import java.util.Comparator;
  * Heavily ispired by David Koelle's AlphanumComparator
  * link: http://www.davekoelle.com/files/AlphanumComparator.java
  */
+
 public class AlphanumNameComparator implements Comparator<SortUtil.Sortable> {
     private boolean isDigit(char ch) {
         return ((ch >= 48) && (ch <= 57));
