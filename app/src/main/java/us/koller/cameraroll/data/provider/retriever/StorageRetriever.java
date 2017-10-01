@@ -79,7 +79,7 @@ public class StorageRetriever extends Retriever {
                             public void done() {
                                 if (!hiddenFolders) {
                                     for (int i = albums.size() - 1; i >= 0; i--) {
-                                        if (albums.get(i).isHidden()) {
+                                        if (albums.get(i) == null || albums.get(i).isHidden()) {
                                             albums.remove(i);
                                         }
                                     }

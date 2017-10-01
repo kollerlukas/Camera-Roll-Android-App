@@ -28,13 +28,6 @@
                     android:padding="32dp"
                     tools:ignore="UseCompoundDrawables">
 
-                    <ImageView
-                        android:id="@+id/header_image"
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"
-                        android:layout_gravity="center_horizontal"
-                        android:padding="16dp" />
-
                     <TextView
                         android:id="@+id/version"
                         android:fontFamily="@font/roboto_mono_regular"

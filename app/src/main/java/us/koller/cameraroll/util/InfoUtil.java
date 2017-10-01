@@ -212,16 +212,14 @@ public class InfoUtil {
     }
 
     public static Address retrieveAddress(Context context, double lat, double lng) {
-        if (Util.hasWifiConnection(context)) {
-            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            try {
-                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-                if (addresses.size() > 0) {
-                    return addresses.get(0);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            if (addresses.size() > 0) {
+                return addresses.get(0);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }

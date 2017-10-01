@@ -205,10 +205,6 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         }
 
         private void retrieveAddress(final Context context, final String locationString) {
-            if (!Util.hasWifiConnection(context)) {
-                return;
-            }
-
             AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {

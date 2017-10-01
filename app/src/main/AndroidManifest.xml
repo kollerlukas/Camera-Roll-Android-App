@@ -6,9 +6,6 @@
     <!--to read & write images ...-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!--download images (e.g. logo in About section)-->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!--to set Wallpaper-->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
 

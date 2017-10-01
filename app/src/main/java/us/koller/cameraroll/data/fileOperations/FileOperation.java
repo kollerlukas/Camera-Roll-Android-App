@@ -5,6 +5,8 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -16,6 +18,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -33,6 +36,8 @@ import us.koller.cameraroll.data.ContentObserver;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.models.Video;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
 
 public abstract class FileOperation extends IntentService implements Parcelable {
@@ -383,55 +388,82 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         }
 
         public static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback) {
+            scanPaths(context, paths, callback, false);
+        }
+
+        public static void scanPathsWithToast(final Context context, final String[] paths) {
+            scanPaths(context, paths, null, true);
+        }
+
+        @SuppressLint("ShowToast")
+        private static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback, final boolean showToast) {
+            if (paths == null) {
+                if (callback != null) {
+                    callback.onAllPathsScanned();
+                }
+                return;
+            }
+
+            final WeakReference<Toast> toastWeakReference;
+            if (showToast) {
+                toastWeakReference = new WeakReference<>(
+                        Toast.makeText(context, R.string.scanning, Toast.LENGTH_SHORT));
+            } else {
+                toastWeakReference = null;
+            }
+
+            String[] mimeTypes = new String[paths.length];
+            for (int i = 0; i < paths.length; i++) {
+                mimeTypes[i] = MediaType.getMimeType(paths[i]);
+            }
+
             MediaScannerConnection.scanFile(context.getApplicationContext(),
-                    paths,
-                    null,
+                    paths, mimeTypes,
                     new MediaScannerConnection.OnScanCompletedListener() {
                         int pathsScanned;
 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.i("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
+                            if (uri == null) {
+                                Log.i("FileOperation", "MediaScannerConnection.scanFile() !FAILED! path = [" + path + "]");
+                                if (new File(path).exists()) {
+                                    AlbumItem albumItem = AlbumItem.getInstance(path);
+                                    ContentValues values = new ContentValues();
+                                    if (albumItem instanceof Video) {
+                                        values.put(MediaStore.Video.Media.DATA, path);
+                                        values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
+                                    } else {
+                                        values.put(MediaStore.Images.Media.DATA, path);
+                                        values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
+                                    }
+                                    Uri contentUri = MediaStore.Files.getContentUri("external");
+                                    ContentResolver resolver = context.getContentResolver();
+                                    resolver.insert(contentUri, values);
+                                }
+                            } else {
+                                Log.i("FileOperation", "MediaScannerConnection.scanFile() path = [" + path + "]");
+                            }
+
+                            if (showToast) {
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast toast = toastWeakReference.get();
+                                        if (toast != null) {
+                                            toastWeakReference.get().show();
+                                        }
+                                    }
+                                });
+                            }
+
                             pathsScanned++;
                             if (callback != null && pathsScanned == paths.length) {
-                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
                                     public void run() {
                                         callback.onAllPathsScanned();
                                     }
-                                }, 100);
-                            }
-                        }
-                    });
-        }
-
-        public static void scanPathsWithToast(final Context context, final String[] paths) {
-            if (paths == null) {
-                return;
-            }
-            @SuppressLint("ShowToast") final WeakReference<Toast> toastWeakReference = new WeakReference<>(
-                    Toast.makeText(context, R.string.scanning, Toast.LENGTH_SHORT));
-            MediaScannerConnection.scanFile(context.getApplicationContext(),
-                    paths,
-                    null,
-                    new MediaScannerConnection.OnScanCompletedListener() {
-                        int pathsScanned;
-
-                        @Override
-                        public void onScanCompleted(String path, Uri uri) {
-                            Log.i("FileOperation", "onScanCompleted() called with: path = [" + path + "]");
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast toast = toastWeakReference.get();
-                                    if (toast != null) {
-                                        toastWeakReference.get().show();
-                                    }
-                                }
-                            });
-                            pathsScanned++;
-                            if (pathsScanned == paths.length) {
-                                toastWeakReference.clear();
+                                });
                             }
                         }
                     });

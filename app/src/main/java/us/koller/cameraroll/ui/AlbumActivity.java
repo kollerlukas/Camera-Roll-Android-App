@@ -90,7 +90,8 @@ public class AlbumActivity extends ThemeableActivity
         @Override
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-            if (sharedElementReturnPosition != -1 && sharedElementReturnPosition < album.getAlbumItems().size()) {
+            if (sharedElementReturnPosition != -1 && album != null &&
+                    sharedElementReturnPosition < album.getAlbumItems().size()) {
                 String newTransitionName = album.getAlbumItems().get(sharedElementReturnPosition).getPath();
                 View layout = recyclerView.findViewWithTag(newTransitionName);
                 View newSharedElement = layout != null ? layout.findViewById(R.id.image) : null;

@@ -77,12 +77,13 @@ public class SortUtil {
 
     public static void sortByName(ArrayList<? extends Sortable> sortables) {
         // Sorting
-        Collections.sort(sortables, new Comparator<Sortable>() {
+        /*Collections.sort(sortables, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable s1, Sortable s2) {
                 return compareNames(s1, s2);
             }
-        });
+        });*/
+        Collections.sort(sortables, new AlphanumNameComparator());
     }
 
     public static void sortByDate(ArrayList<? extends Sortable> sortables) {

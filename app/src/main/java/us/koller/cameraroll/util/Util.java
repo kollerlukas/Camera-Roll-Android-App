@@ -232,20 +232,6 @@ public class Util {
                 android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
     }
 
-    public static boolean hasWifiConnection(Context context) {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null &&
-                    activeNetwork.isConnectedOrConnecting();
-            return isConnected && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-        } catch (SecurityException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     static Locale getLocale(Context context) {
         Locale locale;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {

@@ -446,8 +446,18 @@ public class ItemActivity extends ThemeableActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
-            startActivityForResult(Intent.createChooser(intent,
-                    getString(R.string.set_as)), 13);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                try {
+                    startActivityForResult(Intent.createChooser(intent,
+                            getString(R.string.set_as)), 13);
+                } catch (FileUriExposedException fuee) {
+                    Toast.makeText(this, "Error (FileUriExposedException)", Toast.LENGTH_SHORT).show();
+                    fuee.printStackTrace();
+                }
+            } else {
+                startActivityForResult(Intent.createChooser(intent,
+                        getString(R.string.set_as)), 13);
+            }
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
@@ -465,8 +475,18 @@ public class ItemActivity extends ThemeableActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
-            startActivityForResult(Intent.createChooser(intent,
-                    getString(R.string.set_as)), 13);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                try {
+                    startActivityForResult(Intent.createChooser(intent,
+                            getString(R.string.open_with)), 13);
+                } catch (FileUriExposedException fuee) {
+                    Toast.makeText(this, "Error (FileUriExposedException)", Toast.LENGTH_SHORT).show();
+                    fuee.printStackTrace();
+                }
+            } else {
+                startActivityForResult(Intent.createChooser(intent,
+                        getString(R.string.open_with)), 13);
+            }
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
@@ -599,6 +619,7 @@ public class ItemActivity extends ThemeableActivity {
                         int index = newFilePath.lastIndexOf("/");
                         final String albumPath = newFilePath.substring(0, index);
                         getIntent().putExtra(ALBUM_PATH, albumPath);
+                        getIntent().putExtra(ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
 
                         boolean hiddenFolders = Settings.getInstance(activity).getHiddenFolders();
                         new MediaProvider(activity).loadAlbums(activity, hiddenFolders,
