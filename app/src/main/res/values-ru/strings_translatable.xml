@@ -65,9 +65,6 @@
     <string name="new_folder">Новая папка</string>
     <string name="rename">Переименовать</string>
     <string name="paste">Вставить</string>
-    <string name="successfully_deleted">успешно удалено %1$d/%1$d</string>
-    <string name="successfully_moved">успешно перемещено %1$d/%1$d</string>
-    <string name="successfully_copied">успешно скопировано %1$d/%1$d</string>
     <string name="successfully_created_new_folder">новая папка успешно создана</string>
     <string name="successfully_renamed_file">файл успешно переименован</string>
     <!--FileExplorerActivity-->

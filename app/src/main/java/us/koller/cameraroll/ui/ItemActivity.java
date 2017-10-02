@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUriExposedException;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,7 +32,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.transition.Transition;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -111,7 +111,6 @@ public class ItemActivity extends ThemeableActivity {
             if (isReturning) {
                 ViewGroup v = viewPager.findViewWithTag(albumItem.getPath());
                 View sharedElement = v.findViewById(R.id.image);
-                Log.d("ItemActivity", "onMapSharedElements: " + sharedElement);
                 if (sharedElement == null) {
                     names.clear();
                     sharedElements.clear();
@@ -274,7 +273,7 @@ public class ItemActivity extends ThemeableActivity {
         if (albumItem == null) {
             if (savedInstanceState == null) {
                 int position = getIntent().getIntExtra(ITEM_POSITION, 0);
-                if (album != null && position < album.getAlbumItems().size()) {
+                if (album != null && position >= 0 && position < album.getAlbumItems().size()) {
                     albumItem = album.getAlbumItems().get(position);
                     albumItem.isSharedElement = true;
                 }
@@ -292,6 +291,10 @@ public class ItemActivity extends ThemeableActivity {
             }
         }
 
+        if (albumItem == null) {
+            return;
+        }
+
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(albumItem.getName());
@@ -299,7 +302,8 @@ public class ItemActivity extends ThemeableActivity {
 
         viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(new ViewPagerAdapter(album));
-        viewPager.setCurrentItem(album.getAlbumItems().indexOf(albumItem), false);
+        int currentItem = album.getAlbumItems().indexOf(albumItem);
+        viewPager.setCurrentItem(currentItem >= 0 ? currentItem : 0, false);
         viewPager.setPageTransformer(false, new ParallaxTransformer());
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             private final int color = ContextCompat.getColor(ItemActivity.this, R.color.white);
@@ -318,8 +322,9 @@ public class ItemActivity extends ThemeableActivity {
 
                 ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
                         .findViewHolderByTag(albumItem.getPath());
-
-                onShowViewHolder(viewHolder);
+                if (viewHolder != null) {
+                    onShowViewHolder(viewHolder);
+                }
             }
         });
 
@@ -441,14 +446,24 @@ public class ItemActivity extends ThemeableActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
-            startActivityForResult(Intent.createChooser(intent,
-                    getString(R.string.set_as)), 13);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                try {
+                    startActivityForResult(Intent.createChooser(intent,
+                            getString(R.string.set_as)), 13);
+                } catch (FileUriExposedException fuee) {
+                    Toast.makeText(this, "Error (FileUriExposedException)", Toast.LENGTH_SHORT).show();
+                    fuee.printStackTrace();
+                }
+            } else {
+                startActivityForResult(Intent.createChooser(intent,
+                        getString(R.string.set_as)), 13);
+            }
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App found to set your photo", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+        } catch (ActivityNotFoundException anfe) {
+            Toast.makeText(this, "No App found", Toast.LENGTH_SHORT).show();
+            anfe.printStackTrace();
         }
     }
 
@@ -460,14 +475,24 @@ public class ItemActivity extends ThemeableActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
-            startActivityForResult(Intent.createChooser(intent,
-                    getString(R.string.set_as)), 13);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                try {
+                    startActivityForResult(Intent.createChooser(intent,
+                            getString(R.string.open_with)), 13);
+                } catch (FileUriExposedException fuee) {
+                    Toast.makeText(this, "Error (FileUriExposedException)", Toast.LENGTH_SHORT).show();
+                    fuee.printStackTrace();
+                }
+            } else {
+                startActivityForResult(Intent.createChooser(intent,
+                        getString(R.string.open_with)), 13);
+            }
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
-        } catch (ActivityNotFoundException e) {
+        } catch (ActivityNotFoundException anfe) {
             Toast.makeText(this, getString(R.string.open_with_error, albumItem.getType(this)), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+            anfe.printStackTrace();
         }
     }
 
@@ -588,9 +613,13 @@ public class ItemActivity extends ThemeableActivity {
                         final Activity activity = ItemActivity.this;
 
                         String newFilePath = intent.getStringExtra(Rename.NEW_FILE_PATH);
+                        if (newFilePath == null) {
+                            return;
+                        }
                         int index = newFilePath.lastIndexOf("/");
                         final String albumPath = newFilePath.substring(0, index);
                         getIntent().putExtra(ALBUM_PATH, albumPath);
+                        getIntent().putExtra(ITEM_POSITION, album.getAlbumItems().indexOf(albumItem));
 
                         boolean hiddenFolders = Settings.getInstance(activity).getHiddenFolders();
                         new MediaProvider(activity).loadAlbums(activity, hiddenFolders,
@@ -678,13 +707,13 @@ public class ItemActivity extends ThemeableActivity {
                         ItemActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
-                                final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
-
                                 RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemActivity.this);
                                 recyclerView.setLayoutManager(linearLayoutManager);
                                 recyclerView.setAdapter(adapter);
+
+                                final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);
+                                final View scrollIndicatorBottom = rootView.findViewById(R.id.scroll_indicator_bottom);
 
                                 recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                                     @Override
@@ -817,6 +846,7 @@ public class ItemActivity extends ThemeableActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (albumItem instanceof Photo) {
             View itemView = viewPager.findViewWithTag(albumItem.getPath());
             if (itemView != null) {
@@ -851,15 +881,17 @@ public class ItemActivity extends ThemeableActivity {
             this.finish();
         } else {
             showUI(false);
-            ViewHolder viewHolder = ((ViewPagerAdapter)
-                    viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
-            if (viewHolder != null) {
-                viewHolder.onSharedElementExit(new ItemActivity.Callback() {
-                    @Override
-                    public void done() {
-                        setResultAndFinish();
-                    }
-                });
+            if (viewPager != null && viewPager.getAdapter() != null && albumItem != null) {
+                ViewHolder viewHolder = ((ViewPagerAdapter)
+                        viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
+                if (viewHolder != null) {
+                    viewHolder.onSharedElementExit(new ItemActivity.Callback() {
+                        @Override
+                        public void done() {
+                            setResultAndFinish();
+                        }
+                    });
+                }
             }
         }
     }

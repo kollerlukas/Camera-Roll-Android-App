@@ -17,6 +17,16 @@ public class Move extends FileOperation {
     private boolean failed = false;
 
     @Override
+    String getNotificationTitle() {
+        return getString(R.string.move);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_folder_move_white_24dp;
+    }
+
+    @Override
     public void execute(Intent workIntent) {
         File_POJO[] files = getFiles(workIntent);
         File_POJO target = workIntent.getParcelableExtra(TARGET);
@@ -66,11 +76,6 @@ public class Move extends FileOperation {
         return FileOperation.MOVE;
     }
 
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_moved;
-    }
-
     private boolean moveFile(String path, String destination) {
         ArrayList<String> oldPaths = Util.getAllChildPaths(new ArrayList<String>(), path);
 
@@ -104,7 +109,7 @@ public class Move extends FileOperation {
             @Override
             public void run() {
                 String message = getString(R.string.move_error);
-                sendMessage(message);
+                showToast(message);
             }
         });
     }

@@ -6,9 +6,6 @@
     <!--to read & write images ...-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!--download images (e.g. logo in About section)-->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!--to set Wallpaper-->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
@@ -19,11 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CameraRoll.Theme">
-
-        <!--To make use of extra screen real-estate on phones, like LG G6, Samsung Galaxy S8, ...-->
-        <meta-data
-            android:name="android.max_aspect"
-            android:value="2.1" />
 
         <activity
             android:name=".ui.MainActivity"
@@ -47,9 +39,11 @@
 
         <activity
             android:name=".ui.VideoPlayerActivity"
-            android:configChanges="screenSize|orientation"
-            android:launchMode="singleTop"
-            android:theme="@style/CameraRoll.Theme.VideoPlayer" />
+            android:configChanges="screenSize|smallestScreenSize|orientation|screenLayout"
+            android:launchMode="singleTask"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/CameraRoll.Theme.VideoPlayer"
+            tools:targetApi="n" />
 
         <activity
             android:name=".ui.SettingsActivity"
@@ -99,9 +93,15 @@
 
         <activity
             android:name=".ui.ExcludePathsActivity"
-            android:label="@string/edit"
+            android:label="@string/excluded_paths"
             android:launchMode="singleTop"
             android:theme="@style/CameraRoll.Theme.ExcludePaths" />
+
+        <activity
+            android:name=".ui.VirtualAlbumsActivity"
+            android:label="@string/virtual_albums"
+            android:launchMode="singleTop"
+            android:theme="@style/CameraRoll.Theme.VirtualDirectories" />
 
         <activity android:name=".IntentReceiver">
             <intent-filter tools:ignore="AppLinkUrlError">

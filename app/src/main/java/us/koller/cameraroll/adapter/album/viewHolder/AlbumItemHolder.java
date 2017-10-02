@@ -78,6 +78,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
+                        albumItem.error = true;
                         return false;
                     }
 
@@ -92,7 +93,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
                         return false;
                     }
                 })
-                .apply(albumItem.getGlideRequestOptions())
+                .apply(albumItem.getGlideRequestOptions(imageView.getContext()))
                 .into(imageView);
     }
 

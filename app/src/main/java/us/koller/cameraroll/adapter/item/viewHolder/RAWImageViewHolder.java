@@ -50,8 +50,8 @@ public class RAWImageViewHolder extends PhotoViewHolder {
     }
 
     private void removeProgressBar() {
-        if (progressBar != null) {
-            ViewGroup itemView = (ViewGroup) this.itemView;
+        ViewGroup itemView = (ViewGroup) this.itemView;
+        if (progressBar != null && itemView != null) {
             itemView.removeView(progressBar);
             progressBar = null;
         }

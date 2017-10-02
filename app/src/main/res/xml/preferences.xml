@@ -6,6 +6,11 @@
         android:key="@string/pref_key_excluded_paths"
         android:title="@string/excluded_paths" />
 
+    <!--suppress AndroidElementNotAllowed -->
+    <Preference
+        android:key="@string/pref_key_virtual_directories"
+        android:title="@string/virtual_albums" />
+
     <PreferenceCategory android:title="@string/appearance">
         <ListPreference
             android:defaultValue="@string/DARK_THEME_VALUE"
@@ -26,7 +31,7 @@
             style="@style/CameraRoll.Theme.DialogPreference"
             android:defaultValue="4"
             android:key="@string/pref_key_column_count"
-            android:title="@string/excluded_paths" />
+            android:title="@string/column_count" />
 
         <SwitchPreference
             android:defaultValue="false"

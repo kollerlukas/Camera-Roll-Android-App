@@ -37,6 +37,8 @@ import us.koller.cameraroll.data.Settings;
 
 public class Util {
 
+    public static final String SNACKBAR = "SNACKBAR";
+
     public static int[] getImageDimensions(Context context, Uri uri) {
         int[] dimensions = new int[]{0, 0};
 
@@ -147,15 +149,12 @@ public class Util {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && v.getSystemUiVisibility() != 0;
     }
 
-    public static String getParentPath(String path) {
-        return new File(path).getParent();
-    }
-
     public static void showSnackbar(Snackbar snackbar) {
-        snackbar.show();
+        snackbar.getView().setTag(SNACKBAR);
         TextView textView = snackbar.getView()
                 .findViewById(android.support.design.R.id.snackbar_text);
         textView.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
+        snackbar.show();
     }
 
     public static Snackbar getPermissionDeniedSnackbar(final View rootView) {
@@ -189,14 +188,27 @@ public class Util {
         if (selectorOverlay == null) {
             return null;
         }
+        return tintDrawableWithAccentColor(context, selectorOverlay);
+    }
 
+    public static Drawable getErrorPlaceholder(Context context) {
+        Drawable errorPlaceholder = AppCompatResources.getDrawable(context,
+                R.drawable.error_placeholder);
+
+        if (errorPlaceholder == null) {
+            return null;
+        }
+        return tintDrawableWithAccentColor(context, errorPlaceholder);
+    }
+
+    private static Drawable tintDrawableWithAccentColor(Context context, Drawable d) {
         Settings s = Settings.getInstance(context);
         Theme theme = s.getThemeInstance(context);
 
         int tintColor = theme.getAccentColorLight(context);
-        selectorOverlay = DrawableCompat.wrap(selectorOverlay);
-        DrawableCompat.setTint(selectorOverlay, tintColor);
-        return selectorOverlay;
+        d = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, tintColor);
+        return d;
     }
 
     //int[left, top, right, bottom]
@@ -218,20 +230,6 @@ public class Util {
         }
         return android.provider.Settings.Global.getFloat(context.getContentResolver(),
                 android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
-    }
-
-    public static boolean hasWifiConnection(Context context) {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null &&
-                    activeNetwork.isConnectedOrConnecting();
-            return isConnected && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-        } catch (SecurityException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     static Locale getLocale(Context context) {

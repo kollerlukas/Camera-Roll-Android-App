@@ -43,7 +43,7 @@
                 android:fontFamily="@font/roboto_mono_regular"
                 android:textColor="@color/white_translucent1" />
 
-            <SeekBar
+            <us.koller.cameraroll.ui.widget.ExoPlayerSeekbar
                 android:id="@id/exo_progress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

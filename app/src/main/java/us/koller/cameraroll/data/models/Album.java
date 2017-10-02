@@ -96,7 +96,7 @@ public class Album
     }
 
     @SuppressWarnings("unchecked")
-    private Album(Parcel parcel) {
+    public Album(Parcel parcel) {
         path = parcel.readString();
         hidden = parcel.readInt();
         albumItems = new ArrayList<>();

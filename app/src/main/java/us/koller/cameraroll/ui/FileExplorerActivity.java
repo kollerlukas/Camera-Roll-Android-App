@@ -39,12 +39,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
 import us.koller.cameraroll.data.fileOperations.Copy;
@@ -430,27 +434,35 @@ public class FileExplorerActivity extends ThemeableActivity
     public void manageMenuItems() {
         if (menu != null) {
             for (int i = 0; i < menu.size(); i++) {
-                menu.getItem(i).setVisible(false);
-
-                int id = menu.getItem(i).getItemId();
-                if (id == R.id.exclude) {
-                    MenuItem item = menu.getItem(i);
-                    if (currentDir != null) {
-                        item.setVisible(!currentDir.getPath().equals(STORAGE_ROOTS));
-                        if (Provider.isPathPermanentlyExcluded(currentDir.getPath())) {
-                            item.setChecked(true);
-                            item.setEnabled(false);
+                MenuItem item = menu.getItem(i);
+                switch (item.getItemId()) {
+                    case R.id.exclude:
+                        if (currentDir != null) {
+                            item.setVisible(!currentDir.getPath().equals(STORAGE_ROOTS));
+                            if (Provider.isPathPermanentlyExcluded(currentDir.getPath())) {
+                                item.setChecked(true);
+                                item.setEnabled(false);
+                            } else {
+                                item.setChecked(currentDir.excluded);
+                                item.setEnabled(!currentDir.getPath().equals(STORAGE_ROOTS)
+                                        && !Provider.isDirExcludedBecauseParentDirIsExcluded(
+                                        currentDir.getPath(), Provider.getExcludedPaths()));
+                            }
                         } else {
-                            item.setChecked(currentDir.excluded);
-                            item.setEnabled(!currentDir.getPath().equals(STORAGE_ROOTS)
-                                    && !Provider.isDirExcludedBecauseParentDirIsExcluded(
-                                    currentDir.getPath(), Provider.getExcludedPaths()));
+                            item.setVisible(true);
+                            item.setChecked(false);
+                            item.setEnabled(false);
                         }
-                    } else {
-                        item.setVisible(true);
-                        item.setChecked(false);
-                        item.setEnabled(false);
-                    }
+                        break;
+                    case R.id.scan:
+                        item.setVisible(!currentDir.getPath().equals(STORAGE_ROOTS));
+                        break;
+                    case R.id.add_to_virtual_album:
+                        item.setVisible(!currentDir.getPath().equals(STORAGE_ROOTS));
+                        break;
+                    default:
+                        item.setVisible(false);
+                        break;
                 }
             }
         }
@@ -477,6 +489,18 @@ public class FileExplorerActivity extends ThemeableActivity
                     FilesProvider.removeExcludedPath(this, currentDir.getPath());
                 }
                 break;
+            case R.id.scan:
+                ArrayList<String> paths = FileOperation.Util
+                        .getAllChildPaths(new ArrayList<String>(), currentDir.getPath());
+                String[] pathsArray = new String[paths.size()];
+                paths.toArray(pathsArray);
+                FileOperation.Util.scanPathsWithToast(this, pathsArray);
+                break;
+            case R.id.add_to_virtual_album:
+                String path = currentDir.getPath();
+                AlertDialog dialog = VirtualAlbum.Util.getAddToVirtualAlbumDialog(this, path);
+                dialog.show();
+                break;
             case R.id.paste:
                 if (!currentDir.getPath().equals(STORAGE_ROOTS)) {
                     recyclerViewAdapter.cancelMode();
@@ -487,9 +511,7 @@ public class FileExplorerActivity extends ThemeableActivity
                         fileOpIntent = null;
                     }
                 } else {
-                    Toast.makeText(this, "You can't "
-                            + fileOpIntent.getAction()
-                            + " files here!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.paste_error, Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.copy:
@@ -521,7 +543,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
         final EditText editText = dialogLayout.findViewById(R.id.edit_text);
 
-        new AlertDialog.Builder(this, theme.getDialogThemeRes())
+        AlertDialog dialog = new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(R.string.new_folder)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -547,7 +569,10 @@ public class FileExplorerActivity extends ThemeableActivity
                         animateFab(true);
                     }
                 })
-                .create().show();
+                .create();
+        //noinspection ConstantConditions
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
     }
 
     public void animateFab(final boolean show) {
@@ -705,7 +730,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     d = drawable;
                 } else {
                     d = ContextCompat.getDrawable(FileExplorerActivity.this,
-                            R.drawable.ic_arrow_back_white_24dp);
+                            R.drawable.ic_clear_black_24dp);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), accentTextColor);
@@ -713,11 +738,16 @@ public class FileExplorerActivity extends ThemeableActivity
 
                 //make menu items visible
                 for (int i = 0; i < menu.size(); i++) {
-                    int id = menu.getItem(i).getItemId();
-                    if (id == R.id.paste || id == R.id.exclude) {
-                        menu.getItem(i).setVisible(false);
-                    } else {
-                        menu.getItem(i).setVisible(true);
+                    MenuItem item = menu.getItem(i);
+                    switch (item.getItemId()) {
+                        case R.id.copy:
+                        case R.id.move:
+                        case R.id.delete:
+                            item.setVisible(true);
+                            break;
+                        default:
+                            item.setVisible(false);
+                            break;
                     }
                 }
             }
@@ -822,11 +852,14 @@ public class FileExplorerActivity extends ThemeableActivity
             public void run() {
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {
-                    int id = menu.getItem(i).getItemId();
-                    if (id == R.id.paste) {
-                        menu.getItem(i).setVisible(true);
-                    } else {
-                        menu.getItem(i).setVisible(false);
+                    MenuItem item = menu.getItem(i);
+                    switch (item.getItemId()) {
+                        case R.id.paste:
+                            item.setVisible(true);
+                            break;
+                        default:
+                            item.setVisible(false);
+                            break;
                     }
                 }
             }
@@ -900,7 +933,7 @@ public class FileExplorerActivity extends ThemeableActivity
                 });
 
         //fade overflow menu icon
-        ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), accentTextColor, textColorPrimary);
+        ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), accentTextColor, textColorSecondary);
 
         Drawable navIcon = toolbar.getNavigationIcon();
         if (navIcon instanceof Animatable) {
@@ -913,12 +946,14 @@ public class FileExplorerActivity extends ThemeableActivity
                 Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                            ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.back_to_cancel_avd);
+                            ContextCompat.getDrawable(FileExplorerActivity.this,
+                                    R.drawable.back_to_cancel_avd);
                     //mutating avd to reset it
                     drawable.mutate();
                     d = drawable;
                 } else {
-                    d = ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                    d = ContextCompat.getDrawable(FileExplorerActivity.this,
+                            R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);
@@ -926,11 +961,15 @@ public class FileExplorerActivity extends ThemeableActivity
 
                 //hide menu items
                 for (int i = 0; i < menu.size(); i++) {
-                    int id = menu.getItem(i).getItemId();
-                    if (id == R.id.exclude) {
-                        menu.getItem(i).setVisible(true);
-                    } else {
-                        menu.getItem(i).setVisible(false);
+                    MenuItem item = menu.getItem(i);
+                    switch (item.getItemId()) {
+                        case R.id.exclude:
+                        case R.id.scan:
+                            item.setVisible(true);
+                            break;
+                        default:
+                            item.setVisible(false);
+                            break;
                     }
                 }
             }

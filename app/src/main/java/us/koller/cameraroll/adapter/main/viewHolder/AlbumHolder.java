@@ -2,18 +2,14 @@ package us.koller.cameraroll.adapter.main.viewHolder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -27,6 +23,7 @@ import java.io.File;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.animators.ColorFade;
@@ -56,7 +53,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
         //to fix ellipsize
         nameTv.requestLayout();
         //pinned indicator
-        Drawable pinIndicator = null;
+        /*Drawable pinIndicator = null;
         if (album.pinned) {
             pinIndicator = AppCompatResources
                     .getDrawable(getContext(), R.drawable.pin_indicator);
@@ -68,7 +65,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
             }
         }
         nameTv.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                null, null, pinIndicator, null);
+                null, null, pinIndicator, null);*/
 
         //set album itemCount
         int itemCount = album.getAlbumItems().size();
@@ -83,7 +80,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                     .setVisibility(album.isHidden() ? View.VISIBLE : View.GONE);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !(album instanceof VirtualAlbum)) {
             ImageView removableStorageIndicator = itemView.findViewById(R.id.removable_storage_indicator);
             if (removableStorageIndicator != null) {
                 try {
@@ -92,7 +89,6 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                     removableStorageIndicator
                             .setVisibility(removable ? View.VISIBLE : View.GONE);
                 } catch (IllegalArgumentException e) {
-                    Toast.makeText(itemView.getContext(), "Error while trying to load the image", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
@@ -117,7 +113,6 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
                         coverImage.error = true;
-
                         if (image instanceof ParallaxImageView) {
                             ((ParallaxImageView) image).setParallaxTranslation();
                         }
@@ -138,7 +133,7 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
                         return false;
                     }
                 })
-                .apply(coverImage.getGlideRequestOptions())
+                .apply(coverImage.getGlideRequestOptions(getContext()))
                 .into(image);
     }
 

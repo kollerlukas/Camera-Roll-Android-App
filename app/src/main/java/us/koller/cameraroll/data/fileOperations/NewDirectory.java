@@ -13,6 +13,16 @@ import us.koller.cameraroll.util.StorageUtil;
 public class NewDirectory extends FileOperation {
 
     @Override
+    String getNotificationTitle() {
+        return getString(R.string.new_folder);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_create_new_folder_white_24dp;
+    }
+
+    @Override
     public void execute(Intent workIntent) {
         final File_POJO[] files = getFiles(workIntent);
         if (files.length > 0) {
@@ -52,11 +62,6 @@ public class NewDirectory extends FileOperation {
     @Override
     public int getType() {
         return FileOperation.NEW_DIR;
-    }
-
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_created_new_folder;
     }
 
     private static boolean createNewFolder(String newFolderPath) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
-import android.util.Log;
 
 import java.io.File;
 
@@ -13,6 +12,16 @@ import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.util.StorageUtil;
 
 public class Delete extends FileOperation {
+
+    @Override
+    String getNotificationTitle() {
+        return getString(R.string.delete);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_delete_white_24dp;
+    }
 
     @Override
     public void execute(Intent workIntent) {
@@ -32,10 +41,13 @@ public class Delete extends FileOperation {
                     return;
                 }
                 result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
-                Log.d("Delete", "execute: deleteFileOnRemovableStorage()");
             } else {
                 result = deleteFile(files[i].getPath());
-                Log.d("Delete", "execute: deleteFile()");
+                //Delete Album, when empty
+                /*String parentPath = Util.getParentPath(files[i].getPath());
+                if (result && Util.isDirectoryEmpty(parentPath)) {
+                    deleteFile(parentPath);
+                }*/
             }
 
             if (result) {
@@ -56,14 +68,8 @@ public class Delete extends FileOperation {
         return FileOperation.DELETE;
     }
 
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_deleted;
-    }
-
     public boolean deleteFile(String path) {
         boolean success;
-        Log.d("Delete", "deleteFile: java.io.File");
         File file = new File(path);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -80,12 +86,8 @@ public class Delete extends FileOperation {
         boolean success = false;
         DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, new File(path));
         if (file != null) {
-            Log.d("Delete", "execute: file is on removable storage" + ", canWrite(): " + String.valueOf(file.canWrite()));
             success = file.delete();
-        } else {
-            Log.d("Delete", "execute: file is on removable storage" + ", file = null");
         }
-
         //remove from MediaStore
         addPathToScan(path);
         return success;

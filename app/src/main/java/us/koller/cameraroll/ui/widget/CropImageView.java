@@ -105,8 +105,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
         private int[] cropRect;
 
-        State(ImageViewState imageViewState, Rect cropRect) {
-            super(imageViewState.getScale(), imageViewState.getCenter(), imageViewState.getOrientation());
+        State(float scale, PointF center, int orientation, Rect cropRect) {
+            super(scale, center, orientation);
             this.cropRect = new int[]{
                     cropRect.left, cropRect.top,
                     cropRect.right, cropRect.bottom};
@@ -265,8 +265,15 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                             setProgressBarVisibility(GONE);
                         }
                     });
-                } catch (Exception e) {
+                } catch (Exception | OutOfMemoryError e) {
                     e.printStackTrace();
+                    CropImageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onResultListener.onResult(new Result(getImageUri(), null));
+                            setProgressBarVisibility(GONE);
+                        }
+                    });
                 }
             }
         });
@@ -695,7 +702,11 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     }
 
     public State getCropImageViewState() {
-        return new State(getState(), cropRect);
+        ImageViewState state = getState();
+        if (state != null) {
+            return new State(state.getScale(), state.getCenter(), state.getOrientation(), cropRect);
+        }
+        return null;
     }
 
     private ProgressBar getProgressBar() {

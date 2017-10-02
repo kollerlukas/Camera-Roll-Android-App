@@ -1,0 +1,362 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24">
+            <group
+                android:name="group0"
+                android:translateX="11"
+                android:translateY="7">
+                <path
+                    android:name="path0"
+                    android:fillColor="@color/white"
+                    android:pathData="M 0 0 L 1 0 L 1 2 L 0 2 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
+            </group>
+            <group
+                android:name="group1"
+                android:translateX="12"
+                android:translateY="7">
+                <path
+                    android:name="path1"
+                    android:fillColor="@color/white"
+                    android:pathData="M 0 0 L 1 0 L 1 2 L 0 2 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
+            </group>
+            <group
+                android:name="group2"
+                android:translateX="11"
+                android:translateY="11">
+                <path
+                    android:name="path2"
+                    android:fillColor="@color/white"
+                    android:pathData="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
+            </group>
+            <group
+                android:name="group3"
+                android:translateX="12"
+                android:translateY="11">
+                <path
+                    android:name="path3"
+                    android:fillColor="@color/white"
+                    android:pathData="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
+            </group>
+            <group
+                android:name="group4"
+                android:translateX="11"
+                android:translateY="14">
+                <path
+                    android:name="path4"
+                    android:fillColor="@color/white"
+                    android:pathData="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
+            </group>
+            <group
+                android:name="group5"
+                android:translateX="12"
+                android:translateY="14">
+                <path
+                    android:name="path5"
+                    android:fillColor="@color/white"
+                    android:pathData="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="0.2" />
+            </group>
+            <group
+                android:name="frame_1"
+                android:translateX="3"
+                android:translateY="3">
+                <path
+                    android:name="frame"
+                    android:pathData="M 0 9 C 0 4.029 4.029 0 9 0 L 9 0 C 13.971 0 18 4.029 18 9 L 18 9 C 18 13.971 13.971 18 9 18 L 9 18 C 4.029 18 0 13.971 0 9 L 0 9 Z"
+                    android:strokeColor="@color/white"
+                    android:strokeWidth="2" />
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="path0">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 1 0 L 1 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 4 0 L 4 2 L 0 2 Z"
+                    android:valueType="pathType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 4 0 L 4 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 1 0 L 1 2 L 0 2 Z"
+                    android:valueType="pathType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="path1">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 1 0 L 1 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 6 0 L 6 2 L 0 2 Z"
+                    android:valueType="pathType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 6 0 L 6 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 1 0 L 1 2 L 0 2 Z"
+                    android:valueType="pathType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="path2">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueTo="M 0 0 L 6 0 L 6 2 L 0 2 Z"
+                    android:valueType="pathType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 6 0 L 6 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueType="pathType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="path3">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueTo="M 0 0 L 4 0 L 4 2 L 0 2 Z"
+                    android:valueType="pathType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 4 0 L 4 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueType="pathType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="path4">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueTo="M 0 0 L 2 0 L 2 2 L 0 2 Z"
+                    android:valueType="pathType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 2 0 L 2 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueType="pathType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="path5">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueTo="M 0 0 L 8 0 L 8 2 L 0 2 Z"
+                    android:valueType="pathType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 0 L 8 0 L 8 2 L 0 2 Z"
+                    android:valueTo="M 0 0 L 1 0 L 1 3 L 0 3 Z"
+                    android:valueType="pathType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="group0">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="translateX"
+                    android:valueFrom="11"
+                    android:valueTo="6"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="translateX"
+                    android:valueFrom="6"
+                    android:valueTo="11"
+                    android:valueType="floatType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="group2">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="translateX"
+                    android:valueFrom="11"
+                    android:valueTo="6"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="translateX"
+                    android:valueFrom="6"
+                    android:valueTo="11"
+                    android:valueType="floatType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="group3">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="translateX"
+                    android:valueFrom="12"
+                    android:valueTo="14"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="translateX"
+                    android:valueFrom="14"
+                    android:valueTo="12"
+                    android:valueType="floatType" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="group4">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <set>
+                    <objectAnimator
+                        android:duration="300"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:propertyName="translateX"
+                        android:valueFrom="11"
+                        android:valueTo="6"
+                        android:valueType="floatType" />
+                    <objectAnimator
+                        android:duration="300"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:propertyName="translateY"
+                        android:valueFrom="14"
+                        android:valueTo="15"
+                        android:valueType="floatType" />
+                </set>
+                <set>
+                    <objectAnimator
+                        android:duration="100"
+                        android:propertyName="translateX"
+                        android:valueFrom="6"
+                        android:valueTo="11"
+                        android:valueType="floatType" />
+                    <objectAnimator
+                        android:duration="100"
+                        android:propertyName="translateY"
+                        android:valueFrom="15"
+                        android:valueTo="14"
+                        android:valueType="floatType" />
+                </set>
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="group5">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <set>
+                    <objectAnimator
+                        android:duration="300"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:propertyName="translateX"
+                        android:valueFrom="12"
+                        android:valueTo="10"
+                        android:valueType="floatType" />
+                    <objectAnimator
+                        android:duration="300"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:propertyName="translateY"
+                        android:valueFrom="14"
+                        android:valueTo="15"
+                        android:valueType="floatType" />
+                </set>
+                <set>
+                    <objectAnimator
+                        android:duration="100"
+                        android:propertyName="translateX"
+                        android:valueFrom="10"
+                        android:valueTo="12"
+                        android:valueType="floatType" />
+                    <objectAnimator
+                        android:duration="100"
+                        android:propertyName="translateY"
+                        android:valueFrom="15"
+                        android:valueTo="14"
+                        android:valueType="floatType" />
+                </set>
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="frame">
+        <aapt:attr name="android:animation">
+            <set xmlns:android="http://schemas.android.com/apk/res/android"
+                android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 9 C 0 4.029 4.029 0 9 0 L 9 0 C 13.971 0 18 4.029 18 9 L 18 9 C 18 13.971 13.971 18 9 18 L 9 18 C 4.029 18 0 13.971 0 9 L 0 9 Z"
+                    android:valueTo="M 0 2 C 0 0.895 0.895 0 2 0 L 16 0 C 17.105 0 18 0.895 18 2 L 18 16 C 18 17.105 17.105 18 16 18 L 2 18 C 0.895 18 0 17.105 0 16 L 0 2 Z"
+                    android:valueType="pathType" />
+
+                <objectAnimator
+                    android:duration="100"
+                    android:propertyName="pathData"
+                    android:valueFrom="M 0 2 C 0 0.895 0.895 0 2 0 L 16 0 C 17.105 0 18 0.895 18 2 L 18 16 C 18 17.105 17.105 18 16 18 L 2 18 C 0.895 18 0 17.105 0 16 L 0 2 Z"
+                    android:valueTo="M 0 9 C 0 4.029 4.029 0 9 0 L 9 0 C 13.971 0 18 4.029 18 9 L 18 9 C 18 13.971 13.971 18 9 18 L 9 18 C 4.029 18 0 13.971 0 9 L 0 9 Z"
+                    android:valueType="pathType" />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

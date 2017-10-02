@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
@@ -45,7 +46,7 @@ public class MediaProvider extends Provider {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int read = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
             int write = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (read != PackageManager.PERMISSION_GRANTED && write != PackageManager.PERMISSION_GRANTED) {
+            if (read != PackageManager.PERMISSION_GRANTED || write != PackageManager.PERMISSION_GRANTED) {
                 String[] requestedPermissions = new String[]{
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -86,12 +87,12 @@ public class MediaProvider extends Provider {
                         @Override
                         public void onMediaLoaded(ArrayList<Album> albums) {
                             //if (!hiddenFolders) {
-                                //remove excluded albums
-                                for (int i = albums.size() - 1; i >= 0; i--) {
-                                    if (albums.get(i).excluded) {
-                                        albums.remove(i);
-                                    }
+                            //remove excluded albums
+                            for (int i = albums.size() - 1; i >= 0; i--) {
+                                if (albums.get(i) == null || albums.get(i).excluded) {
+                                    albums.remove(i);
                                 }
+                            }
                             //}
 
                             SortUtil.sortAlbums(context, albums);
@@ -134,8 +135,54 @@ public class MediaProvider extends Provider {
         return albums;
     }
 
+    public static ArrayList<Album> getAlbumsWithVirtualDirectories(Activity context) {
+        Settings s = Settings.getInstance(context);
+        boolean virtualDirs = s.getVirtualDirectories();
+        if (!virtualDirs) {
+            return getAlbums();
+        }
+
+        ArrayList<VirtualAlbum> virtualAlbums = getVirtualAlbums(context);
+        ArrayList<Album> albums = getAlbums();
+        if (albums == null || virtualAlbums == null) {
+            return albums;
+        }
+        //noinspection unchecked
+        albums = (ArrayList<Album>) getAlbums().clone();
+        ArrayList<Album> albumsWithVirtualDirs = new ArrayList<>();
+
+        for (int i = virtualAlbums.size() - 1; i >= 0; i--) {
+            VirtualAlbum virtualAlbum = virtualAlbums.get(i);
+            if (virtualAlbum.getDirectories().size() > 0) {
+                virtualAlbum.create(context, albums);
+                if (virtualAlbum.getAlbumItems().size() > 0) {
+                    albumsWithVirtualDirs.add(virtualAlbum);
+                }
+            }
+        }
+
+        albumsWithVirtualDirs.addAll(albums);
+        for (int i = albumsWithVirtualDirs.size() - 1; i >= 0; i--) {
+            Album album = albumsWithVirtualDirs.get(i);
+            if (!(album instanceof VirtualAlbum)) {
+                for (int k = 0; k < virtualAlbums.size(); k++) {
+                    if (virtualAlbums.get(k).contains(album.getPath())) {
+                        albumsWithVirtualDirs.remove(i);
+                        break;
+                    }
+                }
+            }
+        }
+        SortUtil.sortAlbums(context, albumsWithVirtualDirs);
+        return albumsWithVirtualDirs;
+    }
+
     public static void loadAlbum(final Activity context, final String path,
                                  final OnAlbumLoadedCallback callback) {
+        if (path == null) {
+            return;
+        }
+
         if (albums == null) {
             Settings s = Settings.getInstance(context);
             boolean hiddenFolders = s.getHiddenFolders();
@@ -156,15 +203,33 @@ public class MediaProvider extends Provider {
                 }
             });
         } else {
-            for (int i = 0; i < albums.size(); i++) {
-                if (albums.get(i).getPath().equals(path)) {
-                    final Album album = albums.get(i);
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onAlbumLoaded(album);
-                        }
-                    });
+            if (path.startsWith(VirtualAlbum.VIRTUAL_ALBUMS_DIR)) {
+                ArrayList<VirtualAlbum> virtualDirectories = getVirtualAlbums(context);
+                for (int i = 0; i < virtualDirectories.size(); i++) {
+                    if (virtualDirectories.get(i).getPath().equals(path)) {
+                        final VirtualAlbum album = virtualDirectories.get(i);
+                        album.create(context, albums);
+                        context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onAlbumLoaded(album);
+                            }
+                        });
+                        return;
+                    }
+                }
+            } else {
+                for (int i = 0; i < albums.size(); i++) {
+                    if (albums.get(i).getPath().equals(path)) {
+                        final Album album = albums.get(i);
+                        context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onAlbumLoaded(album);
+                            }
+                        });
+                        return;
+                    }
                 }
             }
         }

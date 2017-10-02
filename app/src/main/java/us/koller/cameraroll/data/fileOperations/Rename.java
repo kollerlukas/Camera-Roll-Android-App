@@ -1,5 +1,6 @@
 package us.koller.cameraroll.data.fileOperations;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,9 +8,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -29,6 +30,16 @@ public class Rename extends FileOperation {
     public static final String NEW_FILE_PATH = "NEW_FILE_PATH";
 
     private String newFilePath;
+
+    @Override
+    String getNotificationTitle() {
+        return getString(R.string.rename);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_text_format_white_24dp;
+    }
 
     @Override
     public void execute(Intent workIntent) {
@@ -72,11 +83,6 @@ public class Rename extends FileOperation {
     @Override
     public int getType() {
         return FileOperation.RENAME;
-    }
-
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_renamed_file;
     }
 
     private static String getFileExtension(String filename) {
@@ -138,8 +144,12 @@ public class Rename extends FileOperation {
                                                   final File_POJO file,
                                                   final BroadcastReceiver broadcastReceiver) {
 
-            View dialogLayout = LayoutInflater.from(activity).inflate(R.layout.input_dialog_layout,
-                    (ViewGroup) activity.findViewById(R.id.root_view), false);
+            Theme theme = Settings.getInstance(activity).getThemeInstance(activity);
+            ContextThemeWrapper wrapper = new ContextThemeWrapper(activity, theme.getDialogThemeRes());
+
+            @SuppressLint("InflateParams")
+            View dialogLayout = LayoutInflater.from(wrapper)
+                    .inflate(R.layout.input_dialog_layout, null, false);
 
             final EditText editText = dialogLayout.findViewById(R.id.edit_text);
             String name = file.getName();
@@ -149,9 +159,7 @@ public class Rename extends FileOperation {
             editText.setText(name);
             editText.setSelection(name.length());
 
-            Theme theme = Settings.getInstance(activity).getThemeInstance(activity);
-
-            AlertDialog dialog = new AlertDialog.Builder(activity, theme.getDialogThemeRes())
+            AlertDialog dialog = new AlertDialog.Builder(wrapper)
                     .setTitle(R.string.rename)
                     .setView(dialogLayout)
                     .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
@@ -26,6 +27,7 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -48,6 +50,7 @@ import java.util.Map;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.fileOperations.Move;
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.RecyclerViewAdapter;
@@ -87,7 +90,8 @@ public class AlbumActivity extends ThemeableActivity
         @Override
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-            if (sharedElementReturnPosition != -1 && sharedElementReturnPosition < album.getAlbumItems().size()) {
+            if (sharedElementReturnPosition != -1 && album != null &&
+                    sharedElementReturnPosition < album.getAlbumItems().size()) {
                 String newTransitionName = album.getAlbumItems().get(sharedElementReturnPosition).getPath();
                 View layout = recyclerView.findViewWithTag(newTransitionName);
                 View newSharedElement = layout != null ? layout.findViewById(R.id.image) : null;
@@ -156,7 +160,7 @@ public class AlbumActivity extends ThemeableActivity
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
@@ -192,8 +196,12 @@ public class AlbumActivity extends ThemeableActivity
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (((RecyclerViewAdapter) recyclerView.getAdapter()).isSelectorModeActive()) {
-                    ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(null);
+                RecyclerViewAdapter adapter = null;
+                if (recyclerView != null) {
+                    adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+                }
+                if (adapter != null && adapter.isSelectorModeActive()) {
+                    adapter.cancelSelectorMode(null);
                 } else {
                     onBackPressed();
                 }
@@ -404,12 +412,17 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     private void setupMenu() {
-        //setup exclude checkbox
-        boolean enabled = !Provider
-                .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
-                        Provider.getExcludedPaths());
-        menu.findItem(R.id.exclude).setEnabled(enabled);
-        menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
+        if (album instanceof VirtualAlbum) {
+            menu.findItem(R.id.exclude).setVisible(false);
+            menu.findItem(R.id.rename).setVisible(false);
+        } else {
+            //setup exclude checkbox
+            boolean enabled = !Provider
+                    .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
+                            Provider.getExcludedPaths());
+            menu.findItem(R.id.exclude).setEnabled(enabled);
+            menu.findItem(R.id.exclude).setChecked(album.excluded || !enabled);
+        }
 
         menu.findItem(R.id.pin).setChecked(album.pinned);
 
@@ -426,7 +439,8 @@ public class AlbumActivity extends ThemeableActivity
         Log.d("AlbumActivity", "onActivityReenter: " + this);
         if (data != null) {
             sharedElementReturnPosition = data.getIntExtra(EXTRA_CURRENT_ALBUM_POSITION, -1);
-            if (sharedElementReturnPosition > -1 && sharedElementReturnPosition < album.getAlbumItems().size()) {
+            if (sharedElementReturnPosition > -1 && album != null
+                    && sharedElementReturnPosition < album.getAlbumItems().size()) {
                 AlbumItem albumItem = album.getAlbumItems().get(sharedElementReturnPosition);
                 albumItem.isSharedElement = true;
                 postponeEnterTransition();
@@ -467,6 +481,12 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.sort_by_name).setChecked(true);
         }
 
+        MenuItem selectAll = menu.findItem(R.id.select_all);
+        Drawable d = selectAll.getIcon();
+        DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, accentTextColor);
+        DrawableCompat.unwrap(d);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -481,6 +501,7 @@ public class AlbumActivity extends ThemeableActivity
             //show copy & move button
             menu.findItem(R.id.copy).setVisible(selectorModeActive);
             menu.findItem(R.id.move).setVisible(selectorModeActive);
+            menu.findItem(R.id.select_all).setVisible(selectorModeActive);
         }
     }
 
@@ -489,6 +510,16 @@ public class AlbumActivity extends ThemeableActivity
         final String[] selected_items_paths;
         Intent intent;
         switch (item.getItemId()) {
+            case R.id.select_all:
+                RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+                SelectorModeManager manager = adapter.getSelectorManager();
+                String[] paths = new String[album.getAlbumItems().size()];
+                for (int i = 0; i < album.getAlbumItems().size(); i++) {
+                    paths[i] = album.getAlbumItems().get(i).getPath();
+                }
+                manager.selectAll(paths);
+                adapter.notifyItemRangeChanged(0, paths.length);
+                break;
             case R.id.share:
                 //share multiple items
                 selected_items_paths =
@@ -500,9 +531,9 @@ public class AlbumActivity extends ThemeableActivity
                     uris.add(StorageUtil.getContentUri(this, selected_items_paths[i]));
                 }
 
-                intent = new Intent();
-                intent.setAction(Intent.ACTION_SEND_MULTIPLE)
-                        .setType(MediaType.getMimeType(selected_items_paths[0]))
+                intent = new Intent()
+                        .setAction(Intent.ACTION_SEND_MULTIPLE)
+                        .setType(MediaType.getMimeType(this, uris.get(0)))
                         .putExtra(Intent.EXTRA_STREAM, uris);
 
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -622,13 +653,10 @@ public class AlbumActivity extends ThemeableActivity
         this.finish();
     }
 
-    public void deleteAlbumItemsSnackbar() {
+    public void deleteAlbumItemsSnackbar(String[] selected_items) {
         if (!MediaProvider.checkPermission(this)) {
             return;
         }
-
-        final String[] selected_items
-                = ((RecyclerViewAdapter) recyclerView.getAdapter()).cancelSelectorMode(this);
 
         final int[] indices = new int[selected_items.length];
         final AlbumItem[] deletedItems = new AlbumItem[selected_items.length];
@@ -689,7 +717,12 @@ public class AlbumActivity extends ThemeableActivity
                         String path = intent.getStringExtra(FileOperation.FILES);
                         for (int i = 0; i < selected_items.length; i++) {
                             if (selected_items[i].getPath().equals(path)) {
-                                album.getAlbumItems().add(indices[i], selected_items[i]);
+                                int index = indices[i];
+                                if (index < album.getAlbumItems().size()) {
+                                    album.getAlbumItems().add(index, selected_items[i]);
+                                } else {
+                                    album.getAlbumItems().add(selected_items[i]);
+                                }
                                 recyclerView.getAdapter().notifyItemInserted(indices[i]);
                                 break;
                             }
@@ -709,7 +742,7 @@ public class AlbumActivity extends ThemeableActivity
     private ClipData createClipData(AlbumItem[] items) {
         String[] mimeTypes = new String[items.length];
         for (int i = 0; i < items.length; i++) {
-            mimeTypes[i] = MediaType.getMimeType(items[i].getPath());
+            mimeTypes[i] = MediaType.getMimeType(this, items[i].getUri(this));
         }
 
         ClipData clipData =
@@ -779,12 +812,14 @@ public class AlbumActivity extends ThemeableActivity
                     Drawable d;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                                ContextCompat.getDrawable(AlbumActivity.this, R.drawable.cancel_to_back_avd);
+                                ContextCompat.getDrawable(AlbumActivity.this,
+                                        R.drawable.cancel_to_back_avd);
                         //mutating avd to reset it
                         drawable.mutate();
                         d = drawable;
                     } else {
-                        d = ContextCompat.getDrawable(AlbumActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                        d = ContextCompat.getDrawable(AlbumActivity.this,
+                                R.drawable.ic_clear_black_24dp);
                     }
                     d = DrawableCompat.wrap(d);
                     DrawableCompat.setTint(d.mutate(), accentTextColor);
@@ -846,17 +881,18 @@ public class AlbumActivity extends ThemeableActivity
                 Drawable d;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                            ContextCompat.getDrawable(AlbumActivity.this, R.drawable.back_to_cancel_avd);
+                            ContextCompat.getDrawable(AlbumActivity.this,
+                                    R.drawable.back_to_cancel_avd);
                     //mutating avd to reset it
                     drawable.mutate();
                     d = drawable;
                 } else {
-                    d = ContextCompat.getDrawable(AlbumActivity.this, R.drawable.ic_arrow_back_white_24dp);
+                    d = ContextCompat.getDrawable(AlbumActivity.this,
+                            R.drawable.ic_arrow_back_white_24dp);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);
                 toolbar.setNavigationIcon(d);
-
                 handleMenuVisibilityForSelectorMode(false);
             }
         }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
@@ -899,7 +935,20 @@ public class AlbumActivity extends ThemeableActivity
             @Override
             public void run() {
                 if (!pick_photos) {
-                    deleteAlbumItemsSnackbar();
+                    //deleteAlbumItemsSnackbar();
+                    final String[] selected_items
+                            = ((RecyclerViewAdapter) recyclerView.getAdapter())
+                            .cancelSelectorMode(AlbumActivity.this);
+                    new AlertDialog.Builder(AlbumActivity.this, theme.getDialogThemeRes())
+                            .setTitle(getString(R.string.delete_files, selected_items.length) + "?")
+                            .setNegativeButton(getString(R.string.no), null)
+                            .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    deleteAlbumItemsSnackbar(selected_items);
+                                }
+                            })
+                            .create().show();
                 } else {
                     setPhotosResult();
                 }
@@ -958,7 +1007,8 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onBackPressed() {
-        if (((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
+        if (recyclerView != null && recyclerView.getAdapter() != null &&
+                ((RecyclerViewAdapter) recyclerView.getAdapter()).onBackPressed()) {
             animateFab(false, false);
         } else if (snackbar != null) {
             snackbar.dismiss();
@@ -970,12 +1020,16 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         //outState.putParcelable(ALBUM, album);
-        outState.putParcelable(RECYCLER_VIEW_SCROLL_STATE,
-                recyclerView.getLayoutManager().onSaveInstanceState());
-
-        RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
-        adapter.saveInstanceState(outState);
+        if (recyclerView != null) {
+            outState.putParcelable(RECYCLER_VIEW_SCROLL_STATE,
+                    recyclerView.getLayoutManager().onSaveInstanceState());
+            RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
+            if (adapter != null) {
+                adapter.saveInstanceState(outState);
+            }
+        }
     }
 
     @Override

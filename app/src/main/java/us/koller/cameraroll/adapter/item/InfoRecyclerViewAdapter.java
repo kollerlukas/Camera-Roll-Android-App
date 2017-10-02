@@ -205,10 +205,6 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         }
 
         private void retrieveAddress(final Context context, final String locationString) {
-            if (!Util.hasWifiConnection(context)) {
-                return;
-            }
-
             AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -377,10 +373,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         private void setColor(CardView card, TextView text, int color) {
             if (Color.alpha(color) == 0) {
                 //color not found
-                int transparent = ContextCompat.getColor(card.getContext(),
-                        android.R.color.transparent);
-                card.setCardBackgroundColor(transparent);
-                text.setText("N/A");
+                card.setVisibility(View.GONE);
                 return;
             }
 

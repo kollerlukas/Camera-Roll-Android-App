@@ -17,10 +17,9 @@
     <color name="colorPrimary_light">#FAFAFA</color>
     <color name="colorPrimaryDark_light">#E0E0E0</color>
     <color name="light_bg">#FAFAFA</color>
-
     <!--light accent color-->
-    <color name="colorAccent_light">#448AFF</color>
-    <color name="colorAccentLight_light">#82B1FF</color>
+    <color name="colorAccent_light">#00BFA5</color>
+    <color name="colorAccentLight_light">#A7FFEB</color>
     <!--<color name="colorAccent_light">@color/black</color>
     <color name="colorAccentLight_light">@color/grey_900</color>-->
     <color name="colorAccent_text_light">#FFFFFF</color>

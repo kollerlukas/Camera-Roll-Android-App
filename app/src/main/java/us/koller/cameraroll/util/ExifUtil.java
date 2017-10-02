@@ -2,7 +2,6 @@ package us.koller.cameraroll.util;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.support.media.ExifInterface;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class ExifUtil {
     private static final int TYPE_RATIONAL = 3;
 
     //Tags
-    private static final String[] exifTags_v24
+    private static final String[] exifTags
             = new String[]{
             ExifInterface.TAG_APERTURE_VALUE,
             ExifInterface.TAG_ARTIST,
@@ -158,193 +157,298 @@ public class ExifUtil {
             ExifInterface.TAG_Y_CB_CR_COEFFICIENTS,
             ExifInterface.TAG_Y_CB_CR_POSITIONING,
             ExifInterface.TAG_Y_CB_CR_SUB_SAMPLING,
-            ExifInterface.TAG_Y_RESOLUTION};
-
-    private static final String[] exifTags
-            = new String[]{
-            ExifInterface.TAG_DATETIME,
-            ExifInterface.TAG_DATETIME_DIGITIZED,
-            ExifInterface.TAG_EXPOSURE_TIME,
-            ExifInterface.TAG_FLASH,
-            ExifInterface.TAG_FOCAL_LENGTH,
-            ExifInterface.TAG_GPS_ALTITUDE,
-            ExifInterface.TAG_GPS_ALTITUDE_REF,
-            ExifInterface.TAG_GPS_DATESTAMP,
-            ExifInterface.TAG_GPS_LATITUDE,
-            ExifInterface.TAG_GPS_LATITUDE_REF,
-            ExifInterface.TAG_GPS_LONGITUDE,
-            ExifInterface.TAG_GPS_LONGITUDE_REF,
-            ExifInterface.TAG_GPS_PROCESSING_METHOD,
-            ExifInterface.TAG_GPS_TIMESTAMP,
-            ExifInterface.TAG_IMAGE_LENGTH,
-            ExifInterface.TAG_IMAGE_WIDTH,
-            ExifInterface.TAG_MAKE,
-            ExifInterface.TAG_MODEL,
-            ExifInterface.TAG_ORIENTATION,
-            ExifInterface.TAG_SUBSEC_TIME,
-            ExifInterface.TAG_WHITE_BALANCE};
+            ExifInterface.TAG_Y_RESOLUTION
+    };
 
     //Types
-    private static final int[] exifTypes_v24
-            = new int[]{
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_DOUBLE,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_DOUBLE,
-            TYPE_RATIONAL,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_DOUBLE,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_RATIONAL,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_RATIONAL,
-            TYPE_RATIONAL,
-            TYPE_DOUBLE,
-            TYPE_INT,
-            TYPE_UNDEFINED,
-            TYPE_UNDEFINED,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_RATIONAL,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_RATIONAL,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_UNDEFINED,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_RATIONAL,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_UNDEFINED,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_RATIONAL,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_DOUBLE,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_STRING,
-            TYPE_INT,
-            TYPE_RATIONAL,
-            TYPE_RATIONAL,
-            TYPE_RATIONAL,
-            TYPE_INT,
-            TYPE_INT,
-            TYPE_RATIONAL};
-
     private static final int[] exifTypes
             = new int[]{
+            TYPE_RATIONAL,
             TYPE_STRING,
+            TYPE_INT,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_RATIONAL,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_INT,
             TYPE_STRING,
             TYPE_DOUBLE,
             TYPE_INT,
+            TYPE_STRING,
+            TYPE_DOUBLE,
             TYPE_RATIONAL,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_DOUBLE,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_RATIONAL,
+            TYPE_RATIONAL,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_RATIONAL,
+            TYPE_RATIONAL,
+            TYPE_DOUBLE,
+            TYPE_INT,
             TYPE_UNDEFINED,
             TYPE_UNDEFINED,
             TYPE_STRING,
+            TYPE_STRING,
+            TYPE_RATIONAL,
+            TYPE_STRING,
             TYPE_RATIONAL,
             TYPE_STRING,
             TYPE_RATIONAL,
             TYPE_STRING,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_RATIONAL,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_RATIONAL,
             TYPE_STRING,
             TYPE_STRING,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_INT,
             TYPE_INT,
             TYPE_INT,
             TYPE_STRING,
             TYPE_STRING,
+            TYPE_RATIONAL,
             TYPE_INT,
             TYPE_STRING,
-            TYPE_INT
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_UNDEFINED,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_RATIONAL,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_UNDEFINED,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_RATIONAL,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_DOUBLE,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_STRING,
+            TYPE_INT,
+            TYPE_RATIONAL,
+            TYPE_RATIONAL,
+            TYPE_RATIONAL,
+            TYPE_INT,
+            TYPE_INT,
+            TYPE_RATIONAL
+    };
+
+    //Values
+    private static final String[][] exifValues
+            = new String[][]{
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            new String[]{
+                    "ORIENTATION_UNDEFINED (= 0)",
+                    "ORIENTATION_NORMAL (= 1)",
+                    "ORIENTATION_FLIP_HORIZONTAL (= 2)",
+                    "ORIENTATION_ROTATE_180 (= 3)",
+                    "ORIENTATION_FLIP_VERTICAL (= 4)",
+                    "ORIENTATION_TRANSPOSE (= 5)",
+                    "ORIENTATION_ROTATE_90 (= 6)",
+                    "ORIENTATION_TRANSVERSE (= 7)",
+                    "ORIENTATION_ROTATE_270 (= 8)"
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            new String[]{
+                    "WHITEBALANCE_AUTO (= 0)",
+                    "WHITEBALANCE_MANUAL (= 1)"
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
     };
 
     public static ExifInterface getExifInterface(Context context, AlbumItem albumItem) {
@@ -354,18 +458,14 @@ public class ExifUtil {
 
         ExifInterface exif = null;
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri uri = albumItem.getUri(context);
-                InputStream is = context.getContentResolver().openInputStream(uri);
-                if (is != null) {
-                    exif = new ExifInterface(is);
-                }
-
-            } else {
-                exif = new ExifInterface(albumItem.getPath());
+            Uri uri = albumItem.getUri(context);
+            InputStream is = context.getContentResolver().openInputStream(uri);
+            if (is != null) {
+                exif = new ExifInterface(is);
             }
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             e.printStackTrace();
+            return null;
         }
         return exif;
     }
@@ -377,19 +477,15 @@ public class ExifUtil {
     }
 
     public static String[] getExifTags() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return exifTags_v24;
-        } else {
-            return exifTags;
-        }
+        return exifTags;
     }
 
     private static int[] getExifTypes() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return exifTypes_v24;
-        } else {
-            return exifTypes;
-        }
+        return exifTypes;
+    }
+
+    public static String[][] getExifValues() {
+        return exifValues;
     }
 
     static Object getCastValue(ExifInterface exif, String tag)
@@ -450,8 +546,26 @@ public class ExifUtil {
                 exif.setAttribute(exifItem.getTag(), exifItem.getValue());
             }
             exif.saveAttributes();
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static int getExifOrientationAngle(Context context, AlbumItem albumItem) {
+        ExifInterface exif = getExifInterface(context, albumItem);
+        if (exif == null) {
+            return 0;
+        }
+        int orientation = (int) getCastValue(exif, ExifInterface.TAG_ORIENTATION);
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return 90;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return 180;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return 270;
+            default:
+                return 0;
         }
     }
 

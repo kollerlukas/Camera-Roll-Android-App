@@ -98,11 +98,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final Album album = albums.get(position);
 
-        if (!album.equals(((AlbumHolder) holder).getAlbum())) {
-            ((AlbumHolder) holder).setAlbum(album);
-        } else {
-            ((AlbumHolder) holder).onItemChanged();
-        }
+        ((AlbumHolder) holder).setAlbum(album);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,7 +142,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     public void setSelectorModeManager(SelectorModeManager selectorManager) {
         this.selectorManager = selectorManager;
-        notifyItemRangeChanged(0, getItemCount() - 1);
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     public SelectorModeManager getSelectorManager() {
@@ -155,7 +151,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return albums.size();
+        return albums != null ? albums.size() : 0;
     }
 
     public boolean onBackPressed() {

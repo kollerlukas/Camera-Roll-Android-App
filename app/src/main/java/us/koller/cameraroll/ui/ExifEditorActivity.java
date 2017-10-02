@@ -11,6 +11,7 @@ import android.support.annotation.RequiresApi;
 import android.support.media.ExifInterface;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -212,19 +215,17 @@ public class ExifEditorActivity extends ThemeableActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.exif_editor, menu);
         this.menu = menu;
 
         MenuItem save = menu.findItem(R.id.save);
+        save.setVisible(editedItems.size() > 0);
         Drawable d = save.getIcon();
         DrawableCompat.wrap(d);
         DrawableCompat.setTint(d, textColorSecondary);
+        DrawableCompat.unwrap(d);
         save.setIcon(d);
-
-        save.setVisible(editedItems.size() > 0);
-
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -366,6 +367,9 @@ public class ExifEditorActivity extends ThemeableActivity {
 
     private static class RecyclerViewAdapter extends RecyclerView.Adapter {
 
+        private static final int VIEW_TYPE_EDIT_TEXT = 0;
+        private static final int VIEW_TYPE_SPINNER = 1;
+
         private ExifInterface exifInterface;
         private OnEditCallback callback;
 
@@ -398,9 +402,29 @@ public class ExifEditorActivity extends ThemeableActivity {
         }
 
         @Override
+        public int getItemViewType(int position) {
+            if (ExifUtil.getExifValues()[position] != null) {
+                return VIEW_TYPE_SPINNER;
+            }
+            return VIEW_TYPE_EDIT_TEXT;
+        }
+
+        @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            int layoutRes;
+            switch (viewType) {
+                case VIEW_TYPE_EDIT_TEXT:
+                    layoutRes = R.layout.exif_editor_item;
+                    break;
+                case VIEW_TYPE_SPINNER:
+                    layoutRes = R.layout.exif_editor_spinner_item;
+                    break;
+                default:
+                    layoutRes = -1;
+                    break;
+            }
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.exif_editor_item, parent, false);
+                    .inflate(layoutRes, parent, false);
             return new ExifViewHolder(v);
         }
 
@@ -411,19 +435,52 @@ public class ExifEditorActivity extends ThemeableActivity {
             TextView tagTV = holder.itemView.findViewById(R.id.tag);
             tagTV.setText(tag);
 
-            final EditText value = holder.itemView.findViewById(R.id.value);
             EditedItem editedItem = callback.getEditedItem(tag);
 
-            value.removeTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
-            value.setText(editedItem == null ? exifInterface.getAttribute(tag) : editedItem.newValue);
+            if (ExifUtil.getExifValues()[position] != null) {
+                final AppCompatSpinner spinner = holder.itemView.findViewById(R.id.value_spinner);
+                String[] values = ExifUtil.getExifValues()[position];
+                ArrayAdapter arrayAdapter = new ArrayAdapter<>(
+                        holder.itemView.getContext(),
+                        R.layout.simple_spinner_item,
+                        values);
+                arrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(arrayAdapter);
 
-            ((ExifViewHolder) holder).setTextWatcher(new SimpleTextWatcher() {
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    callback.onItemEdited(tag, s.toString());
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                        callback.onItemEdited(tag, String.valueOf(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+                    }
+                });
+
+                int selection = 0;
+                if (editedItem == null) {
+                    String value = exifInterface.getAttribute(tag);
+                    if (value != null) {
+                        selection = Integer.parseInt(value);
+                    }
+                } else {
+                    selection = Integer.parseInt(editedItem.newValue);
                 }
-            });
-            value.addTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
+                spinner.setSelection(selection);
+            } else {
+                final EditText value = holder.itemView.findViewById(R.id.value);
+                value.removeTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
+                value.setText(editedItem == null ? exifInterface.getAttribute(tag) : editedItem.newValue);
+
+                ((ExifViewHolder) holder).setTextWatcher(new SimpleTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        callback.onItemEdited(tag, s.toString());
+                    }
+                });
+                value.addTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
+            }
         }
 
         @Override

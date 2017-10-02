@@ -222,13 +222,19 @@ public class EditImageActivity extends AppCompatActivity {
                             }
                         }
                     } else {
-                        outputStream = getContentResolver().openOutputStream(uri);
+                        try {
+                            outputStream = getContentResolver().openOutputStream(uri);
+                        } catch (SecurityException e) {
+                            outputStream = null;
+                        }
                     }
 
                     if (outputStream != null) {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, outputStream);
                         outputStream.flush();
                         outputStream.close();
+                    } else {
+                        return;
                     }
 
                     //save Exif-Data

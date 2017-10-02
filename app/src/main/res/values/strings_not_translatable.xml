@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--"app_name" defined in build.gradle to have different names for .debug and normal version
+    <string name="app_name" translatable="false">Camera Roll</string>-->
+    <string name="task_description_label">@string/app_name</string>
+    <string name="toolbar_title">@string/app_name</string>
+
+    <!--About Text-->
     <string name="about_text" translatable="false">
         <![CDATA[
             © 2017 Lukas Koller, Munich, Germany<br/>
@@ -69,12 +75,21 @@
                 French: <a href=\"https://github.com/Primokorn\">Primokorn</a>, <a href=\"https://github.com/kkfong\">kkfong</a><br>
                 Italian: Silvano Numelli<br>
                 Polish: Marcin Głowacki<br>
+                Russian: <a href=\"https://github.com/SnowVolf\">Atrem Zhiganov</a><br>
+                Spanish: Christobal Rojas, Luis Gmz<br>
+                Bulgarian: psydex<br>
+                Croatian: <a href=\"https://github.com/krux3r\">Ivan Krušlin</a><br>
+                Portuguese: <a href=\"https://github.com/marciozomb13\">Marcio Zomb13</a><br>
+                Chinese: Yixuan Wang<br>
             <br>
         ]]>
     </string>
+
+    <!--Toolbar transitionName-->
     <string name="toolbar_transition_name" translatable="false">toolbar_transition_name</string>
 
     <!--Preference Keys-->
+    <string name="pref_key_virtual_directories" translatable="false">KEY_VIRTUAL_DIRECTORIES</string>
     <string name="pref_key_excluded_paths" translatable="false">KEY_EXCLUDED_PATHS</string>
     <string name="pref_key_theme" translatable="false">KEY_THEME</string>
     <string name="pref_key_media_retriever" translatable="false">KEY_MEDIA_RETRIEVER</string>
@@ -86,4 +101,7 @@
     <string name="pref_key_8_bit_color" translatable="false">KEY_8_BIT_COLOR</string>
     <string name="pref_key_camera_shortcut" translatable="false">KEY_CAMERA_SHORTCUT</string>
     <string name="pref_key_removable_storage_treeUri" translatable="false">KEY_REMOVABLE_STORAGE_TREE_URI</string>
+
+    <!--Notification Channel-->
+    <string name="file_op_channel_id">file_op_channel_id</string>
 </resources>

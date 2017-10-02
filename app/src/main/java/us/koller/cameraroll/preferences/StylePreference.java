@@ -54,10 +54,6 @@ public class StylePreference extends DialogPreference {
         //update summary
         String style_name = Settings.Utils.getStyleName(getContext(), style);
         setSummary(style_name);
-
-        //update Style column count
-        int columnCount = Settings.getDefaultStyleColumnCount(getContext(), style);
-        Settings.getInstance(getContext()).setStyleColumnCount(columnCount);
     }
 
     @Override

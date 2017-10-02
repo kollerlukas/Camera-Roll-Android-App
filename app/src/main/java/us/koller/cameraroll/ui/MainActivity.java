@@ -17,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -74,8 +75,10 @@ public class MainActivity extends ThemeableActivity {
                 return;
             }
 
-            if (sharedElementViewHolder.sharedElementReturnPosition != -1) {
-                String newTransitionName = sharedElementViewHolder.album.getAlbumItems()
+            if (sharedElementViewHolder.sharedElementReturnPosition != -1
+                    && sharedElementViewHolder.sharedElementReturnPosition <
+                    sharedElementViewHolder.getAlbum().getAlbumItems().size()) {
+                String newTransitionName = sharedElementViewHolder.getAlbum().getAlbumItems()
                         .get(sharedElementViewHolder.sharedElementReturnPosition).getPath();
                 View layout = sharedElementViewHolder.nestedRecyclerView.findViewWithTag(newTransitionName);
                 View newSharedElement = layout != null ? layout.findViewById(R.id.image) : null;
@@ -86,7 +89,6 @@ public class MainActivity extends ThemeableActivity {
                     sharedElements.put(newTransitionName, newSharedElement);
                 }
                 sharedElementViewHolder.sharedElementReturnPosition = -1;
-
             } else {
                 View v = sharedElementViewHolder.itemView.getRootView();
                 View navigationBar = v.findViewById(android.R.id.navigationBarBackground);
@@ -145,8 +147,8 @@ public class MainActivity extends ThemeableActivity {
         toolbar.setBackgroundColor(!pick_photos ? toolbarColor : accentColor);
         toolbar.setTitleTextColor(!pick_photos ? textColorPrimary : accentTextColor);
 
+        ActionBar actionBar = getSupportActionBar();
         if (pick_photos) {
-            ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) : getString(R.string.pick_photo));
             }
@@ -166,7 +168,13 @@ public class MainActivity extends ThemeableActivity {
             });
 
             Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
-            Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            if (theme.darkStatusBarIconsInSelectorMode()) {
+                Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
+            }
+        } else {
+            if (actionBar != null) {
+                actionBar.setTitle(getString(R.string.toolbar_title));
+            }
         }
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -178,9 +186,8 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setAdapter(recyclerViewAdapter);
 
         int spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
-        //recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
         if (recyclerView instanceof FastScrollerRecyclerView) {
-            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing/* / 2*/);
+            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing);
         }
 
         //disable default change animation
@@ -250,8 +257,13 @@ public class MainActivity extends ThemeableActivity {
         });
 
         final FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setVisibility(View.GONE);
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fabClicked(view);
+            }
+        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
                     R.drawable.ic_camera_lens_avd);
             fab.setImageDrawable(d);
@@ -269,7 +281,7 @@ public class MainActivity extends ThemeableActivity {
 
         if (pick_photos || !settings.getCameraShortcut()) {
             fab.setVisibility(View.GONE);
-        }*/
+        }
 
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
@@ -280,16 +292,21 @@ public class MainActivity extends ThemeableActivity {
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
+                    Log.d("MainActivity", "onApplyWindowInsets()"
+                            + "[" + insets.getSystemWindowInsetLeft() + ", " +
+                            insets.getSystemWindowInsetTop() + ", " +
+                            insets.getSystemWindowInsetRight() + ", " +
+                            insets.getSystemWindowInsetBottom() + "]");
 
-                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                    toolbar.setPadding(toolbar.getPaddingStart(),
                             toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                            toolbar.getPaddingEnd(),
                             toolbar.getPaddingBottom());
 
                     ViewGroup.MarginLayoutParams toolbarParams
                             = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                    toolbarParams.leftMargin = insets.getSystemWindowInsetLeft();
+                    toolbarParams.rightMargin = insets.getSystemWindowInsetRight();
                     toolbar.setLayoutParams(toolbarParams);
 
                     recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
@@ -363,6 +380,7 @@ public class MainActivity extends ThemeableActivity {
                 String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
                 final int sharedElementReturnPosition = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
                 int index = -1;
+                ArrayList<Album> albums = MediaProvider.getAlbumsWithVirtualDirectories(this);
                 for (int i = 0; i < albums.size(); i++) {
                     if (albums.get(i).getPath().equals(albumPath)) {
                         index = i;
@@ -453,12 +471,14 @@ public class MainActivity extends ThemeableActivity {
                 = new MediaProvider.OnMediaLoadedCallback() {
             @Override
             public void onMediaLoaded(final ArrayList<Album> albums) {
+                final ArrayList<Album> albumsWithVirtualDirs =
+                        MediaProvider.getAlbumsWithVirtualDirectories(MainActivity.this);
                 if (albums != null) {
                     MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            MainActivity.this.albums = albums;
-                            recyclerViewAdapter.setAlbums(albums);
+                            MainActivity.this.albums = albumsWithVirtualDirs;
+                            recyclerViewAdapter.setAlbums(albumsWithVirtualDirs);
                             recyclerViewAdapter.notifyDataSetChanged();
 
                             snackbar.dismiss();
@@ -521,14 +541,14 @@ public class MainActivity extends ThemeableActivity {
             menu.findItem(R.id.sort_by_most_recent).setChecked(true);
         }
 
-        Settings s = Settings.getInstance(this);
+        /*Settings s = Settings.getInstance(this);
         MenuItem cameraShortcut = menu.findItem(R.id.camera_shortcut);
         cameraShortcut.setVisible(s.getCameraShortcut() && !pick_photos);
         Drawable cameraIcon = cameraShortcut.getIcon().mutate();
         DrawableCompat.wrap(cameraIcon);
         DrawableCompat.setTint(cameraIcon, theme.getTextColorSecondary(this));
         DrawableCompat.unwrap(cameraIcon);
-        cameraShortcut.setIcon(cameraIcon);
+        cameraShortcut.setIcon(cameraIcon);*/
 
         if (pick_photos) {
             menu.findItem(R.id.file_explorer).setVisible(false);
@@ -602,12 +622,15 @@ public class MainActivity extends ThemeableActivity {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                SortUtil.sortAlbums(MainActivity.this, MediaProvider.getAlbums());
+                //SortUtil.sortAlbums(MainActivity.this, MediaProvider.getAlbums());
+                final ArrayList<Album> albums = MediaProvider.getAlbumsWithVirtualDirectories(MainActivity.this);
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        snackbar.dismiss();
+                        MainActivity.this.albums = albums;
+                        ((RecyclerViewAdapter) recyclerView.getAdapter()).setAlbums(albums);
                         recyclerView.getAdapter().notifyDataSetChanged();
+                        snackbar.dismiss();
                     }
                 });
             }

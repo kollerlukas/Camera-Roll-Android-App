@@ -22,7 +22,6 @@ public class Settings {
     private String theme;
     private boolean storageRetriever;
     private int style;
-    private int styleColumnCount;
     private int columnCount;
     private int sort_albums_by;
     private int sort_album_by;
@@ -30,6 +29,8 @@ public class Settings {
     private boolean use8BitColor;
     private boolean cameraShortcut;
     private Uri removableStorageTreeUri;
+    private boolean virtualDirectories;
+    private boolean fadeImages = false;
 
     private static Settings instance;
 
@@ -55,8 +56,6 @@ public class Settings {
         style = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_style),
                 context.getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE));
-
-        styleColumnCount = getDefaultStyleColumnCount(context, style);
 
         columnCount = sharedPreferences.getInt(
                 context.getString(R.string.pref_key_column_count),
@@ -85,6 +84,10 @@ public class Settings {
         removableStorageTreeUri = Uri.parse(sharedPreferences.getString(
                 context.getString(R.string.pref_key_removable_storage_treeUri),
                 ""));
+
+        virtualDirectories = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_virtual_directories),
+                true);
     }
 
     /*Getter & Setter*/
@@ -131,6 +134,7 @@ public class Settings {
     public int getStyleColumnCount(Context context, int style) {
         Resources res = context.getResources();
         boolean landscape = res.getBoolean(R.bool.landscape);
+        int styleColumnCount = getDefaultStyleColumnCount(context, style);
         if (landscape &&
                 (style == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
                         style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE))) {
@@ -145,10 +149,6 @@ public class Settings {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
         }
         return 0;
-    }
-
-    public void setStyleColumnCount(int styleColumnCount) {
-        this.styleColumnCount = styleColumnCount;
     }
 
     public int getColumnCount(Context context) {
@@ -174,7 +174,7 @@ public class Settings {
         this.columnCount = columnCount;
     }
 
-    public static int getDefaultStyleColumnCount(Context context, int style) {
+    private static int getDefaultStyleColumnCount(Context context, int style) {
         Resources res = context.getResources();
         if (style == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
             return res.getInteger(R.integer.STYLE_PARALLAX_COLUMN_COUNT);
@@ -239,6 +239,21 @@ public class Settings {
     public Uri getRemovableStorageTreeUri() {
         Log.d("Settings", "getRemovableStorageTreeUri: " + removableStorageTreeUri);
         return removableStorageTreeUri;
+    }
+
+    public boolean getVirtualDirectories() {
+        return virtualDirectories;
+    }
+
+    @SuppressWarnings("unused")
+    public void setVirtualDirectories(Context context, boolean virtualDirectories) {
+        this.virtualDirectories = virtualDirectories;
+        saveBoolean(context, context.getString(R.string.pref_key_virtual_directories),
+                virtualDirectories);
+    }
+
+    public boolean fadeImages() {
+        return fadeImages;
     }
 
     public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.Settings;
@@ -115,6 +116,21 @@ public class SelectorModeManager {
         boolean selected = addOrRemovePathFromList(selected_items_paths, path);
         onItemSelected(getSelectedItemCount());
         return selected;
+    }
+
+    public void selectAll(String[] paths) {
+        ArrayList<String> itemsToSelect = new ArrayList<>();
+        for (int i = 0; i < paths.length; i++) {
+            if (!selected_items_paths.contains(paths[i])) {
+                itemsToSelect.add(paths[i]);
+            }
+        }
+        selected_items_paths.addAll(itemsToSelect);
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onItemSelected(selected_items_paths.size());
+            }
+        }
     }
 
     public int getSelectedItemCount() {

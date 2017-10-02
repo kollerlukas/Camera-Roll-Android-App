@@ -66,9 +66,6 @@
     <string name="new_folder">Nuova Cartella</string>
     <string name="rename">Rinomina</string>
     <string name="paste">Incolla</string>
-    <string name="successfully_deleted">%1$d/%1$d eliminata con successo</string>
-    <string name="successfully_moved">%1$d/%1$d spostata con successo</string>
-    <string name="successfully_copied">%1$d/%1$d copiata con successo</string>
     <string name="successfully_created_new_folder">Nuova cartella creata con successo!</string>
     <string name="successfully_renamed_file">File rinominato con successo!</string>
     <!--FileExplorerActivity-->

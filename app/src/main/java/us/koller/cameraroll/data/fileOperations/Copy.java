@@ -22,6 +22,16 @@ import us.koller.cameraroll.util.StorageUtil;
 public class Copy extends FileOperation {
 
     @Override
+    String getNotificationTitle() {
+        return getString(R.string.copy);
+    }
+
+    @Override
+    public int getNotificationSmallIconRes() {
+        return R.drawable.ic_content_copy_white_24dp;
+    }
+
+    @Override
     public void execute(Intent workIntent) {
         File_POJO[] files = getFiles(workIntent);
         File_POJO target = workIntent.getParcelableExtra(TARGET);
@@ -61,11 +71,6 @@ public class Copy extends FileOperation {
         return FileOperation.COPY;
     }
 
-    @Override
-    public int getActionStringRes() {
-        return R.string.successfully_copied;
-    }
-
     private static String getCopyFileName(String destinationPath) {
         File dir = new File(destinationPath);
         String copyName;
@@ -87,6 +92,7 @@ public class Copy extends FileOperation {
     //treeUri only needed for removable storage
     private boolean copyFilesRecursively(Context context, Uri treeUri, String path,
                                          String destination, boolean result) {
+        Log.d("Copy", "copyFilesRecursively() path = [" + path + "]");
         File file = new File(path);
         String destinationFilePath = getCopyFileName(new File(destination, new File(path).getName()).getPath());
         try {
@@ -122,19 +128,16 @@ public class Copy extends FileOperation {
 
     //for files on non-removable storage
     private static boolean copyFile(String path, String destination) throws IOException {
-        boolean result;
         //create output directory if it doesn't exist
         File dir = new File(destination);
         if (new File(path).isDirectory()) {
-            result = dir.mkdirs();
+            return dir.mkdirs();
         } else {
-            result = dir.createNewFile();
-        }
-
-        if (result) {
-            InputStream inputStream = new FileInputStream(path);
-            OutputStream outputStream = new FileOutputStream(dir);
-            return writeStream(inputStream, outputStream);
+            if (dir.createNewFile()) {
+                InputStream inputStream = new FileInputStream(path);
+                OutputStream outputStream = new FileOutputStream(dir);
+                return writeStream(inputStream, outputStream);
+            }
         }
         return false;
     }
@@ -142,7 +145,6 @@ public class Copy extends FileOperation {
     //for files on removable storage
     static boolean copyFileOntoRemovableStorage(Context context, Uri treeUri,
                                                 String path, String destination) throws IOException {
-        Log.d("Copy", "copyFileOntoRemovableStorage() called with: path = [" + path + "], destination = [" + destination + "]");
         String mimeType = MediaType.getMimeType(path);
         DocumentFile file = DocumentFile.fromFile(new File(destination));
         if (file.exists()) {

@@ -154,7 +154,6 @@ public class SettingsActivity extends ThemeableActivity {
     @Override
     public void recreate() {
         recreated = true;
-
         super.recreate();
     }
 
@@ -163,7 +162,6 @@ public class SettingsActivity extends ThemeableActivity {
         if (recreated) {
             setResult(RESULT_OK);
         }
-
         super.onBackPressed();
     }
 
@@ -219,6 +217,7 @@ public class SettingsActivity extends ThemeableActivity {
             Settings settings = Settings.getInstance(getContext());
 
             initExcludedPathsPref();
+            initVirtualDirectoriesPref();
             initThemePref(settings.getTheme());
             initStylePref(settings.getStyle(getContext(), false));
             initColumnCountPref(settings.getRealColumnCount());
@@ -251,6 +250,21 @@ public class SettingsActivity extends ThemeableActivity {
                         callback.onSettingChanged();
                     }
                     Intent intent = new Intent(getContext(), ExcludePathsActivity.class);
+                    getContext().startActivity(intent);
+                    return false;
+                }
+            });
+        }
+
+        private void initVirtualDirectoriesPref() {
+            Preference pref = findPreference(getString(R.string.pref_key_virtual_directories));
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (callback != null) {
+                        callback.onSettingChanged();
+                    }
+                    Intent intent = new Intent(getContext(), VirtualAlbumsActivity.class);
                     getContext().startActivity(intent);
                     return false;
                 }
@@ -377,13 +391,8 @@ public class SettingsActivity extends ThemeableActivity {
                 getActivity().recreate();
             } else if (preference.getKey().equals(getString(R.string.pref_key_style))) {
                 settings.setStyle((int) o);
-
                 String style_name = Settings.Utils.getStyleName(getActivity(), (int) o);
                 preference.setSummary(style_name);
-
-                //update Style column count
-                int columnCount = Settings.getDefaultStyleColumnCount(getActivity(), (int) o);
-                Settings.getInstance(getActivity()).setStyleColumnCount(columnCount);
 
             } else if (preference.getKey().equals(getString(R.string.pref_key_column_count))) {
                 settings.setColumnCount((int) o);
