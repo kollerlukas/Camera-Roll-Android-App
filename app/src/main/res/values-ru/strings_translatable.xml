@@ -1,6 +1,6 @@
 <resources>
     <!--error messages-->
-    <string name="read_permission_denied">Camera Roll необходимо разрешение на чтение внутреннего накопителя для отображения мультимедиа.</string>
+    <string name="read_permission_denied">Camera Roll необходимо разрешение на чтение внутреннего накопителя для того, чтобы отображать мультимедиа.</string>
     <string name="grant_removable_storage_permission">Разрешить запись на SD карту</string>
     <string name="grant_removable_storage_permission_message">На следующем экране вы должны выбрать корневую папку вашей SD карты (например sdcard1)</string>
     <!--general-->
@@ -21,6 +21,8 @@
     <string name="excluded">Исключенные</string>
     <string name="error">Ошибка</string>
     <string name="selected_count">%1$d выбрано</string>
+    <string name="file_op_channel_name">Файловые операции</string>
+    <string name="file_op_channel_description">Показывает текущее состояние файловой операции</string>
     <!--MainActivity-->
     <string name="refresh">Обновить</string>
     <string name="sort_by">Сортировка по…</string>
@@ -39,6 +41,7 @@
     <string name="pin_album">Закрепить альбом</string>
     <string name="file_deleted">%1$d файл удален</string>
     <string name="files_deleted">%1$d файлов удалено</string>
+    <string name="select_all">Выбрать всё</string>
     <!--ItemActivity-->
     <string name="set_as">Установить как…</string>
     <string name="open_with">Открыть с помощью…</string>
@@ -70,11 +73,14 @@
     <!--FileExplorerActivity-->
     <string name="no_files">НЕТ ФАЙЛОВ</string>
     <string name="storage">Внутр. общий накопитель</string>
+    <string name="scan">Скан</string>
+    <string name="scanning">Сканирование…</string>
     <string name="copy_file">Копировать %1$d файл</string>
     <string name="copy_files">Копирование %1$d файлов</string>
     <string name="move_file">Перемещение %1$d файла</string>
     <string name="move_files">Перемещение %1$d файлов</string>
     <string name="delete_file">Удаление %1$d файла</string>
+    <string name="paste_error">Вы не можете копировать файлы сюда!</string>
     <!--SettingsActivity-->
     <string name="appearance">Внешний вид</string>
     <string name="theme">Тема</string>
@@ -82,7 +88,7 @@
     <string name="column_count">Количество колонок</string>
     <string name="other">Прочее</string>
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Производить поиск изображений самостоятельно, вместо использования MediaStore API. Может бы полезным, если некоторые фотографии не видны в галерее.</string>
+    <string name="media_retriever_summary">Производить поиск изображений самостоятельно, вместо использования MediaStore API. Может быть полезным, если некоторые фотографии не видны в галерее.</string>
     <string name="use_8_bit_color">8-бит цвет</string>
     <string name="use_8_bit_color_summary">Использовать 8-бит палитру для отображения фотографий. Это повлияет на скорость показа фотографий, а также увеличит количество потребляемой ОЗУ.</string>
     <!--EditImageActivity-->
@@ -99,8 +105,21 @@
     <string name="edit_exif">изменить Exif</string>
     <string name="save">Сохранить</string>
     <string name="changes_saved">Изменения сохранены</string>
+    <!--ExcludedPathsActivity-->
+    <string name="excluded_paths">Исключенные папки</string>
+    <!--VirtualAlbumsActivity-->
+    <string name="virtual_albums">Виртуальные альбомы</string>
+    <string name="create_virtual_album">Создать вирт. альбом</string>
+    <string name="virtual_album_created">Виртуальный альбом %1$s создан</string>
+    <string name="virtual_album_different_name">Пожалуйста выберите другое имя</string>
+    <string name="add_path_to_virtual_album">Добавить путь к вирт. альбому</string>
+    <string name="added_path_to_virtual_album">Путь %1$s добавлен в виртуальный альбом</string>
+    <string name="virtual_album_deleted">Виртуальный альбом %1$s удален</string>
+    <string name="path_removed">путь удален</string>
+    <string name="no_paths">Нет сохраненных путей</string>
+    <string name="no_virtual_albums">Нет виртуальных альбомов</string>
     <!--info Dialog Strings-->
-    	<string name="info_filename">Имя файла: </string>
+    <string name="info_filename">Имя файла: </string>
     <string name="info_filepath">Путь: </string>
     <string name="info_size">Размер: </string>
     <string name="info_dimensions">Плотность пикс: </string>
