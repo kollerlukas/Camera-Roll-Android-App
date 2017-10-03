@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.FileUriExposedException;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -194,7 +193,7 @@ public class ItemActivity extends ThemeableActivity {
         }
 
         final ViewGroup rootView = findViewById(R.id.root_view);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
@@ -446,18 +445,8 @@ public class ItemActivity extends ThemeableActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                try {
-                    startActivityForResult(Intent.createChooser(intent,
-                            getString(R.string.set_as)), 13);
-                } catch (FileUriExposedException fuee) {
-                    Toast.makeText(this, "Error (FileUriExposedException)", Toast.LENGTH_SHORT).show();
-                    fuee.printStackTrace();
-                }
-            } else {
-                startActivityForResult(Intent.createChooser(intent,
-                        getString(R.string.set_as)), 13);
-            }
+            startActivityForResult(Intent.createChooser(intent,
+                    getString(R.string.set_as)), 13);
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();
@@ -475,18 +464,8 @@ public class ItemActivity extends ThemeableActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                try {
-                    startActivityForResult(Intent.createChooser(intent,
-                            getString(R.string.open_with)), 13);
-                } catch (FileUriExposedException fuee) {
-                    Toast.makeText(this, "Error (FileUriExposedException)", Toast.LENGTH_SHORT).show();
-                    fuee.printStackTrace();
-                }
-            } else {
-                startActivityForResult(Intent.createChooser(intent,
-                        getString(R.string.open_with)), 13);
-            }
+            startActivityForResult(Intent.createChooser(intent,
+                    getString(R.string.open_with)), 13);
         } catch (SecurityException se) {
             Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
             se.printStackTrace();

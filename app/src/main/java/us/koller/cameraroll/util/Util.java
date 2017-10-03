@@ -232,7 +232,7 @@ public class Util {
                 android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
     }
 
-    static Locale getLocale(Context context) {
+    public static Locale getLocale(Context context) {
         Locale locale;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             locale = context.getResources().getConfiguration().getLocales().get(0);

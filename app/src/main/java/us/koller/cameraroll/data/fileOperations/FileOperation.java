@@ -20,6 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.media.ExifInterface;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.provider.DocumentFile;
@@ -27,9 +28,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.ContentObserver;
@@ -37,6 +44,7 @@ import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Video;
+import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.StorageUtil;
 
@@ -397,6 +405,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
         @SuppressLint("ShowToast")
         private static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback, final boolean showToast) {
+            Log.i("FileOperation", "scanPaths(), paths: " + Arrays.toString(paths));
             if (paths == null) {
                 if (callback != null) {
                     callback.onAllPathsScanned();
@@ -425,8 +434,11 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
                             if (uri == null) {
+                                //Scanning failed --> changing MediaStore manually
+                                Log.i("FileOperation", "MediaScannerConnection.scanFile() !FAILED! path = [" + path + "]");
+                                Uri contentUri = MediaStore.Files.getContentUri("external");
+                                ContentResolver resolver = context.getContentResolver();
                                 if (new File(path).exists()) {
-                                    Log.i("FileOperation", "MediaScannerConnection.scanFile() !FAILED! path = [" + path + "]");
                                     AlbumItem albumItem = AlbumItem.getInstance(path);
                                     ContentValues values = new ContentValues();
                                     if (albumItem instanceof Video) {
@@ -435,10 +447,26 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                                     } else {
                                         values.put(MediaStore.Images.Media.DATA, path);
                                         values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
+                                        try {
+                                            ExifInterface exif = new ExifInterface(path);
+                                            Locale locale = us.koller.cameraroll.util.Util.getLocale(context);
+                                            String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
+                                            try {
+                                                Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
+                                                long dateTaken = date.getTime();
+                                                values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
-                                    Uri contentUri = MediaStore.Files.getContentUri("external");
-                                    ContentResolver resolver = context.getContentResolver();
                                     resolver.insert(contentUri, values);
+                                } else {
+                                    resolver.delete(contentUri,
+                                            MediaStore.MediaColumns.DATA + "='" + path + "'",
+                                            null);
                                 }
                             } else {
                                 Log.i("FileOperation", "MediaScannerConnection.scanFile() path = [" + path + "]");

@@ -488,7 +488,7 @@ public class ExifUtil {
         return exifValues;
     }
 
-    static Object getCastValue(ExifInterface exif, String tag)
+    public static Object getCastValue(ExifInterface exif, String tag)
             throws NumberFormatException, NullPointerException {
         String value = exif.getAttribute(tag);
         return castValue(tag, value);
