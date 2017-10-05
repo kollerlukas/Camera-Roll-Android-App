@@ -90,7 +90,7 @@ public class InfoUtil {
                 cursor.close();
             }
         }
-        return new InfoItem(context.getString(R.string.info_size), Parser.parseFileSize(size));
+        return new InfoItem(context.getString(R.string.info_size), Parser.parseFileSize(context, size));
     }
 
     public static InfoItem retrieveDimensions(Context context, ExifInterface exif, AlbumItem albumItem) {
@@ -226,25 +226,22 @@ public class InfoUtil {
 
     /*parsing Methods*/
     private static class Parser {
-        private static String parseFileSize(long fileLength) {
-            long file_bytes = fileLength / 1000 * 1000;
-            float size = file_bytes;
+        private static final String[] byteUnits =
+                new String[]{"Bytes", " KB", " MB", " GB"};
+
+        private static String parseFileSize(Context context, long fileBytes) {
+            //long file_bytes = fileLength / 1000 * 1000;
+            float bytes = fileBytes;
             int i = 0;
-            while (size > 1000) {
-                size = size / 1000;
+            while (bytes > 1000) {
+                bytes = bytes / 1000;
                 i++;
             }
-            switch (i) {
-                case 1:
-                    return size + " KB";
-                case 2:
-                    return size + " MB";
-                case 3:
-                    return size + " GB";
-                default:
-                    break;
-            }
-            return file_bytes + " Bytes";
+            i = i >= byteUnits.length ? 0 : i;
+            String unit = byteUnits[i];
+            //round to two decimal digits
+            String size = String.format(Util.getLocale(context), "%.3f", bytes);
+            return size + unit;
         }
 
         private static String parseExposureTime(String input) {
