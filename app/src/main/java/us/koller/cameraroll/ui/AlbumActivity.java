@@ -470,6 +470,8 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.rename).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
+            menu.findItem(R.id.info).setVisible(false);
+            menu.findItem(R.id.edit).setVisible(false);
         } else if (album != null) {
             setupMenu();
         }
@@ -502,6 +504,9 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.copy).setVisible(selectorModeActive);
             menu.findItem(R.id.move).setVisible(selectorModeActive);
             menu.findItem(R.id.select_all).setVisible(selectorModeActive);
+            //show info & edit button, but their visibility would change as selected items change
+            menu.findItem(R.id.info).setVisible(selectorModeActive);
+            menu.findItem(R.id.edit).setVisible(selectorModeActive);
         }
     }
 
@@ -555,6 +560,11 @@ public class AlbumActivity extends ThemeableActivity
                 intent.putExtra(FileOperationDialogActivity.FILES, selected_items_paths);
 
                 startActivityForResult(intent, FILE_OP_DIALOG_REQUEST);
+                break;
+            case R.id.info:
+                //show item info
+                break;
+            case R.id.edit:
                 break;
             case R.id.exclude:
                 Provider.loadExcludedPaths(this);
@@ -921,6 +931,10 @@ public class AlbumActivity extends ThemeableActivity
                 } else {
                     setPhotosResult();
                 }
+            } else if (menu != null) {
+                //show info & edit button only if a single item is selected
+                menu.findItem(R.id.info).setVisible(selectedItemCount == 1);
+                menu.findItem(R.id.edit).setVisible(selectedItemCount == 1);
             }
         } else {
             if (pick_photos) {
