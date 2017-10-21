@@ -43,6 +43,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -562,9 +563,45 @@ public class AlbumActivity extends ThemeableActivity
                 startActivityForResult(intent, FILE_OP_DIALOG_REQUEST);
                 break;
             case R.id.info:
-                //show item info
+                selected_items_paths =
+                        ((RecyclerViewAdapter) recyclerView.getAdapter())
+                                .cancelSelectorMode(this);
+                if (selected_items_paths.length != 1) {
+                    break;
+                }
                 break;
             case R.id.edit:
+                selected_items_paths =
+                        ((RecyclerViewAdapter) recyclerView.getAdapter())
+                                .cancelSelectorMode(this);
+                if (selected_items_paths.length != 1) {
+                    break;
+                }
+                final String path = selected_items_paths[0];
+
+                final AlbumItem albumItem = AlbumItem.getInstance(path);
+
+                final Uri uri = StorageUtil.getContentUri(this, path);
+
+                intent = new Intent(Intent.ACTION_EDIT)
+                        .setDataAndType(uri, MediaType.getMimeType(path))
+                        .putExtra(EditImageActivity.IMAGE_PATH, path)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                try {
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        final String title = getString(R.string.edit_item, albumItem.getType(this));
+                        startActivity(Intent.createChooser(intent, title));
+                    } else {
+                        Toast.makeText(this,
+                                getString(R.string.edit_error, albumItem.getType(this)),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } catch (SecurityException se) {
+                    Toast.makeText(this, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
+                    se.printStackTrace();
+                }
+
                 break;
             case R.id.exclude:
                 Provider.loadExcludedPaths(this);
@@ -933,8 +970,9 @@ public class AlbumActivity extends ThemeableActivity
                 }
             } else if (menu != null) {
                 //show info & edit button only if a single item is selected
-                menu.findItem(R.id.info).setVisible(selectedItemCount == 1);
-                menu.findItem(R.id.edit).setVisible(selectedItemCount == 1);
+                boolean singleItemSelected = (selectedItemCount == 1);
+                menu.findItem(R.id.info).setVisible(singleItemSelected);
+                menu.findItem(R.id.edit).setVisible(singleItemSelected);
             }
         } else {
             if (pick_photos) {

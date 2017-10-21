@@ -25,4 +25,14 @@
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/delete"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/info"
+        android:icon="@drawable/ic_info_white_24dp"
+        android:title="@string/info"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/edit"
+        android:icon="@drawable/ic_edit_white_24dp"
+        android:title="@string/edit"
+        app:showAsAction="never" />
 </menu>

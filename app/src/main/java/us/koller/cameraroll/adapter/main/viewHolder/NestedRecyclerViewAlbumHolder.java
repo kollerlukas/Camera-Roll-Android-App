@@ -17,6 +17,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.AlbumActivity;
+import us.koller.cameraroll.ui.EditImageActivity;
 import us.koller.cameraroll.ui.FileOperationDialogActivity;
 import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
 import us.koller.cameraroll.util.MediaType;
@@ -169,6 +171,14 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                             toolbar.setTitle(title);
                         }
                     });
+
+            //show info & edit button only if a single item is selected
+            final Menu menu = toolbar.getMenu();
+            if (menu != null) {
+                boolean singleItemSelected = (selectedItemCount == 1);
+                menu.findItem(R.id.info).setVisible(singleItemSelected);
+                menu.findItem(R.id.edit).setVisible(singleItemSelected);
+            }
         }
     };
 
@@ -299,11 +309,13 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
         cancelSelectorMode();
 
+        final Context context = getContext();
         Activity a;
-        if (getContext() instanceof Activity) {
-            a = ((Activity) getContext());
+        //TODO: should this check be placed at first?
+        if (context instanceof Activity) {
+            a = ((Activity) context);
         } else {
-            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
             return false;
         }
         Intent intent;
@@ -312,23 +324,23 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 //share multiple items
                 ArrayList<Uri> uris = new ArrayList<>();
                 for (int i = 0; i < paths.length; i++) {
-                    uris.add(StorageUtil.getContentUri(getContext(), paths[i]));
+                    uris.add(StorageUtil.getContentUri(context, paths[i]));
                 }
 
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE)
-                        .setType(MediaType.getMimeType(getContext(), uris.get(0)))
+                        .setType(MediaType.getMimeType(context, uris.get(0)))
                         .putExtra(Intent.EXTRA_STREAM, uris);
 
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-                    a.startActivity(Intent.createChooser(intent, getContext().getString(R.string.share)));
+                if (intent.resolveActivity(context.getPackageManager()) != null) {
+                    a.startActivity(Intent.createChooser(intent, context.getString(R.string.share)));
                 }
                 break;
             case R.id.copy:
             case R.id.move:
-                intent = new Intent(getContext(), FileOperationDialogActivity.class);
+                intent = new Intent(context, FileOperationDialogActivity.class);
                 intent.setAction(item.getItemId() == R.id.copy ?
                         FileOperationDialogActivity.ACTION_COPY :
                         FileOperationDialogActivity.ACTION_MOVE);
@@ -338,8 +350,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         AlbumActivity.FILE_OP_DIALOG_REQUEST);
                 break;
             case R.id.delete:
-                Context c = getContext();
-
                 String title;
                 if (paths.length == 1) {
                     AlbumItem albumItem = AlbumItem.getInstance(paths[0]);
@@ -349,16 +359,48 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     title = getContext().getString(R.string.delete_files, paths.length);
                 }
 
-                new AlertDialog.Builder(c, theme.getDialogThemeRes())
+                new AlertDialog.Builder(context, theme.getDialogThemeRes())
                         .setTitle(title)
-                        .setNegativeButton(c.getString(R.string.no), null)
-                        .setPositiveButton(c.getString(R.string.delete), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(context.getString(R.string.no), null)
+                        .setPositiveButton(context.getString(R.string.delete), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 deleteItems(paths);
                             }
                         })
                         .create().show();
+                break;
+            case R.id.info:
+                break;
+            case R.id.edit:
+                if (paths.length != 1) {
+                    break;
+                }
+                final String path = paths[0];
+
+                final AlbumItem albumItem = AlbumItem.getInstance(path);
+
+                final Uri uri = StorageUtil.getContentUri(context, path);
+
+                intent = new Intent(Intent.ACTION_EDIT)
+                        .setDataAndType(uri, MediaType.getMimeType(path))
+                        .putExtra(EditImageActivity.IMAGE_PATH, path)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                try {
+                    if (intent.resolveActivity(context.getPackageManager()) != null) {
+                        title = a.getString(R.string.edit_item, albumItem.getType(context));
+                        a.startActivity(Intent.createChooser(intent, title));
+                    } else {
+                        Toast.makeText(context,
+                                a.getString(R.string.edit_error, albumItem.getType(context)),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } catch (SecurityException se) {
+                    Toast.makeText(context, "Error (SecurityException)", Toast.LENGTH_SHORT).show();
+                    se.printStackTrace();
+                }
+
                 break;
             default:
                 break;
