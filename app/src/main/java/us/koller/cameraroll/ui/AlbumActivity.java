@@ -1042,7 +1042,9 @@ public class AlbumActivity extends ThemeableActivity
 
     @Override
     public boolean canSwipeBack(int dir) {
-        return SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir) && !pick_photos;
+        RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+        return !adapter.isSelectorModeActive() &&
+                SwipeBackCoordinatorLayout.canSwipeBackForThisView(recyclerView, dir) && !pick_photos;
     }
 
     @Override
