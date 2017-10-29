@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,7 +29,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -118,7 +118,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     private NotificationCompat.Builder createNotificationBuilder() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel();
+            createNotificationChannel(getApplicationContext());
         }
         return new NotificationCompat.Builder(this, getString(R.string.file_op_channel_id))
                 .setContentTitle(getNotificationTitle())
@@ -126,14 +126,14 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
+    private static void createNotificationChannel(Context context) {
         NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel mChannel = new NotificationChannel(
-                getString(R.string.file_op_channel_id),
-                getString(R.string.file_op_channel_name),
+                context.getString(R.string.file_op_channel_id),
+                context.getString(R.string.file_op_channel_name),
                 NotificationManager.IMPORTANCE_LOW);
-        mChannel.setDescription(getString(R.string.file_op_channel_description));
+        mChannel.setDescription(context.getString(R.string.file_op_channel_description));
         if (mNotificationManager != null) {
             mNotificationManager.createNotificationChannel(mChannel);
         }
@@ -155,6 +155,10 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public void addPathsToScan(List<String> paths) {
         pathsToScan.addAll(paths);
+    }
+
+    ArrayList<String> getPathsToScan() {
+        return pathsToScan;
     }
 
     public boolean autoSendDoneBroadcast() {
@@ -323,7 +327,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         return null;
     }
 
-    void scanPaths(Context context, Util.MediaScannerCallback callback) {
+    void scanPaths(final Context context, final Util.MediaScannerCallback callback) {
         String[] paths = new String[pathsToScan.size()];
         pathsToScan.toArray(paths);
         Util.scanPaths(context, paths, callback);
@@ -404,12 +408,12 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             scanPaths(context, paths, callback, false);
         }
 
-        public static void scanPathsWithToast(final Context context, final String[] paths) {
+        public static void scanPathsWithNotification(final Context context, final String[] paths) {
             scanPaths(context, paths, null, true);
         }
 
         @SuppressLint("ShowToast")
-        private static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback, final boolean showToast) {
+        private static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback, final boolean withNotification) {
             Log.i("FileOperation", "scanPaths(), paths: " + Arrays.toString(paths));
             if (paths == null) {
                 if (callback != null) {
@@ -418,74 +422,81 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                 return;
             }
 
-            final WeakReference<Toast> toastWeakReference;
-            if (showToast) {
-                toastWeakReference = new WeakReference<>(
-                        Toast.makeText(context, R.string.scanning, Toast.LENGTH_SHORT));
-            } else {
-                toastWeakReference = null;
+            //create notification
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                createNotificationChannel(context);
             }
+            final NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context,
+                    context.getString(R.string.file_op_channel_id))
+                    .setContentTitle("Scanning...")
+                    .setSmallIcon(R.drawable.ic_autorenew_white_24dp);
+            notifBuilder.setProgress(paths.length, 0, false);
+            final NotificationManager manager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-
-            for (int i = 0; i < paths.length; i++) {
-                String path = paths[i];
-                if (MediaType.isMedia(path)) {
-                    Uri contentUri = MediaStore.Files.getContentUri("external");
-                    ContentResolver resolver = context.getContentResolver();
-                    if (new File(path).exists()) {
-                        AlbumItem albumItem = AlbumItem.getInstance(path);
-                        ContentValues values = new ContentValues();
-                        if (albumItem instanceof Video) {
-                            values.put(MediaStore.Video.Media.DATA, path);
-                            values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
-                        } else {
-                            values.put(MediaStore.Images.Media.DATA, path);
-                            values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
-                            try {
-                                ExifInterface exif = new ExifInterface(path);
-                                Locale locale = us.koller.cameraroll.util.Util.getLocale(context);
-                                String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
-                                try {
-                                    Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
-                                    long dateTaken = date.getTime();
-                                    values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < paths.length; i++) {
+                        String path = paths[i];
+                        if (MediaType.isMedia(path)) {
+                            Uri contentUri = MediaStore.Files.getContentUri("external");
+                            ContentResolver resolver = context.getContentResolver();
+                            if (new File(path).exists()) {
+                                AlbumItem albumItem = AlbumItem.getInstance(path);
+                                ContentValues values = new ContentValues();
+                                if (albumItem instanceof Video) {
+                                    values.put(MediaStore.Video.Media.DATA, path);
+                                    values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
+                                } else {
+                                    values.put(MediaStore.Images.Media.DATA, path);
+                                    values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
+                                    try {
+                                        ExifInterface exif = new ExifInterface(path);
+                                        Locale locale = us.koller.cameraroll.util.Util.getLocale(context);
+                                        String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
+                                        try {
+                                            Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
+                                            long dateTaken = date.getTime();
+                                            values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                                resolver.insert(contentUri, values);
+                            } else {
+                                resolver.delete(contentUri,
+                                        MediaStore.MediaColumns.DATA + "='" + path + "'",
+                                        null);
                             }
                         }
-                        resolver.insert(contentUri, values);
-                    } else {
-                        resolver.delete(contentUri,
-                                MediaStore.MediaColumns.DATA + "='" + path + "'",
-                                null);
-                    }
-                }
 
-                if (showToast) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast toast = toastWeakReference.get();
-                            if (toast != null) {
-                                toastWeakReference.get().show();
+                        if (withNotification) {
+                            notifBuilder.setProgress(paths.length, i, false);
+                            if (manager != null) {
+                                manager.notify(NOTIFICATION_ID, notifBuilder.build());
                             }
                         }
-                    });
-                }
 
-            }
-
-            if (callback != null) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onAllPathsScanned();
                     }
-                });
-            }
+
+                    if (manager != null) {
+                        manager.cancel(NOTIFICATION_ID);
+                    }
+
+                    if (callback != null) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onAllPathsScanned();
+                            }
+                        });
+                    }
+                }
+            });
 
             /*String[] mimeTypes = new String[paths.length];
             for (int i = 0; i < paths.length; i++) {

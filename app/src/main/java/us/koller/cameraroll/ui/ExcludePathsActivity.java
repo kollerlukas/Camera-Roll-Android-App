@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -165,6 +166,8 @@ public class ExcludePathsActivity extends ThemeableActivity {
         } else {
             loadRoots();
         }
+
+        Log.d("ExcludedPathsActivity", "onCreate: " + Provider.getExcludedPaths());
     }
 
     @Override

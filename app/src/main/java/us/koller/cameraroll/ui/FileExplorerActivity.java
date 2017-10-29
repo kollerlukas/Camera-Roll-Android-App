@@ -494,7 +494,7 @@ public class FileExplorerActivity extends ThemeableActivity
                         .getAllChildPaths(new ArrayList<String>(), currentDir.getPath());
                 String[] pathsArray = new String[paths.size()];
                 paths.toArray(pathsArray);
-                FileOperation.Util.scanPathsWithToast(this, pathsArray);
+                FileOperation.Util.scanPathsWithNotification(this, pathsArray);
                 break;
             case R.id.add_to_virtual_album:
                 String path = currentDir.getPath();

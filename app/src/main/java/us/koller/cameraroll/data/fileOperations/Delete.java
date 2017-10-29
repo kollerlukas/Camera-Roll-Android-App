@@ -82,7 +82,7 @@ public class Delete extends FileOperation {
         return success;
     }
 
-    private boolean deleteFileOnRemovableStorage(Context context, Uri treeUri, String path) {
+    boolean deleteFileOnRemovableStorage(Context context, Uri treeUri, String path) {
         boolean success = false;
         DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, new File(path));
         if (file != null) {

@@ -90,8 +90,8 @@ public class Copy extends FileOperation {
     }
 
     //treeUri only needed for removable storage
-    private boolean copyFilesRecursively(Context context, Uri treeUri, String path,
-                                         String destination, boolean result) {
+    boolean copyFilesRecursively(Context context, Uri treeUri, String path,
+                                 String destination, boolean result) {
         Log.d("Copy", "copyFilesRecursively() path = [" + path + "]");
         File file = new File(path);
         String destinationFilePath = getCopyFileName(new File(destination, new File(path).getName()).getPath());

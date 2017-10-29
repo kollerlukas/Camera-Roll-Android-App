@@ -37,6 +37,7 @@ public abstract class Provider {
 
     // default virtual directories:
     // not expecting relevant media in alarms, music or ringtone folder
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
     private static final VirtualAlbum[] defaultVirtualAlbums = {};
 
     Retriever retriever;

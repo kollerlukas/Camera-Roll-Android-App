@@ -77,7 +77,8 @@ public class PhotoViewHolder extends ViewHolder {
 
         imageView.setMinimumTileDpi(196);
         imageView.setMinimumDpi(80);
-        imageView.setDoubleTapZoomDpi(196);
+        //imageView.setDoubleTapZoomDpi(196);
+        imageView.setDoubleTapZoomScale(1.0f);
 
         //imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
         int orientation = ExifUtil.getExifOrientationAngle(view.getContext(), albumItem);
