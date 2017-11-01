@@ -27,7 +27,7 @@
     <!--MainActivity-->
     <string name="refresh">Actualiser</string>
     <string name="sort_by">Trier par…</string>
-    <string name="by_name">Nome</string>
+    <string name="by_name">Nom</string>
     <string name="by_size">Taille</string>
     <string name="by_date">Date</string>
     <string name="hidden_folders">Dossiers cachés</string>
