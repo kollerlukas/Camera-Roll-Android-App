@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.Settings;
@@ -237,7 +236,7 @@ public class SelectorModeManager {
     }
 
     private static ArrayList<String> sortStringArray(Activity context, ArrayList<String> paths) {
-        ArrayList<AlbumItem> albumItems = new ArrayList<>();
+        /*ArrayList<AlbumItem> albumItems = new ArrayList<>();
         for (int i = 0; i < paths.size(); i++) {
             albumItems.add(AlbumItem.getInstance(paths.get(i)));
         }
@@ -249,6 +248,7 @@ public class SelectorModeManager {
             sortedPaths.add(albumItems.get(i).getPath());
         }
 
-        return sortedPaths;
+        return sortedPaths;*/
+        return paths;
     }
 }
