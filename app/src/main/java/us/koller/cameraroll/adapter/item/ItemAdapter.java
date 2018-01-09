@@ -1,5 +1,6 @@
 package us.koller.cameraroll.adapter.item;
 
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,7 @@ import us.koller.cameraroll.data.models.RAWImage;
 import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class ItemAdapter extends PagerAdapter {
 
     private Album album;
 
@@ -26,7 +27,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     private ItemActivity.ViewPagerOnInstantiateItemCallback callback;
 
-    public ViewPagerAdapter(Album album) {
+    public ItemAdapter(Album album) {
         this.album = album;
         this.viewHolders = new ArrayList<>();
     }
@@ -46,12 +47,13 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view.equals(object);
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(final ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull final ViewGroup container, int position) {
         AlbumItem albumItem = album.getAlbumItems().get(position);
 
         ViewHolder viewHolder;
@@ -80,7 +82,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View) object);
         ViewHolder viewHolder = findViewHolderByPosition(position);
         if (viewHolder != null) {
@@ -109,7 +111,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     //for deleting items from the list
     @Override
-    public int getItemPosition(Object object) {
+    public int getItemPosition(@NonNull Object object) {
         return PagerAdapter.POSITION_NONE;
     }
 }

@@ -153,7 +153,7 @@ public class SelectorModeManager {
         }
     }
 
-    public void addCallback(Callback callback) {
+    public SelectorModeManager addCallback(Callback callback) {
         if (callbacks == null) {
             callbacks = new ArrayList<>();
         }
@@ -163,6 +163,7 @@ public class SelectorModeManager {
             callback.onSelectorModeEnter();
             callback.onItemSelected(getSelectedItemCount());
         }
+        return this;
     }
 
     public ArrayList<Callback> getCallbacks() {

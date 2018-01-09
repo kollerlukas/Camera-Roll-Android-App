@@ -256,6 +256,10 @@ public class Settings {
         return fadeImages;
     }
 
+    public boolean noFolderMode() {
+        return false;
+    }
+
     public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {
         this.removableStorageTreeUri = removableStorageTreeUri;
         saveString(context,

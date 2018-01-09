@@ -16,7 +16,7 @@ import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.ui.FileExplorerActivity;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter {
+public class FileExplorerAdapter extends RecyclerView.Adapter {
 
     public static final int NORMAL_MODE = 0;
     public static final int SELECTOR_MODE = 1;
@@ -45,14 +45,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         void onDataChanged();
     }
 
-    public RecyclerViewAdapter(
+    public FileExplorerAdapter(
             FileExplorerActivity.OnDirectoryChangeCallback directoryChangeCallback,
             Callback callback) {
         this.directoryChangeCallback = directoryChangeCallback;
         this.callback = callback;
     }
 
-    public RecyclerViewAdapter setFiles(File_POJO files) {
+    public FileExplorerAdapter setFiles(File_POJO files) {
         this.files = files;
         selected_items = new boolean[files.getChildren().size()];
         return this;

@@ -6,7 +6,9 @@ import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.Key;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
 
@@ -164,12 +166,6 @@ public abstract class AlbumItem
 
     public abstract int[] retrieveImageDimens(Context context);
 
-    public Key getGlideSignature() {
-        File file = new File(getPath());
-        String lastModified = String.valueOf(file.lastModified());
-        return new ObjectKey(lastModified);
-    }
-
     AlbumItem(Parcel parcel) {
         this.name = parcel.readString();
         this.path = parcel.readString();
@@ -235,10 +231,16 @@ public abstract class AlbumItem
 
     public abstract String getType(Context context);
 
+    public Key getGlideSignature() {
+        File file = new File(getPath());
+        String lastModified = String.valueOf(file.lastModified());
+        return new ObjectKey(lastModified);
+    }
+
     public RequestOptions getGlideRequestOptions(Context context) {
         return new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .error(Util.getErrorPlaceholder(context))
-                /*.skipMemoryCache(true)*/
                 .signature(getGlideSignature());
     }
 }

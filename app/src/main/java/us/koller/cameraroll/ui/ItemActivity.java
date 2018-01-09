@@ -31,6 +31,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,7 +54,7 @@ import java.util.Map;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.InfoRecyclerViewAdapter;
 import us.koller.cameraroll.adapter.item.viewHolder.ViewHolder;
-import us.koller.cameraroll.adapter.item.ViewPagerAdapter;
+import us.koller.cameraroll.adapter.item.ItemAdapter;
 import us.koller.cameraroll.data.fileOperations.Move;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
@@ -137,7 +138,7 @@ public class ItemActivity extends ThemeableActivity {
 
         @Override
         public void onTransitionEnd(@NonNull Transition transition) {
-            ViewHolder viewHolder = ((ViewPagerAdapter)
+            ViewHolder viewHolder = ((ItemAdapter)
                     viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
             if (viewHolder == null) {
                 return;
@@ -254,10 +255,12 @@ public class ItemActivity extends ThemeableActivity {
             } else {
                 path = getIntent().getStringExtra(ALBUM_PATH);
             }
+            Log.d("ItemActivity", "loadAlbum() " + path);
             MediaProvider.loadAlbum(this, path,
                     new MediaProvider.OnAlbumLoadedCallback() {
                         @Override
                         public void onAlbumLoaded(Album album) {
+                            Log.d("ItemActivity", "onAlbumLoaded()");
                             ItemActivity.this.album = album;
                             ItemActivity.this.onAlbumLoaded(savedInstanceState);
                         }
@@ -300,7 +303,7 @@ public class ItemActivity extends ThemeableActivity {
         }
 
         viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(new ViewPagerAdapter(album));
+        viewPager.setAdapter(new ItemAdapter(album));
         int currentItem = album.getAlbumItems().indexOf(albumItem);
         viewPager.setCurrentItem(currentItem >= 0 ? currentItem : 0, false);
         viewPager.setPageTransformer(false, new ParallaxTransformer());
@@ -319,7 +322,7 @@ public class ItemActivity extends ThemeableActivity {
                             }
                         });
 
-                ViewHolder viewHolder = ((ViewPagerAdapter) viewPager.getAdapter())
+                ViewHolder viewHolder = ((ItemAdapter) viewPager.getAdapter())
                         .findViewHolderByTag(albumItem.getPath());
                 if (viewHolder != null) {
                     onShowViewHolder(viewHolder);
@@ -330,12 +333,12 @@ public class ItemActivity extends ThemeableActivity {
         if (!enterTransitionPostponed()) {
             albumItem.isSharedElement = false;
             //there is no sharedElementTransition
-            ViewPagerAdapter adapter = (ViewPagerAdapter) viewPager.getAdapter();
+            ItemAdapter adapter = (ItemAdapter) viewPager.getAdapter();
             ViewHolder viewHolder = adapter.findViewHolderByTag(albumItem.getPath());
             if (viewHolder != null) {
                 onShowViewHolder(viewHolder);
             } else {
-                ((ViewPagerAdapter) viewPager.getAdapter())
+                ((ItemAdapter) viewPager.getAdapter())
                         .addOnInstantiateItemCallback(new ViewPagerOnInstantiateItemCallback() {
                             @Override
                             public boolean onInstantiateItem(ViewHolder viewHolder) {
@@ -861,7 +864,7 @@ public class ItemActivity extends ThemeableActivity {
         } else {
             showUI(false);
             if (viewPager != null && viewPager.getAdapter() != null && albumItem != null) {
-                ViewHolder viewHolder = ((ViewPagerAdapter)
+                ViewHolder viewHolder = ((ItemAdapter)
                         viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
                 if (viewHolder != null) {
                     viewHolder.onSharedElementExit(new ItemActivity.Callback() {
@@ -937,7 +940,7 @@ public class ItemActivity extends ThemeableActivity {
                                             index = album.getAlbumItems().size() - 1;
                                         }
                                         if (index >= 0) {
-                                            ((ViewPagerAdapter) viewPager.getAdapter()).setAlbum(album);
+                                            ((ItemAdapter) viewPager.getAdapter()).setAlbum(album);
                                             albumItem = album.getAlbumItems().get(index);
                                             viewPager.getAdapter().notifyDataSetChanged();
                                             viewPager.setCurrentItem(index);
@@ -947,12 +950,12 @@ public class ItemActivity extends ThemeableActivity {
                                                 actionBar.setTitle(albumItem.getName());
                                             }
 
-                                            ViewPagerAdapter adapter = (ViewPagerAdapter) viewPager.getAdapter();
+                                            ItemAdapter adapter = (ItemAdapter) viewPager.getAdapter();
                                             ViewHolder viewHolder = adapter.findViewHolderByTag(albumItem.getPath());
                                             if (viewHolder != null) {
                                                 onShowViewHolder(viewHolder);
                                             } else {
-                                                ((ViewPagerAdapter) viewPager.getAdapter())
+                                                ((ItemAdapter) viewPager.getAdapter())
                                                         .addOnInstantiateItemCallback(new ViewPagerOnInstantiateItemCallback() {
                                                             @Override
                                                             public boolean onInstantiateItem(ViewHolder viewHolder) {

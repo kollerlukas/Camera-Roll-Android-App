@@ -9,8 +9,6 @@
     <!--accent color-->
     <color name="colorAccent">#69F0AE</color>
     <color name="colorAccentLight">#B9F6CA</color>
-    <!--<color name="colorAccent">@color/white</color>
-    <color name="colorAccentLight">@color/white_translucent1</color>-->
     <color name="colorAccent_text">#8A212121</color>
 
     <!--light theme colors-->
@@ -20,12 +18,11 @@
     <!--light accent color-->
     <color name="colorAccent_light">#00BFA5</color>
     <color name="colorAccentLight_light">#A7FFEB</color>
-    <!--<color name="colorAccent_light">@color/black</color>
-    <color name="colorAccentLight_light">@color/grey_900</color>-->
     <color name="colorAccent_text_light">#FFFFFF</color>
 
     <color name="white">#FFFFFF</color>
     <color name="white_translucent1">#8AFFFFFF</color>
+    <color name="grey_900_translucent1">#64212121</color>
     <color name="ripple_color">#33000000</color>
     <color name="black_translucent1">#33000000</color>
     <color name="grey_900_translucent">#8A212121</color>

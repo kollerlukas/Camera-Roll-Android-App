@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.themes.Theme;
-import us.koller.cameraroll.adapter.fileExplorer.RecyclerViewAdapter;
+import us.koller.cameraroll.adapter.fileExplorer.FileExplorerAdapter;
 import us.koller.cameraroll.data.fileOperations.Copy;
 import us.koller.cameraroll.data.fileOperations.Delete;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
@@ -64,7 +64,7 @@ import us.koller.cameraroll.util.animators.ColorFade;
 import us.koller.cameraroll.util.Util;
 
 public class FileExplorerActivity extends ThemeableActivity
-        implements SwipeBackCoordinatorLayout.OnSwipeListener, RecyclerViewAdapter.Callback {
+        implements SwipeBackCoordinatorLayout.OnSwipeListener, FileExplorerAdapter.Callback {
 
     public static final String ROOTS = "ROOTS";
     public static final String CURRENT_DIR = "CURRENT_DIR";
@@ -80,7 +80,7 @@ public class FileExplorerActivity extends ThemeableActivity
     private FilesProvider filesProvider;
 
     private RecyclerView recyclerView;
-    private RecyclerViewAdapter recyclerViewAdapter;
+    private FileExplorerAdapter recyclerViewAdapter;
 
     private Menu menu;
 
@@ -155,7 +155,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewAdapter = new RecyclerViewAdapter(
+        recyclerViewAdapter = new FileExplorerAdapter(
                 new OnDirectoryChangeCallback() {
                     @Override
                     public void changeDir(String path) {
@@ -265,7 +265,7 @@ public class FileExplorerActivity extends ThemeableActivity
             if (savedInstanceState.containsKey(MODE)) {
                 int mode = savedInstanceState.getInt(MODE);
 
-                if (mode == RecyclerViewAdapter.SELECTOR_MODE) {
+                if (mode == FileExplorerAdapter.SELECTOR_MODE) {
                     if (savedInstanceState.containsKey(SELECTED_ITEMS)) {
                         final File_POJO[] selectedItems
                                 = (File_POJO[]) savedInstanceState.getParcelableArray(SELECTED_ITEMS);
@@ -281,7 +281,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
                         }
                     }
-                } else if (mode == RecyclerViewAdapter.PICK_TARGET_MODE
+                } else if (mode == FileExplorerAdapter.PICK_TARGET_MODE
                         && savedInstanceState.containsKey(FILE_OPERATION)) {
                     onSelectorModeEnter();
                     //fileOp = savedInstanceState.getParcelable(FILE_OPERATION);
@@ -474,7 +474,7 @@ public class FileExplorerActivity extends ThemeableActivity
             case android.R.id.home:
                 if (recyclerViewAdapter.isModeActive()
                         || recyclerViewAdapter.getMode()
-                        == RecyclerViewAdapter.PICK_TARGET_MODE) {
+                        == FileExplorerAdapter.PICK_TARGET_MODE) {
                     recyclerViewAdapter.cancelMode();
                 } else {
                     onBackPressed();
@@ -657,7 +657,7 @@ public class FileExplorerActivity extends ThemeableActivity
     public void onSwipeProcess(float percent) {
         getWindow().getDecorView().setBackgroundColor(
                 SwipeBackCoordinatorLayout.getBackgroundColor(percent));
-        boolean selectorModeActive = ((RecyclerViewAdapter) recyclerView.getAdapter()).isModeActive();
+        boolean selectorModeActive = ((FileExplorerAdapter) recyclerView.getAdapter()).isModeActive();
         if (!theme.darkStatusBarIcons() && selectorModeActive) {
             SwipeBackCoordinatorLayout layout = findViewById(R.id.swipeBackView);
             Toolbar toolbar = findViewById(R.id.toolbar);
@@ -889,7 +889,7 @@ public class FileExplorerActivity extends ThemeableActivity
                 .setDuration(100)
                 .start();
 
-        if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
+        if (recyclerViewAdapter.getMode() == FileExplorerAdapter.NORMAL_MODE) {
             final Toolbar toolbar = findViewById(R.id.toolbar);
 
             ColorFade.fadeToolbarTitleColor(toolbar, textColorPrimary,
@@ -901,7 +901,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     });
         }
 
-        if (recyclerViewAdapter.getMode() == RecyclerViewAdapter.NORMAL_MODE) {
+        if (recyclerViewAdapter.getMode() == FileExplorerAdapter.NORMAL_MODE) {
             manageMenuItems();
         }
     }

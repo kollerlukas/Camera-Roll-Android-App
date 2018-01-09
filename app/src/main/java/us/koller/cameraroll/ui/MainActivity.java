@@ -38,16 +38,19 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.AbstractRecyclerViewAdapter;
+import us.koller.cameraroll.adapter.main.NoFolderRecyclerViewAdapter;
 import us.koller.cameraroll.data.ContentObserver;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
-import us.koller.cameraroll.adapter.main.RecyclerViewAdapter;
+import us.koller.cameraroll.adapter.main.MainAdapter;
 import us.koller.cameraroll.adapter.main.viewHolder.NestedRecyclerViewAlbumHolder;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.FastScrollerRecyclerView;
+import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.Util;
@@ -108,7 +111,7 @@ public class MainActivity extends ThemeableActivity {
     private ArrayList<Album> albums;
 
     private RecyclerView recyclerView;
-    private RecyclerViewAdapter recyclerViewAdapter;
+    private AbstractRecyclerViewAdapter<ArrayList<Album>> recyclerViewAdapter;
 
     private Snackbar snackbar;
 
@@ -179,13 +182,35 @@ public class MainActivity extends ThemeableActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setTag(ParallaxImageView.RECYCLER_VIEW_TAG);
-        int columnCount = settings.getStyleColumnCount(this, settings.getStyle(this, pick_photos));
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, columnCount);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerViewAdapter = new RecyclerViewAdapter(this, pick_photos).setAlbums(albums);
-        recyclerView.setAdapter(recyclerViewAdapter);
+        SelectorModeManager.Callback callback = new SelectorModeManager.SimpleCallback() {
+            @Override
+            public void onSelectorModeEnter() {
+                super.onSelectorModeEnter();
+                showAndHideFab(false);
+            }
 
-        int spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
+            @Override
+            public void onSelectorModeExit() {
+                super.onSelectorModeExit();
+                showAndHideFab(true);
+            }
+        };
+        int spanCount, spacing;
+        if (settings.noFolderMode()) {
+            spanCount = settings.getColumnCount(this);
+            spacing = (int) getResources().getDimension(R.dimen.album_grid_spacing) / 2;
+            recyclerView.addItemDecoration(new GridMarginDecoration(spacing + spacing));
+            recyclerViewAdapter = new NoFolderRecyclerViewAdapter(callback, recyclerView, pick_photos)
+                    .setData(albums);
+        } else {
+            spanCount = settings.getStyleColumnCount(this, settings.getStyle(this, pick_photos));
+            spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
+            recyclerViewAdapter = new MainAdapter(this, pick_photos).setData(albums);
+            recyclerViewAdapter.getSelectorManager().addCallback(callback);
+        }
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
+
         if (recyclerView instanceof FastScrollerRecyclerView) {
             ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing);
         }
@@ -199,26 +224,12 @@ public class MainActivity extends ThemeableActivity {
             recyclerViewAdapter.setSelectorModeManager(manager);
         }
 
-        recyclerViewAdapter.getSelectorManager()
-                .addCallback(new SelectorModeManager.SimpleCallback() {
-                    @Override
-                    public void onSelectorModeEnter() {
-                        super.onSelectorModeEnter();
-                        showAndHideFab(false);
-                    }
-
-                    @Override
-                    public void onSelectorModeExit() {
-                        super.onSelectorModeExit();
-                        showAndHideFab(true);
-                    }
-                });
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
                 if (pick_photos) {
                     return;
                 }
@@ -240,10 +251,9 @@ public class MainActivity extends ThemeableActivity {
                 toolbar.setTranslationY(translationY);
 
                 //animate statusBarIcon color
-                boolean selectorModeActive = ((RecyclerViewAdapter) recyclerView.getAdapter())
+                boolean selectorModeActive = recyclerViewAdapter
                         .getSelectorManager().isSelectorModeActive();
-                if (!selectorModeActive
-                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                if (!selectorModeActive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && theme.isBaseLight()) {
                     //only animate statusBar icons color, when not in selectorMode
                     float animatedValue = (-translationY) / toolbar.getHeight();
@@ -478,8 +488,7 @@ public class MainActivity extends ThemeableActivity {
                         @Override
                         public void run() {
                             MainActivity.this.albums = albumsWithVirtualDirs;
-                            recyclerViewAdapter.setAlbums(albumsWithVirtualDirs);
-                            recyclerViewAdapter.notifyDataSetChanged();
+                            recyclerViewAdapter.setData(albumsWithVirtualDirs);
 
                             snackbar.dismiss();
 
@@ -628,8 +637,7 @@ public class MainActivity extends ThemeableActivity {
                     @Override
                     public void run() {
                         MainActivity.this.albums = albums;
-                        ((RecyclerViewAdapter) recyclerView.getAdapter()).setAlbums(albums);
-                        recyclerView.getAdapter().notifyDataSetChanged();
+                        recyclerViewAdapter.setData(albums);
                         snackbar.dismiss();
                     }
                 });
@@ -740,15 +748,12 @@ public class MainActivity extends ThemeableActivity {
         //not able to save albums in Bundle, --> TransactionTooLargeException
         //outState.putParcelableArrayList(ALBUMS, albums);
 
-        RecyclerViewAdapter adapter = ((RecyclerViewAdapter) recyclerView.getAdapter());
-        adapter.saveInstanceState(outState);
+        recyclerViewAdapter.saveInstanceState(outState);
     }
 
     @Override
     public void onBackPressed() {
-        RecyclerViewAdapter adapter
-                = ((RecyclerViewAdapter) recyclerView.getAdapter());
-        if (!adapter.onBackPressed()) {
+        if (!recyclerViewAdapter.onBackPressed()) {
             super.onBackPressed();
         }
     }
@@ -811,8 +816,7 @@ public class MainActivity extends ThemeableActivity {
                         break;
                     case DATA_CHANGED:
                         albums = MediaProvider.getAlbums();
-                        recyclerViewAdapter.setAlbums(albums);
-                        recyclerViewAdapter.notifyDataSetChanged();
+                        recyclerViewAdapter.setData(albums);
                     default:
                         break;
                 }

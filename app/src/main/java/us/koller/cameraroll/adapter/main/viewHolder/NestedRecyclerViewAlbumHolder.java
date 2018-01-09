@@ -27,6 +27,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.adapter.album.AlbumAdapter;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
@@ -252,11 +253,10 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         }
 
         if (nestedRecyclerView.getAdapter() != null) {
-            RecyclerViewAdapter adapter = (RecyclerViewAdapter) nestedRecyclerView.getAdapter();
-            adapter.setAlbum(album);
-            adapter.notifyDataSetChanged();
+            NestedAdapter adapter = (NestedAdapter) nestedRecyclerView.getAdapter();
+            adapter.setData(album);
         } else {
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(callback,
+            NestedAdapter adapter = new NestedAdapter(callback,
                     nestedRecyclerView, album, false);
             adapter.setSelectorModeManager(manager);
             nestedRecyclerView.setAdapter(adapter);
@@ -294,7 +294,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        final String[] paths = ((RecyclerViewAdapter) nestedRecyclerView.getAdapter())
+        final String[] paths = ((NestedAdapter) nestedRecyclerView.getAdapter())
                 .cancelSelectorMode((Activity) getContext());
 
         cancelSelectorMode();
@@ -369,8 +369,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     private void cancelSelectorMode() {
         //cancel SelectorMode
-        if (nestedRecyclerView.getAdapter() instanceof RecyclerViewAdapter) {
-            ((RecyclerViewAdapter) nestedRecyclerView.getAdapter())
+        if (nestedRecyclerView.getAdapter() instanceof NestedAdapter) {
+            ((NestedAdapter) nestedRecyclerView.getAdapter())
                     .cancelSelectorMode((Activity) getContext());
         }
     }
@@ -392,11 +392,10 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 .getDefaultIntent(getContext(), FileOperation.DELETE, filesToDelete));
     }
 
-    private static class RecyclerViewAdapter
-            extends us.koller.cameraroll.adapter.album.RecyclerViewAdapter {
+    private static class NestedAdapter extends AlbumAdapter {
 
-        RecyclerViewAdapter(SelectorModeManager.Callback callback, final RecyclerView recyclerView,
-                            Album album, boolean pick_photos) {
+        NestedAdapter(SelectorModeManager.Callback callback, final RecyclerView recyclerView,
+                      Album album, boolean pick_photos) {
             super(callback, recyclerView, album, pick_photos);
         }
 
@@ -435,9 +434,11 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
             Drawable navIcon = ContextCompat.getDrawable(context,
                     R.drawable.ic_clear_black_24dp);
-            DrawableCompat.wrap(navIcon);
-            DrawableCompat.setTint(navIcon.mutate(), accentTextColor);
-            toolbar.setNavigationIcon(navIcon);
+            if (navIcon != null) {
+                DrawableCompat.wrap(navIcon);
+                DrawableCompat.setTint(navIcon.mutate(), accentTextColor);
+                toolbar.setNavigationIcon(navIcon);
+            }
 
             toolbar.setNavigationOnClickListener(onClickListener);
 

@@ -22,6 +22,7 @@ public class MediaProvider extends Provider {
 
     private static ArrayList<Album> albums;
 
+    public static final String SINGLE_FOLDER_PATH = "CAMERA_ROLL_SINGLE_FOLDER_PATH";
     private static final int MODE_STORAGE = 1;
     private static final int MODE_MEDIASTORE = 2;
 
@@ -180,6 +181,12 @@ public class MediaProvider extends Provider {
     public static void loadAlbum(final Activity context, final String path,
                                  final OnAlbumLoadedCallback callback) {
         if (path == null) {
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onAlbumLoaded(null);
+                }
+            });
             return;
         }
 
@@ -218,6 +225,19 @@ public class MediaProvider extends Provider {
                         return;
                     }
                 }
+            } else if (path.equals(SINGLE_FOLDER_PATH)) {
+                final Album album = new Album().setPath(MediaProvider.SINGLE_FOLDER_PATH);
+                for (int i = 0; i < albums.size(); i++) {
+                    album.getAlbumItems().addAll(albums.get(i).getAlbumItems());
+                }
+                int sortBy = Settings.getInstance(context).sortAlbumsBy();
+                SortUtil.sort(album.getAlbumItems(), sortBy);
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onAlbumLoaded(album);
+                    }
+                });
             } else {
                 for (int i = 0; i < albums.size(); i++) {
                     if (albums.get(i).getPath().equals(path)) {
