@@ -30,7 +30,7 @@
 
                     <TextView
                         android:id="@+id/version"
-                        android:fontFamily="@font/roboto_mono_regular"
+                        android:fontFamily="@font/roboto_mono_medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -49,7 +49,7 @@
                     android:padding="16dp"
                     android:paddingTop="24dp"
                     android:tag="@string/theme_bg_color"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar

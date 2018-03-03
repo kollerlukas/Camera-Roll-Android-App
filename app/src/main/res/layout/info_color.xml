@@ -22,8 +22,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp" />
+                android:fontFamily="@font/roboto_mono_medium"
+                android:textSize="14sp" />
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Dark color-->
@@ -39,8 +39,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp" />
+                android:fontFamily="@font/roboto_mono_medium"
+                android:textSize="14sp" />
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Light color-->
@@ -56,8 +56,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp" />
+                android:fontFamily="@font/roboto_mono_medium"
+                android:textSize="14sp" />
         </android.support.v7.widget.CardView>
 
         <!--Muted color-->
@@ -73,8 +73,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp" />
+                android:fontFamily="@font/roboto_mono_medium"
+                android:textSize="14sp" />
         </android.support.v7.widget.CardView>
 
         <!--Muted Dark color-->
@@ -90,8 +90,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp" />
+                android:fontFamily="@font/roboto_mono_medium"
+                android:textSize="14sp" />
         </android.support.v7.widget.CardView>
 
         <!--Muted Light color-->
@@ -107,8 +107,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_regular"
-                android:textSize="18sp" />
+                android:fontFamily="@font/roboto_mono_medium"
+                android:textSize="14sp" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </HorizontalScrollView>

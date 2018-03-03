@@ -1,6 +1,7 @@
 package us.koller.cameraroll.ui;
 
 import android.app.WallpaperManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -34,6 +36,9 @@ import us.koller.cameraroll.util.Util;
 public class SetWallpaperActivity extends AppCompatActivity {
 
     private static final String IMAGE_VIEW_STATE = "IMAGE_VIEW_STATE";
+    private static final int HOME_SCREEN = 1;
+    private static final int LOCK_SCREEN = 2;
+    private static final int BOTH = 3;
 
     private Uri imageUri;
 
@@ -152,7 +157,8 @@ public class SetWallpaperActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.set_wallpaper:
-                setWallpaper();
+                //setWallpaper();
+                showDialog();
                 break;
             default:
                 break;
@@ -160,13 +166,55 @@ public class SetWallpaperActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setWallpaper() {
+    private void showDialog() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.set_wallpaper)
+                    .setItems(new CharSequence[]{
+                                    getString(R.string.home_screen),
+                                    getString(R.string.lock_screen),
+                                    getString(R.string.both)},
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case 0:
+                                            setWallpaper(HOME_SCREEN);
+                                            break;
+                                        case 1:
+                                            setWallpaper(LOCK_SCREEN);
+                                            break;
+                                        case 2:
+                                            setWallpaper(BOTH);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }).create().show();
+        } else {
+            // on phones below Api level 24 can't set Home- & Lock-Screen Wallpapers individually
+            setWallpaper(0);
+        }
+    }
+
+    private void setWallpaper(int which) {
         try {
             WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
             InputStream inputStream = getContentResolver().openInputStream(imageUri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Rect croppedRect = getCroppedRect();
-                wallpaperManager.setStream(inputStream, croppedRect, true);
+                switch (which) {
+                    case HOME_SCREEN:
+                        wallpaperManager.setStream(inputStream, croppedRect, true, WallpaperManager.FLAG_SYSTEM);
+                        break;
+                    case LOCK_SCREEN:
+                        wallpaperManager.setStream(inputStream, croppedRect, true, WallpaperManager.FLAG_LOCK);
+                        break;
+                    case BOTH:
+                        wallpaperManager.setStream(inputStream, croppedRect, true);
+                        break;
+                }
             } else {
                 wallpaperManager.setStream(inputStream);
             }

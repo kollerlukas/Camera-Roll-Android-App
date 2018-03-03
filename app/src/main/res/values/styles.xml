@@ -173,4 +173,11 @@
         <item name="positiveButtonText">@android:string/ok</item>
         <item name="negativeButtonText">@android:string/cancel</item>
     </style>
+
+    <style name="shadow">
+        <item name="android:shadowColor">@color/black_translucent2</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
 </resources>

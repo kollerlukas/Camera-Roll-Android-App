@@ -100,6 +100,9 @@
     <string name="wallpaper">Wallpaper</string>
     <string name="set_wallpaper">Set Wallpaper</string>
     <string name="wallpaper_file_format_not_supported">This file format is not supported for wallpapers</string>
+    <string name="home_screen">Home Screen</string>
+    <string name="lock_screen">Lock Screen</string>
+    <string name="both">Both</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">Exif Editor</string>
     <string name="edit_exif">edit Exif</string>

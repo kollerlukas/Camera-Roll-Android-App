@@ -10,9 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
+        android:layerType="software"
         android:padding="32dp"
-        android:paddingTop="?android:attr/actionBarSize"
-        android:layerType="software" />
+        android:paddingTop="?android:attr/actionBarSize" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -46,9 +46,4 @@
             android:layout_margin="8dp"
             android:text="@string/done" />
     </LinearLayout>
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </FrameLayout>

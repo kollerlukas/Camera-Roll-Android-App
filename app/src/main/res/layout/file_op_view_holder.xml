@@ -27,17 +27,19 @@
 
             <TextView
                 android:id="@+id/album_title"
+                style="@style/shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/roboto_mono_medium"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="14sp" />
 
             <ImageView
                 android:id="@+id/removable_storage_indicator"
+                style="@style/shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

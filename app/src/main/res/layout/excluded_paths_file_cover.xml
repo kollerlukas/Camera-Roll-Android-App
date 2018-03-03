@@ -24,8 +24,8 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
-        android:fontFamily="@font/roboto_mono_regular"
-        android:textSize="18sp" />
+        android:fontFamily="@font/roboto_mono_medium"
+        android:textSize="14sp" />
 
     <CheckBox
         android:id="@+id/checkbox"

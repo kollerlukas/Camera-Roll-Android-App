@@ -100,6 +100,9 @@
     <string name="wallpaper">Hintergrundbild</string>
     <string name="set_wallpaper">Hintergrundbild setzen</string>
     <string name="wallpaper_file_format_not_supported">Das Dateiformat kann nicht als Hintergrundbild verwendet werden</string>
+    <string name="home_screen">Startbildschirm</string>
+    <string name="lock_screen">Sperrbildschirm</string>
+    <string name="both">Beides</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">Exif Editor</string>
     <string name="edit_exif">Exif bearbeiten</string>

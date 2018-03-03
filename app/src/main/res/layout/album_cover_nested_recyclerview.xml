@@ -14,6 +14,7 @@
 
         <ImageView
             android:id="@+id/removable_storage_indicator"
+            style="@style/shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -29,6 +30,7 @@
 
         <ImageView
             android:id="@+id/hidden_folder_indicator"
+            style="@style/shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -44,19 +46,21 @@
 
         <TextView
             android:id="@+id/name"
+            style="@style/shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/roboto_mono_medium"
             android:maxLines="1"
             android:tag="@string/theme_text_color_primary"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/count"
+            style="@style/shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -65,7 +69,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/roboto_mono_regular"
             android:tag="@string/theme_text_color_secondary"
-            android:textColor="@color/white_translucent1"
+            android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
 

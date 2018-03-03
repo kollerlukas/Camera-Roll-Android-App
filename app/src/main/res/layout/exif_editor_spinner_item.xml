@@ -13,9 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1.5"
-        android:fontFamily="@font/roboto_mono_regular"
+        android:fontFamily="@font/roboto_mono_medium"
         android:labelFor="@+id/value"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/value_spinner"
@@ -27,5 +27,5 @@
         android:dropDownWidth="wrap_content"
         android:fontFamily="@font/roboto_mono_regular"
         android:inputType="text"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 </LinearLayout>

@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
-    android:layout_gravity="bottom"
-    android:background="@drawable/transparent_to_dark_gradient">
+    android:layout_gravity="bottom">
+    <!--android:background="@drawable/transparent_to_dark_gradient"-->
 
     <LinearLayout
         android:layout_width="0dp"
@@ -18,27 +18,30 @@
 
         <TextView
             android:id="@+id/name"
+            style="@style/shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/roboto_mono_medium"
+            android:gravity="center"
             android:maxLines="1"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:gravity="center" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/count"
+            style="@style/shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_mono_regular"
-            android:textColor="@color/white_translucent1"
+            android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/removable_storage_indicator"
+        style="@style/shadow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -50,6 +53,7 @@
 
     <ImageView
         android:id="@+id/hidden_folder_indicator"
+        style="@style/shadow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
