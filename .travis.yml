@@ -10,6 +10,9 @@ android:
   - extra-android-support
   - extra-android-m2repository
 
+licenses:
+    - 'android-sdk-license-.+'
+
 script:
  - ./gradlew build connectedCheck
 
