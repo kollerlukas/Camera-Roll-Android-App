@@ -11,10 +11,13 @@ android:
   - extra-android-m2repository
 
 licenses:
-    - '.+'
+  - 'android-sdk-license-.+'
 
 script:
- - ./gradlew build connectedCheck
+  - ./gradlew build connectedCheck
+
+before_install:
+  - yes | sdkmanager "platforms;android-27"
 
 branches:
  only:
