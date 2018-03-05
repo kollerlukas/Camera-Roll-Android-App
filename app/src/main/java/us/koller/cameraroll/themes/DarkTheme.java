@@ -46,7 +46,7 @@ public class DarkTheme extends Theme {
 
     @Override
     public int getTextColorSecondaryRes() {
-        return R.color.white_translucent1;
+        return R.color.white_translucent2;
     }
 
     @Override

@@ -25,7 +25,7 @@
         android:layout_weight="2"
         android:drawSelectorOnTop="true"
         android:dropDownWidth="wrap_content"
-        android:fontFamily="@font/roboto_mono_regular"
+        android:fontFamily="@font/roboto_mono_light"
         android:inputType="text"
         android:textSize="14sp" />
 </LinearLayout>

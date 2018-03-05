@@ -112,8 +112,8 @@ public class Util {
             if (view instanceof TextView) {
                 TextView textView = (TextView) view;
                 if (textView.getText().equals(toolbar.getTitle())) {
-                    Typeface typeface = ResourcesCompat.getFont(toolbar.getContext(),
-                            R.font.roboto_mono_regular);
+                    Typeface typeface = ResourcesCompat
+                            .getFont(toolbar.getContext(), R.font.roboto_mono_medium);
                     textView.setTypeface(typeface);
                     return textView;
                 }
@@ -154,7 +154,8 @@ public class Util {
         snackbar.getView().setTag(SNACKBAR);
         TextView textView = snackbar.getView()
                 .findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTypeface(Typeface.create("sans-serif-monospace", Typeface.NORMAL));
+        textView.setTypeface(ResourcesCompat
+                .getFont(textView.getContext(), R.font.roboto_mono_medium));
         snackbar.show();
     }
 

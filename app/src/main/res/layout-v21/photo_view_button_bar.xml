@@ -14,8 +14,8 @@
         android:orientation="horizontal"
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp">
-        <!--android:background="@drawable/transparent_to_dark_gradient"-->
+        android:paddingStart="16dp"
+        android:background="@drawable/transparent_to_dark_gradient">
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -24,7 +24,6 @@
 
             <ImageView
                 android:id="@+id/info_button"
-                style="@style/shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -34,7 +33,7 @@
                 android:contentDescription="@string/info"
                 android:onClick="bottomBarOnClick"
                 android:padding="8dp"
-                android:src="@drawable/ic_info_white_24dp" />
+                app:srcCompat="@drawable/ic_info_white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -44,7 +43,6 @@
 
             <ImageView
                 android:id="@+id/share_button"
-                style="@style/shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -64,7 +62,6 @@
 
             <ImageView
                 android:id="@+id/edit_button"
-                style="@style/shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -74,7 +71,7 @@
                 android:contentDescription="@string/edit"
                 android:onClick="bottomBarOnClick"
                 android:padding="8dp"
-                android:src="@drawable/ic_edit_white_24dp" />
+                app:srcCompat="@drawable/ic_edit_white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -84,7 +81,6 @@
 
             <ImageView
                 android:id="@+id/delete_button"
-                style="@style/shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"

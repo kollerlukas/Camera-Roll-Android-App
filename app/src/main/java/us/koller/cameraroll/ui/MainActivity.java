@@ -156,7 +156,7 @@ public class MainActivity extends ThemeableActivity {
                 actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) : getString(R.string.pick_photo));
             }
             toolbar.setActivated(true);
-            toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white);
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
@@ -205,6 +205,7 @@ public class MainActivity extends ThemeableActivity {
         } else {
             spanCount = settings.getStyleColumnCount(this, settings.getStyle(this, pick_photos));
             spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
+            recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
             recyclerViewAdapter = new MainAdapter(this, pick_photos).setData(albums);
             recyclerViewAdapter.getSelectorManager().addCallback(callback);
         }
@@ -212,7 +213,7 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
 
         if (recyclerView instanceof FastScrollerRecyclerView) {
-            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing);
+            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing / 2);
         }
 
         //disable default change animation
@@ -278,7 +279,7 @@ public class MainActivity extends ThemeableActivity {
                     R.drawable.ic_camera_lens_avd);
             fab.setImageDrawable(d);
         } else {
-            fab.setImageResource(R.drawable.ic_camera_white_24dp);
+            fab.setImageResource(R.drawable.ic_camera_white);
         }
         Drawable d = fab.getDrawable();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

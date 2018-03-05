@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.AbstractRecyclerViewAdapter;
 import us.koller.cameraroll.data.fileOperations.Move;
 import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.themes.Theme;
@@ -171,7 +170,7 @@ public class AlbumActivity extends ThemeableActivity
                 drawable.mutate();
                 toolbar.setNavigationIcon(drawable);
             } else {
-                toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+                toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
             }
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
@@ -184,7 +183,7 @@ public class AlbumActivity extends ThemeableActivity
                 actionBar.setTitle(allowMultiple ? getString(R.string.pick_photos) :
                         getString(R.string.pick_photo));
             }
-            toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white);
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon != null) {
                 navIcon = DrawableCompat.wrap(navIcon);
@@ -266,10 +265,10 @@ public class AlbumActivity extends ThemeableActivity
                         R.drawable.ic_delete_avd);
                 fab.setImageDrawable(d);
             } else {
-                fab.setImageResource(R.drawable.ic_delete_white_24dp);
+                fab.setImageResource(R.drawable.ic_delete_white);
             }
         } else {
-            fab.setImageResource(R.drawable.ic_send_white_24dp);
+            fab.setImageResource(R.drawable.ic_send_white);
         }
         Drawable d = fab.getDrawable();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -810,7 +809,7 @@ public class AlbumActivity extends ThemeableActivity
                         d = drawable;
                     } else {
                         d = ContextCompat.getDrawable(AlbumActivity.this,
-                                R.drawable.ic_clear_black_24dp);
+                                R.drawable.ic_clear_white);
                     }
                     d = DrawableCompat.wrap(d);
                     DrawableCompat.setTint(d.mutate(), accentTextColor);
@@ -879,7 +878,7 @@ public class AlbumActivity extends ThemeableActivity
                     d = drawable;
                 } else {
                     d = ContextCompat.getDrawable(AlbumActivity.this,
-                            R.drawable.ic_arrow_back_white_24dp);
+                            R.drawable.ic_arrow_back_white);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);

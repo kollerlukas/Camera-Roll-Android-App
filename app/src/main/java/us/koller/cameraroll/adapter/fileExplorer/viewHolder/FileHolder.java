@@ -28,20 +28,20 @@ public class FileHolder extends RecyclerView.ViewHolder {
         ImageView folderIndicator = itemView.findViewById(R.id.folder_indicator);
         if (file instanceof StorageRoot) {
             if (file.getName().equals(itemView.getContext().getString(R.string.storage))) {
-                folderIndicator.setImageResource(R.drawable.ic_smartphone_white_24dp);
+                folderIndicator.setImageResource(R.drawable.ic_smartphone_white);
             } else {
-                folderIndicator.setImageResource(R.drawable.ic_sd_storage_white_24dp);
+                folderIndicator.setImageResource(R.drawable.ic_sd_card_white);
             }
         } else if (!file.isMedia) {
             if (new File(file.getPath()).isFile()) {
-                folderIndicator.setImageResource(R.drawable.ic_insert_drive_file_white_24dp);
+                folderIndicator.setImageResource(R.drawable.ic_insert_drive_file_white);
             } else {
-                folderIndicator.setImageResource(R.drawable.ic_folder_white_24dp);
+                folderIndicator.setImageResource(R.drawable.ic_folder_white);
             }
         } else if (MediaType.isVideo(file.getPath())) {
-            folderIndicator.setImageResource(R.drawable.ic_videocam_white_24dp);
+            folderIndicator.setImageResource(R.drawable.ic_videocam_white);
         } else {
-            folderIndicator.setImageResource(R.drawable.ic_photo_white_24dp);
+            folderIndicator.setImageResource(R.drawable.ic_photo_white);
         }
         TextView textView = itemView.findViewById(R.id.text);
         textView.setText(file.getName());
@@ -58,13 +58,12 @@ public class FileHolder extends RecyclerView.ViewHolder {
                 : ContextCompat.getColor(context, android.R.color.transparent);
         itemView.setBackgroundColor(color);
 
-        int textColor = selected ?
-                theme.getAccentTextColor(context)
-                : theme.getTextColorSecondary(context);
         TextView textView = itemView.findViewById(R.id.text);
-        textView.setTextColor(textColor);
+        textView.setTextColor(selected ? theme.getAccentTextColor(context)
+                : theme.getTextColorPrimary(context));
 
         ImageView folderIndicator = itemView.findViewById(R.id.folder_indicator);
-        folderIndicator.setColorFilter(textColor, PorterDuff.Mode.SRC_IN);
+        folderIndicator.setColorFilter(selected ? theme.getAccentTextColor(context)
+                : theme.getTextColorSecondary(context), PorterDuff.Mode.SRC_IN);
     }
 }

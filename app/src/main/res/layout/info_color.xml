@@ -2,7 +2,8 @@
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -14,16 +15,13 @@
             android:id="@+id/vibrant_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4dp"
             app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/vibrant_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_medium"
-                android:textSize="14sp" />
+                style="@style/InfoColorItem" />
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Dark color-->
@@ -31,16 +29,13 @@
             android:id="@+id/vibrant_dark_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4dp"
             app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/vibrant_dark_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_medium"
-                android:textSize="14sp" />
+                style="@style/InfoColorItem" />
         </android.support.v7.widget.CardView>
 
         <!--Vibrant Light color-->
@@ -48,16 +43,13 @@
             android:id="@+id/vibrant_light_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4dp"
             app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/vibrant_light_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_medium"
-                android:textSize="14sp" />
+                style="@style/InfoColorItem" />
         </android.support.v7.widget.CardView>
 
         <!--Muted color-->
@@ -65,16 +57,13 @@
             android:id="@+id/muted_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4dp"
             app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/muted_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_medium"
-                android:textSize="14sp" />
+                style="@style/InfoColorItem" />
         </android.support.v7.widget.CardView>
 
         <!--Muted Dark color-->
@@ -82,16 +71,13 @@
             android:id="@+id/muted_dark_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4dp"
             app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/muted_dark_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_medium"
-                android:textSize="14sp" />
+                style="@style/InfoColorItem" />
         </android.support.v7.widget.CardView>
 
         <!--Muted Light color-->
@@ -99,16 +85,13 @@
             android:id="@+id/muted_light_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4dp"
             app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/muted_light_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_mono_medium"
-                android:textSize="14sp" />
+                style="@style/InfoColorItem" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </HorizontalScrollView>

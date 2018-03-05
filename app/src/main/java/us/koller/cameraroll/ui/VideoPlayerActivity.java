@@ -75,7 +75,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             playPause.setImageResource(R.drawable.pause_to_play_avd);
         } else {
-            playPause.setImageResource(R.drawable.ic_pause_white_24dp);
+            playPause.setImageResource(R.drawable.ic_pause_white);
         }
 
         playPause.setOnClickListener(new View.OnClickListener() {
@@ -283,9 +283,9 @@ public class VideoPlayerActivity extends ThemeableActivity {
                     }
                 } else {
                     if (player.getPlayWhenReady()) {
-                        playPause.setImageResource(R.drawable.ic_pause_white_24dp);
+                        playPause.setImageResource(R.drawable.ic_pause_white);
                     } else {
-                        playPause.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+                        playPause.setImageResource(R.drawable.ic_play_arrow_white);
                     }
                 }
             }

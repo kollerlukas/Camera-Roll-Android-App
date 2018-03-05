@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.ExifUtil;
@@ -385,6 +387,7 @@ public class ExifEditorActivity extends ThemeableActivity {
 
             ExifViewHolder(View itemView) {
                 super(itemView);
+                setTextColors();
             }
 
             void setTextWatcher(TextWatcher textWatcher) {
@@ -393,6 +396,17 @@ public class ExifEditorActivity extends ThemeableActivity {
 
             TextWatcher getTextWatcher() {
                 return textWatcher;
+            }
+
+            void setTextColors() {
+                Context context = itemView.getContext();
+                TextView tagTV = itemView.findViewById(R.id.tag);
+                EditText valueET = itemView.findViewById(R.id.value);
+                Theme theme = Settings.getInstance(context).getThemeInstance(context);
+                tagTV.setTextColor(theme.getTextColorSecondary(context));
+                if (valueET != null) {
+                    valueET.setTextColor(theme.getTextColorPrimary(context));
+                }
             }
         }
 

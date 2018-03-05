@@ -46,7 +46,7 @@ public class LightTheme extends Theme {
 
     @Override
     public int getTextColorSecondaryRes() {
-        return R.color.grey_900_translucent;
+        return R.color.grey_900_translucent1;
     }
 
     @Override

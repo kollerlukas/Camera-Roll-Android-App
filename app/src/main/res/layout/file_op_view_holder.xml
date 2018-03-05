@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <us.koller.cameraroll.ui.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="200dp"
     android:layout_height="wrap_content">
@@ -27,26 +28,21 @@
 
             <TextView
                 android:id="@+id/album_title"
-                style="@style/shadow"
+                style="@style/AlbumTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:fontFamily="@font/roboto_mono_medium"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/removable_storage_indicator"
-                style="@style/shadow"
+                style="@style/Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="16dp"
-                android:alpha="0.7"
-                android:src="@drawable/ic_sd_storage_white_24dp"
                 android:visibility="gone"
+                app:srcCompat="@drawable/ic_sd_card_white"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
     </android.support.v7.widget.CardView>

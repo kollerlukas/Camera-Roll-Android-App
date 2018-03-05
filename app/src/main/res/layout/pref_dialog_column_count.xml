@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -19,7 +20,7 @@
             android:layout_margin="16dp"
             android:background="?selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:src="@drawable/ic_remove_white_24dp"
+            app:srcCompat="@drawable/ic_remove_white"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -27,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:fontFamily="@font/roboto_mono_regular"
+            android:fontFamily="@font/roboto_mono_light"
             android:textSize="20sp" />
 
         <ImageButton
@@ -38,7 +39,7 @@
             android:layout_margin="16dp"
             android:background="?selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:src="@drawable/ic_add_white_24dp"
+            app:srcCompat="@drawable/ic_add_white"
             tools:ignore="ContentDescription" />
     </LinearLayout>
 </FrameLayout>

@@ -174,10 +174,47 @@
         <item name="negativeButtonText">@android:string/cancel</item>
     </style>
 
-    <style name="shadow">
+    <!--View Styles-->
+
+    <style name="TextShadow">
         <item name="android:shadowColor">@color/black_translucent2</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="AlbumTitle" parent="TextShadow">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="AlbumSubTitle" parent="TextShadow">
+        <item name="android:fontFamily">@font/roboto_mono_light</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/grey_300</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="Icon">
+        <item name="android:shadowColor">@color/black_translucent2</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+        <!--<item name="android:alpha">0.7</item>-->
+    </style>
+
+    <style name="InfoColorItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/grey_300</item>
     </style>
 </resources>

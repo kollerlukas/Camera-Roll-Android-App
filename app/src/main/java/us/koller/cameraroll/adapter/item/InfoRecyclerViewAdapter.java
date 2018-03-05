@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,10 +30,12 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.Gif;
 import us.koller.cameraroll.data.models.Photo;
 import us.koller.cameraroll.data.models.Video;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
@@ -79,31 +82,42 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
                 Uri uri = albumItem.getUri(context);
 
-                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filename), albumItem.getName()));
-                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filepath), albumItem.getPath()));
-                infoItems.add(InfoUtil.retrieveFileSize(context, uri));
+                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filename), albumItem.getName())
+                        .setIconRes(R.drawable.ic_insert_drive_file_white));
+                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filepath), albumItem.getPath())
+                        .setIconRes(R.drawable.ic_folder_white));
+                infoItems.add(InfoUtil.retrieveFileSize(context, uri).setIconRes(R.drawable.ic_memory_white));
 
                 ExifInterface exif = null;
                 if (exifSupported(context, albumItem)) {
                     exif = ExifUtil.getExifInterface(context, albumItem);
                 }
 
-                infoItems.add(InfoUtil.retrieveDimensions(context, exif, albumItem));
-                infoItems.add(InfoUtil.retrieveFormattedDate(context, exif, albumItem));
+                infoItems.add(InfoUtil.retrieveDimensions(context, exif, albumItem)
+                        .setIconRes(R.drawable.ic_fullscreen_white));
+                infoItems.add(InfoUtil.retrieveFormattedDate(context, exif, albumItem)
+                        .setIconRes(R.drawable.ic_date_range_white));
 
                 if (exif != null) {
-                    infoItems.add(InfoUtil.retrieveLocation(context, exif));
+                    infoItems.add(InfoUtil.retrieveLocation(context, exif)
+                            .setIconRes(R.drawable.ic_location_on_white));
+                    // TODO: Add an Icon for Focal Length
                     infoItems.add(InfoUtil.retrieveFocalLength(context, exif));
-                    infoItems.add(InfoUtil.retrieveExposure(context, exif));
-                    infoItems.add(InfoUtil.retrieveModelAndMake(context, exif));
+                    infoItems.add(InfoUtil.retrieveExposure(context, exif)
+                            .setIconRes(R.drawable.ic_timelapse_white));
+                    infoItems.add(InfoUtil.retrieveModelAndMake(context, exif)
+                            .setIconRes(R.drawable.ic_camera_alt_white));
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        infoItems.add(InfoUtil.retrieveAperture(context, exif));
-                        infoItems.add(InfoUtil.retrieveISO(context, exif));
+                        infoItems.add(InfoUtil.retrieveAperture(context, exif)
+                                .setIconRes(R.drawable.ic_camera_white));
+                        infoItems.add(InfoUtil.retrieveISO(context, exif)
+                                .setIconRes(R.drawable.ic_iso_white));
                     }
                 }
 
                 if (albumItem instanceof Video) {
+                    // TODO: Add an Icon for Frame Rate
                     infoItems.add(InfoUtil.retrieveVideoFrameRate(context, albumItem));
                 }
 
@@ -160,16 +174,32 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     static class InfoHolder extends RecyclerView.ViewHolder {
 
         TextView type, value;
+        ImageView icon;
 
         InfoHolder(View itemView) {
             super(itemView);
             type = itemView.findViewById(R.id.tag);
             value = itemView.findViewById(R.id.value);
+            icon = itemView.findViewById(R.id.icon);
+            setTextColors();
         }
 
         void bind(InfoUtil.InfoItem infoItem) {
             type.setText(infoItem.getType());
             value.setText(infoItem.getValue());
+            setIcon(infoItem);
+        }
+
+        void setIcon(InfoUtil.InfoItem infoItem) {
+            icon.setImageResource(infoItem.getIconRes());
+        }
+
+        void setTextColors() {
+            Context context = type.getContext();
+            Theme theme = Settings.getInstance(context).getThemeInstance(context);
+            type.setTextColor(theme.getTextColorSecondary(context));
+            value.setTextColor(theme.getTextColorPrimary(context));
+            icon.setColorFilter(theme.getTextColorPrimary(context));
         }
     }
 
@@ -186,20 +216,21 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         @Override
         public void bind(InfoUtil.InfoItem infoItem) {
             type.setText(infoItem.getType());
+            setIcon(infoItem);
             if (infoItem instanceof InfoUtil.LocationItem) {
                 locationItem = (InfoUtil.LocationItem) infoItem;
                 value.setText(locationItem.getValue());
                 retrieveAddress(itemView.getContext(), locationItem.getValue());
 
                 if (!locationItem.getValue().equals(ExifUtil.NO_DATA)) {
-                    value.setOnClickListener(new View.OnClickListener() {
+                    itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             launchLocation();
                         }
                     });
                 } else {
-                    value.setOnClickListener(null);
+                    itemView.setOnClickListener(null);
                 }
             }
         }
@@ -390,9 +421,9 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             if ((Color.red(backgroundColor) +
                     Color.green(backgroundColor) +
                     Color.blue(backgroundColor)) / 3 < 100) {
-                return ContextCompat.getColor(context, R.color.white_translucent1);
+                return ContextCompat.getColor(context, R.color.grey_300);
             }
-            return ContextCompat.getColor(context, R.color.grey_900_translucent);
+            return ContextCompat.getColor(context, R.color.grey_900);
         }
     }
 }

@@ -23,10 +23,16 @@ public class InfoUtil {
 
     public static class InfoItem {
         private String type, value;
+        private int iconRes;
 
         public InfoItem(String type, String value) {
             this.type = type;
             this.value = value;
+        }
+
+        public InfoItem setIconRes(int iconRes) {
+            this.iconRes = iconRes;
+            return this;
         }
 
         public String getType() {
@@ -35,6 +41,10 @@ public class InfoUtil {
 
         public String getValue() {
             return value;
+        }
+
+        public int getIconRes() {
+            return iconRes;
         }
     }
 

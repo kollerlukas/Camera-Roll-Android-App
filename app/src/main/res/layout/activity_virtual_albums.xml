@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="@font/roboto_mono_regular"
+        android:fontFamily="@font/roboto_mono_light"
         android:textSize="24sp"
         android:visibility="gone" />
 </FrameLayout>

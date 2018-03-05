@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,7 +15,7 @@
 
         <ImageView
             android:id="@+id/removable_storage_indicator"
-            style="@style/shadow"
+            style="@style/Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -22,15 +23,14 @@
             android:layout_marginEnd="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:alpha="0.7"
-            android:src="@drawable/ic_sd_storage_white_24dp"
             android:tag="@string/theme_text_color_primary"
             android:visibility="gone"
+            app:srcCompat="@drawable/ic_sd_card_white"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/hidden_folder_indicator"
-            style="@style/shadow"
+            style="@style/Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -38,39 +38,30 @@
             android:layout_marginEnd="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:alpha="0.7"
-            android:src="@drawable/ic_eye_off_white_24dp"
             android:tag="@string/theme_text_color_primary"
             android:visibility="gone"
+            app:srcCompat="@drawable/ic_visibility_off_white"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/name"
-            style="@style/shadow"
+            style="@style/AlbumTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:layout_weight="1"
-            android:ellipsize="end"
-            android:fontFamily="@font/roboto_mono_medium"
-            android:maxLines="1"
-            android:tag="@string/theme_text_color_primary"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:tag="@string/theme_text_color_primary" />
 
         <TextView
             android:id="@+id/count"
-            style="@style/shadow"
+            style="@style/AlbumSubTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="0dp"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/roboto_mono_regular"
-            android:tag="@string/theme_text_color_secondary"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:tag="@string/theme_text_color_secondary" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

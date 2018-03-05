@@ -122,7 +122,7 @@ public class FileExplorerActivity extends ThemeableActivity
             drawable.mutate();
             toolbar.setNavigationIcon(drawable);
         } else {
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
 
         }
         Drawable navIcon = toolbar.getNavigationIcon();
@@ -142,8 +142,7 @@ public class FileExplorerActivity extends ThemeableActivity
         Util.colorToolbarOverflowMenuIcon(toolbar, textColorSecondary);
 
         //need to be called after setTitle(), to ensure, that mTitleTextView exists
-        final TextView titleTextView = Util.setToolbarTypeface(toolbar
-        );
+        final TextView titleTextView = Util.setToolbarTypeface(toolbar);
         if (titleTextView != null) {
             titleTextView.setEllipsize(TextUtils.TruncateAt.START);
         }
@@ -170,7 +169,7 @@ public class FileExplorerActivity extends ThemeableActivity
 
         //setup fab
         final FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_create_new_folder_white_24dp);
+        fab.setImageResource(R.drawable.ic_create_new_folder_white);
         Drawable d = fab.getDrawable();
         d = DrawableCompat.wrap(d);
         DrawableCompat.setTint(d.mutate(), accentTextColor);
@@ -730,7 +729,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     d = drawable;
                 } else {
                     d = ContextCompat.getDrawable(FileExplorerActivity.this,
-                            R.drawable.ic_clear_black_24dp);
+                            R.drawable.ic_clear_white);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), accentTextColor);
@@ -953,7 +952,7 @@ public class FileExplorerActivity extends ThemeableActivity
                     d = drawable;
                 } else {
                     d = ContextCompat.getDrawable(FileExplorerActivity.this,
-                            R.drawable.ic_arrow_back_white_24dp);
+                            R.drawable.ic_arrow_back_white);
                 }
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);

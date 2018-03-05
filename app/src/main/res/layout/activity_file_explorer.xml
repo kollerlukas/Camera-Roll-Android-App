@@ -19,7 +19,7 @@
 
         <TextView
             android:id="@+id/empty_state_text"
-            android:fontFamily="@font/roboto_mono_regular"
+            android:fontFamily="@font/roboto_mono_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

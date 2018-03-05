@@ -38,7 +38,7 @@ public class Rename extends FileOperation {
 
     @Override
     public int getNotificationSmallIconRes() {
-        return R.drawable.ic_text_format_white_24dp;
+        return R.drawable.ic_text_format_white;
     }
 
     @Override

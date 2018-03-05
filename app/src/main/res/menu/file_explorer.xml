@@ -5,7 +5,7 @@
     <item
         android:id="@+id/exclude"
         android:checkable="true"
-        android:icon="@drawable/ic_eye_off_white_24dp"
+        android:icon="@drawable/ic_visibility_off_white"
         android:title="@string/exclude"
         app:showAsAction="never" />
 
@@ -21,23 +21,23 @@
 
     <item
         android:id="@+id/paste"
-        android:icon="@drawable/ic_content_paste_white_24dp"
+        android:icon="@drawable/ic_content_paste"
         android:title="@string/paste"
         android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/copy"
-        android:icon="@drawable/ic_content_copy_white_24dp"
+        android:icon="@drawable/ic_content_copy_white"
         android:title="@string/copy" />
 
     <item
         android:id="@+id/move"
-        android:icon="@drawable/ic_folder_move_white_24dp"
+        android:icon="@drawable/ic_folder_move_white"
         android:title="@string/move" />
 
     <item
         android:id="@+id/delete"
-        android:icon="@drawable/ic_delete_white_24dp"
+        android:icon="@drawable/ic_delete_white"
         android:title="@string/delete" />
 </menu>

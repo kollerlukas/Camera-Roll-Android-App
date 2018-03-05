@@ -20,7 +20,7 @@ public class Delete extends FileOperation {
 
     @Override
     public int getNotificationSmallIconRes() {
-        return R.drawable.ic_delete_white_24dp;
+        return R.drawable.ic_delete_white;
     }
 
     @Override

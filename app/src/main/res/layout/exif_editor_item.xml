@@ -15,14 +15,14 @@
         android:layout_weight="1.5"
         android:fontFamily="@font/roboto_mono_medium"
         android:labelFor="@+id/value"
-        android:textSize="14sp" />
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:fontFamily="@font/roboto_mono_regular"
+        android:fontFamily="@font/roboto_mono_light"
         android:inputType="text"
-        android:textSize="14sp" />
+        android:textSize="16sp" />
 </LinearLayout>

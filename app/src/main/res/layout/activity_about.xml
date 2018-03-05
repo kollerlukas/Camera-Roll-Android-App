@@ -43,13 +43,13 @@
 
                 <TextView
                     android:id="@+id/about_text"
-                    android:fontFamily="@font/roboto_mono_regular"
+                    android:fontFamily="@font/roboto_mono_light"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
                     android:paddingTop="24dp"
                     android:tag="@string/theme_bg_color"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar

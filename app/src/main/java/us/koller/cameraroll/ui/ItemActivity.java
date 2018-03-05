@@ -690,8 +690,15 @@ public class ItemActivity extends ThemeableActivity {
                             @Override
                             public void run() {
                                 RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
-                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemActivity.this);
-                                recyclerView.setLayoutManager(linearLayoutManager);
+                                LinearLayoutManager layoutManager = new LinearLayoutManager(ItemActivity.this);
+                                /*GridLayoutManager layoutManager = new GridLayoutManager(ItemActivity.this, 2);
+                                layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                                    @Override
+                                    public int getSpanSize(int position) {
+                                        return position == 0 ? 2 : 1;
+                                    }
+                                });*/
+                                recyclerView.setLayoutManager(layoutManager);
                                 recyclerView.setAdapter(adapter);
 
                                 final View scrollIndicatorTop = rootView.findViewById(R.id.scroll_indicator_top);

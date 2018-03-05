@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:padding="12dp"
+    android:padding="10dp"
     android:paddingEnd="16dp"
     android:paddingStart="16dp"
     tools:ignore="UseCompoundDrawables">
@@ -13,6 +13,7 @@
     <!--suppress AndroidDomInspection -->
     <ImageView
         android:id="@+id/folder_indicator"
+        style="@style/Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -24,6 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
-        android:fontFamily="@font/roboto_mono_medium"
-        android:textSize="14sp" />
+        android:fontFamily="@font/roboto_mono_light"
+        android:textSize="16sp" />
 </LinearLayout>

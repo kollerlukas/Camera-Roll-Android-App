@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
         android:id="@+id/select_all"
-        android:icon="@drawable/ic_select_all_white_24dp"
+        android:icon="@drawable/ic_select_all_white"
         android:title="@string/select_all"
         android:visible="false"
         app:showAsAction="always"
@@ -13,28 +13,28 @@
 
     <item
         android:id="@+id/share"
-        android:icon="@drawable/ic_share_white_24dp"
+        android:icon="@drawable/ic_share_white"
         android:title="@string/share"
         android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/copy"
-        android:icon="@drawable/ic_content_copy_white_24dp"
+        android:icon="@drawable/ic_content_copy_white"
         android:title="@string/copy"
         android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/move"
-        android:icon="@drawable/ic_folder_move_white_24dp"
+        android:icon="@drawable/ic_folder_move_white"
         android:title="@string/move"
         android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/sort_by"
-        android:icon="@drawable/ic_sort_white_24dp"
+        android:icon="@drawable/ic_sort_white"
         android:title="@string/sort_by"
         app:showAsAction="never">
 
@@ -57,20 +57,20 @@
     <item
         android:id="@+id/exclude"
         android:checkable="true"
-        android:icon="@drawable/ic_eye_off_white_24dp"
+        android:icon="@drawable/ic_visibility_off_white"
         android:title="@string/exclude"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/pin"
         android:checkable="true"
-        android:icon="@drawable/ic_pin_white_24dp"
+        android:icon="@drawable/ic_pin_white"
         android:title="@string/pin_album"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/rename"
-        android:icon="@drawable/ic_text_format_white_24dp"
+        android:icon="@drawable/ic_text_format_white"
         android:title="@string/rename"
         app:showAsAction="never" />
 </menu>

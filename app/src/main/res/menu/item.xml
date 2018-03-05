@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/set_as"
-        android:icon="@drawable/ic_wallpaper_white_24dp"
+        android:icon="@drawable/ic_wallpaper_white"
         android:title="@string/set_as"
         app:showAsAction="never" />
 
@@ -15,52 +15,52 @@
 
     <item
         android:id="@+id/info"
-        android:icon="@drawable/ic_info_white_24dp"
+        android:icon="@drawable/ic_info_white"
         android:title="@string/info"
         android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/share"
-        android:icon="@drawable/ic_share_white_24dp"
+        android:icon="@drawable/ic_share_white"
         android:title="@string/share"
         android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/print"
-        android:icon="@drawable/ic_print_white_24dp"
+        android:icon="@drawable/ic_print_white"
         android:title="@string/print"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/edit"
-        android:icon="@drawable/ic_edit_white_24dp"
+        android:icon="@drawable/ic_edit_white"
         android:title="@string/edit"
         android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/copy"
-        android:icon="@drawable/ic_content_copy_white_24dp"
+        android:icon="@drawable/ic_content_copy_white"
         android:title="@string/copy"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/move"
-        android:icon="@drawable/ic_folder_move_white_24dp"
+        android:icon="@drawable/ic_folder_move_white"
         android:title="@string/move"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/rename"
-        android:icon="@drawable/ic_text_format_white_24dp"
+        android:icon="@drawable/ic_text_format_white"
         android:title="@string/rename"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/delete"
-        android:icon="@drawable/ic_delete_white_24dp"
+        android:icon="@drawable/ic_delete_white"
         android:title="@string/delete"
         android:visible="false"
         app:showAsAction="never" />

@@ -433,7 +433,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             }
 
             Drawable navIcon = ContextCompat.getDrawable(context,
-                    R.drawable.ic_clear_black_24dp);
+                    R.drawable.ic_clear_white);
             if (navIcon != null) {
                 DrawableCompat.wrap(navIcon);
                 DrawableCompat.setTint(navIcon.mutate(), accentTextColor);

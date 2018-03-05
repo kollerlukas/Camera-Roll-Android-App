@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/camera_shortcut"
-        android:icon="@drawable/ic_camera_white_24dp"
+        android:icon="@drawable/ic_camera_white"
         android:title="@string/camera_shortcut"
         app:showAsAction="always"
         android:visible="false"
@@ -13,13 +13,13 @@
 
     <item
         android:id="@+id/refresh"
-        android:icon="@drawable/ic_refresh_white_24dp"
+        android:icon="@drawable/ic_refresh_white"
         android:title="@string/refresh"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/sort_by"
-          android:icon="@drawable/ic_sort_white_24dp"
+        android:icon="@drawable/ic_sort_white"
           android:title="@string/sort_by"
         app:showAsAction="never">
 
@@ -46,25 +46,25 @@
     <item
         android:id="@+id/hiddenFolders"
         android:checkable="true"
-        android:icon="@drawable/ic_eye_off_white_24dp"
+        android:icon="@drawable/ic_visibility_off_white"
         android:title="@string/hidden_folders"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/file_explorer"
-        android:icon="@drawable/ic_folder_white_24dp"
+        android:icon="@drawable/ic_folder_white"
         android:title="@string/file_explorer"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/settings"
-        android:icon="@drawable/ic_settings_white_24dp"
+        android:icon="@drawable/ic_settings_white"
         android:title="@string/settings"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/about"
-        android:icon="@drawable/ic_info_white_24dp"
+        android:icon="@drawable/ic_info_white"
         android:title="@string/about"
         app:showAsAction="never" />
 </menu>

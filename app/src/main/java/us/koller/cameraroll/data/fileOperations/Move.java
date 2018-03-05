@@ -26,7 +26,7 @@ public class Move extends FileOperation {
 
     @Override
     public int getNotificationSmallIconRes() {
-        return R.drawable.ic_folder_move_white_24dp;
+        return R.drawable.ic_folder_move_white;
     }
 
     @Override

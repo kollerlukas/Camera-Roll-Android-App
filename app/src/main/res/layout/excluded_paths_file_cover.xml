@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:padding="12dp"
+    android:padding="10dp"
     android:paddingEnd="16dp"
     android:paddingStart="16dp"
     tools:ignore="UseCompoundDrawables">
@@ -24,8 +24,8 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
-        android:fontFamily="@font/roboto_mono_medium"
-        android:textSize="14sp" />
+        android:fontFamily="@font/roboto_mono_light"
+        android:textSize="16sp" />
 
     <CheckBox
         android:id="@+id/checkbox"

@@ -144,9 +144,13 @@ public class Settings {
     }
 
     public int getStyleGridSpacing(Context context, int style) {
+        Log.d("Settings", "getStyleGridSpacing() called with: context = [" + context + "], style = [" + style + "]");
         Resources res = context.getResources();
         if (style == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
             return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
+        }
+        if (style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
+            return (int) res.getDimension(R.dimen.album_grid_spacing);
         }
         return 0;
     }

@@ -4,9 +4,9 @@
 
     <item
         android:id="@+id/rotate"
-        android:icon="@drawable/ic_rotate_90_degrees_ccw_white_24dp"
+        android:icon="@drawable/ic_rotate_90_degrees_ccw_white"
         android:title="@string/rotate"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/done"

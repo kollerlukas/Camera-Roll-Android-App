@@ -28,7 +28,7 @@ public class Copy extends FileOperation {
 
     @Override
     public int getNotificationSmallIconRes() {
-        return R.drawable.ic_content_copy_white_24dp;
+        return R.drawable.ic_content_copy_white;
     }
 
     @Override
