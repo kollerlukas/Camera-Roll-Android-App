@@ -205,7 +205,6 @@ public class MainActivity extends ThemeableActivity {
         } else {
             spanCount = settings.getStyleColumnCount(this, settings.getStyle(this, pick_photos));
             spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
-            recyclerView.addItemDecoration(new GridMarginDecoration(spacing));
             recyclerViewAdapter = new MainAdapter(this, pick_photos).setData(albums);
             recyclerViewAdapter.getSelectorManager().addCallback(callback);
         }
@@ -213,7 +212,7 @@ public class MainActivity extends ThemeableActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
 
         if (recyclerView instanceof FastScrollerRecyclerView) {
-            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing / 2);
+            ((FastScrollerRecyclerView) recyclerView).addOuterGridSpacing(spacing);
         }
 
         //disable default change animation

@@ -1,7 +1,7 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="album_grid_spacing">4dp</dimen>
-    <dimen name="cards_style_grid_spacing">6dp</dimen>
+    <dimen name="cards_style_grid_spacing">4dp</dimen>
     <dimen name="album_grid_spacing_big">16dp</dimen>
     <dimen name="parallax_image_view_offset">200dp</dimen>
     <dimen name="twenty_four_dp">24dp</dimen>
