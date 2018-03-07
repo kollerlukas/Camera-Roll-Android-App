@@ -237,7 +237,7 @@ public class InfoUtil {
     /*parsing Methods*/
     private static class Parser {
         private static final String[] byteUnits =
-                new String[]{"Bytes", " KB", " MB", " GB"};
+                new String[]{" Bytes", " KB", " MB", " GB"};
 
         private static String parseFileSize(Context context, long fileBytes) {
             //long file_bytes = fileLength / 1000 * 1000;

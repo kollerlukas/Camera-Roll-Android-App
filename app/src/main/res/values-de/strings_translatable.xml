@@ -94,6 +94,8 @@
     <!--EditImageActivity-->
     <string name="rotate">Rotieren</string>
     <string name="restore">Zurücksetzten</string>
+    <string name="overwrite">Überschreiben</string>
+    <string name="save_as_copy">Als Kopie speichern</string>
     <string name="editing_file_format_not_supported">Das Dateiformat kann nicht bearbeitet werden</string>
     <string name="success">Success!</string>
     <!--SetWallpaperActivity-->
@@ -106,7 +108,7 @@
     <!--ExifEditorActivity-->
     <string name="exif_editor">Exif Editor</string>
     <string name="edit_exif">Exif bearbeiten</string>
-    <string name="save">speichren</string>
+    <string name="save">speichern</string>
     <string name="changes_saved">Änderungen gespeichert</string>
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Ausgeschlossene Dateipfade</string>

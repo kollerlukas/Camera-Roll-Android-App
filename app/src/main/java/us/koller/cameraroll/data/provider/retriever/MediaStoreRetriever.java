@@ -2,6 +2,7 @@ package us.koller.cameraroll.data.provider.retriever;
 
 import android.app.Activity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -9,6 +10,7 @@ import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -191,4 +193,24 @@ public class MediaStoreRetriever extends Retriever {
 
         return hiddenAlbums;
     }
+
+    public static String getPathForUri(Context context, Uri uri) {
+        CursorLoader cursorLoader = new CursorLoader(
+                context, uri, new String[]{MediaStore.Files.FileColumns.DATA},
+                null, null, null);
+
+        try {
+            final Cursor cursor = cursorLoader.loadInBackground();
+
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA));
+            }
+            return null;
+        } catch (SecurityException e) {
+            Toast.makeText(context, "Permission Error", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
 }
