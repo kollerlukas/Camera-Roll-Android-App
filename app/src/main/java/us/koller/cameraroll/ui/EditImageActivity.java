@@ -1,5 +1,6 @@
 package us.koller.cameraroll.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
@@ -15,8 +16,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +35,10 @@ import java.io.OutputStream;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.Copy;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.provider.MediaProvider;
+import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
 import us.koller.cameraroll.ui.widget.CropImageView;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;
@@ -185,10 +191,38 @@ public class EditImageActivity extends AppCompatActivity {
         final ExifUtil.ExifItem[] exifData = ExifUtil.retrieveExifData(this, cropImageView.getImageUri());
         cropImageView.getCroppedBitmap(new CropImageView.OnResultListener() {
             @Override
-            public void onResult(CropImageView.Result result) {
-                saveCroppedImage(result.getImageUri(), result.getCroppedBitmap(), exifData);
+            public void onResult(final CropImageView.Result result) {
+                new AlertDialog.Builder(EditImageActivity.this)
+                        .setItems(new CharSequence[]{getString(R.string.overwrite), getString(R.string.save_as_copy)},
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        switch (i) {
+                                            case 0:
+                                                saveCroppedImage(result.getImageUri(), result.getCroppedBitmap(), exifData);
+                                                break;
+                                            case 1:
+                                                Uri copyUri = createUri(result.getImageUri());
+                                                saveCroppedImage(copyUri, result.getCroppedBitmap(), exifData);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                }).create().show();
             }
         });
+    }
+
+    public Uri createUri(Uri originalUri) {
+        String path = MediaStoreRetriever.getPathForUri(this, originalUri);
+        if (path == null) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        String copyPath = Copy.getCopyFileName(path);
+        imagePath = copyPath;
+        return StorageUtil.getContentUri(this, copyPath);
     }
 
     private void saveCroppedImage(final Uri uri, final Bitmap bitmap, final ExifUtil.ExifItem[] exifData) {

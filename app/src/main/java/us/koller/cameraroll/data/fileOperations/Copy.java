@@ -71,7 +71,7 @@ public class Copy extends FileOperation {
         return FileOperation.COPY;
     }
 
-    private static String getCopyFileName(String destinationPath) {
+    public static String getCopyFileName(String destinationPath) {
         File dir = new File(destinationPath);
         String copyName;
         if (dir.exists()) {

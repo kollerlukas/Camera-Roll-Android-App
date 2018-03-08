@@ -695,7 +695,7 @@ public class ItemActivity extends ThemeableActivity {
                                 layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                                     @Override
                                     public int getSpanSize(int position) {
-                                        return position == 0 ? 2 : 1;
+                                        return position < 3 ? 2 : 1;
                                     }
                                 });*/
                                 recyclerView.setLayoutManager(layoutManager);

@@ -94,6 +94,8 @@
     <!--EditImageActivity-->
     <string name="rotate">Rotate</string>
     <string name="restore">Restore</string>
+    <string name="overwrite">Overwrite</string>
+    <string name="save_as_copy">Save as Copy</string>
     <string name="editing_file_format_not_supported">This file format is not supported for editing</string>
     <string name="success">Success!</string>
     <!--SetWallpaperActivity-->
