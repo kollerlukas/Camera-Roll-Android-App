@@ -21,7 +21,7 @@ public class LightTheme extends Theme {
 
     @Override
     public boolean statusBarOverlay() {
-        return true;
+        return false;
     }
 
     @Override
