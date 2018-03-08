@@ -54,7 +54,7 @@
     <string name="edit">Editar</string>
     <string name="edit_item">Editar %1$s</string>
     <string name="edit_error">Nenhum app encontrado para editar o arquivo de %1$s</string>
-    <string name="delete">Ecluir</string>
+    <string name="delete">Excluir</string>
     <string name="delete_item">Excluir %1$s</string>
     <string name="delete_files">Excluir %1$d arquivos</string>
     <string name="move">Mover</string>
@@ -62,7 +62,7 @@
     <string name="move_items_to">Mover %1$d itens para:</string>
     <string name="move_error">Mover arquivos de/para o armazenamento externo não funciona. Por favor copie e exclua os arquivos</string>
     <string name="copy">Copiar</string>
-    <string name="copy_item_to">Coiar %1$d item para:</string>
+    <string name="copy_item_to">Copiar %1$d item para:</string>
     <string name="copy_items_to">Copiar %1$d itens para:</string>
     <string name="create">Criar</string>
     <string name="new_folder">Nova Pasta</string>
@@ -88,7 +88,7 @@
     <string name="column_count">Quantidade de Colunas</string>
     <string name="other">Outras</string>
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api. This might help if you are missing some picture.</string>
+    <string name="media_retriever_summary">Varrer o armazenamento de mídia manualmente ao invés de confiar na API MediaStore. Isso pode resolver problemas com fotos faltando.</string>
     <string name="use_8_bit_color">Cores em 8-Bits</string>
     <string name="use_8_bit_color_summary">Usar Cores em 8-Bits ao exibir imagens. As imagens podem demorar mais para carregar. Também pode fazer o app usar mais memória quando em execução.</string>
     <!--EditImageActivity-->
