@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,11 +31,13 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.MediaProvider;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -134,10 +138,11 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         false);
 
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(
-                this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.addItemDecoration(new GridMarginDecoration(
-                (int) getResources().getDimension(R.dimen.album_grid_spacing_big)));
+        /*recyclerView.setLayoutManager(new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false));*/
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        /*recyclerView.addItemDecoration(new GridMarginDecoration((int) getResources().getDimension(R.dimen.album_grid_spacing_big)));*/
+        recyclerView.addItemDecoration(new GridMarginDecoration((int) getResources().getDimension(R.dimen.album_grid_spacing)));
 
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -327,15 +332,28 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                 if (selected) {
                     final Drawable selectorOverlay = Util
                             .getAlbumItemSelectorOverlay(imageView.getContext());
+                    Context context = imageView.getContext();
+                    int tintColor = Settings.getInstance(context)
+                            .getThemeInstance(context)
+                            .getAccentColorLight(context);
+                    final Drawable colorDrawable1 = new ColorDrawable(tintColor),
+                            colorDrawable2 = new ColorDrawable(tintColor);
+                    colorDrawable1.setAlpha(138);
+                    colorDrawable2.setAlpha(138);
                     imageView.post(new Runnable() {
                         @Override
                         public void run() {
                             imageView.getOverlay().clear();
                             if (selectorOverlay != null) {
-                                selectorOverlay.setBounds(0, 0,
-                                        imageView.getWidth(),
-                                        imageView.getHeight());
+                                int width = imageView.getWidth(), height = imageView.getHeight();
+                                int start = (width - height) / 2;
+                                //noinspection SuspiciousNameCombination
+                                selectorOverlay.setBounds(start, 0, start + height, height);
+                                colorDrawable1.setBounds(0, 0, start, height);
+                                colorDrawable2.setBounds(start + height, 0, width, height);
                                 imageView.getOverlay().add(selectorOverlay);
+                                imageView.getOverlay().add(colorDrawable1);
+                                imageView.getOverlay().add(colorDrawable2);
                             }
                         }
                     });
@@ -352,7 +370,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
         RecyclerViewAdapter() {
             albums = MediaProvider.getAlbums();
-
             if (albums != null && albums.size() == 0) {
                 albums.add(MediaProvider.getErrorAlbum());
             }
@@ -362,14 +379,13 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             if (selected_position == -1) {
                 return null;
             }
-
             return albums.get(selected_position).getPath();
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.file_op_view_holder, parent, false);
+                    .inflate(R.layout.file_op_view_holder_2, parent, false);
             return new ViewHolder(v);
         }
 
