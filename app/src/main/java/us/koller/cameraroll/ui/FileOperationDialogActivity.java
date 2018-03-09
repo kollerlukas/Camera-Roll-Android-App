@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +36,6 @@ import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
@@ -138,14 +136,28 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         false);
 
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
-        /*recyclerView.setLayoutManager(new LinearLayoutManager(
-                this, LinearLayoutManager.HORIZONTAL, false));*/
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        /*recyclerView.addItemDecoration(new GridMarginDecoration((int) getResources().getDimension(R.dimen.album_grid_spacing_big)));*/
         recyclerView.addItemDecoration(new GridMarginDecoration((int) getResources().getDimension(R.dimen.album_grid_spacing)));
 
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        final View scrollIndicatorTop = v.findViewById(R.id.scroll_indicator_top);
+        final View scrollIndicatorBottom = v.findViewById(R.id.scroll_indicator_bottom);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                scrollIndicatorTop.setVisibility(
+                        recyclerView.canScrollVertically(-1) ?
+                                View.VISIBLE : View.INVISIBLE);
+
+                scrollIndicatorBottom.setVisibility(
+                        recyclerView.canScrollVertically(1) ?
+                                View.VISIBLE : View.INVISIBLE);
+            }
+        });
 
         int stringRes;
         boolean oneItem = files.length == 1;
@@ -327,12 +339,13 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             }
 
             private void setSelected(boolean selected) {
-                final View imageView = itemView.findViewById(R.id.image);
+                //final View imageView = itemView.findViewById(R.id.image);
+                final View card = itemView.findViewById(R.id.card);
 
                 if (selected) {
                     final Drawable selectorOverlay = Util
-                            .getAlbumItemSelectorOverlay(imageView.getContext());
-                    Context context = imageView.getContext();
+                            .getAlbumItemSelectorOverlay(card.getContext());
+                    Context context = card.getContext();
                     int tintColor = Settings.getInstance(context)
                             .getThemeInstance(context)
                             .getAccentColorLight(context);
@@ -340,28 +353,28 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                             colorDrawable2 = new ColorDrawable(tintColor);
                     colorDrawable1.setAlpha(138);
                     colorDrawable2.setAlpha(138);
-                    imageView.post(new Runnable() {
+                    card.post(new Runnable() {
                         @Override
                         public void run() {
-                            imageView.getOverlay().clear();
+                            card.getOverlay().clear();
                             if (selectorOverlay != null) {
-                                int width = imageView.getWidth(), height = imageView.getHeight();
+                                int width = card.getWidth(), height = card.getHeight();
                                 int start = (width - height) / 2;
                                 //noinspection SuspiciousNameCombination
                                 selectorOverlay.setBounds(start, 0, start + height, height);
                                 colorDrawable1.setBounds(0, 0, start, height);
                                 colorDrawable2.setBounds(start + height, 0, width, height);
-                                imageView.getOverlay().add(selectorOverlay);
-                                imageView.getOverlay().add(colorDrawable1);
-                                imageView.getOverlay().add(colorDrawable2);
+                                card.getOverlay().add(selectorOverlay);
+                                card.getOverlay().add(colorDrawable1);
+                                card.getOverlay().add(colorDrawable2);
                             }
                         }
                     });
                 } else {
-                    imageView.post(new Runnable() {
+                    card.post(new Runnable() {
                         @Override
                         public void run() {
-                            imageView.getOverlay().clear();
+                            card.getOverlay().clear();
                         }
                     });
                 }
@@ -385,7 +398,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.file_op_view_holder_2, parent, false);
+                    .inflate(R.layout.file_op_view_holder, parent, false);
             return new ViewHolder(v);
         }
 
