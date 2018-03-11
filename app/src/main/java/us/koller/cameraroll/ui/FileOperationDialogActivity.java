@@ -6,12 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
@@ -134,13 +136,28 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         false);
 
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(
-                this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.addItemDecoration(new GridMarginDecoration(
-                (int) getResources().getDimension(R.dimen.album_grid_spacing_big)));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.addItemDecoration(new GridMarginDecoration((int) getResources().getDimension(R.dimen.album_grid_spacing)));
 
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        final View scrollIndicatorTop = v.findViewById(R.id.scroll_indicator_top);
+        final View scrollIndicatorBottom = v.findViewById(R.id.scroll_indicator_bottom);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                scrollIndicatorTop.setVisibility(
+                        recyclerView.canScrollVertically(-1) ?
+                                View.VISIBLE : View.INVISIBLE);
+
+                scrollIndicatorBottom.setVisibility(
+                        recyclerView.canScrollVertically(1) ?
+                                View.VISIBLE : View.INVISIBLE);
+            }
+        });
 
         int stringRes;
         boolean oneItem = files.length == 1;
@@ -322,28 +339,42 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             }
 
             private void setSelected(boolean selected) {
-                final View imageView = itemView.findViewById(R.id.image);
+                //final View imageView = itemView.findViewById(R.id.image);
+                final View card = itemView.findViewById(R.id.card);
 
                 if (selected) {
                     final Drawable selectorOverlay = Util
-                            .getAlbumItemSelectorOverlay(imageView.getContext());
-                    imageView.post(new Runnable() {
+                            .getAlbumItemSelectorOverlay(card.getContext());
+                    Context context = card.getContext();
+                    int tintColor = Settings.getInstance(context)
+                            .getThemeInstance(context)
+                            .getAccentColorLight(context);
+                    final Drawable colorDrawable1 = new ColorDrawable(tintColor),
+                            colorDrawable2 = new ColorDrawable(tintColor);
+                    colorDrawable1.setAlpha(138);
+                    colorDrawable2.setAlpha(138);
+                    card.post(new Runnable() {
                         @Override
                         public void run() {
-                            imageView.getOverlay().clear();
+                            card.getOverlay().clear();
                             if (selectorOverlay != null) {
-                                selectorOverlay.setBounds(0, 0,
-                                        imageView.getWidth(),
-                                        imageView.getHeight());
-                                imageView.getOverlay().add(selectorOverlay);
+                                int width = card.getWidth(), height = card.getHeight();
+                                int start = (width - height) / 2;
+                                //noinspection SuspiciousNameCombination
+                                selectorOverlay.setBounds(start, 0, start + height, height);
+                                colorDrawable1.setBounds(0, 0, start, height);
+                                colorDrawable2.setBounds(start + height, 0, width, height);
+                                card.getOverlay().add(selectorOverlay);
+                                card.getOverlay().add(colorDrawable1);
+                                card.getOverlay().add(colorDrawable2);
                             }
                         }
                     });
                 } else {
-                    imageView.post(new Runnable() {
+                    card.post(new Runnable() {
                         @Override
                         public void run() {
-                            imageView.getOverlay().clear();
+                            card.getOverlay().clear();
                         }
                     });
                 }
@@ -352,7 +383,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
         RecyclerViewAdapter() {
             albums = MediaProvider.getAlbums();
-
             if (albums != null && albums.size() == 0) {
                 albums.add(MediaProvider.getErrorAlbum());
             }
@@ -362,7 +392,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             if (selected_position == -1) {
                 return null;
             }
-
             return albums.get(selected_position).getPath();
         }
 

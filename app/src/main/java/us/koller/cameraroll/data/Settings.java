@@ -30,7 +30,7 @@ public class Settings {
     private boolean cameraShortcut;
     private Uri removableStorageTreeUri;
     private boolean virtualDirectories;
-    private boolean fadeImages = false;
+    private boolean fadeImages = true;
 
     private static Settings instance;
 

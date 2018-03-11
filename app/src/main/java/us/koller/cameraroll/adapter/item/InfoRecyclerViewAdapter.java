@@ -101,8 +101,8 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 if (exif != null) {
                     infoItems.add(InfoUtil.retrieveLocation(context, exif)
                             .setIconRes(R.drawable.ic_location_on_white));
-                    // TODO: Add an Icon for Focal Length
-                    infoItems.add(InfoUtil.retrieveFocalLength(context, exif));
+                    infoItems.add(InfoUtil.retrieveFocalLength(context, exif)
+                            .setIconRes(R.drawable.ic_straighten_white));
                     infoItems.add(InfoUtil.retrieveExposure(context, exif)
                             .setIconRes(R.drawable.ic_timelapse_white));
                     infoItems.add(InfoUtil.retrieveModelAndMake(context, exif)
@@ -117,8 +117,8 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 }
 
                 if (albumItem instanceof Video) {
-                    // TODO: Add an Icon for Frame Rate
-                    infoItems.add(InfoUtil.retrieveVideoFrameRate(context, albumItem));
+                    infoItems.add(InfoUtil.retrieveVideoFrameRate(context, albumItem)
+                            .setIconRes(R.drawable.ic_movie_creation_white));
                 }
 
                 callback.onDataRetrieved();
