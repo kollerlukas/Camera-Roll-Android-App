@@ -94,6 +94,8 @@
     <!--EditImageActivity-->
     <string name="rotate">Павярнуць</string>
     <string name="restore">Аднавіць</string>
+    <string name="overwrite">Перазапісаць</string>
+    <string name="save_as_copy">Захаваць як копію</string> 
     <string name="editing_file_format_not_supported">Гэты фармат файла нельга рэдагаваць</string>
     <string name="success">Паспяхова!</string>
     <!--SetWallpaperActivity-->
