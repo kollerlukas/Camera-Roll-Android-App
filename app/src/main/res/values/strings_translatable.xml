@@ -93,6 +93,8 @@
     <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images. Images might take longer to load. This also increases the amount of memory is used, when the app is running.</string>
     <string name="show_animations">Show Animations</string>
     <string name="show_animations_summary">Disable the SharedElementTransition and the PageTransformer</string>
+    <string name="show_videos">Show Videos</string>
+    <string name="show_videos_summary">Show videos in gallery.</string>
     <!--EditImageActivity-->
     <string name="rotate">Rotate</string>
     <string name="restore">Restore</string>

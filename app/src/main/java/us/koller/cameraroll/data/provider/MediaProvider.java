@@ -9,9 +9,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
 import us.koller.cameraroll.data.Settings;
@@ -95,6 +97,23 @@ public class MediaProvider extends Provider {
                                 }
                             }
                             //}
+
+                            // remove videos if should not show.
+                            if (!Settings.getInstance(context).getShowVideos()) {
+                                for (int i = albums.size() - 1; i >= 0; i--) {
+                                    Album album = albums.get(i);
+                                    List<AlbumItem> items = album.getAlbumItems();
+                                    for (int j = items.size() - 1; j >= 0; j--) {
+                                        AlbumItem item = items.get(j);
+                                        if (item instanceof Video) {
+                                            items.remove(j);
+                                        }
+                                    }
+                                    if (items.isEmpty()) {
+                                        albums.remove(i);
+                                    }
+                                }
+                            }
 
                             SortUtil.sortAlbums(context, albums);
 

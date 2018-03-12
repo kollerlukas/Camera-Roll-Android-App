@@ -103,6 +103,7 @@
     <string name="pref_key_camera_shortcut" translatable="false">KEY_CAMERA_SHORTCUT</string>
     <string name="pref_key_removable_storage_treeUri" translatable="false">KEY_REMOVABLE_STORAGE_TREE_URI</string>
     <string name="pref_key_animations" translatable="false">KEY_SHOW_ANIMATIONS</string>
+    <string name="pref_key_show_videos" translatable="false">KEY_SHOW_VIDEOS</string>
 
     <!--Notification Channel-->
     <string name="file_op_channel_id">file_op_channel_id</string>

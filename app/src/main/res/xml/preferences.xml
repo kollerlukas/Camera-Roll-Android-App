@@ -48,6 +48,11 @@
     <PreferenceCategory android:title="@string/other">
         <SwitchPreference
             android:defaultValue="false"
+            android:key="@string/pref_key_show_videos"
+            android:summary="@string/show_videos_summary"
+            android:title="@string/show_videos" />
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="@string/pref_key_media_retriever"
             android:summary="@string/media_retriever_summary"
             android:title="@string/media_retriever" />
