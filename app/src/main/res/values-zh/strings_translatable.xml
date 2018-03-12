@@ -92,6 +92,8 @@
     <string name="media_retriever_summary">不使用MediaStore API而手动搜索存储空间内的媒体。可尝试解决某些照片不能显示的问题。</string>
     <string name="use_8_bit_color">8位颜色</string>
     <string name="use_8_bit_color_summary">在显示照片时使用8位颜色。可能增加加载时间和应用程序运行时占用的内存。</string>
+    <string name="show_videos">显示视频</string>
+    <string name="show_videos_summary">在相册中显示视频。</string>
     <!--EditImageActivity-->
     <string name="rotate">旋转</string>
     <string name="restore">重置</string>

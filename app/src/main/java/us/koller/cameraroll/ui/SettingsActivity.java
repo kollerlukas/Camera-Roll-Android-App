@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -221,6 +222,7 @@ public class SettingsActivity extends ThemeableActivity {
             initThemePref(settings.getTheme());
             initStylePref(settings.getStyle(getContext(), false));
             initColumnCountPref(settings.getRealColumnCount());
+            initShowVideos(settings.getShowVideos());
             initMediaRetrieverPref(settings.useStorageRetriever());
             init8BitColorPref(settings.use8BitColor());
             initCameraShortcutPref(settings.getCameraShortcut());
@@ -296,6 +298,12 @@ public class SettingsActivity extends ThemeableActivity {
 
             columnCountPref.setSummary(String.valueOf(column_count));
             columnCountPref.setOnPreferenceChangeListener(this);
+        }
+
+        private void initShowVideos(boolean hide) {
+            SwitchPreference prefs = (SwitchPreference) findPreference(getString(R.string.pref_key_show_videos));
+            prefs.setChecked(hide);
+            prefs.setOnPreferenceChangeListener(this);
         }
 
         private void initMediaRetrieverPref(boolean storageRetriever) {
@@ -414,6 +422,8 @@ public class SettingsActivity extends ThemeableActivity {
                 settings.setCameraShortcut((boolean) o);
             } else if (preference.getKey().equals(getString(R.string.pref_key_animations))) {
                 settings.showAnimations((boolean) o);
+            } else if (preference.getKey().equals(getString(R.string.pref_key_show_videos))) {
+                settings.setShowVideos((boolean) o);
             }
             return true;
         }
