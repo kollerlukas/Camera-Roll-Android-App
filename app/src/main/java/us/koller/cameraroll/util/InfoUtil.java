@@ -65,6 +65,20 @@ public class InfoUtil {
         }
     }
 
+    public static class TagsItem extends InfoItem {
+
+        private AlbumItem albumItem;
+
+        public TagsItem(AlbumItem albumItem) {
+            super("Tags", null);
+            this.albumItem = albumItem;
+        }
+
+        public AlbumItem getItem() {
+            return albumItem;
+        }
+    }
+
     public static String retrieveFileName(Context context, Uri uri) {
         //retrieve file name
         try {
@@ -200,7 +214,7 @@ public class InfoUtil {
     }
 
     public static InfoItem retrieveISO(Context context, ExifInterface exif) {
-        Object isoObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_ISO_SPEED_RATINGS);
+        Object isoObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY);
         String iso;
         if (isoObject != null) {
             iso = String.valueOf(isoObject);

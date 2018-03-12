@@ -30,7 +30,8 @@ public class Settings {
     private boolean cameraShortcut;
     private Uri removableStorageTreeUri;
     private boolean virtualDirectories;
-    private boolean fadeImages = true;
+    private boolean fadeImages = false;
+    private boolean showAnimations;
 
     private static Settings instance;
 
@@ -87,6 +88,10 @@ public class Settings {
 
         virtualDirectories = sharedPreferences.getBoolean(
                 context.getString(R.string.pref_key_virtual_directories),
+                true);
+
+        showAnimations = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_animations),
                 true);
     }
 
@@ -259,6 +264,14 @@ public class Settings {
 
     public boolean noFolderMode() {
         return false;
+    }
+
+    public boolean showAnimations() {
+        return showAnimations;
+    }
+
+    public void showAnimations(boolean showAnimations) {
+        this.showAnimations = showAnimations;
     }
 
     public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {

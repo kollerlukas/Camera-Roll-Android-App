@@ -35,7 +35,8 @@
         <activity
             android:name=".ui.ItemActivity"
             android:launchMode="singleTop"
-            android:theme="@style/CameraRoll.Theme.PhotoView" />
+            android:theme="@style/CameraRoll.Theme.PhotoView"
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".ui.VideoPlayerActivity"

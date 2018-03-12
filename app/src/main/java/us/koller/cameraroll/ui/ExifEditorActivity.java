@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.media.ExifInterface;
@@ -423,8 +424,9 @@ public class ExifEditorActivity extends ThemeableActivity {
             return VIEW_TYPE_EDIT_TEXT;
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             int layoutRes;
             switch (viewType) {
                 case VIEW_TYPE_EDIT_TEXT:
@@ -443,7 +445,7 @@ public class ExifEditorActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             final String tag = ExifUtil.getExifTags()[position];
 
             TextView tagTV = holder.itemView.findViewById(R.id.tag);

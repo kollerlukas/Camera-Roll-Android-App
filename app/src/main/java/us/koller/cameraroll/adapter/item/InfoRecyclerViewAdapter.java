@@ -10,14 +10,18 @@ import android.location.Address;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.media.ExifInterface;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +32,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
@@ -48,6 +53,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     private static final int INFO_VIEW_TYPE = 0;
     private static final int COLOR_VIEW_TYPE = 1;
     private static final int LOCATION_VIEW_TYPE = 2;
+    private static final int TAGS_VIEW_TYPE = 3;
 
     private ArrayList<InfoUtil.InfoItem> infoItems;
 
@@ -77,6 +83,8 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 if (showColors) {
                     infoItems.add(new InfoUtil.ColorsItem(albumItem.getPath()));
                 }
+
+                //infoItems.add(new InfoUtil.TagsItem(albumItem));
 
                 Context context = callback.getContext();
 
@@ -133,14 +141,29 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             return COLOR_VIEW_TYPE;
         } else if (infoItem instanceof InfoUtil.LocationItem) {
             return LOCATION_VIEW_TYPE;
+        } else if (infoItem instanceof InfoUtil.TagsItem) {
+            return TAGS_VIEW_TYPE;
         }
         return INFO_VIEW_TYPE;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        int layoutRes = viewType == COLOR_VIEW_TYPE ? R.layout.info_color : R.layout.info_item;
-        View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        int layoutRes;
+        switch (viewType) {
+            case COLOR_VIEW_TYPE:
+                layoutRes = R.layout.info_color;
+                break;
+            case TAGS_VIEW_TYPE:
+                layoutRes = R.layout.info_tags;
+                break;
+            default:
+                layoutRes = R.layout.info_item;
+                break;
+        }
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(layoutRes, parent, false);
         switch (viewType) {
             case INFO_VIEW_TYPE:
                 return new InfoHolder(v);
@@ -148,17 +171,21 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 return new ColorHolder(v);
             case LOCATION_VIEW_TYPE:
                 return new LocationHolder(v);
+            case TAGS_VIEW_TYPE:
+                return new TagsHolder(v);
             default:
                 break;
         }
-        return null;
+        return new InfoHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         InfoUtil.InfoItem infoItem = infoItems.get(position);
         if (holder instanceof ColorHolder && infoItem instanceof InfoUtil.ColorsItem) {
             ((ColorHolder) holder).setColors((InfoUtil.ColorsItem) infoItem);
+        } else if (holder instanceof TagsHolder && infoItem instanceof InfoUtil.TagsItem) {
+            ((TagsHolder) holder).setTags((InfoUtil.TagsItem) infoItem);
         } else if (holder instanceof InfoHolder) {
             ((InfoHolder) holder).bind(infoItem);
         }
@@ -341,12 +368,12 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                     .apply(options)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
-                        public void onResourceReady(final Bitmap bitmap, com.bumptech.glide.request
+                        public void onResourceReady(@NonNull final Bitmap bitmap, com.bumptech.glide.request
                                 .transition.Transition<? super Bitmap> transition) {
                             // Do something with bitmap here.
                             Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                                 @Override
-                                public void onGenerated(Palette palette) {
+                                public void onGenerated(@NonNull Palette palette) {
                                     p = palette;
                                     setColors(null);
                                 }
@@ -424,6 +451,172 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 return ContextCompat.getColor(context, R.color.grey_300);
             }
             return ContextCompat.getColor(context, R.color.grey_900);
+        }
+    }
+
+    static class TagsHolder extends RecyclerView.ViewHolder {
+
+        interface TagCallback {
+            void removeTag(String tag);
+
+            void addTag(String tag);
+        }
+
+        private RecyclerView recyclerView;
+
+        TagsHolder(View itemView) {
+            super(itemView);
+            recyclerView = itemView.findViewById(R.id.recyclerView);
+            recyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext(),
+                    LinearLayoutManager.HORIZONTAL, false));
+        }
+
+        private void setTags(InfoUtil.TagsItem tagsItem) {
+            final AlbumItem albumItem = tagsItem.getItem();
+            recyclerView.setAdapter(new TagsAdapter(itemView.getContext(), albumItem));
+        }
+
+        private static class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.TagHolder> {
+
+            private static final int TAG_VIEW_TYPE = 1;
+            private static final int ADD_TAG_VIEW_TYPE = 2;
+
+            private List<String> tags;
+
+            private TagCallback callback;
+
+            TagsAdapter(final Context context, final AlbumItem albumItem) {
+                tags = albumItem.getTags(context);
+                callback = new TagCallback() {
+                    @Override
+                    public void removeTag(String tag) {
+                        int index = tags.indexOf(tag);
+                        boolean success = albumItem.removeTag(context, tag);
+                        if (success) {
+                            notifyItemRemoved(index);
+                        }
+                    }
+
+                    @Override
+                    public void addTag(String tag) {
+                        boolean success = albumItem.addTag(context, tag);
+                        if (success) {
+                            notifyItemInserted(tags.size() - 1);
+                        }
+                    }
+                };
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                return position < tags.size() ? TAG_VIEW_TYPE : ADD_TAG_VIEW_TYPE;
+            }
+
+            @NonNull
+            @Override
+            public TagHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                int layoutRes = viewType == TAG_VIEW_TYPE ? R.layout.info_tag : R.layout.info_add_tag;
+                View v = LayoutInflater.from(parent.getContext())
+                        .inflate(layoutRes, parent, false);
+                return viewType == TAG_VIEW_TYPE ? new TagHolder(v).setCallback(callback) : new AddTagHolder(v).setCallback(callback);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull TagHolder holder, int position) {
+                if (position < tags.size()) {
+                    holder.bind(tags.get(position));
+                }
+            }
+
+            @Override
+            public int getItemCount() {
+                return tags.size() + 1;
+            }
+
+            static class TagHolder extends RecyclerView.ViewHolder
+                    implements View.OnClickListener {
+
+                TagCallback callback;
+
+                String tag;
+
+                TextView textView;
+                ImageView tagButton;
+
+                TagHolder(View itemView) {
+                    super(itemView);
+                    init();
+                }
+
+                void init() {
+                    textView = itemView.findViewById(R.id.text_view);
+                    tagButton = itemView.findViewById(R.id.tag_button);
+                    setTextColor();
+                    setButtonColor();
+                }
+
+                void bind(String tag) {
+                    this.tag = tag;
+                    textView.setText(tag);
+                    tagButton.setOnClickListener(this);
+                }
+
+                void setTextColor() {
+                    int color = getColor();
+                    textView.setTextColor(color);
+                }
+
+                void setButtonColor() {
+                    int color = getColor();
+                    tagButton.setColorFilter(color);
+                    tagButton.setAlpha(Color.alpha(color) / 255.0f);
+                }
+
+                int getColor() {
+                    Context context = itemView.getContext();
+                    Theme theme = Settings.getInstance(context).getThemeInstance(context);
+                    return theme.getTextColorSecondary(context);
+                }
+
+                @Override
+                public void onClick(View view) {
+                    callback.removeTag(tag);
+                }
+
+                public TagHolder setCallback(TagCallback callback) {
+                    this.callback = callback;
+                    return this;
+                }
+            }
+
+            static class AddTagHolder extends TagHolder {
+
+                EditText editText;
+
+                AddTagHolder(View itemView) {
+                    super(itemView);
+                }
+
+                @Override
+                void init() {
+                    editText = itemView.findViewById(R.id.edit_text);
+                    setTextColor();
+                    editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                            callback.addTag(textView.getText().toString());
+                            textView.setText("");
+                            return false;
+                        }
+                    });
+                }
+
+                @Override
+                void setTextColor() {
+                    int color = getColor();
+                    editText.setTextColor(color);
+                }
+            }
         }
     }
 }

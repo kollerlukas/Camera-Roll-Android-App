@@ -224,6 +224,7 @@ public class SettingsActivity extends ThemeableActivity {
             initMediaRetrieverPref(settings.useStorageRetriever());
             init8BitColorPref(settings.use8BitColor());
             initCameraShortcutPref(settings.getCameraShortcut());
+            initAnimationsPref(settings.showAnimations());
 
             if (savedInstanceState != null
                     && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
@@ -321,6 +322,14 @@ public class SettingsActivity extends ThemeableActivity {
             cameraShortcutPref.setOnPreferenceChangeListener(this);
         }
 
+        private void initAnimationsPref(boolean showAnimations) {
+            TwoStatePreference animationsPref =
+                    (TwoStatePreference) findPreference(getString(R.string.pref_key_animations));
+
+            animationsPref.setChecked(showAnimations);
+            animationsPref.setOnPreferenceChangeListener(this);
+        }
+
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
             if (callback != null) {
@@ -403,6 +412,8 @@ public class SettingsActivity extends ThemeableActivity {
                 settings.use8BitColor((boolean) o);
             } else if (preference.getKey().equals(getString(R.string.pref_key_camera_shortcut))) {
                 settings.setCameraShortcut((boolean) o);
+            } else if (preference.getKey().equals(getString(R.string.pref_key_animations))) {
+                settings.showAnimations((boolean) o);
             }
             return true;
         }

@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
@@ -247,5 +248,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     boolean enterTransitionPostponed() {
         return enterTransitionPostponed;
+    }
+
+    boolean showAnimations() {
+        return Settings.getInstance(this).showAnimations();
     }
 }

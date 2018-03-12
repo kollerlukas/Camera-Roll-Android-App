@@ -776,11 +776,6 @@ public class AlbumActivity extends ThemeableActivity
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        ColorDrawable statusBarOverlay = getStatusBarOverlay();
-        if (statusBarOverlay != null) {
-            ColorFade.fadeDrawableAlpha(statusBarOverlay, 0);
-        }
-
         handleMenuVisibilityForSelectorMode(true);
 
         if (!pick_photos) {
@@ -790,6 +785,11 @@ public class AlbumActivity extends ThemeableActivity
 
             //fade overflow menu icon
             ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), textColorSecondary, accentTextColor);
+
+            ColorDrawable statusBarOverlay = getStatusBarOverlay();
+            if (statusBarOverlay != null) {
+                ColorFade.fadeDrawableAlpha(statusBarOverlay, 0);
+            }
 
             Drawable navIcon = toolbar.getNavigationIcon();
             if (navIcon instanceof Animatable) {
@@ -887,7 +887,9 @@ public class AlbumActivity extends ThemeableActivity
             }
         }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
 
-        animateFab(false, false);
+        if (!pick_photos) {
+            animateFab(false, false);
+        }
     }
 
     @Override
@@ -921,7 +923,7 @@ public class AlbumActivity extends ThemeableActivity
 
     public void fabClicked() {
         animateFab(false, true);
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (!pick_photos) {
@@ -942,7 +944,24 @@ public class AlbumActivity extends ThemeableActivity
                     setPhotosResult();
                 }
             }
-        }, (int) (400 * Util.getAnimatorSpeed(this)));
+        }, showAnimations() ? (int) (400 * Util.getAnimatorSpeed(this)) : 0);*/
+        if (!pick_photos) {
+            //deleteAlbumItemsSnackbar();
+            final String[] selected_items = recyclerViewAdapter
+                    .cancelSelectorMode(AlbumActivity.this);
+            new AlertDialog.Builder(AlbumActivity.this, theme.getDialogThemeRes())
+                    .setTitle(getString(R.string.delete_files, selected_items.length) + "?")
+                    .setNegativeButton(getString(R.string.no), null)
+                    .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            deleteAlbumItemsSnackbar(selected_items);
+                        }
+                    })
+                    .create().show();
+        } else {
+            setPhotosResult();
+        }
     }
 
     public void animateFab(final boolean show, boolean click) {
@@ -963,7 +982,7 @@ public class AlbumActivity extends ThemeableActivity
         } else {
             fab.setOnClickListener(null);
         }
-        if (click) {
+        if (click && showAnimations()) {
             Drawable drawable = fab.getDrawable();
             if (drawable instanceof Animatable) {
                 ((Animatable) drawable).start();

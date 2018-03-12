@@ -115,7 +115,7 @@ public class FileExplorerActivity extends ThemeableActivity
         toolbar.setBackgroundColor(toolbarColor);
         toolbar.setTitleTextColor(textColorPrimary);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && showAnimations()) {
             AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
                     ContextCompat.getDrawable(FileExplorerActivity.this, R.drawable.back_to_cancel_avd);
             //mutating avd to reset it
@@ -535,7 +535,9 @@ public class FileExplorerActivity extends ThemeableActivity
     }
 
     public void fabClicked(View v) {
-        animateFab(false);
+        if (showAnimations()) {
+            animateFab(false);
+        }
 
         View dialogLayout = LayoutInflater.from(this).inflate(R.layout.input_dialog_layout,
                 (ViewGroup) findViewById(R.id.root_view), false);

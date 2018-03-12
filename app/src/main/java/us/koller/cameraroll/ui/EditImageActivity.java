@@ -322,8 +322,9 @@ public class EditImageActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.rotate:
+                boolean showAnimations = Settings.getInstance(this).showAnimations();
                 Drawable d = item.getIcon();
-                if (d instanceof Animatable && !((Animatable) d).isRunning()) {
+                if (showAnimations && d instanceof Animatable && !((Animatable) d).isRunning()) {
                     ((Animatable) d).start();
                 }
                 rotate90Degrees();

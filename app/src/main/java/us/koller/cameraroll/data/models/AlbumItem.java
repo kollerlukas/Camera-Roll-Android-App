@@ -6,13 +6,14 @@ import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
@@ -33,6 +34,7 @@ public abstract class AlbumItem
     private Uri uri;
     private long dateTaken;
     private int[] imageDimens;
+    private List<String> tags;
 
     public boolean error = false;
     public boolean isSharedElement = false;
@@ -165,6 +167,30 @@ public abstract class AlbumItem
     }
 
     public abstract int[] retrieveImageDimens(Context context);
+
+    public List<String> getTags(Context context) {
+        if (tags == null) {
+            retrieveTags(context);
+        }
+        return tags;
+    }
+
+    private void retrieveTags(Context context) {
+        // TODO: implement
+        tags = new LinkedList<>();
+    }
+
+    // returns whether the Operation was successful
+    public boolean addTag(Context context, String tag) {
+        // TODO: implement
+        return false;
+    }
+
+    // returns whether the Operation was successful
+    public boolean removeTag(Context context, String tag) {
+        // TODO: implement
+        return false;
+    }
 
     AlbumItem(Parcel parcel) {
         this.name = parcel.readString();

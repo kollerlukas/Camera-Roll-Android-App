@@ -167,7 +167,7 @@ public class ItemActivity extends ThemeableActivity {
 
         view_only = getIntent().getBooleanExtra(VIEW_ONLY, false);
 
-        if (!view_only && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (!view_only && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && showAnimations()) {
             if (savedInstanceState == null) {
                 postponeEnterTransition();
             }
@@ -306,7 +306,9 @@ public class ItemActivity extends ThemeableActivity {
         viewPager.setAdapter(new ItemAdapter(album));
         int currentItem = album.getAlbumItems().indexOf(albumItem);
         viewPager.setCurrentItem(currentItem >= 0 ? currentItem : 0, false);
-        viewPager.setPageTransformer(false, new ParallaxTransformer());
+        if (showAnimations()) {
+            viewPager.setPageTransformer(false, new ParallaxTransformer());
+        }
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             private final int color = ContextCompat.getColor(ItemActivity.this, R.color.white);
 
@@ -680,6 +682,9 @@ public class ItemActivity extends ThemeableActivity {
         }
         infoDialog = builder.create();
         infoDialog.show();
+        //noinspection ConstantConditions
+        /*infoDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);*/
 
         boolean showColors = (albumItem instanceof Photo || albumItem instanceof Gif) && !view_only;
         adapter.retrieveData(albumItem, showColors,
@@ -691,13 +696,6 @@ public class ItemActivity extends ThemeableActivity {
                             public void run() {
                                 RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
                                 LinearLayoutManager layoutManager = new LinearLayoutManager(ItemActivity.this);
-                                /*GridLayoutManager layoutManager = new GridLayoutManager(ItemActivity.this, 2);
-                                layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                                    @Override
-                                    public int getSpanSize(int position) {
-                                        return position < 3 ? 2 : 1;
-                                    }
-                                });*/
                                 recyclerView.setLayoutManager(layoutManager);
                                 recyclerView.setAdapter(adapter);
 
@@ -738,7 +736,7 @@ public class ItemActivity extends ThemeableActivity {
 
     public void bottomBarOnClick(final View v) {
         Drawable d = ((ImageView) v).getDrawable();
-        if (d instanceof Animatable) {
+        if (d instanceof Animatable && showAnimations()) {
             ((Animatable) d).start();
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -869,6 +867,10 @@ public class ItemActivity extends ThemeableActivity {
             }*/
             this.finish();
         } else {
+            if (!showAnimations()) {
+                setResultAndFinish();
+                return;
+            }
             showUI(false);
             if (viewPager != null && viewPager.getAdapter() != null && albumItem != null) {
                 ViewHolder viewHolder = ((ItemAdapter)
@@ -892,7 +894,11 @@ public class ItemActivity extends ThemeableActivity {
         data.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
         data.putExtra(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION, viewPager.getCurrentItem());
         setResult(RESULT_OK, data);
-        ActivityCompat.finishAfterTransition(this);
+        if (showAnimations()) {
+            ActivityCompat.finishAfterTransition(this);
+        } else {
+            finish();
+        }
     }
 
     @Override

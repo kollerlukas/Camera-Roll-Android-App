@@ -124,6 +124,10 @@
     <string name="no_paths">Keine Pfade vorhanden</string>
     <string name="no_virtual_albums">Keine Virtuellen Alben</string>
     <!--info Dialog Strings-->
+    <string name="tags">Tags: </string>
+    <string name="new_tag">Neuer Tag</string>
+    <string name="add_tag">Tag hinzufügen</string>
+    <string name="tag_already_added">Tag bereits hinzugefügt</string>
     <string name="info_filename">Dateiname: </string>
     <string name="info_filepath">Dateipfad: </string>
     <string name="info_size">Größe: </string>
