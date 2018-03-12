@@ -80,7 +80,7 @@ public class MediaStoreRetriever extends Retriever {
 
                     do {
                         path = cursor.getString(pathColumn);
-                        AlbumItem albumItem = AlbumItem.getInstance(path);
+                        AlbumItem albumItem = AlbumItem.getInstance(context, path);
                         if (albumItem != null) {
                             //set dateTaken
                             int dateTakenColumn = cursor.getColumnIndex(

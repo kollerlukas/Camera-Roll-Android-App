@@ -246,11 +246,11 @@ public class Settings {
         this.cameraShortcut = cameraShortcut;
     }
 
-    public boolean getShowVideos() {
+    public boolean showVideos() {
         return showVideos;
     }
 
-    public void setShowVideos(boolean hideVideos) {
+    public void showVideos(boolean hideVideos) {
         this.showVideos = hideVideos;
     }
 

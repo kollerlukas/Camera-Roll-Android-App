@@ -89,29 +89,10 @@ public class MediaProvider extends Provider {
                     new OnMediaLoadedCallback() {
                         @Override
                         public void onMediaLoaded(ArrayList<Album> albums) {
-                            //if (!hiddenFolders) {
                             //remove excluded albums
                             for (int i = albums.size() - 1; i >= 0; i--) {
                                 if (albums.get(i) == null || albums.get(i).excluded) {
                                     albums.remove(i);
-                                }
-                            }
-                            //}
-
-                            // remove videos if should not show.
-                            if (!Settings.getInstance(context).getShowVideos()) {
-                                for (int i = albums.size() - 1; i >= 0; i--) {
-                                    Album album = albums.get(i);
-                                    List<AlbumItem> items = album.getAlbumItems();
-                                    for (int j = items.size() - 1; j >= 0; j--) {
-                                        AlbumItem item = items.get(j);
-                                        if (item instanceof Video) {
-                                            items.remove(j);
-                                        }
-                                    }
-                                    if (items.isEmpty()) {
-                                        albums.remove(i);
-                                    }
                                 }
                             }
 

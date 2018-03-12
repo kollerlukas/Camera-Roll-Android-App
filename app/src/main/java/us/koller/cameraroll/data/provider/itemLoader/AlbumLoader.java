@@ -54,7 +54,7 @@ public class AlbumLoader extends ItemLoader {
 
     @Override
     public void onFile(final Context context, File file) {
-        final AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
+        final AlbumItem albumItem = AlbumItem.getInstance(context, file.getPath());
         if (albumItem != null) {
             if (dateRetriever != null) {
                 dateRetriever.retrieveDate(context, albumItem);

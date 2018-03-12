@@ -94,7 +94,7 @@
     <string name="show_animations">Show Animations</string>
     <string name="show_animations_summary">Disable the SharedElementTransition and the PageTransformer</string>
     <string name="show_videos">Show Videos</string>
-    <string name="show_videos_summary">Show videos in gallery.</string>
+    <string name="show_videos_summary">Show videos in gallery</string>
     <!--EditImageActivity-->
     <string name="rotate">Rotate</string>
     <string name="restore">Restore</string>

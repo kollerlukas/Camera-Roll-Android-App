@@ -222,7 +222,7 @@ public class SettingsActivity extends ThemeableActivity {
             initThemePref(settings.getTheme());
             initStylePref(settings.getStyle(getContext(), false));
             initColumnCountPref(settings.getRealColumnCount());
-            initShowVideos(settings.getShowVideos());
+            initShowVideos(settings.showVideos());
             initMediaRetrieverPref(settings.useStorageRetriever());
             init8BitColorPref(settings.use8BitColor());
             initCameraShortcutPref(settings.getCameraShortcut());
@@ -423,7 +423,7 @@ public class SettingsActivity extends ThemeableActivity {
             } else if (preference.getKey().equals(getString(R.string.pref_key_animations))) {
                 settings.showAnimations((boolean) o);
             } else if (preference.getKey().equals(getString(R.string.pref_key_show_videos))) {
-                settings.setShowVideos((boolean) o);
+                settings.showVideos((boolean) o);
             }
             return true;
         }
