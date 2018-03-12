@@ -776,8 +776,6 @@ public class AlbumActivity extends ThemeableActivity
             Util.setLightStatusBarIcons(findViewById(R.id.root_view));
         }
 
-        handleMenuVisibilityForSelectorMode(true);
-
         if (!pick_photos) {
             ColorFade.fadeBackgroundColor(toolbar, toolbarColor, accentColor);
 
@@ -785,6 +783,10 @@ public class AlbumActivity extends ThemeableActivity
 
             //fade overflow menu icon
             ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), textColorSecondary, accentTextColor);
+
+            Drawable selectAll = menu.findItem(R.id.select_all).getIcon();
+            selectAll.setAlpha(0);
+            ColorFade.fadeDrawableAlpha(selectAll, 255);
 
             ColorDrawable statusBarOverlay = getStatusBarOverlay();
             if (statusBarOverlay != null) {
@@ -820,6 +822,8 @@ public class AlbumActivity extends ThemeableActivity
             toolbar.setBackgroundColor(accentColor);
             toolbar.setTitleTextColor(accentTextColor);
         }
+
+        handleMenuVisibilityForSelectorMode(true);
 
         if (!pick_photos) {
             animateFab(true, false);
@@ -857,6 +861,9 @@ public class AlbumActivity extends ThemeableActivity
                     }
                 });
 
+        final Drawable selectAll = menu.findItem(R.id.select_all).getIcon();
+        ColorFade.fadeDrawableAlpha(selectAll, 0);
+
         //fade overflow menu icon
         ColorFade.fadeDrawableColor(toolbar.getOverflowIcon(), accentTextColor, textColorSecondary);
 
@@ -884,6 +891,7 @@ public class AlbumActivity extends ThemeableActivity
                 DrawableCompat.setTint(d.mutate(), textColorSecondary);
                 toolbar.setNavigationIcon(d);
                 handleMenuVisibilityForSelectorMode(false);
+                selectAll.setAlpha(100);
             }
         }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
 
@@ -923,28 +931,6 @@ public class AlbumActivity extends ThemeableActivity
 
     public void fabClicked() {
         animateFab(false, true);
-        /*new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!pick_photos) {
-                    //deleteAlbumItemsSnackbar();
-                    final String[] selected_items = recyclerViewAdapter
-                            .cancelSelectorMode(AlbumActivity.this);
-                    new AlertDialog.Builder(AlbumActivity.this, theme.getDialogThemeRes())
-                            .setTitle(getString(R.string.delete_files, selected_items.length) + "?")
-                            .setNegativeButton(getString(R.string.no), null)
-                            .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    deleteAlbumItemsSnackbar(selected_items);
-                                }
-                            })
-                            .create().show();
-                } else {
-                    setPhotosResult();
-                }
-            }
-        }, showAnimations() ? (int) (400 * Util.getAnimatorSpeed(this)) : 0);*/
         if (!pick_photos) {
             //deleteAlbumItemsSnackbar();
             final String[] selected_items = recyclerViewAdapter
@@ -1017,12 +1003,19 @@ public class AlbumActivity extends ThemeableActivity
     public void onBackPressed() {
         if (recyclerView != null && recyclerViewAdapter.onBackPressed()) {
             animateFab(false, false);
-        } else if (snackbar != null) {
-            snackbar.dismiss();
-            snackbar = null;
+        } else if (scrollToTheTop()) {
+            recyclerView.smoothScrollToPosition(0);
         } else {
+            if (snackbar != null) {
+                snackbar.dismiss();
+                snackbar = null;
+            }
             super.onBackPressed();
         }
+    }
+
+    private boolean scrollToTheTop() {
+        return recyclerView.canScrollVertically(-1);
     }
 
     @Override
