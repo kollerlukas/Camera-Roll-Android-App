@@ -540,7 +540,7 @@ public class ExifUtil {
             ExifInterface.TAG_ORF_PREVIEW_IMAGE_LENGTH,
             ExifInterface.TAG_ORF_PREVIEW_IMAGE_START,
             ExifInterface.TAG_ORF_THUMBNAIL_IMAGE,
-            ExifInterface.TAG_ORIENTATION,
+            /*ExifInterface.TAG_ORIENTATION,*/
             ExifInterface.TAG_PHOTOMETRIC_INTERPRETATION,
             /*ExifInterface.TAG_PIXEL_X_DIMENSION,*/
             /*ExifInterface.TAG_PIXEL_Y_DIMENSION,*/
