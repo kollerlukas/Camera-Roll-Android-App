@@ -1,6 +1,6 @@
 package us.koller.cameraroll.ui;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
@@ -12,14 +12,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,30 +27,31 @@ import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.data.fileOperations.Copy;
 import us.koller.cameraroll.data.fileOperations.FileOperation;
-import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
 import us.koller.cameraroll.ui.widget.CropImageView;
 import us.koller.cameraroll.util.ExifUtil;
+import us.koller.cameraroll.util.InfoUtil;
 import us.koller.cameraroll.util.MediaType;
-import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.Util;
 
 public class EditImageActivity extends AppCompatActivity {
 
     public static final String IMAGE_PATH = "IMAGE_PATH";
     public static final String IMAGE_VIEW_STATE = "IMAGE_VIEW_STATE";
+    public static final int STORAGE_FRAMEWORK_REQUEST_CODE = 69;
 
     public static final int JPEG_QUALITY = 90;
 
     private String imagePath;
+
+    private CropImageView.Result result;
+    private ExifUtil.ExifItem[] exifData;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -192,37 +191,69 @@ public class EditImageActivity extends AppCompatActivity {
         cropImageView.getCroppedBitmap(new CropImageView.OnResultListener() {
             @Override
             public void onResult(final CropImageView.Result result) {
-                new AlertDialog.Builder(EditImageActivity.this)
-                        .setItems(new CharSequence[]{getString(R.string.overwrite), getString(R.string.save_as_copy)},
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        switch (i) {
-                                            case 0:
-                                                saveCroppedImage(result.getImageUri(), result.getCroppedBitmap(), exifData);
-                                                break;
-                                            case 1:
-                                                Uri copyUri = createUri(result.getImageUri());
-                                                saveCroppedImage(copyUri, result.getCroppedBitmap(), exifData);
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                }).create().show();
+                final BottomSheetDialog dialog = new BottomSheetDialog(EditImageActivity.this);
+                @SuppressLint("InflateParams")
+                View sheetView = EditImageActivity.this.getLayoutInflater()
+                        .inflate(R.layout.edit_image_export_dialog, null);
+
+                View save = sheetView.findViewById(R.id.save);
+                View export = sheetView.findViewById(R.id.export);
+
+                View.OnClickListener clickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                        switch (view.getId()) {
+                            case R.id.save:
+                                saveCroppedImage(result.getImageUri(), result.getCroppedBitmap(), exifData);
+                                break;
+                            case R.id.export:
+                                EditImageActivity.this.result = result;
+                                EditImageActivity.this.exifData = exifData;
+
+                                Uri imageUri = getIntent().getData();
+                                String filename = InfoUtil.retrieveFileName(EditImageActivity.this, imageUri);
+                                if (filename == null) {
+                                    filename = "image_edit.jpeg";
+                                }
+
+                                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                                intent.setType("image/jpeg");
+                                intent.putExtra(Intent.EXTRA_TITLE, filename);
+                                startActivityForResult(intent, STORAGE_FRAMEWORK_REQUEST_CODE);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                };
+
+                save.setOnClickListener(clickListener);
+                if (imagePath == null) {
+                    save.setEnabled(false);
+                    save.setAlpha(0.5f);
+                }
+                export.setOnClickListener(clickListener);
+
+                dialog.setContentView(sheetView);
+                dialog.show();
             }
         });
     }
 
-    public Uri createUri(Uri originalUri) {
-        String path = MediaStoreRetriever.getPathForUri(this, originalUri);
-        if (path == null) {
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
-            return null;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case STORAGE_FRAMEWORK_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    saveCroppedImage(uri, result.getCroppedBitmap(), exifData);
+                }
+                break;
+            default:
+                break;
         }
-        String copyPath = Copy.getCopyFileName(path);
-        imagePath = copyPath;
-        return StorageUtil.getContentUri(this, copyPath);
     }
 
     private void saveCroppedImage(final Uri uri, final Bitmap bitmap, final ExifUtil.ExifItem[] exifData) {
@@ -231,36 +262,17 @@ public class EditImageActivity extends AppCompatActivity {
             return;
         }
 
+        final String newPath = MediaStoreRetriever.getPathForUri(EditImageActivity.this, uri);
+
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    String newPath = null;
                     OutputStream outputStream;
-                    if (imagePath != null) {
-                        boolean removableStorage = FileOperation.Util.isOnRemovableStorage(imagePath);
-                        //replace fileExtension with .jpg
-                        int index = imagePath.lastIndexOf(".");
-                        newPath = imagePath.substring(0, index) + ".jpg";
-                        if (!removableStorage) {
-                            outputStream = new FileOutputStream(newPath);
-                        } else {
-                            Settings s = Settings.getInstance(getApplicationContext());
-                            Uri treeUri = s.getRemovableStorageTreeUri();
-                            DocumentFile file = StorageUtil.createDocumentFile(EditImageActivity.this,
-                                    treeUri, imagePath, "image/jpeg");
-                            if (file != null) {
-                                outputStream = getContentResolver().openOutputStream(file.getUri());
-                            } else {
-                                outputStream = null;
-                            }
-                        }
-                    } else {
-                        try {
-                            outputStream = getContentResolver().openOutputStream(uri);
-                        } catch (SecurityException e) {
-                            outputStream = null;
-                        }
+                    try {
+                        outputStream = getContentResolver().openOutputStream(uri);
+                    } catch (SecurityException e) {
+                        outputStream = null;
                     }
 
                     if (outputStream != null) {

@@ -1,18 +1,17 @@
 package us.koller.cameraroll.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.media.ExifInterface;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +52,7 @@ public class ExifEditorActivity extends ThemeableActivity {
 
     private ExifInterface exifInterface;
 
-    private ArrayList<EditedItem> editedItems;
+    private ArrayList<ExifUtil.ExifItem> editedItems;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,21 +73,14 @@ public class ExifEditorActivity extends ThemeableActivity {
         }
 
         String mimeType = MediaType.getMimeType(this, albumItem.getUri(this));
-        if (!MediaType.doesSupportExifMimeType(mimeType)) {
+        if (!MediaType.doesSupportWritingExifMimeType(mimeType)) {
+            Toast.makeText(this, "Editing Exif values is only supported for JPEG images", Toast.LENGTH_SHORT).show();
             this.finish();
             return;
         }
 
         exifInterface = null;
         try {
-            //cannot save changes with the inputStream as input
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri uri = albumItem.getUri(this);
-                exifInterface = new ExifInterface(getContentResolver().openInputStream(uri));
-            } else {
-                exifInterface = new ExifInterface(albumItem.getPath());
-            }*/
-
             exifInterface = new ExifInterface(albumItem.getPath());
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,52 +100,32 @@ public class ExifEditorActivity extends ThemeableActivity {
 
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new RecyclerViewAdapter(exifInterface,
+        recyclerView.setAdapter(new RecyclerViewAdapter(
                 new RecyclerViewAdapter.OnEditCallback() {
                     @Override
                     public void onItemEdited(String tag, String newValue) {
-                        String oldValue = exifInterface.getAttribute(tag);
-                        if (oldValue == null) {
-                            oldValue = "";
-                        }
-                        if (oldValue.equals(newValue)) {
-                            return;
-                        }
-
-                        //check if item was already edited
-                        boolean alreadyInEditedItems = false;
-                        for (int i = 0; i < editedItems.size(); i++) {
-                            if (editedItems.get(i).tag.equals(tag)) {
-                                alreadyInEditedItems = true;
+                        for (ExifUtil.ExifItem item : editedItems) {
+                            if (item.getTag().equals(tag)) {
+                                item.setValue(newValue);
+                                showSaveButton();
+                                return;
                             }
                         }
-
-                        if (!alreadyInEditedItems) {
-                            editedItems.add(new EditedItem(tag, newValue));
-                        } else {
-                            for (int i = 0; i < editedItems.size(); i++) {
-                                if (editedItems.get(i).tag.equals(tag)) {
-                                    EditedItem item = editedItems.get(i);
-                                    item.setNewValue(newValue);
-                                }
-                            }
-                        }
-
-                        //make save button visible
-                        if (editedItems.size() > 0) {
-                            MenuItem save = menu.findItem(R.id.save);
-                            save.setVisible(true);
-                        }
+                        // ExifItem wasn't previously edited
+                        ExifUtil.ExifItem item = getItem(tag);
+                        item.setValue(newValue);
+                        editedItems.add(item);
+                        showSaveButton();
                     }
 
                     @Override
-                    public EditedItem getEditedItem(String constant) {
-                        for (int i = 0; i < editedItems.size(); i++) {
-                            if (editedItems.get(i).tag.equals(constant)) {
-                                return editedItems.get(i);
+                    public ExifUtil.ExifItem getItem(String tag) {
+                        for (ExifUtil.ExifItem item : editedItems) {
+                            if (item.getTag().equals(tag)) {
+                                return item;
                             }
                         }
-                        return null;
+                        return new ExifUtil.ExifItem(tag, exifInterface.getAttribute(tag));
                     }
                 }));
 
@@ -240,54 +212,65 @@ public class ExifEditorActivity extends ThemeableActivity {
             case R.id.save:
                 saveChanges();
                 break;
+            case R.id.clear_exif_data:
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.clear_exif_data)
+                        .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // remove all Exif data
+                                ExifUtil.removeExifData(exifInterface, new ExifUtil.Callback() {
+                                    @Override
+                                    public void done(final boolean success) {
+                                        ExifEditorActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                int stringRes = success ? R.string.changes_saved : R.string.error;
+                                                Toast.makeText(ExifEditorActivity.this, stringRes, Toast.LENGTH_SHORT).show();
+                                                RecyclerView recyclerView = findViewById(R.id.recyclerView);
+                                                recyclerView.getAdapter().notifyDataSetChanged();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create().show();
+                break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    public void showSaveButton() {
+        //make save button visible
+        if (editedItems.size() > 0) {
+            MenuItem save = menu.findItem(R.id.save);
+            save.setVisible(true);
+        }
+    }
+
     public void saveChanges() {
-        AsyncTask.execute(new Runnable() {
+        ExifUtil.saveChanges(exifInterface, editedItems, new ExifUtil.Callback() {
             @Override
-            public void run() {
-                boolean successful = true;
-
-                for (int i = 0; i < editedItems.size(); i++) {
-                    EditedItem item = editedItems.get(i);
-                    try {
-                        String newValue = item.getCastNewValue();
-                        exifInterface.setAttribute(item.tag, newValue);
-                    } catch (NumberFormatException | NullPointerException e) {
-                        e.printStackTrace();
-                        successful = false;
-                    }
-                }
-
-                try {
-                    exifInterface.saveAttributes();
-                } catch (final IOException e) {
-                    e.printStackTrace();
-                    ExifEditorActivity.this.runOnUiThread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(ExifEditorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                    successful = false;
-                }
-                final int stringRes = successful ? R.string.changes_saved : R.string.error;
-                ExifEditorActivity.this.runOnUiThread(
-                        new Runnable() {
+            public void done(final boolean success) {
+                ExifEditorActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ExifEditorActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                int stringRes = success ? R.string.changes_saved : R.string.error;
                                 Toast.makeText(ExifEditorActivity.this, stringRes, Toast.LENGTH_SHORT).show();
                             }
                         });
+                    }
+                });
             }
         });
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -322,64 +305,17 @@ public class ExifEditorActivity extends ThemeableActivity {
         }
     }
 
-    private static class EditedItem implements Parcelable {
-        String tag;
-        String newValue;
-
-        EditedItem(String constant, String newValue) {
-            this.tag = constant;
-            this.newValue = newValue;
-        }
-
-        EditedItem(Parcel in) {
-            tag = in.readString();
-            newValue = in.readString();
-        }
-
-        void setNewValue(String newValue) {
-            this.newValue = newValue;
-        }
-
-        String getCastNewValue() throws NumberFormatException, NullPointerException {
-            return String.valueOf(ExifUtil.castValue(tag, newValue));
-        }
-
-        public static final Creator<EditedItem> CREATOR = new Creator<EditedItem>() {
-            @Override
-            public EditedItem createFromParcel(Parcel in) {
-                return new EditedItem(in);
-            }
-
-            @Override
-            public EditedItem[] newArray(int size) {
-                return new EditedItem[size];
-            }
-        };
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel parcel, int i) {
-            parcel.writeString(tag);
-            parcel.writeString(newValue);
-        }
-    }
-
-    private static class RecyclerViewAdapter extends RecyclerView.Adapter {
+    private static class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ExifViewHolder> {
 
         private static final int VIEW_TYPE_EDIT_TEXT = 0;
         private static final int VIEW_TYPE_SPINNER = 1;
 
-        private ExifInterface exifInterface;
         private OnEditCallback callback;
 
         interface OnEditCallback {
             void onItemEdited(String tag, String newValue);
 
-            EditedItem getEditedItem(String tag);
+            ExifUtil.ExifItem getItem(String tag);
         }
 
         static class ExifViewHolder extends RecyclerView.ViewHolder {
@@ -411,8 +347,7 @@ public class ExifEditorActivity extends ThemeableActivity {
             }
         }
 
-        RecyclerViewAdapter(ExifInterface exifInterface, OnEditCallback callback) {
-            this.exifInterface = exifInterface;
+        RecyclerViewAdapter(OnEditCallback callback) {
             this.callback = callback;
         }
 
@@ -426,7 +361,7 @@ public class ExifEditorActivity extends ThemeableActivity {
 
         @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ExifViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             int layoutRes;
             switch (viewType) {
                 case VIEW_TYPE_EDIT_TEXT:
@@ -445,13 +380,13 @@ public class ExifEditorActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ExifViewHolder holder, int position) {
             final String tag = ExifUtil.getExifTags()[position];
 
             TextView tagTV = holder.itemView.findViewById(R.id.tag);
             tagTV.setText(tag);
 
-            EditedItem editedItem = callback.getEditedItem(tag);
+            ExifUtil.ExifItem item = callback.getItem(tag);
 
             if (ExifUtil.getExifValues()[position] != null) {
                 final AppCompatSpinner spinner = holder.itemView.findViewById(R.id.value_spinner);
@@ -462,40 +397,37 @@ public class ExifEditorActivity extends ThemeableActivity {
                         values);
                 arrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(arrayAdapter);
-
+                int selection = 0;
+                try {
+                    selection = Integer.parseInt(item.getValue());
+                } catch (NumberFormatException ignored) {
+                }
+                final int startSelection = selection;
+                spinner.setSelection(startSelection);
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                        callback.onItemEdited(tag, String.valueOf(position));
+                        if (startSelection != position) {
+                            callback.onItemEdited(tag, String.valueOf(position));
+                        }
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {
                     }
                 });
-
-                int selection = 0;
-                if (editedItem == null) {
-                    String value = exifInterface.getAttribute(tag);
-                    if (value != null) {
-                        selection = Integer.parseInt(value);
-                    }
-                } else {
-                    selection = Integer.parseInt(editedItem.newValue);
-                }
-                spinner.setSelection(selection);
             } else {
                 final EditText value = holder.itemView.findViewById(R.id.value);
-                value.removeTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
-                value.setText(editedItem == null ? exifInterface.getAttribute(tag) : editedItem.newValue);
+                value.removeTextChangedListener(holder.getTextWatcher());
+                value.setText(item.getValue());
 
-                ((ExifViewHolder) holder).setTextWatcher(new SimpleTextWatcher() {
+                holder.setTextWatcher(new SimpleTextWatcher() {
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         callback.onItemEdited(tag, s.toString());
                     }
                 });
-                value.addTextChangedListener(((ExifViewHolder) holder).getTextWatcher());
+                value.addTextChangedListener(holder.getTextWatcher());
             }
         }
 

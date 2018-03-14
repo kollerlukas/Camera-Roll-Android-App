@@ -7,7 +7,7 @@ import android.webkit.MimeTypeMap;
 public class MediaType {
 
     private static String[] imageExtensions = {"jpg", "png", "jpe", "jpeg", "bmp"};
-    private static String[] imageMimeTypes = {"image/*", "image/jpeg", "image/png", "image/bmp"};
+    private static String[] imageMimeTypes = {"image/*", "image/jpeg", "image/jpg", "image/png", "image/bmp"};
 
     private static String[] videoExtensions = {"mp4", "mkv", "webm", "avi"};
     private static String[] videoMimeTypes = {"video/*", "video/mp4", "video/x-matroska", "video/webm", "video/avi"};
@@ -18,8 +18,11 @@ public class MediaType {
     private static String[] rawExtensions = {"dng", "cr2", "arw"};
     private static String[] rawMimeTypes = {"image/x-adobe-dng", "image/x-canon-cr2", "image/arw", "image/x-sony-arw"};
 
-    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "dng", "cr2"/*, "arw"*/};
-    private static String[] exifMimeTypes = {"image/jpeg", "image/x-adobe-dng", "image/x-canon-cr2"/*, "image/arw", "image/x-sony-arw"*/};
+    private static String[] exifExtensions = {"jpg", "jpe", "jpeg", "dng", "cr2"};
+    private static String[] exifMimeTypes = {"image/jpeg", "image/jpg", "image/x-adobe-dng", "image/x-canon-cr2"};
+
+    private static String[] exifWritingExtensions = {"jpg", "jpe", "jpeg"};
+    private static String[] exifWritingMimeTypes = {"image/jpeg", "image/jpg"};
 
     private static String[] wallpaperMimeTypes = {"image/jpeg", "image/png"};
 
@@ -64,6 +67,10 @@ public class MediaType {
         return checkExtension(mimeType, exifMimeTypes);
     }
 
+    public static boolean doesSupportWritingExifMimeType(String mimeType) {
+        return checkExtension(mimeType, exifWritingMimeTypes);
+    }
+
     public static boolean checkImageMimeType(String mimeType) {
         return checkExtension(mimeType, imageMimeTypes);
     }
@@ -84,6 +91,11 @@ public class MediaType {
     @SuppressWarnings("unused")
     public static boolean doesSupportExifFileExtension(String path) {
         return checkExtension(path, exifExtensions);
+    }
+
+    @SuppressWarnings("unused")
+    public static boolean doesSupportWritingExifFileExtension(String path) {
+        return checkExtension(path, exifWritingExtensions);
     }
 
     private static boolean checkImageExtension(String path) {

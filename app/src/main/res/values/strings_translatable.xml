@@ -13,6 +13,7 @@
     <string name="loading">Loading…</string>
     <string name="loading_failed">Loading failed</string>
     <string name="ok">OK</string>
+    <string name="remove">Remove</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
     <string name="undo">Undo</string>
@@ -98,8 +99,8 @@
     <!--EditImageActivity-->
     <string name="rotate">Rotate</string>
     <string name="restore">Restore</string>
-    <string name="overwrite">Overwrite</string>
-    <string name="save_as_copy">Save as Copy</string>
+    <string name="save_edit">Save</string>
+    <string name="export">Export</string>
     <string name="editing_file_format_not_supported">This file format is not supported for editing</string>
     <string name="success">Success!</string>
     <!--SetWallpaperActivity-->
@@ -114,6 +115,7 @@
     <string name="edit_exif">edit Exif</string>
     <string name="save">Save</string>
     <string name="changes_saved">Changes saved</string>
+    <string name="clear_exif_data">Clear Exif Data</string>
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Excluded Paths</string>
     <!--VirtualAlbumsActivity-->
