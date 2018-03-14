@@ -68,7 +68,6 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
     private int touchedCorner = NO_CORNER;
     private boolean touching = false;
-    //private int rotationAngle = 0;
 
     private int minCropRectSize;
     private int strokeWidth;
@@ -133,8 +132,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         setPanEnabled(false);
         setPanLimit(PAN_LIMIT_CENTER);
         setOrientation(0);
-        setMinimumTileDpi(50);
-        setMinScale(2.0f);
+        setMinScale(0.1f);
+        setMinimumScaleType(SCALE_TYPE_CUSTOM);
 
         setOnTouchListener(this);
 
@@ -180,7 +179,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         if (state != null) {
             cropRect = state.getCropRect();
         }
-        setImage(ImageSource.uri(uri)/*.tilingDisabled()*/, state);
+        setImage(ImageSource.uri(uri), state);
     }
 
     public Uri getImageUri() {
@@ -192,9 +191,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         super.onImageLoaded();
         if (cropRect == null) {
             cropRect = getImageRect();
-        } else {
-            autoZoom(true);
         }
+        autoZoom(false);
 
         setProgressBarVisibility(GONE);
     }
@@ -214,15 +212,10 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         });
     }
 
-    /*public void setRotationAngle(int rotationAngle) {
-        this.rotationAngle = rotationAngle;
-        invalidate();
-    }*/
-
     public void restore() {
         setOrientation(0);
         cropRect = getImageRect();
-        //rotationAngle = 0;
+        autoZoom(false);
     }
 
     public void getCroppedBitmap(final OnResultListener onResultListener) {
@@ -333,6 +326,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
         int height = getHeight() - (padding[1] + padding[3]);
         float scaleHeight = (float) height / (cropRect.bottom - cropRect.top);
+        if (getHeight() > getWidth()) {
+            return scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
+        }
         return scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
     }
 

@@ -5,10 +5,42 @@
     android:viewportHeight="432"
     android:viewportWidth="432">
 
+    <!--Filmstrip-->
+    <group>
+        <!--Base Filmstrip-->
+        <group android:translateY="112">
+            <path
+                android:fillColor="#f44336"
+                android:pathData="M0 208L278 208C291.255 208 302 197.255 302 184L302 24C302 10.7451 291.255 0 278 0L0 0L0 208ZM110 28L134 28L134 52L110 52L110 28ZM14 28L38 28L38 52L14 52L14 28ZM206 28L230 28L230 52L206 52L206 28ZM62 156L86 156L86 180L62 180L62 156ZM110 156L134 156L134 180L110 180L110 156ZM206 156L230 156L230 180L206 180L206 156ZM86 28L86 52L62 52L62 28L86 28ZM182 28L182 52L158 52L158 28L182 28ZM278 28L278 52L254 52L254 28L278 28ZM38 156L38 180L14 180L14 156L38 156ZM182 156L182 180L158 180L158 156L182 156ZM278 156L278 180L254 180L254 156L278 156Z" />
+        </group>
+
+        <!--top tinted Egde-->
+        <group android:translateY="112">
+            <path
+                android:fillAlpha="0.2"
+                android:fillColor="#ffffff"
+                android:pathData="M302 24l0 2C302 12.7451 291.255 2 278 2L0 2 0 0 278 0c13.255 0 24 10.7451 24 24z M110 52l0 2 24 0 0 -2 -24 0z M62 52l0 2 24 0 0 -2 -24 0z M14 52l0 2 24 0 0 -2 -24 0z M158 52l0 2 24 0 0 -2 -24 0z M206 52l0 2 24 0 0 -2 -24 0z M254 52l0 2 24 0 0 -2 -24 0z M62 180l0 2 24 0 0 -2 -24 0z M14 180l0 2 24 0 0 -2 -24 0z M110 180l0 2 24 0 0 -2 -24 0z M158 180l0 2 24 0 0 -2 -24 0z M206 180l0 2 24 0 0 -2 -24 0z M254 180l0 2 24 0 0 -2 -24 0z" />
+        </group>
+
+        <!--bottom tinted Edge-->
+        <group android:translateY="138">
+            <path
+                android:fillAlpha="0.4"
+                android:fillColor="#b71c1c"
+                android:pathData="M278 180l-278 0 0 2 278 0c13.255 0 24 -10.745 24 -24l0 -2c0 13.255 -10.745 24 -24 24z M134 0l-24 0 0 2 24 0 0 -2z M62 0L86 0 86 2 62 2 62 0Z M38 0L14 0 14 2 38 2 38 0Z M158 0l24 0 0 2 -24 0 0 -2z M230 0l-24 0 0 2 24 0 0 -2z M254 0l24 0 0 2 -24 0 0 -2z M86 128l-24 0 0 2 24 0 0 -2z M14 128l24 0 0 2 -24 0 0 -2z M134 128l-24 0 0 2 24 0 0 -2z M158 128l24 0 0 2 -24 0 0 -2z M230 128l-24 0 0 2 24 0 0 -2z M254 128l24 0 0 2 -24 0 0 -2z" />
+        </group>
+
+        <!--individual Frames-->
+        <path
+            android:fillAlpha="0.3"
+            android:fillColor="#b71c1c"
+            android:pathData="M14 180L86 180 86 252 14 252 14 180Z M110 180L182 180 182 252 110 252 110 180Z M206 180L278 180 278 252 206 252 206 180Z" />
+    </group>
+
     <!--grey substract-->
     <group>
         <path
-            android:fillColor="#303030"
+            android:fillColor="#424242"
             android:pathData="M0 0L146 0 146 432 0 432 0 0Z" />
         <!--shadow-->
         <path

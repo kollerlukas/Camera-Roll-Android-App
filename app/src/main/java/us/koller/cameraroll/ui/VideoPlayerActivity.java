@@ -46,6 +46,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.data.Settings;
 
 public class VideoPlayerActivity extends ThemeableActivity {
 
@@ -270,7 +271,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 //update PlayPause-Button
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && showAnimations()) {
                     if (player.getPlayWhenReady()) {
                         playPause.setImageResource(R.drawable.play_to_pause_avd);
                     } else {

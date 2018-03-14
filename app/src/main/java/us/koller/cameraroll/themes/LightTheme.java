@@ -41,7 +41,7 @@ public class LightTheme extends Theme {
 
     @Override
     public int getTextColorPrimaryRes() {
-        return R.color.grey_900;
+        return R.color.grey_800;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class LightTheme extends Theme {
 
     @Override
     public int getAccentTextColorRes() {
-        return R.color.grey_900_translucent1/*colorAccent_text_light*/;
+        return R.color.colorAccent_text_light;
     }
 
     @Override

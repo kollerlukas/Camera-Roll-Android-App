@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -221,9 +222,11 @@ public class SettingsActivity extends ThemeableActivity {
             initThemePref(settings.getTheme());
             initStylePref(settings.getStyle(getContext(), false));
             initColumnCountPref(settings.getRealColumnCount());
+            initShowVideos(settings.showVideos());
             initMediaRetrieverPref(settings.useStorageRetriever());
             init8BitColorPref(settings.use8BitColor());
             initCameraShortcutPref(settings.getCameraShortcut());
+            initAnimationsPref(settings.showAnimations());
 
             if (savedInstanceState != null
                     && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
@@ -297,6 +300,12 @@ public class SettingsActivity extends ThemeableActivity {
             columnCountPref.setOnPreferenceChangeListener(this);
         }
 
+        private void initShowVideos(boolean hide) {
+            SwitchPreference prefs = (SwitchPreference) findPreference(getString(R.string.pref_key_show_videos));
+            prefs.setChecked(hide);
+            prefs.setOnPreferenceChangeListener(this);
+        }
+
         private void initMediaRetrieverPref(boolean storageRetriever) {
             TwoStatePreference mediaRetrieverPref =
                     (TwoStatePreference) findPreference(getString(R.string.pref_key_media_retriever));
@@ -319,6 +328,14 @@ public class SettingsActivity extends ThemeableActivity {
 
             cameraShortcutPref.setChecked(cameraShortcut);
             cameraShortcutPref.setOnPreferenceChangeListener(this);
+        }
+
+        private void initAnimationsPref(boolean showAnimations) {
+            TwoStatePreference animationsPref =
+                    (TwoStatePreference) findPreference(getString(R.string.pref_key_animations));
+
+            animationsPref.setChecked(showAnimations);
+            animationsPref.setOnPreferenceChangeListener(this);
         }
 
         @Override
@@ -403,6 +420,10 @@ public class SettingsActivity extends ThemeableActivity {
                 settings.use8BitColor((boolean) o);
             } else if (preference.getKey().equals(getString(R.string.pref_key_camera_shortcut))) {
                 settings.setCameraShortcut((boolean) o);
+            } else if (preference.getKey().equals(getString(R.string.pref_key_animations))) {
+                settings.showAnimations((boolean) o);
+            } else if (preference.getKey().equals(getString(R.string.pref_key_show_videos))) {
+                settings.showVideos((boolean) o);
             }
             return true;
         }

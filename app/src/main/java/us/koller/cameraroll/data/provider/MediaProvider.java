@@ -9,9 +9,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
 import us.koller.cameraroll.data.Settings;
@@ -87,14 +89,12 @@ public class MediaProvider extends Provider {
                     new OnMediaLoadedCallback() {
                         @Override
                         public void onMediaLoaded(ArrayList<Album> albums) {
-                            //if (!hiddenFolders) {
                             //remove excluded albums
                             for (int i = albums.size() - 1; i >= 0; i--) {
                                 if (albums.get(i) == null || albums.get(i).excluded) {
                                     albums.remove(i);
                                 }
                             }
-                            //}
 
                             SortUtil.sortAlbums(context, albums);
 

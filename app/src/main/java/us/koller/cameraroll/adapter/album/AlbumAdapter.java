@@ -3,6 +3,7 @@ package us.koller.cameraroll.adapter.album;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
@@ -22,12 +23,14 @@ import us.koller.cameraroll.adapter.album.viewHolder.GifViewHolder;
 import us.koller.cameraroll.adapter.album.viewHolder.PhotoViewHolder;
 import us.koller.cameraroll.adapter.album.viewHolder.RAWImageHolder;
 import us.koller.cameraroll.adapter.album.viewHolder.VideoViewHolder;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.Gif;
 import us.koller.cameraroll.data.models.Photo;
 import us.koller.cameraroll.data.models.RAWImage;
 import us.koller.cameraroll.data.models.Video;
+import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
@@ -92,8 +95,9 @@ public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
         return -1;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return onCreateViewHolder(parent, viewType, R.layout.albumitem_cover);
     }
 
@@ -115,7 +119,7 @@ public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         final AlbumItem albumItem = getData().getAlbumItems().get(position);
 
         if (!albumItem.equals(((AlbumItemHolder) holder).getAlbumItem())) {
@@ -141,12 +145,17 @@ public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
                     intent.putExtra(ItemActivity.ALBUM_PATH, getData().getPath());
                     intent.putExtra(ItemActivity.ITEM_POSITION, getData().getAlbumItems().indexOf(albumItem));
 
-                    ActivityOptionsCompat options =
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    (Activity) context, holder.itemView.findViewById(R.id.image),
-                                    albumItem.getPath());
-                    ActivityCompat.startActivityForResult((Activity) context, intent,
-                            ItemActivity.VIEW_IMAGE, options.toBundle());
+                    if (Settings.getInstance(context).showAnimations()) {
+                        ActivityOptionsCompat options =
+                                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                        (Activity) context, holder.itemView.findViewById(R.id.image),
+                                        albumItem.getPath());
+                        ActivityCompat.startActivityForResult((Activity) context, intent,
+                                ItemActivity.VIEW_IMAGE, options.toBundle());
+                    } else {
+                        ActivityCompat.startActivityForResult((Activity) context, intent,
+                                ItemActivity.VIEW_IMAGE, null);
+                    }
                 }
             }
         });

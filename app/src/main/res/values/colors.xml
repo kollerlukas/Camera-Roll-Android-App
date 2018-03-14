@@ -8,7 +8,7 @@
     <color name="black_bg">#000000</color>
     <!--accent color-->
     <color name="colorAccent">#69F0AE</color>
-    <color name="colorAccentLight">#B9F6CA</color>
+    <color name="colorAccentLight">#69F0AE</color>
     <color name="colorAccent_text">#8A212121</color>
 
     <!--light theme colors-->
@@ -16,13 +16,14 @@
     <color name="colorPrimaryDark_light">#E0E0E0</color>
     <color name="light_bg">#FAFAFA</color>
     <!--light accent color-->
-    <color name="colorAccent_light">#00BFA5</color>
-    <color name="colorAccentLight_light">#A7FFEB</color>
-    <color name="colorAccent_text_light">#FFFFFF</color>
+    <color name="colorAccent_light">@color/colorAccent</color>
+    <color name="colorAccentLight_light">@color/colorAccentLight</color>
+    <color name="colorAccent_text_light">@color/colorAccent_text</color>
 
     <color name="white">#FFFFFF</color>
     <color name="grey_300">#E0E0E0</color>
     <color name="white_translucent1">#8AFFFFFF</color>
+    <color name="grey_500">#9E9E9E</color>
     <color name="white_translucent2">#64FFFFFF</color>
     <color name="grey_800">#424242</color>
     <color name="grey_900_translucent1">#64212121</color>

@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
@@ -318,8 +319,9 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
             return VIRTUAL_ALBUM_VIEW_TYPE;
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v;
             switch (viewType) {
                 case VIRTUAL_ALBUM_VIEW_TYPE:
@@ -337,7 +339,7 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
         }
 
         @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
             if (holder instanceof VirtualAlbumHolder) {
                 final VirtualAlbum virtualAlbum = virtualAlbums.get(position);
                 ((VirtualAlbumHolder) holder).bind(virtualAlbum);
@@ -354,7 +356,7 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
                                     listener.onVirtualAlbumChanged(currentAlbum);
                                 }
                             }
-                        }, 300);
+                        }, /*300*/0);
                     }
                 });
                 ((VirtualAlbumHolder) holder).deleteButton.
@@ -378,7 +380,7 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
                                                 .getString(R.string.virtual_album_deleted, virtualAlbum.getName());
                                         Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
                                     }
-                                }, 300);
+                                }, /*300*/0);
 
                                 if (virtualAlbum.pinned()) {
                                     //remove virtualAlbum from pinnedPaths
@@ -407,7 +409,7 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
                                         }
                                         Toast.makeText(view.getContext(), R.string.path_removed, Toast.LENGTH_SHORT).show();
                                     }
-                                }, 300);
+                                }, /*300*/0);
                             }
                         });
             }

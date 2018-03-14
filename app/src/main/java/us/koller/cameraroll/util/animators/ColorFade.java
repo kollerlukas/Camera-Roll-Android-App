@@ -43,8 +43,8 @@ public class ColorFade {
         return getDefaultValueAnimator(0, 100);
     }
 
-    private static ValueAnimator getDefaultValueAnimator(int startValue, int encValue) {
-        ValueAnimator animator = ValueAnimator.ofInt(startValue, encValue);
+    private static ValueAnimator getDefaultValueAnimator(int startValue, int endValue) {
+        ValueAnimator animator = ValueAnimator.ofInt(startValue, endValue);
         animator.setDuration(500);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         return animator;

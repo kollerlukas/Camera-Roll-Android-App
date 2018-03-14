@@ -26,11 +26,13 @@ public class Settings {
     private int sort_albums_by;
     private int sort_album_by;
     private boolean hiddenFolders;
+    private boolean showVideos;
     private boolean use8BitColor;
     private boolean cameraShortcut;
     private Uri removableStorageTreeUri;
     private boolean virtualDirectories;
-    private boolean fadeImages = true;
+    private boolean fadeImages = false;
+    private boolean showAnimations;
 
     private static Settings instance;
 
@@ -69,6 +71,9 @@ public class Settings {
                 context.getString(R.string.pref_key_sort_album),
                 SortUtil.BY_DATE);
 
+        showVideos = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_show_videos),
+                true);
 
         hiddenFolders = sharedPreferences.getBoolean
                 (PREF_KEY_HIDDEN_FOLDERS, false);
@@ -87,6 +92,10 @@ public class Settings {
 
         virtualDirectories = sharedPreferences.getBoolean(
                 context.getString(R.string.pref_key_virtual_directories),
+                true);
+
+        showAnimations = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_animations),
                 true);
     }
 
@@ -237,6 +246,14 @@ public class Settings {
         this.cameraShortcut = cameraShortcut;
     }
 
+    public boolean showVideos() {
+        return showVideos;
+    }
+
+    public void showVideos(boolean hideVideos) {
+        this.showVideos = hideVideos;
+    }
+
     public Uri getRemovableStorageTreeUri() {
         Log.d("Settings", "getRemovableStorageTreeUri: " + removableStorageTreeUri);
         return removableStorageTreeUri;
@@ -259,6 +276,14 @@ public class Settings {
 
     public boolean noFolderMode() {
         return false;
+    }
+
+    public boolean showAnimations() {
+        return showAnimations;
+    }
+
+    public void showAnimations(boolean showAnimations) {
+        this.showAnimations = showAnimations;
     }
 
     public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {
