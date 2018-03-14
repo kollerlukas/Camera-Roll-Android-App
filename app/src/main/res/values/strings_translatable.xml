@@ -13,6 +13,7 @@
     <string name="loading">Loading…</string>
     <string name="loading_failed">Loading failed</string>
     <string name="ok">OK</string>
+    <string name="remove">Remove</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
     <string name="undo">Undo</string>
@@ -114,6 +115,7 @@
     <string name="edit_exif">edit Exif</string>
     <string name="save">Save</string>
     <string name="changes_saved">Changes saved</string>
+    <string name="clear_exif_data">Clear Exif Data</string>
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Excluded Paths</string>
     <!--VirtualAlbumsActivity-->
