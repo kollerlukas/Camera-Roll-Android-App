@@ -94,8 +94,7 @@ public class InfoUtil {
                     return filename;
                 }
             }
-        } catch (SecurityException e) {
-            e.printStackTrace();
+        } catch (SecurityException ignored) {
         }
         return null;
     }
@@ -137,8 +136,7 @@ public class InfoUtil {
                 Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
                 String formattedDate = new SimpleDateFormat("EEE d MMM yyyy HH:mm", locale).format(date);
                 return new InfoItem(context.getString(R.string.info_date), formattedDate);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            } catch (ParseException ignored) {
             }
         }
         String formattedDate = new SimpleDateFormat("EEE d MMM yyyy HH:mm", locale)

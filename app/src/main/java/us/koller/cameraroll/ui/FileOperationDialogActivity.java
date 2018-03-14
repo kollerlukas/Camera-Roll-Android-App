@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -395,18 +396,26 @@ public class FileOperationDialogActivity extends ThemeableActivity {
             return albums.get(selected_position).getPath();
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.file_op_view_holder, parent, false);
             return new ViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
+        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
             final Album album = albums.get(position);
-            ((TextView) holder.itemView.findViewById(R.id.album_title))
+            ((TextView) holder.itemView.findViewById(R.id.name))
                     .setText(album.getName());
+
+            int itemCount = album.getAlbumItems().size();
+            boolean oneItem = itemCount == 1;
+            String count = holder.itemView.getContext().getString(oneItem ?
+                    R.string.item_count : R.string.items_count, itemCount);
+            ((TextView) holder.itemView.findViewById(R.id.count))
+                    .setText(count);
 
             final boolean selected = position == selected_position;
             ((ViewHolder) holder).setSelected(selected);

@@ -96,8 +96,8 @@
     <!--EditImageActivity-->
     <string name="rotate">Rotieren</string>
     <string name="restore">Zurücksetzten</string>
-    <string name="overwrite">Überschreiben</string>
-    <string name="save_as_copy">Als Kopie speichern</string>
+    <string name="save_edit">Speichern</string>
+    <string name="export">Exportieren</string>
     <string name="editing_file_format_not_supported">Das Dateiformat kann nicht bearbeitet werden</string>
     <string name="success">Success!</string>
     <!--SetWallpaperActivity-->

@@ -371,7 +371,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             return EMPTY;
         }
 
-        public static boolean isOnRemovableStorage(String path) {
+        static boolean isOnRemovableStorage(String path) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 File file = new File(path);
                 try {
@@ -459,8 +459,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
                                             Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
                                             long dateTaken = date.getTime();
                                             values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
-                                        } catch (ParseException e) {
-                                            e.printStackTrace();
+                                        } catch (ParseException ignored) {
                                         }
                                     } catch (IOException e) {
                                         e.printStackTrace();

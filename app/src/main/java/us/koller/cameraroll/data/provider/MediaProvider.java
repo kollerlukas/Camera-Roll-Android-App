@@ -9,11 +9,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
-import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
 import us.koller.cameraroll.data.Settings;

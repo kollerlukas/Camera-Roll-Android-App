@@ -133,6 +133,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         setPanLimit(PAN_LIMIT_CENTER);
         setOrientation(0);
         setMinScale(0.1f);
+        setMinimumTileDpi(100);
         setMinimumScaleType(SCALE_TYPE_CUSTOM);
 
         setOnTouchListener(this);

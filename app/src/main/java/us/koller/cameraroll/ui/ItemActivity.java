@@ -947,6 +947,11 @@ public class ItemActivity extends ThemeableActivity {
                                 new MediaProvider.OnAlbumLoadedCallback() {
                                     @Override
                                     public void onAlbumLoaded(Album album) {
+                                        if (album == null) {
+                                            Toast.makeText(ItemActivity.this, "Error: Album null", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                            return;
+                                        }
                                         int index = albumItemIndex;
                                         ItemActivity.this.album = album;
                                         if (index >= album.getAlbumItems().size()) {

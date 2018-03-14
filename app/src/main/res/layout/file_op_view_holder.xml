@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/card"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    app:cardElevation="0dp">
 
     <ImageView
         android:id="@+id/image"
@@ -14,31 +16,5 @@
         android:scaleType="centerCrop"
         tools:ignore="ContentDescription" />
 
-    <LinearLayout
-        android:id="@+id/title_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@drawable/transparent_to_dark_gradient"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/album_title"
-            style="@style/AlbumTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/removable_storage_indicator"
-            style="@style/Icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="16dp"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_sd_card_white"
-            tools:ignore="ContentDescription" />
-    </LinearLayout>
-</FrameLayout>
+    <include layout="@layout/album_title" />
+</android.support.v7.widget.CardView>
