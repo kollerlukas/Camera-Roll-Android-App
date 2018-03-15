@@ -94,7 +94,7 @@
     <string name="use_8_bit_color_summary">Выкарыстоўваць 8-біт колер для адлюстравання выяў. Выявы могуць загружацца дольш. Таксама гэта можа павялічыць выкарыстанне памяці падчас работы праграмы.</string>
     <!--EditImageActivity-->
     <string name="show_animations">Паказваць анімацыі</string>
-    <string name="show_animations_summary">Disable the SharedElementTransition and the PageTransformer</string>
+    <string name="show_animations_summary">Адключае анімацыі выбару і гартання выяваў</string>
     <string name="show_videos">Паказваць відэа</string>
     <string name="show_videos_summary">Паказваць відэа ў галерэі</string>
     <string name="rotate">Павярнуць</string>
