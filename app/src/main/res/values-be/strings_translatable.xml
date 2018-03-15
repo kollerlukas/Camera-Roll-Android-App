@@ -13,6 +13,7 @@
     <string name="loading">Загрузка…</string>
     <string name="loading_failed">Няўдалая загрузка</string>
     <string name="ok">Добра</string>
+    <string name="remove">Выдаліць</string> 
     <string name="cancel">Скасаваць</string>
     <string name="no">Не</string>
     <string name="undo">Адмяніць</string>
@@ -92,8 +93,14 @@
     <string name="use_8_bit_color">8-біт колер</string>
     <string name="use_8_bit_color_summary">Выкарыстоўваць 8-біт колер для адлюстравання выяў. Выявы могуць загружацца дольш. Таксама гэта можа павялічыць выкарыстанне памяці падчас работы праграмы.</string>
     <!--EditImageActivity-->
+    <string name="show_animations">Паказваць анімацыі</string>
+    <string name="show_animations_summary">Адключае анімацыі выбару і гартання выяваў</string>
+    <string name="show_videos">Паказваць відэа</string>
+    <string name="show_videos_summary">Паказваць відэа ў галерэі</string>
     <string name="rotate">Павярнуць</string>
     <string name="restore">Аднавіць</string>
+    <string name="save_edit">Захаваць</string> 
+    <string name="export">Экспартаваць</string>   
     <string name="overwrite">Перазапісаць</string>
     <string name="save_as_copy">Захаваць як копію</string> 
     <string name="editing_file_format_not_supported">Гэты фармат файла нельга рэдагаваць</string>
@@ -110,6 +117,7 @@
     <string name="edit_exif">рэдагаваць Exif</string>
     <string name="save">Захаваць</string>
     <string name="changes_saved">Змены захаваны</string>
+    <string name="clear_exif_data">Ачысціць Exif дадзеныя</string>  
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Выключаныя папкі</string>
     <!--VirtualAlbumsActivity-->
@@ -124,6 +132,10 @@
     <string name="no_paths">Няма ўключаных шляхоў</string>
     <string name="no_virtual_albums">Няма віртуальных альбомаў</string>
     <!--info Dialog Strings-->
+    <string name="tags">Тэгі: </string>
+    <string name="new_tag">Новы тэг</string>
+    <string name="add_tag">Дадаць тэг</string>
+    <string name="tag_already_added">Тэг ужо даданы</string>
     <string name="info_filename">Імя файла: </string>
     <string name="info_filepath">Шлях да файла: </string>
     <string name="info_size">Памер: </string>
