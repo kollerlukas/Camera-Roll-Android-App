@@ -180,12 +180,6 @@ public class ExifEditorActivity extends ThemeableActivity {
                                 }
                             });
         }
-
-        //needed to achieve transparent statusBar in landscape; don't ask me why, but its working
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
     @Override
