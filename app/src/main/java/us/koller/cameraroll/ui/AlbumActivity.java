@@ -1161,6 +1161,7 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     private void removeAlbumItem(String path) {
+        Log.d("AlbumActivity", "removeAlbumItem() called with: path = [" + path + "]");
         int index = -1;
         for (int i = 0; i < album.getAlbumItems().size(); i++) {
             AlbumItem albumItem = album.getAlbumItems().get(i);
@@ -1169,9 +1170,14 @@ public class AlbumActivity extends ThemeableActivity
                 break;
             }
         }
+        Log.d("AlbumActivity", "removeAlbumItem: " + index);
         if (index > -1) {
             album.getAlbumItems().remove(index);
-            recyclerViewAdapter.notifyDataSetChanged();
+        }
+        recyclerViewAdapter.notifyDataSetChanged();
+
+        if (album.getAlbumItems().size() == 0) {
+            finish();
         }
     }
 }
