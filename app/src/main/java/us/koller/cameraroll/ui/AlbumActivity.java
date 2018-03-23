@@ -432,7 +432,7 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onActivityReenter(int requestCode, Intent data) {
-        /*super.onActivityReenter(requestCode, data);*/
+        super.onActivityReenter(requestCode, data);
         Log.d("AlbumActivity", "onActivityReenter: " + this);
         if (data != null) {
             sharedElementReturnPosition = data.getIntExtra(EXTRA_CURRENT_ALBUM_POSITION, -1);
@@ -452,7 +452,7 @@ public class AlbumActivity extends ThemeableActivity
                 recyclerView.scrollToPosition(sharedElementReturnPosition);
             }
         }
-        super.onActivityReenter(requestCode, data);
+        /*super.onActivityReenter(requestCode, data);*/
     }
 
     @Override
