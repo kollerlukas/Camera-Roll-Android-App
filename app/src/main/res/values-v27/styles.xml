@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--SettingsActivity Theme-->
-    <style name="CameraRoll.Theme.Light.Settings" parent="CameraRoll.Theme.Light">
-        <item name="android:windowBackground">@null</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarColor">@color/grey_200</item>
-    </style>
-
     <!--ExifEditor Theme-->
     <style name="CameraRoll.Theme.Light.ExifEditor" parent="CameraRoll.Theme.Light">
         <item name="android:windowBackground">@null</item>

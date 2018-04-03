@@ -1003,9 +1003,9 @@ public class AlbumActivity extends ThemeableActivity
     public void onBackPressed() {
         if (recyclerView != null && recyclerViewAdapter.onBackPressed()) {
             animateFab(false, false);
-        } else if (scrollToTheTop()) {
+        } /*else if (scrollToTheTop()) {
             recyclerView.smoothScrollToPosition(0);
-        } else {
+        }*/ else {
             if (snackbar != null) {
                 snackbar.dismiss();
                 snackbar = null;

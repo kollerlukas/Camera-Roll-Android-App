@@ -127,6 +127,8 @@ public class SettingsActivity extends ThemeableActivity {
                 setResult(RESULT_OK);
             }
         });
+
+        setSystemUiFlags();
     }
 
     @Override
