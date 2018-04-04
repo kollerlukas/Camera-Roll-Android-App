@@ -13,6 +13,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -489,11 +490,16 @@ public class FileExplorerActivity extends ThemeableActivity
                 }
                 break;
             case R.id.scan:
-                ArrayList<String> paths = FileOperation.Util
-                        .getAllChildPaths(new ArrayList<String>(), currentDir.getPath());
-                String[] pathsArray = new String[paths.size()];
-                paths.toArray(pathsArray);
-                FileOperation.Util.scanPathsWithNotification(this, pathsArray);
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<String> paths = FileOperation.Util
+                                .getAllChildPaths(new ArrayList<String>(), currentDir.getPath());
+                        String[] pathsArray = new String[paths.size()];
+                        paths.toArray(pathsArray);
+                        FileOperation.Util.scanPathsWithNotification(FileExplorerActivity.this, pathsArray);
+                    }
+                });
                 break;
             case R.id.add_to_virtual_album:
                 String path = currentDir.getPath();
