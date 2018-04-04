@@ -10,9 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:layerType="software"
         android:padding="32dp"
         android:paddingTop="?android:attr/actionBarSize" />
+    <!--android:layerType="software"-->
 
     <ProgressBar
         android:id="@+id/progress_bar"

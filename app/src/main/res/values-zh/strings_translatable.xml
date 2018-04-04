@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--error messages-->
-    <string name="read_permission_denied">Camera Roll需要获得访问存储空间的权限来描绘您的图片。</string>
+    <string name="read_permission_denied">Camera Roll需要访问存储空间的权限以显示图片。</string>
     <string name="grant_removable_storage_permission">授予访问可移动存储的权限</string>
     <string name="grant_removable_storage_permission_message">请在下一屏幕上选择您的可移动存储设备的根目录（如SD卡）。</string>
     <!--general-->
     <string name="photo">照片</string>
     <string name="raw_image">原始图像</string>
-    <string name="gif">动画</string>
+    <string name="gif">动图</string>
     <string name="video">视频</string>
     <string name="pick_photo">选择一张照片</string>
     <string name="pick_photos">选择照片</string>
     <string name="loading">加载中</string>
     <string name="loading_failed">加载失败</string>
     <string name="ok">确定</string>
+    <string name="remove">移除</string>
     <string name="cancel">取消</string>
-    <string name="no">否</string>
+    <string name="no">取消</string>
     <string name="undo">撤销</string>
     <string name="done">完成</string>
     <string name="retry">重试</string>
@@ -66,7 +67,7 @@
     <string name="copy_item_to">复制%1$d项至：</string>
     <string name="copy_items_to">复制%1$d项至：</string>
     <string name="create">创建</string>
-    <string name="new_folder">新文件夹</string>
+    <string name="new_folder">新建文件夹</string>
     <string name="rename">重命名</string>
     <string name="paste">粘贴</string>
     <string name="successfully_created_new_folder">新文件夹创建成功</string>
@@ -75,7 +76,7 @@
     <string name="no_files">没有文件</string>
     <string name="storage">存储空间</string>
     <string name="scan">扫描</string>
-    <string name="scanning">正在扫描</string>
+    <string name="scanning">正在扫描……</string>
     <string name="copy_file">复制%1$d个文件</string>
     <string name="copy_files">复制%1$d个文件</string>
     <string name="move_file">移动%1$d个文件</string>
@@ -89,25 +90,33 @@
     <string name="column_count">列数</string>
     <string name="other">其他</string>
     <string name="media_retriever">媒体获取器</string>
-    <string name="media_retriever_summary">不使用MediaStore API而手动搜索存储空间内的媒体。可尝试解决某些照片不能显示的问题。</string>
+    <string name="media_retriever_summary">不使用MediaStore API而手动搜索存储空间内的媒体，或许可以解决某些照片不能显示的问题。</string>
     <string name="use_8_bit_color">8位颜色</string>
-    <string name="use_8_bit_color_summary">在显示照片时使用8位颜色。可能增加加载时间和应用程序运行时占用的内存。</string>
+    <string name="use_8_bit_color_summary">在显示照片时使用8位颜色。可能减缓加载、占用更多内存。</string>
+    <string name="show_animations">过渡动画</string>
+    <string name="show_animations_summary">停用元素过渡动画和翻页动画</string>
     <string name="show_videos">显示视频</string>
-    <string name="show_videos_summary">在相册中显示视频。</string>
+    <string name="show_videos_summary">在相册中显示视频</string>
     <!--EditImageActivity-->
     <string name="rotate">旋转</string>
     <string name="restore">重置</string>
+    <string name="save_edit">保存</string>
+    <string name="export">导出</string>
     <string name="editing_file_format_not_supported">不支持编辑该格式的文件</string>
     <string name="success">成功！</string>
     <!--SetWallpaperActivity-->
     <string name="wallpaper">壁纸</string>
     <string name="set_wallpaper">设置为壁纸</string>
     <string name="wallpaper_file_format_not_supported">不支持将该格式的文件设为壁纸</string>
+    <string name="home_screen">主屏幕</string>
+    <string name="lock_screen">锁定屏幕</string>
+    <string name="both">主屏幕和锁定屏幕</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">照片信息编辑器</string>
     <string name="edit_exif">编辑照片信息</string>
     <string name="save">保存</string>
     <string name="changes_saved">更改已保存</string>
+    <string name="clear_exif_data">清除照片信息</string>
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">已排除的文件路径</string>
     <!--VirtualAlbumsActivity-->
@@ -122,6 +131,10 @@
     <string name="no_paths">没有已添加的路径</string>
     <string name="no_virtual_albums">没有虚拟相册</string>
     <!--info Dialog Strings-->
+    <string name="tags">标签：</string>
+    <string name="new_tag">新标签</string>
+    <string name="add_tag">添加标签</string>
+    <string name="tag_already_added">已添加标签</string>
     <string name="info_filename">文件名：</string>
     <string name="info_filepath">文件位置：</string>
     <string name="info_size">文件大小：</string>

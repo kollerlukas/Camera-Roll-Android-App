@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,8 +134,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         setPanEnabled(false);
         setPanLimit(PAN_LIMIT_CENTER);
         setOrientation(0);
-        setMinScale(0.1f);
-        setMinimumTileDpi(100);
+        setMinScale(0.01f);
         setMinimumScaleType(SCALE_TYPE_CUSTOM);
 
         setOnTouchListener(this);
@@ -554,16 +555,12 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
     @Override
     public void setPadding(int left, int top, int right, int bottom) {
-        //super.setPadding(left, top, right, bottom);
         padding = new int[]{left, top, right, bottom};
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        /*canvas.save();
-        canvas.rotate(rotationAngle, canvas.getWidth() / 2, canvas.getHeight() / 2);*/
         super.onDraw(canvas);
-        /*canvas.restore();*/
 
         // Don't draw anything before image is ready.
         if (!isReady() || cropRect == null) {
@@ -645,7 +642,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private void drawBackground(Canvas canvas) {
         Rect imageRect = getImageRect();
         PointF topLeftImageRect = sourceToViewCoord(imageRect.left, imageRect.top);
-        PointF bottomRightImageRect = sourceToViewCoord(imageRect.left, imageRect.top);
+        PointF bottomRightImageRect = sourceToViewCoord(imageRect.right, imageRect.bottom);
 
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
@@ -655,17 +652,17 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         }
 
         Path background = new Path();
-        background.setFillType(Path.FillType.INVERSE_EVEN_ODD);
+        background.setFillType(Path.FillType.EVEN_ODD);
         background.moveTo(topLeft.x, topLeft.y);
         background.lineTo(bottomRight.x, topLeft.y);
         background.lineTo(bottomRight.x, bottomRight.y);
         background.lineTo(topLeft.x, bottomRight.y);
         background.close();
 
-        background.moveTo(topLeftImageRect.x, topLeftImageRect.y);
-        background.lineTo(bottomRightImageRect.x, topLeftImageRect.y);
+        background.moveTo((int) topLeftImageRect.x, (int) topLeftImageRect.y);
+        background.lineTo(bottomRightImageRect.x, (int) topLeftImageRect.y);
         background.lineTo(bottomRightImageRect.x, bottomRightImageRect.y);
-        background.lineTo(topLeftImageRect.x, bottomRightImageRect.y);
+        background.lineTo((int) topLeftImageRect.x, bottomRightImageRect.y);
         background.close();
 
         backgroundPaint.setAlpha(touching ? 100 : 200);
