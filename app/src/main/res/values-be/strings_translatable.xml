@@ -22,7 +22,7 @@
     <string name="excluded">Выключыць</string>
     <string name="error">Памылка</string>
     <string name="selected_count">%1$d вылучана</string>
-    <string name="file_op_channel_name">Операцыі з файламі</string>
+    <string name="file_op_channel_name">Аперацыі з файламі</string>
     <string name="file_op_channel_description">Паказвае бягучы стан аперацыі з файламі.</string>
     <!--MainActivity-->
     <string name="refresh">Абнавіць</string>
@@ -31,7 +31,7 @@
     <string name="by_size">Памер</string>
     <string name="by_date">Дата</string>
     <string name="hidden_folders">Схаваць папку</string>
-    <string name="file_explorer">Файлавы мэнеджар</string>
+    <string name="file_explorer">Файлавы мэнэджар</string>
     <string name="about">Пра праграму</string>
     <string name="settings">Налады</string>
     <string name="camera_shortcut">Ярлык камеры</string>
@@ -39,7 +39,7 @@
     <string name="items_count">%1$d Элементаў</string>
     <!--AlbumActivity-->
     <string name="exclude">Выключыць</string>
-    <string name="pin_album">Замацаваць фльбом </string>
+    <string name="pin_album">Замацаваць альбом </string>
     <string name="file_deleted">%1$d файл выдалены</string>
     <string name="files_deleted">%1$d файлаў выдалена</string>
     <string name="select_all">Вылучыць усё</string>
