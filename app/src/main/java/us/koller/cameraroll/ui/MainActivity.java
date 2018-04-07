@@ -41,6 +41,8 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.AbstractRecyclerViewAdapter;
 import us.koller.cameraroll.adapter.main.NoFolderRecyclerViewAdapter;
 import us.koller.cameraroll.data.ContentObserver;
+import us.koller.cameraroll.styles.NestedRecyclerView;
+import us.koller.cameraroll.styles.Style;
 import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.MainAdapter;
@@ -136,7 +138,7 @@ public class MainActivity extends ThemeableActivity {
         hiddenFolders = settings.getHiddenFolders();
 
         //load media
-        albums = MediaProvider.getAlbums();
+        albums = MediaProvider.getAlbumsWithVirtualDirectories(this);
         if (albums == null) {
             albums = new ArrayList<>();
         }
@@ -203,8 +205,9 @@ public class MainActivity extends ThemeableActivity {
             recyclerViewAdapter = new NoFolderRecyclerViewAdapter(callback, recyclerView, pick_photos)
                     .setData(albums);
         } else {
-            spanCount = settings.getStyleColumnCount(this, settings.getStyle(this, pick_photos));
-            spacing = settings.getStyleGridSpacing(this, settings.getStyle(this, pick_photos));
+            Style style = settings.getStyleInstance(this, pick_photos);
+            spanCount = style.getColumnCount(this);
+            spacing = (int) style.getGridSpacing(this);
             recyclerViewAdapter = new MainAdapter(this, pick_photos).setData(albums);
             recyclerViewAdapter.getSelectorManager().addCallback(callback);
         }
@@ -377,26 +380,29 @@ public class MainActivity extends ThemeableActivity {
     public void onActivityReenter(final int resultCode, Intent intent) {
         super.onActivityReenter(resultCode, intent);
 
-        int nestedRecyclerViewValue = getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE);
         if (intent.getAction() != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && intent.getAction().equals(ItemActivity.SHARED_ELEMENT_RETURN_TRANSITION)
-                && Settings.getInstance(this).getStyle(this, pick_photos) == nestedRecyclerViewValue) {
+                && Settings.getInstance(this).getStyleInstance(this, pick_photos) instanceof NestedRecyclerView) {
             //handle shared-element transition, for nested nestedRecyclerView style
             Bundle tmpReenterState = new Bundle(intent.getExtras());
             if (tmpReenterState.containsKey(AlbumActivity.ALBUM_PATH)
                     && tmpReenterState.containsKey(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION)) {
 
                 String albumPath = tmpReenterState.getString(AlbumActivity.ALBUM_PATH);
+                Log.d("MainActivity", "albumPath: " + albumPath);
                 final int sharedElementReturnPosition = tmpReenterState.getInt(AlbumActivity.EXTRA_CURRENT_ALBUM_POSITION);
                 int index = -1;
                 ArrayList<Album> albums = MediaProvider.getAlbumsWithVirtualDirectories(this);
                 for (int i = 0; i < albums.size(); i++) {
+                    Log.d("MainActivity", "albums: " + albums.get(i).getPath());
                     if (albums.get(i).getPath().equals(albumPath)) {
                         index = i;
                         break;
                     }
                 }
+
+                Log.d("MainActivity", "index: " + index);
 
                 if (index == -1) {
                     return;

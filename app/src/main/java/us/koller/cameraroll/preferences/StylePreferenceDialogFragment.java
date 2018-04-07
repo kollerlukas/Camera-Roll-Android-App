@@ -14,13 +14,12 @@ import android.support.v7.preference.Preference;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.styles.Style;
 
 public class StylePreferenceDialogFragment
         extends DialogFragment implements DialogInterface.OnClickListener {
@@ -50,7 +49,7 @@ public class StylePreferenceDialogFragment
         View view = LayoutInflater.from(getContext()).inflate(R.layout.pref_dialog_style, null);
 
         ViewPager viewPager = view.findViewById(R.id.view_pager);
-        viewPager.setAdapter(new ViewPagerAdapter());
+        viewPager.setAdapter(new ViewPagerAdapter(getContext()));
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -104,50 +103,38 @@ public class StylePreferenceDialogFragment
 
     public static class ViewPagerAdapter extends PagerAdapter {
 
-        private static int[] nameRess = {
-                R.string.STYLE_PARALLAX_NAME,
-                R.string.STYLE_CARDS_NAME,
-                R.string.STYLE_CARDS_2_NAME,
-                R.string.STYLE_NESTED_RECYCLER_VIEW_NAME};
+        private Style[] styles;
 
-        private static int[] imageRess = {
-                R.drawable.style_parallax,
-                R.drawable.style_cards,
-                R.drawable.style_cards_2,
-                R.drawable.style_nested_recycler_view};
+        ViewPagerAdapter(Context context) {
+            Settings settings = Settings.getInstance(context);
+            int[] styleValues = context.getResources().getIntArray(R.array.style_values);
+            styles = new Style[styleValues.length];
+            for (int i = 0; i < styles.length; i++) {
+                styles[i] = settings.getStyleInstance(context, styleValues[i]);
+            }
+        }
 
+        @NonNull
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View view = LayoutInflater.from(container.getContext())
-                    .inflate(R.layout.pref_dialog_style_item, container, false);
-
-            TextView textView = view.findViewById(R.id.name);
-            textView.setText(nameRess[position]);
-
-            ImageView imageView = view.findViewById(R.id.image);
-            imageView.setImageResource(imageRess[position]);
-
-            Context context = container.getContext();
-            Settings s = Settings.getInstance(context);
-            int accentColor = s.getThemeInstance(context).getAccentColorLight(context);
-            imageView.setColorFilter(accentColor);
-
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            Style style = styles[position];
+            View view = style.createPrefDialogView(container);
             container.addView(view);
             return view;
         }
 
         @Override
         public int getCount() {
-            return nameRess.length;
+            return styles != null ? styles.length : 0;
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
             return view.equals(object);
         }
 
         @Override
-        public void destroyItem(ViewGroup collection, int position, Object view) {
+        public void destroyItem(@NonNull ViewGroup collection, int position, @NonNull Object view) {
             collection.removeView((View) view);
         }
     }
