@@ -120,9 +120,13 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(getApplicationContext());
         }
-        return new NotificationCompat.Builder(this, getString(R.string.file_op_channel_id))
-                .setContentTitle(getNotificationTitle())
-                .setSmallIcon(getNotificationSmallIconRes());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
+                getString(R.string.file_op_channel_id))
+                .setContentTitle(getNotificationTitle());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder.setSmallIcon(getNotificationSmallIconRes());
+        }
+        return builder;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -428,8 +432,10 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             }
             final NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context,
                     context.getString(R.string.file_op_channel_id))
-                    .setContentTitle("Scanning...")
-                    .setSmallIcon(R.drawable.ic_autorenew_white);
+                    .setContentTitle("Scanning...");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                notifBuilder.setSmallIcon(R.drawable.ic_autorenew_white);
+            }
             notifBuilder.setProgress(paths.length, 0, false);
             final NotificationManager manager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

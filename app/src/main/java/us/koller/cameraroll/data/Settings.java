@@ -8,6 +8,11 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import us.koller.cameraroll.R;
+import us.koller.cameraroll.styles.Cards;
+import us.koller.cameraroll.styles.Cards2;
+import us.koller.cameraroll.styles.NestedRecyclerView;
+import us.koller.cameraroll.styles.Parallax;
+import us.koller.cameraroll.styles.Style;
 import us.koller.cameraroll.themes.BlackTheme;
 import us.koller.cameraroll.themes.DarkTheme;
 import us.koller.cameraroll.themes.LightTheme;
@@ -31,6 +36,7 @@ public class Settings {
     private boolean cameraShortcut;
     private Uri removableStorageTreeUri;
     private boolean virtualDirectories;
+    @SuppressWarnings("FieldCanBeLocal")
     private boolean fadeImages = false;
     private boolean showAnimations;
 
@@ -129,9 +135,8 @@ public class Settings {
     }
 
     public int getStyle(Context context, boolean pickPhotos) {
-        Resources res = context.getResources();
-        if (pickPhotos && style == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
-            return res.getInteger(R.integer.STYLE_CARDS_VALUE);
+        if (pickPhotos && style == NestedRecyclerView.getValue(context)) {
+            return Cards2.getValue(context);
         }
         return style;
     }
@@ -140,25 +145,22 @@ public class Settings {
         this.style = style;
     }
 
-    public int getStyleColumnCount(Context context, int style) {
-        Resources res = context.getResources();
-        boolean landscape = res.getBoolean(R.bool.landscape);
-        int styleColumnCount = getDefaultStyleColumnCount(context, style);
-        if (landscape &&
-                (style == res.getInteger(R.integer.STYLE_CARDS_VALUE) ||
-                        style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE))) {
-            return styleColumnCount + 1;
-        }
-        return styleColumnCount;
+    public Style getStyleInstance(Context context, boolean pickPhotos) {
+        int style = getStyle(context, pickPhotos);
+        return getStyleInstance(context, style);
     }
 
-    public int getStyleGridSpacing(Context context, int style) {
-        Resources res = context.getResources();
-        if (style == res.getInteger(R.integer.STYLE_CARDS_VALUE)
-                || style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
-            return (int) res.getDimension(R.dimen.cards_style_grid_spacing);
+    public Style getStyleInstance(Context context, int style) {
+        if (style == Parallax.getValue(context)) {
+            return new Parallax();
+        } else if (style == Cards.getValue(context)) {
+            return new Cards();
+        } else if (style == Cards2.getValue(context)) {
+            return new Cards2();
+        } else if (style == NestedRecyclerView.getValue(context)) {
+            return new NestedRecyclerView();
         }
-        return 0;
+        return null;
     }
 
     public int getColumnCount(Context context) {
@@ -182,20 +184,6 @@ public class Settings {
 
     public void setColumnCount(int columnCount) {
         this.columnCount = columnCount;
-    }
-
-    private static int getDefaultStyleColumnCount(Context context, int style) {
-        Resources res = context.getResources();
-        if (style == res.getInteger(R.integer.STYLE_PARALLAX_VALUE)) {
-            return res.getInteger(R.integer.STYLE_PARALLAX_COLUMN_COUNT);
-        } else if (style == res.getInteger(R.integer.STYLE_CARDS_VALUE)) {
-            return res.getInteger(R.integer.STYLE_CARDS_COLUMN_COUNT);
-        } else if (style == res.getInteger(R.integer.STYLE_CARDS_2_VALUE)) {
-            return res.getInteger(R.integer.STYLE_CARDS_2_COLUMN_COUNT);
-        } else if (style == res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE)) {
-            return res.getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_COLUMN_COUNT);
-        }
-        return 1;
     }
 
     public int sortAlbumsBy() {
@@ -293,7 +281,7 @@ public class Settings {
                 removableStorageTreeUri.toString());
     }
 
-    private static void saveInt(Context context, String key, int value) {
+    public static void saveInt(Context context, String key, int value) {
         SharedPreferences sharedPreferences
                 = PreferenceManager.getDefaultSharedPreferences(context);
         sharedPreferences

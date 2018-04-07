@@ -572,8 +572,22 @@ public class ItemActivity extends ThemeableActivity {
                                 .putExtra(ALBUM_ITEM_PATH, path);
                         //notify AlbumActivity
                         LocalBroadcastManager.getInstance(ItemActivity.this).sendBroadcast(i);
-                        ItemActivity.this.setResult(RESULT_OK);
-                        finish();
+                        /*ItemActivity.this.setResult(RESULT_OK);
+                        finish();*/
+
+                        album.getAlbumItems().remove(albumItem);
+                        viewPager.getAdapter().notifyDataSetChanged();
+
+                        if (album.getAlbumItems().size() == 0) {
+                            ItemActivity.this.setResult(RESULT_OK);
+                            finish();
+                            return;
+                        }
+
+                        albumItem = album.getAlbumItems().get(viewPager.getCurrentItem());
+                        ItemAdapter adapter = (ItemAdapter) viewPager.getAdapter();
+                        ViewHolder viewHolder = adapter.findViewHolderByTag(albumItem.getPath());
+                        onShowViewHolder(viewHolder);
                         break;
                     case FileOperation.FAILED:
                         //onBackPressed();

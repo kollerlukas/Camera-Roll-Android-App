@@ -153,7 +153,7 @@ public abstract class Provider {
             return true;
         } else {
             for (int i = 0; i < pinnedPaths.size(); i++) {
-                if (albumPath.contains(pinnedPaths.get(i))) {
+                if (albumPath.equals(pinnedPaths.get(i))) {
                     return true;
                 }
             }

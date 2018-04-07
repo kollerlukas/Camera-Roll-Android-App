@@ -107,7 +107,7 @@ public class ExifEditorActivity extends ThemeableActivity {
                         for (ExifUtil.ExifItem item : editedItems) {
                             if (item.getTag().equals(tag)) {
                                 item.setValue(newValue);
-                                showSaveButton();
+                                showSaveButton(true);
                                 return;
                             }
                         }
@@ -115,7 +115,7 @@ public class ExifEditorActivity extends ThemeableActivity {
                         ExifUtil.ExifItem item = getItem(tag);
                         item.setValue(newValue);
                         editedItems.add(item);
-                        showSaveButton();
+                        showSaveButton(true);
                     }
 
                     @Override
@@ -180,12 +180,6 @@ public class ExifEditorActivity extends ThemeableActivity {
                                 }
                             });
         }
-
-        //needed to achieve transparent statusBar in landscape; don't ask me why, but its working
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
     @Override
@@ -244,12 +238,10 @@ public class ExifEditorActivity extends ThemeableActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showSaveButton() {
+    public void showSaveButton(boolean show) {
         //make save button visible
-        if (editedItems.size() > 0) {
-            MenuItem save = menu.findItem(R.id.save);
-            save.setVisible(true);
-        }
+        MenuItem save = menu.findItem(R.id.save);
+        save.setVisible(show && editedItems.size() > 0);
     }
 
     public void saveChanges() {
@@ -264,6 +256,9 @@ public class ExifEditorActivity extends ThemeableActivity {
                             public void run() {
                                 int stringRes = success ? R.string.changes_saved : R.string.error;
                                 Toast.makeText(ExifEditorActivity.this, stringRes, Toast.LENGTH_SHORT).show();
+                                if (success) {
+                                    showSaveButton(false);
+                                }
                             }
                         });
                     }

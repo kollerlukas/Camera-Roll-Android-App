@@ -432,7 +432,7 @@ public class AlbumActivity extends ThemeableActivity
     @Override
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onActivityReenter(int requestCode, Intent data) {
-        /*super.onActivityReenter(requestCode, data);*/
+        super.onActivityReenter(requestCode, data);
         Log.d("AlbumActivity", "onActivityReenter: " + this);
         if (data != null) {
             sharedElementReturnPosition = data.getIntExtra(EXTRA_CURRENT_ALBUM_POSITION, -1);
@@ -452,7 +452,7 @@ public class AlbumActivity extends ThemeableActivity
                 recyclerView.scrollToPosition(sharedElementReturnPosition);
             }
         }
-        super.onActivityReenter(requestCode, data);
+        /*super.onActivityReenter(requestCode, data);*/
     }
 
     @Override
@@ -1003,9 +1003,9 @@ public class AlbumActivity extends ThemeableActivity
     public void onBackPressed() {
         if (recyclerView != null && recyclerViewAdapter.onBackPressed()) {
             animateFab(false, false);
-        } else if (scrollToTheTop()) {
+        } /*else if (scrollToTheTop()) {
             recyclerView.smoothScrollToPosition(0);
-        } else {
+        }*/ else {
             if (snackbar != null) {
                 snackbar.dismiss();
                 snackbar = null;
@@ -1161,6 +1161,7 @@ public class AlbumActivity extends ThemeableActivity
     }
 
     private void removeAlbumItem(String path) {
+        Log.d("AlbumActivity", "removeAlbumItem() called with: path = [" + path + "]");
         int index = -1;
         for (int i = 0; i < album.getAlbumItems().size(); i++) {
             AlbumItem albumItem = album.getAlbumItems().get(i);
@@ -1169,9 +1170,14 @@ public class AlbumActivity extends ThemeableActivity
                 break;
             }
         }
+        Log.d("AlbumActivity", "removeAlbumItem: " + index);
         if (index > -1) {
             album.getAlbumItems().remove(index);
-            recyclerViewAdapter.notifyDataSetChanged();
+        }
+        recyclerViewAdapter.notifyDataSetChanged();
+
+        if (album.getAlbumItems().size() == 0) {
+            finish();
         }
     }
 }

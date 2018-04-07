@@ -13,6 +13,7 @@
     <string name="loading">Ładowanie…</string>
     <string name="loading_failed">Nie udało się załadować</string>
     <string name="ok">OK</string>
+    <string name="remove">Usuń</string>
     <string name="cancel">Anuluj</string>
     <string name="no">Nie</string>
     <string name="undo">Cofnij</string>
@@ -91,20 +92,30 @@
     <string name="media_retriever_summary">Ręcznie przeszukaj pamięć, zamiast polegać na MediaStore Api. Może pomóc, jeśli uważasz, że brakuje części plików.</string>
     <string name="use_8_bit_color">8-Bitowe kolory</string>
     <string name="use_8_bit_color_summary">Użyj 8-Bitowej palety kolorów, podczas wyświetlania obrazów. Ładowanie ich może zająć więcej czasu. Również zwiększa ilość używanej pamięci, gdy aplikacja jest uruchomiona.</string>
+    <string name="show_animations">Pokaż animacje</string>
+    <string name="show_animations_summary">Wyłącz SharedElementTransition i PageTransformer</string>
+    <string name="show_videos">Pokaż filmy</string>
+    <string name="show_videos_summary">Pokazuj filmy w galerii</string>
     <!--EditImageActivity-->
     <string name="rotate">Obróć</string>
     <string name="restore">Przywróć</string>
+    <string name="save_edit">Zapisz</string>
+    <string name="export">Eksport</string>
     <string name="editing_file_format_not_supported">Ten format pliku nie jest obsługiwany do edycji</string>
     <string name="success">Powodzenie!</string>
     <!--SetWallpaperActivity-->
     <string name="wallpaper">Tapeta</string>
     <string name="set_wallpaper">Ustaw tapetę</string>
     <string name="wallpaper_file_format_not_supported">Ten format pliku nie jest obsługiwany w przypadku tapet</string>
+    <string name="home_screen">Ekran główny</string>
+    <string name="lock_screen">Ekran blokady</string>
+    <string name="both">Obie</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">Edytor Exif</string>
     <string name="edit_exif">Edytuj Exif</string>
     <string name="save">Zapisz</string>
     <string name="changes_saved">Zmiany zapisano</string>
+    <string name="clear_exif_data">Wyczyść dane Exif</string>
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Wykluczone ścieżki</string>
     <!--VirtualAlbumsActivity-->
@@ -119,6 +130,10 @@
     <string name="no_paths">Brak zawartych ścieżek</string>
     <string name="no_virtual_albums">Brak wirtualnych albumów</string>
     <!--info Dialog Strings-->
+    <string name="tags">Tagi: </string>
+    <string name="new_tag">Nowy Tag</string>
+    <string name="add_tag">Dodaj Tag</string>
+    <string name="tag_already_added">Tag jest już dodany</string>
     <string name="info_filename">Nazwa pliku: </string>
     <string name="info_filepath">Ścieżka pliku: </string>
     <string name="info_size">Rozmiar: </string>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--ExifEditor Theme-->
+    <style name="CameraRoll.Theme.Light.ExifEditor" parent="CameraRoll.Theme.Light">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/grey_200</item>
+    </style>
+</resources>

@@ -70,7 +70,7 @@ public class SettingsActivity extends ThemeableActivity {
                     container.setPadding(container.getPaddingStart() + insets.getSystemWindowInsetLeft(),
                             container.getPaddingTop(),
                             container.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            container.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                            container.getPaddingBottom()/* + insets.getSystemWindowInsetBottom()*/);
 
                     // clear this listener so insets aren't re-applied
                     rootView.setOnApplyWindowInsetsListener(null);
@@ -109,7 +109,7 @@ public class SettingsActivity extends ThemeableActivity {
                                     container.setPadding(container.getPaddingStart() + windowInsets[0],
                                             container.getPaddingTop(),
                                             container.getPaddingEnd() + windowInsets[2],
-                                            container.getPaddingBottom() + windowInsets[3]);
+                                            container.getPaddingBottom() /*+ windowInsets[3]*/);
 
                                     rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 }
@@ -128,11 +128,7 @@ public class SettingsActivity extends ThemeableActivity {
             }
         });
 
-        //needed to achieve transparent statusBar in landscape; don't ask me why, but its working
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        setSystemUiFlags();
     }
 
     @Override

@@ -21,6 +21,7 @@
     <color name="colorAccent_text_light">@color/colorAccent_text</color>
 
     <color name="white">#FFFFFF</color>
+    <color name="grey_200">#EEEEEE</color>
     <color name="grey_300">#E0E0E0</color>
     <color name="white_translucent1">#8AFFFFFF</color>
     <color name="grey_500">#9E9E9E</color>

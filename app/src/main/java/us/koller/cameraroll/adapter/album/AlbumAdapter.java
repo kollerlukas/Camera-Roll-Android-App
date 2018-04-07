@@ -30,7 +30,6 @@ import us.koller.cameraroll.data.models.Gif;
 import us.koller.cameraroll.data.models.Photo;
 import us.koller.cameraroll.data.models.RAWImage;
 import us.koller.cameraroll.data.models.Video;
-import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
