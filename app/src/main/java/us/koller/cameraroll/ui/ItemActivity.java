@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,7 +39,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -63,6 +66,7 @@ import us.koller.cameraroll.data.fileOperations.Rename;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.models.Gif;
 import us.koller.cameraroll.data.models.Photo;
+import us.koller.cameraroll.data.models.RAWImage;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Video;
@@ -361,6 +365,21 @@ public class ItemActivity extends ThemeableActivity {
         if (menu != null) {
             menu.findItem(R.id.set_as).setVisible(albumItem instanceof Photo);
             menu.findItem(R.id.print).setVisible(albumItem instanceof Photo);
+        }
+
+        // set MaxBrightness
+        Settings settings = Settings.getInstance(this);
+        if (settings.isMaxBrightness()) {
+            final Window window = getWindow();
+            final WindowManager.LayoutParams layoutParams = window.getAttributes();
+            if (albumItem instanceof Photo) {
+                // set screenBrightness to max
+                layoutParams.screenBrightness = 1.0f;
+            } else {
+                // restore user preferred screenBrightness => negative value
+                layoutParams.screenBrightness = -1.0f;
+            }
+            window.setAttributes(layoutParams);
         }
     }
 

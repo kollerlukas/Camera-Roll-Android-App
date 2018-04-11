@@ -96,6 +96,8 @@
     <string name="show_animations_summary">Disable the SharedElementTransition and the PageTransformer</string>
     <string name="show_videos">Show Videos</string>
     <string name="show_videos_summary">Show videos in gallery</string>
+    <string name="maximum_brightness">Maximum Brightness</string>
+    <string name="maximum_brightness_summary">Set Screen Brightness to maximum when viewing images.</string>
     <!--EditImageActivity-->
     <string name="rotate">Rotate</string>
     <string name="restore">Restore</string>

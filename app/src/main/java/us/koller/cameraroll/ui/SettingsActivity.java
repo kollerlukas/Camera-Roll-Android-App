@@ -223,6 +223,7 @@ public class SettingsActivity extends ThemeableActivity {
             init8BitColorPref(settings.use8BitColor());
             initCameraShortcutPref(settings.getCameraShortcut());
             initAnimationsPref(settings.showAnimations());
+            initMaxBrightnessPref(settings.isMaxBrightness());
 
             if (savedInstanceState != null
                     && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
@@ -334,6 +335,14 @@ public class SettingsActivity extends ThemeableActivity {
             animationsPref.setOnPreferenceChangeListener(this);
         }
 
+        private void initMaxBrightnessPref(boolean maxBrightness) {
+            TwoStatePreference animationsPref =
+                    (TwoStatePreference) findPreference(getString(R.string.pref_key_max_brightness));
+
+            animationsPref.setChecked(maxBrightness);
+            animationsPref.setOnPreferenceChangeListener(this);
+        }
+
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
             if (callback != null) {
@@ -420,6 +429,8 @@ public class SettingsActivity extends ThemeableActivity {
                 settings.showAnimations((boolean) o);
             } else if (preference.getKey().equals(getString(R.string.pref_key_show_videos))) {
                 settings.showVideos((boolean) o);
+            } else if (preference.getKey().equals(getString(R.string.pref_key_max_brightness))) {
+                settings.setMaxBrightness((boolean) o);
             }
             return true;
         }

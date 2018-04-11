@@ -3,13 +3,13 @@ package us.koller.cameraroll.styles;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Canvas;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import us.koller.cameraroll.R;
@@ -124,7 +124,17 @@ public abstract class Style {
                 columnCountTV.setText(String.valueOf(columnCount));
             }
         };
-        view.findViewById(R.id.minus).setOnClickListener(clickListener);
-        view.findViewById(R.id.plus).setOnClickListener(clickListener);
+
+        Settings s = Settings.getInstance(view.getContext());
+        Theme theme = s.getThemeInstance(view.getContext());
+        int textColor = theme.getTextColorSecondary(view.getContext());
+
+        ImageButton minus = view.findViewById(R.id.minus);
+        minus.setOnClickListener(clickListener);
+        minus.setColorFilter(textColor);
+
+        ImageButton plus = view.findViewById(R.id.plus);
+        plus.setOnClickListener(clickListener);
+        plus.setColorFilter(textColor);
     }
 }

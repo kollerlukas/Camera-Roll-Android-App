@@ -43,6 +43,12 @@
             android:defaultValue="false"
             android:key="@string/pref_key_camera_shortcut"
             android:title="@string/camera_shortcut" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_max_brightness"
+            android:title="@string/maximum_brightness"
+            android:summary="@string/maximum_brightness_summary" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/other">

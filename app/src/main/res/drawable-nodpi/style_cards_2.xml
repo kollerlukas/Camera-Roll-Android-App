@@ -1,55 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="500dp"
-    android:height="750dp"
+    android:viewportWidth="500"
     android:viewportHeight="750"
-    android:viewportWidth="500">
-
-    <group
-        android:translateX="4"
-        android:translateY="4">
-        <path
-            android:fillColor="#EEEEEE"
-            android:pathData="M 0 0L 244 0L 244 244.6L 0 244.6L 0 0Z" />
-    </group>
-
-    <group
-        android:translateX="252"
-        android:translateY="4">
-        <path
-            android:fillColor="#EEEEEE"
-            android:pathData="M 0 0L 244 0L 244 244.6L 0 244.6L 0 0Z" />
-    </group>
-
-    <group
-        android:translateX="4"
-        android:translateY="253">
-        <path
-            android:fillColor="#EEEEEE"
-            android:pathData="M 0 0L 244 0L 244 244.6L 0 244.6L 0 0Z" />
-    </group>
-
-    <group
-        android:translateX="252"
-        android:translateY="253">
-        <path
-            android:fillColor="#EEEEEE"
-            android:pathData="M 0 0L 244 0L 244 244.6L 0 244.6L 0 0Z" />
-    </group>
-
-    <group
-        android:translateX="4"
-        android:translateY="502">
-        <path
-            android:fillColor="#EEEEEE"
-            android:pathData="M 0 0L 244 0L 244 244.6L 0 244.6L 0 0Z" />
-    </group>
-
-    <group
-        android:translateX="252"
-        android:translateY="502">
-        <path
-            android:fillColor="#EEEEEE"
-            android:pathData="M 0 0L 244 0L 244 244.6L 0 244.6L 0 0Z" />
+    android:width="500dp"
+    android:height="750dp">
+    <group android:translateX="-1200">
+        <group>
+            <clip-path android:pathData="M1200 0l500 0 0 750 -500 0 0 -750z" />
+            <group
+                android:translateX="1217"
+                android:translateY="17">
+                <path
+                    android:pathData="M0 0L220 0 220 220 0 220 0 0Z"
+                    android:fillColor="#eeeeee" />
+            </group>
+            <group
+                android:translateX="1463"
+                android:translateY="17">
+                <path
+                    android:pathData="M0 0L220 0 220 220 0 220 0 0Z"
+                    android:fillColor="#eeeeee" />
+            </group>
+            <group
+                android:translateX="1217"
+                android:translateY="265">
+                <path
+                    android:pathData="M0 0L220 0 220 220 0 220 0 0Z"
+                    android:fillColor="#eeeeee" />
+            </group>
+            <group
+                android:translateX="1463"
+                android:translateY="265">
+                <path
+                    android:pathData="M0 0L220 0 220 220 0 220 0 0Z"
+                    android:fillColor="#eeeeee" />
+            </group>
+            <group
+                android:translateX="1217"
+                android:translateY="513">
+                <path
+                    android:pathData="M0 0L220 0 220 220 0 220 0 0Z"
+                    android:fillColor="#eeeeee" />
+            </group>
+            <group
+                android:translateX="1463"
+                android:translateY="513">
+                <path
+                    android:pathData="M0 0L220 0 220 220 0 220 0 0Z"
+                    android:fillColor="#eeeeee" />
+            </group>
+        </group>
     </group>
 </vector>

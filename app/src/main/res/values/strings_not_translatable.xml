@@ -104,6 +104,7 @@
     <string name="pref_key_removable_storage_treeUri" translatable="false">KEY_REMOVABLE_STORAGE_TREE_URI</string>
     <string name="pref_key_animations" translatable="false">KEY_SHOW_ANIMATIONS</string>
     <string name="pref_key_show_videos" translatable="false">KEY_SHOW_VIDEOS</string>
+    <string name="pref_key_max_brightness" translatable="false">KEY_MAX_BRIGHTNESS</string>
 
     <!--Notification Channel-->
     <string name="file_op_channel_id">file_op_channel_id</string>

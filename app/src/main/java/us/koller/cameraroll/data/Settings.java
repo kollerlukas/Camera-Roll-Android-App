@@ -10,6 +10,7 @@ import android.util.Log;
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.styles.Cards;
 import us.koller.cameraroll.styles.Cards2;
+import us.koller.cameraroll.styles.List;
 import us.koller.cameraroll.styles.NestedRecyclerView;
 import us.koller.cameraroll.styles.Parallax;
 import us.koller.cameraroll.styles.Style;
@@ -39,6 +40,8 @@ public class Settings {
     @SuppressWarnings("FieldCanBeLocal")
     private boolean fadeImages = false;
     private boolean showAnimations;
+    private boolean maxBrightness;
+    private float prevBrightness;
 
     private static Settings instance;
 
@@ -103,6 +106,10 @@ public class Settings {
         showAnimations = sharedPreferences.getBoolean(
                 context.getString(R.string.pref_key_animations),
                 true);
+
+        maxBrightness = sharedPreferences.getBoolean(
+                context.getString(R.string.pref_key_max_brightness),
+                false);
     }
 
     /*Getter & Setter*/
@@ -159,6 +166,8 @@ public class Settings {
             return new Cards2();
         } else if (style == NestedRecyclerView.getValue(context)) {
             return new NestedRecyclerView();
+        } else if (style == List.getValue(context)) {
+            return new List();
         }
         return null;
     }
@@ -272,6 +281,22 @@ public class Settings {
 
     public void showAnimations(boolean showAnimations) {
         this.showAnimations = showAnimations;
+    }
+
+    public boolean isMaxBrightness() {
+        return maxBrightness;
+    }
+
+    public void setMaxBrightness(boolean maxBrightness) {
+        this.maxBrightness = maxBrightness;
+    }
+
+    public void setPrevBrightness(float prevBrightness) {
+        this.prevBrightness = prevBrightness;
+    }
+
+    public float getPrevBrightness() {
+        return prevBrightness;
     }
 
     public void setRemovableStorageTreeUri(Context context, Uri removableStorageTreeUri) {

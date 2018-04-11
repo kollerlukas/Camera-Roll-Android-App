@@ -33,27 +33,33 @@
     <integer name="STYLE_NESTED_RECYCLER_VIEW_VALUE">4</integer>
     <integer name="STYLE_NESTED_RECYCLER_VIEW_EXCLUDED_VALUE">5</integer>
 
+    <integer name="STYLE_LIST_VALUE">8</integer>
+
     <string name="STYLE_PARALLAX_NAME" translatable="false">Parallax</string>
     <string name="STYLE_CARDS_NAME" translatable="false">Cards</string>
     <string name="STYLE_CARDS_2_NAME" translatable="false">Cards 2</string>
     <string name="STYLE_NESTED_RECYCLER_VIEW_NAME" translatable="false">Nested RecyclerView</string>
+    <string name="STYLE_LIST_NAME" translatable="false">List</string>
 
     <!--Keys to store individual columnCounts-->
     <string name="STYLE_PARALLAX_COLUMN_COUNT_PREF_KEY" translatable="false">STYLE_PARALLAX_COLUMN_COUNT_PREF_KEY</string>
     <string name="STYLE_CARDS_COLUMN_COUNT_PREF_KEY" translatable="false">STYLE_CARDS_COLUMN_COUNT_PREF_KEY</string>
     <string name="STYLE_CARDS_2_COLUMN_COUNT_PREF_KEY" translatable="false">STYLE_CARDS_2_COLUMN_COUNT_PREF_KEY</string>
     <string name="STYLE_NESTED_RECYCLER_VIEW_COLUMN_COUNT_PREF_KEY" translatable="false">STYLE_NESTED_RECYCLER_VIEW_COLUMN_COUNT_PREF_KEY</string>
+    <string name="STYLE_LIST_COLUMN_COUNT_PREF_KEY" translatable="false">STYLE_LIST_COLUMN_COUNT_PREF_KEY</string>
 
     <integer-array name="style_values">
         <item>@integer/STYLE_PARALLAX_VALUE</item>
         <item>@integer/STYLE_CARDS_VALUE</item>
         <item>@integer/STYLE_CARDS_2_VALUE</item>
         <item>@integer/STYLE_NESTED_RECYCLER_VIEW_VALUE</item>
+        <item>@integer/STYLE_LIST_VALUE</item>
     </integer-array>
     <string-array name="style_names">
         <item>@string/STYLE_PARALLAX_NAME</item>
         <item>@string/STYLE_CARDS_NAME</item>
         <item>@string/STYLE_CARDS_2_NAME</item>
         <item>@string/STYLE_NESTED_RECYCLER_VIEW_NAME</item>
+        <item>@string/STYLE_LIST_NAME</item>
     </string-array>
 </resources>

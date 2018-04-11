@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:foreground="?selectableItemBackground"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="centerCrop"
+        tools:ignore="ContentDescription"
+        android:layout_margin="8dp" />
+
+    <LinearLayout
+        android:id="@+id/card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/removable_storage_indicator"
+            style="@style/Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:tag="@string/theme_text_color_primary"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_sd_card_white"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/hidden_folder_indicator"
+            style="@style/Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:tag="@string/theme_text_color_primary"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_visibility_off_white"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/name"
+            style="@style/AlbumTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_weight="1"
+            android:tag="@string/theme_text_color_primary" />
+
+        <TextView
+            android:id="@+id/count"
+            style="@style/AlbumSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="16dp"
+            android:tag="@string/theme_text_color_secondary" />
+    </LinearLayout>
+</LinearLayout>

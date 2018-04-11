@@ -2,6 +2,7 @@
     <dimen name="cards_style_grid_spacing">4dp</dimen>
     <dimen name="parallax_style_grid_spacing">0dp</dimen>
     <dimen name="nested_recycler_view_style_grid_spacing">0dp</dimen>
+    <dimen name="list_style_grid_spacing">0dp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="album_grid_spacing">4dp</dimen>
