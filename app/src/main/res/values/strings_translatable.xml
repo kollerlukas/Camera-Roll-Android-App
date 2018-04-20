@@ -1,6 +1,6 @@
 <resources>
     <!--error messages-->
-    <string name="read_permission_denied">Camera Roll needs the permission access your Storage to depict your pictures.</string>
+    <string name="read_permission_denied">Camera Roll needs permission to access your Storage to be able to depict your pictures.</string>
     <string name="grant_removable_storage_permission">Grant removable Storage Permission</string>
     <string name="grant_removable_storage_permission_message">Please select the root folder of your removable Storage device (e.g. SD Card) on the next screen.</string>
     <!--general-->
@@ -61,7 +61,7 @@
     <string name="move">Move</string>
     <string name="move_item_to">Move %1$d Item to:</string>
     <string name="move_items_to">Move %1$d Items to:</string>
-    <string name="move_error">Moving files to/from removable Storage doesn\'t work. Please just copy and delete the file</string>
+    <string name="move_error">Moving files to/from removable Storage doesn\'t work. Please just copy and delete the file.</string>
     <string name="copy">Copy</string>
     <string name="copy_item_to">Copy %1$d Item to:</string>
     <string name="copy_items_to">Copy %1$d Items to:</string>
@@ -89,15 +89,15 @@
     <string name="column_count">Column Count</string>
     <string name="other">Other</string>
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore Api. This might help if you are missing some picture.</string>
+    <string name="media_retriever_summary">Manually search the storage for media instead of relying on the MediaStore API. This might help if you are missing some pictures.</string>
     <string name="use_8_bit_color">8-Bit Color</string>
-    <string name="use_8_bit_color_summary">Use 8-Bit Color, when displaying images. Images might take longer to load. This also increases the amount of memory is used, when the app is running.</string>
+    <string name="use_8_bit_color_summary">Use 8-Bit Color when displaying images. Images might take longer to load. This also increases the amount of memory used when the app is running.</string>
     <string name="show_animations">Show Animations</string>
     <string name="show_animations_summary">Disable the SharedElementTransition and the PageTransformer</string>
     <string name="show_videos">Show Videos</string>
     <string name="show_videos_summary">Show videos in gallery</string>
     <string name="maximum_brightness">Maximum Brightness</string>
-    <string name="maximum_brightness_summary">Set Screen Brightness to maximum when viewing images.</string>
+    <string name="maximum_brightness_summary">Set Screen Brightness to maximum when viewing images</string>
     <!--EditImageActivity-->
     <string name="rotate">Rotate</string>
     <string name="restore">Restore</string>
