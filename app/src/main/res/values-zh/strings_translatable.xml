@@ -90,13 +90,15 @@
     <string name="column_count">列数</string>
     <string name="other">其他</string>
     <string name="media_retriever">媒体获取器</string>
-    <string name="media_retriever_summary">不使用MediaStore API而手动搜索存储空间内的媒体，或许可以解决某些照片不能显示的问题。</string>
+    <string name="media_retriever_summary">不使用MediaStore API而手动搜索存储空间内的媒体，或许可以解决某些照片不能显示的问题</string>
     <string name="use_8_bit_color">8位颜色</string>
-    <string name="use_8_bit_color_summary">在显示照片时使用8位颜色。可能减缓加载、占用更多内存。</string>
+    <string name="use_8_bit_color_summary">在显示照片时使用8位颜色。可能减缓加载、占用更多内存</string>
     <string name="show_animations">过渡动画</string>
     <string name="show_animations_summary">停用元素过渡动画和翻页动画</string>
     <string name="show_videos">显示视频</string>
     <string name="show_videos_summary">在相册中显示视频</string>
+    <string name="maximum_brightness">最大亮度</string>
+    <string name="maximum_brightness_summary">在显示照片时使用最大亮度</string>
     <!--EditImageActivity-->
     <string name="rotate">旋转</string>
     <string name="restore">重置</string>
