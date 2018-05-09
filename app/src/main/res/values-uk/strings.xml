@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about">Про</string>
+    <string name="clear_exif_data">Очистити Exif</string>
     <string name="appearance">Зовнішній вигляд</string>
+    <string name="virtual_albums">Віртуальні альбоми</string>
+    <string name="create_virtual_album">Створити вірт. альбом</string>
+    <string name="virtual_album_created">Вірт. альбом %1$s створено</string>
+    <string name="virtual_album_different_name">Будь ласка, виберіть інше ім'я</string>
+    <string name="add_path_to_virtual_album">Додати шлях до вірт. альбому</string>
+    <string name="added_path_to_virtual_album">Додано шлях до вірт. альбому %1$s</string>
+    <string name="virtual_album_deleted">Вірт. альбом %1$s видалено</string>
+    <string name="path_removed">шлях видалено</string>
+    <string name="no_paths">Немає шляхів</string>
+    <string name="no_virtual_albums">Немає віртуальних альбомів</string>
+    <string name="excluded_paths">Чорний список</string>
     <string name="by_date">По даті</string>
+    <string name="show_videos">Показати відео</string>
+    <string name="show_videos_summary">Показувати відео в галереї</string>
     <string name="by_name">По імені</string>
     <string name="by_size">По розміру</string>
     <string name="camera_shortcut">Ярлик камери</string>
@@ -27,7 +41,7 @@
     <string name="edit_item">Редагування %1$s</string>
     <string name="editing_file_format_not_supported">Редагування цього формату файлів не підтримується</string>
     <string name="error">Помилка</string>
-    <string name="exclude">Виключити</string>
+    <string name="exclude">Сховати альбом</string>
     <string name="excluded">Виключеня</string>
     <string name="exif_editor">Редактор Exif</string>
     <string name="exo_controls_fastforward_description">Перемотати вперед</string>
@@ -76,17 +90,18 @@
     <string name="no">Ні</string>
     <string name="no_files">НЕМАЄ ФАЙЛІВ</string>
     <string name="ok">OK</string>
-    <string name="open_with">Відкрити з допомогою…</string>
+    <string name="open_with">Відкрити в…</string>
     <string name="open_with_error">Немає додатків для перегляду %1$s</string>
     <string name="other">Інше</string>
     <string name="paste">Вставити</string>
+    <string name="paste_error">Ви не можете копіювати файли сюди!</string>
     <string name="photo">Фото</string>
     <string name="pick_photo">Вибрати фото</string>
     <string name="pick_photos">Вибрати фотографії</string>
     <string name="pin_album">Закріпити альбом</string>
     <string name="print">Друк</string>
     <string name="raw_image">RAW Зображення</string>
-    <string name="read_permission_denied">Camera Roll необхідний дозвіл на читання внутрішнього накопичувача для відображення мультимедіа.</string>
+    <string name="read_permission_denied">Camera Roll необхідний дозвіл на читання сховища для відображення фото.</string>
     <string name="refresh">Оновити</string>
     <string name="rename">Перейменувати</string>
     <string name="restore">Відновити</string>
@@ -104,8 +119,8 @@
     <string name="storage">Внутр. загальний накопичувач</string>
     <string name="style">Стиль</string>
     <string name="success">Успішно!</string>
-    <string name="successfully_created_new_folder">нова папка успішно створена</string>
-    <string name="successfully_renamed_file">файл успішно перейменовано</string>
+    <string name="successfully_created_new_folder">Папку створено</string>
+    <string name="successfully_renamed_file">Перейменовано</string>
     <string name="theme">Тема</string>
     <string name="undo">Відмінити</string>
     <string name="use_8_bit_color">8-біт колір</string>
