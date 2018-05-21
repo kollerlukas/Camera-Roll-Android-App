@@ -112,7 +112,9 @@ public abstract class Style {
                 int columnCount = getColumnCount(v.getContext());
                 switch (v.getId()) {
                     case R.id.minus:
-                        columnCount--;
+                        if (columnCount > 1) {
+                            columnCount--;
+                        }
                         break;
                     case R.id.plus:
                         columnCount++;
