@@ -262,10 +262,10 @@ public class AlbumActivity extends ThemeableActivity
         if (!pick_photos) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Drawable d = ContextCompat.getDrawable(this,
-                        R.drawable.ic_delete_avd);
+                        /*R.drawable.ic_delete_avd*/ R.drawable.ic_share_avd);
                 fab.setImageDrawable(d);
             } else {
-                fab.setImageResource(R.drawable.ic_delete_white);
+                fab.setImageResource(/*R.drawable.ic_delete_white*/ R.drawable.ic_share_white);
             }
         } else {
             fab.setImageResource(R.drawable.ic_send_white);
@@ -467,6 +467,7 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.rename).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
+            menu.findItem(R.id.delete).setVisible(false);
         } else if (album != null) {
             setupMenu();
         }
@@ -499,6 +500,7 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.copy).setVisible(selectorModeActive);
             menu.findItem(R.id.move).setVisible(selectorModeActive);
             menu.findItem(R.id.select_all).setVisible(selectorModeActive);
+            menu.findItem(R.id.delete).setVisible(selectorModeActive);
         }
     }
 
@@ -518,22 +520,7 @@ public class AlbumActivity extends ThemeableActivity
                 break;
             case R.id.share:
                 //share multiple items
-                selected_items_paths = recyclerViewAdapter.cancelSelectorMode(this);
-                ArrayList<Uri> uris = new ArrayList<>();
-                for (int i = 0; i < selected_items_paths.length; i++) {
-                    uris.add(StorageUtil.getContentUri(this, selected_items_paths[i]));
-                }
-
-                intent = new Intent()
-                        .setAction(Intent.ACTION_SEND_MULTIPLE)
-                        .setType(MediaType.getMimeType(this, uris.get(0)))
-                        .putExtra(Intent.EXTRA_STREAM, uris);
-
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(Intent.createChooser(intent, getString(R.string.share)));
-                }
+                shareSelectedItems();
                 break;
             case R.id.copy:
             case R.id.move:
@@ -545,6 +532,9 @@ public class AlbumActivity extends ThemeableActivity
                 intent.putExtra(FileOperationDialogActivity.FILES, selected_items_paths);
 
                 startActivityForResult(intent, FILE_OP_DIALOG_REQUEST);
+                break;
+            case R.id.delete:
+                deleteSelectedItems();
                 break;
             case R.id.exclude:
                 Provider.loadExcludedPaths(this);
@@ -929,24 +919,48 @@ public class AlbumActivity extends ThemeableActivity
         }
     }
 
+    public void deleteSelectedItems() {
+        //deleteAlbumItemsSnackbar();
+        final String[] selected_items = recyclerViewAdapter
+                .cancelSelectorMode(AlbumActivity.this);
+        new AlertDialog.Builder(AlbumActivity.this, theme.getDialogThemeRes())
+                .setTitle(getString(R.string.delete_files, selected_items.length) + "?")
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteAlbumItemsSnackbar(selected_items);
+                    }
+                }).create().show();
+    }
+
     public void fabClicked() {
         animateFab(false, true);
         if (!pick_photos) {
-            //deleteAlbumItemsSnackbar();
-            final String[] selected_items = recyclerViewAdapter
-                    .cancelSelectorMode(AlbumActivity.this);
-            new AlertDialog.Builder(AlbumActivity.this, theme.getDialogThemeRes())
-                    .setTitle(getString(R.string.delete_files, selected_items.length) + "?")
-                    .setNegativeButton(getString(R.string.no), null)
-                    .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            deleteAlbumItemsSnackbar(selected_items);
-                        }
-                    })
-                    .create().show();
+            //deleteClicked();
+            shareSelectedItems();
         } else {
             setPhotosResult();
+        }
+    }
+
+    public void shareSelectedItems() {
+        //share multiple items
+        String[] selected_items_paths = recyclerViewAdapter.cancelSelectorMode(this);
+        ArrayList<Uri> uris = new ArrayList<>();
+        for (int i = 0; i < selected_items_paths.length; i++) {
+            uris.add(StorageUtil.getContentUri(this, selected_items_paths[i]));
+        }
+
+        Intent intent = new Intent()
+                .setAction(Intent.ACTION_SEND_MULTIPLE)
+                .setType(MediaType.getMimeType(this, uris.get(0)))
+                .putExtra(Intent.EXTRA_STREAM, uris);
+
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(Intent.createChooser(intent, getString(R.string.share)));
         }
     }
 

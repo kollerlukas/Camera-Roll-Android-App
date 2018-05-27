@@ -240,7 +240,7 @@ public class InfoUtil {
             if (addresses.size() > 0) {
                 return addresses.get(0);
             }
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
         return null;

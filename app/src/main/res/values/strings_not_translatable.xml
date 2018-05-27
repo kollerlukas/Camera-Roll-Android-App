@@ -10,20 +10,21 @@
         <![CDATA[
             © 2017 Lukas Koller, Munich, Germany<br/>
             <br/>
-            <a href=\"https://github.com/kollerlukas/Camera-Roll-Android-App\">Source Code</a> for this App<br/>
+            <b><a href=\"https://github.com/kollerlukas/Camera-Roll-Android-App\">Source Code</a></b> for this App<br/>
+            <b><a href=\"https://github.com/kollerlukas/Camera-Roll-Android-App/blob/master/PRIVACY.md\">Privacy Policy</a></b><br/>
             <br/>
             <br/>
             <b>Licenses:</b><br/>
             <br/>
             Libraries:<br/>
             <br>
-                <a href=\"https://github.com/bumptech/glide\">Glide</a><br/>
+                <b><a href=\"https://github.com/bumptech/glide\">Glide</a></b><br/>
                 An image loading and caching library for Android focused on smooth scrolling.<br/>
                 <a href=\"https://github.com/bumptech/glide/blob/master/LICENSE\">LICENSE</a>
             <br>
             <br/>
             <br>
-                <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view\">Subsampling Scale Image View</a><br/>
+                <b><a href=\"https://github.com/davemorrissey/subsampling-scale-image-view\">Subsampling Scale Image View</a></b><br/>
                 Highly configurable, easily extendable view with pan and zoom gestures for displaying huge images without loss of detail. Perfect for photo galleries, maps, building plans etc.<br/>
                 <a href=\"https://github.com/davemorrissey/subsampling-scale-image-view/blob/master/LICENSE\">LICENSE</a>
             <br>
