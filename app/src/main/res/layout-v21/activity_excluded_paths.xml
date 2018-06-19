@@ -21,7 +21,7 @@
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
             android:ellipsize="start"
-            android:fontFamily="@font/roboto_mono_light"
+            android:fontFamily="@font/roboto_mono_medium"
             android:gravity="start|bottom"
             android:singleLine="true" />
 

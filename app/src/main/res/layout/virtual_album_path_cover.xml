@@ -29,7 +29,7 @@
         android:layout_marginStart="16dp"
         android:layout_weight="1"
         android:ellipsize="start"
-        android:fontFamily="@font/roboto_mono_light"
+        android:fontFamily="@font/roboto_mono_medium"
         android:singleLine="true"
         android:textSize="16sp" />
 

@@ -11,7 +11,8 @@
         android:layout_height="match_parent"
         android:layout_margin="@dimen/cards_style_grid_spacing"
         android:foreground="?selectableItemBackground"
-        app:cardElevation="2dp">
+        app:cardCornerRadius="4dp"
+        app:cardElevation="1dp">
 
         <ImageView
             android:id="@+id/image"

@@ -15,8 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pixelcan.inkpageindicator.InkPageIndicator;
-
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.styles.Style;
@@ -67,9 +65,6 @@ public class StylePreferenceDialogFragment
         }
 
         viewPager.setCurrentItem(currentItem);
-
-        InkPageIndicator inkPageIndicator = view.findViewById(R.id.indicator);
-        inkPageIndicator.setViewPager(viewPager);
 
         return new AlertDialog.Builder(getContext())
                 .setTitle(R.string.style)

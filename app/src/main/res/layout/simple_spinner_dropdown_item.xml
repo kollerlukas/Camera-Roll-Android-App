@@ -5,6 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:ellipsize="start"
-    android:fontFamily="@font/roboto_mono_light"
+    android:fontFamily="@font/roboto_mono_medium"
     android:padding="8dp"
     android:singleLine="true" />

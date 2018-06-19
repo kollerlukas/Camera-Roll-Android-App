@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
-                android:fontFamily="@font/roboto_mono_light"
+                android:fontFamily="@font/roboto_mono_medium"
                 android:textColor="@color/white_translucent1" />
 
             <us.koller.cameraroll.ui.widget.ExoPlayerSeekbar
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
-                android:fontFamily="@font/roboto_mono_light"
+                android:fontFamily="@font/roboto_mono_medium"
                 android:textColor="@color/white_translucent1" />
         </LinearLayout>
     </LinearLayout>

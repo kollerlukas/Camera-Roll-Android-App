@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="start"
-            android:fontFamily="@font/roboto_mono_light"
+            android:fontFamily="@font/roboto_mono_medium"
             android:gravity="start"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
