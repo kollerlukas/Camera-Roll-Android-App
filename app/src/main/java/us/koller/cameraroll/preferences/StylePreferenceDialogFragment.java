@@ -15,6 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.rd.PageIndicatorView;
+import com.rd.animation.type.AnimationType;
+
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.styles.Style;
@@ -65,6 +68,9 @@ public class StylePreferenceDialogFragment
         }
 
         viewPager.setCurrentItem(currentItem);
+
+        PageIndicatorView indicator = view.findViewById(R.id.indicator);
+        indicator.setAnimationType(AnimationType.WORM);
 
         return new AlertDialog.Builder(getContext())
                 .setTitle(R.string.style)
