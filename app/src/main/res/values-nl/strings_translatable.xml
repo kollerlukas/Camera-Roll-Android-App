@@ -1,0 +1,152 @@
+<resources>
+    <!--error messages-->
+    <string name="read_permission_denied">Camera Roll moet gemachtigd worden om toegang te krijgen tot je opslag, zodat afbeeldingen kunnen worden getoond.</string>
+    <string name="grant_removable_storage_permission">Verwijderbare opslag-machtiging verlenen</string>
+    <string name="grant_removable_storage_permission_message">Selecteer, op het volgende scherm, de hoofdmap van je verwijderbare opslag (bijv. je SD-kaart).</string>
+    <!--general-->
+    <string name="photo">Foto</string>
+    <string name="raw_image">RAW-afbeelding</string>
+    <string name="gif">GIF</string>
+    <string name="video">Video</string>
+    <string name="pick_photo">Kies een foto</string>
+    <string name="pick_photos">Kies foto's</string>
+    <string name="loading">Bezig met laden…</string>
+    <string name="loading_failed">Laden mislukt</string>
+    <string name="ok">Oké</string>
+    <string name="remove">Verwijderen</string>
+    <string name="cancel">Annuleren</string>
+    <string name="no">Nee</string>
+    <string name="undo">Ongedaan maken</string>
+    <string name="done">Voltooid</string>
+    <string name="retry">Opnieuw</string>
+    <string name="excluded">Uitgesloten</string>
+    <string name="error">Fout</string>
+    <string name="selected_count">%1$d geselecteerd</string>
+    <string name="file_op_channel_name">Bestandstaken</string>
+    <string name="file_op_channel_description">Toont de huidige status van een bestandstaak.</string>
+    <!--MainActivity-->
+    <string name="refresh">Verversen</string>
+    <string name="sort_by">Sorteren op…</string>
+    <string name="by_name">Naam</string>
+    <string name="by_size">Grootte</string>
+    <string name="by_date">Datum</string>
+    <string name="hidden_folders">Verborgen mappen</string>
+    <string name="file_explorer">Bestandsverkenner</string>
+    <string name="about">Over</string>
+    <string name="settings">Instellingen</string>
+    <string name="camera_shortcut">Camera-sneltoets</string>
+    <string name="item_count">%1$d item</string>
+    <string name="items_count">%1$d items</string>
+    <!--AlbumActivity-->
+    <string name="exclude">Uitsluiten</string>
+    <string name="pin_album">Album vastmaken</string>
+    <string name="file_deleted">%1$d bestand verwijderd</string>
+    <string name="files_deleted">%1$d bestanden verwijderd</string>
+    <string name="select_all">Alles selecteren</string>
+    <!--ItemActivity-->
+    <string name="set_as">Instellen als…</string>
+    <string name="open_with">Openen met…</string>
+    <string name="open_with_error">Geen app aangetroffen om je %1$s te bekijken</string>
+    <string name="print">Afdrukken</string>
+    <string name="info">Informatie</string>
+    <string name="share">Delen</string>
+    <string name="share_item">%1$s delen</string>
+    <string name="share_error">Geen app aangetroffen om je %1$s te delen</string>
+    <string name="edit">Bewerken</string>
+    <string name="edit_item">%1$s bewerken</string>
+    <string name="edit_error">Geen app aangetroffen om je %1$s te bewerken</string>
+    <string name="delete">Verwijderen</string>
+    <string name="delete_item">%1$s verwijderen</string>
+    <string name="delete_files">%1$d bestanden verwijderen</string>
+    <string name="move">Verplaatsen</string>
+    <string name="move_item_to">%1$d item verplaatsen naar:</string>
+    <string name="move_items_to">%1$d items verplaatsen naar:</string>
+    <string name="move_error">Het verplaatsen van bestanden van/naar verwijderbare opslag werkt niet. Kopieer en verwijder het bestand.</string>
+    <string name="copy">Kopiëren</string>
+    <string name="copy_item_to">%1$d item kopiëren naar:</string>
+    <string name="copy_items_to">%1$d items kopiëren naar:</string>
+    <string name="create">Creëren</string>
+    <string name="new_folder">Nieuwe map</string>
+    <string name="rename">Naam wijzigen</string>
+    <string name="paste">Plakken</string>
+    <string name="successfully_created_new_folder">nieuwe map gecreëerd</string>
+    <string name="successfully_renamed_file">bestandsnaam gewijzigd</string>
+    <!--FileExplorerActivity-->
+    <string name="no_files">geen bestanden</string>
+    <string name="storage">Opslag</string>
+    <string name="scan">Doorzoeken</string>
+    <string name="scanning">Bezig met doorzoeken…</string>
+    <string name="copy_file">%1$d bestand kopiëren</string>
+    <string name="copy_files">%1$d bestanden kopiëren</string>
+    <string name="move_file">%1$d bestand verplaatsen</string>
+    <string name="move_files">%1$d bestanden verplaatsen</string>
+    <string name="delete_file">%1$d bestand verwijderen</string>
+    <string name="paste_error">Je kunt hier geen bestanden plakken!</string>
+    <!--SettingsActivity-->
+    <string name="appearance">Uiterlijk</string>
+    <string name="theme">Thema</string>
+    <string name="style">Stijl</string>
+    <string name="column_count">Aantal kolommen</string>
+    <string name="other">Overig</string>
+    <string name="media_retriever">MediaDoorzoeker</string>
+    <string name="media_retriever_summary">Handmatig zoeken naar media op de opslag in plaats van via de MediaStore API. Dit kan helpen als er afbeeldingen ontbreken.</string>
+    <string name="use_8_bit_color">8-bit-kleuren</string>
+    <string name="use_8_bit_color_summary">8-bit-kleuren gebruiken bij het tonen van afbeeldingen. Hierdoor kan het laden langer duren en het geheugengebruik van de app neemt toe.</string>
+    <string name="show_animations">Animaties tonen</string>
+    <string name="show_animations_summary">SharedElementTransition en PageTransformer uitschakelen</string>
+    <string name="show_videos">Video's tonen</string>
+    <string name="show_videos_summary">Video's tonen in de galerij</string>
+    <string name="maximum_brightness">Maximale helderheid</string>
+    <string name="maximum_brightness_summary">Schermhelderheid instellen op maximaal tijdens het tonen van afbeeldingen</string>
+    <!--EditImageActivity-->
+    <string name="rotate">Draaien</string>
+    <string name="restore">Herstellen</string>
+    <string name="save_edit">Opslaan</string>
+    <string name="export">Exporteren</string>
+    <string name="editing_file_format_not_supported">Dit bestandsformaat wordt niet ondersteund.</string>
+    <string name="success">Voltooid!</string>
+    <!--SetWallpaperActivity-->
+    <string name="wallpaper">Achtergrond</string>
+    <string name="set_wallpaper">Instellen als achtergrond</string>
+    <string name="wallpaper_file_format_not_supported">Dit bestandsformaat wordt niet ondersteund.</string>
+    <string name="home_screen">Beginscherm</string>
+    <string name="lock_screen">Vergrendelscherm</string>
+    <string name="both">Beiden</string>
+    <!--ExifEditorActivity-->
+    <string name="exif_editor">Exif-bewerker</string>
+    <string name="edit_exif">Exif bewerken</string>
+    <string name="save">Opslaan</string>
+    <string name="changes_saved">Wijzigingen opgeslagen</string>
+    <string name="clear_exif_data">Exif-gegevens wissen</string>
+    <!--ExcludedPathsActivity-->
+    <string name="excluded_paths">Uitgesloten paden</string>
+    <!--VirtualAlbumsActivity-->
+    <string name="virtual_albums">Virtuele albums</string>
+    <string name="create_virtual_album">Virtueel album creëren</string>
+    <string name="virtual_album_created">Virtueel album %1$s gecreëerd</string>
+    <string name="virtual_album_different_name">Kies een andere naam</string>
+    <string name="add_path_to_virtual_album">Pad toevoegen aan virtueel album</string>
+    <string name="added_path_to_virtual_album">Pad toegevoegd aan virtueel album %1$s</string>
+    <string name="virtual_album_deleted">Virtueel album %1$s verwijderd</string>
+    <string name="path_removed">pad verwijderd</string>
+    <string name="no_paths">Geen paden opgegeven</string>
+    <string name="no_virtual_albums">Geen virtuele albums</string>
+    <!--info Dialog Strings-->
+    <string name="tags">Labels: </string>
+    <string name="new_tag">Nieuw label</string>
+    <string name="add_tag">Label toevoegen</string>
+    <string name="tag_already_added">Label is al toegevoegd</string>
+    <string name="info_filename">Bestandsnaam: </string>
+    <string name="info_filepath">Bestandspad: </string>
+    <string name="info_size">Grootte: </string>
+    <string name="info_dimensions">Afmetingen: </string>
+    <string name="info_date">Datum: </string>
+    <string name="info_location">Locatie: </string>
+    <string name="info_focal_length">Brandpuntsafstand: </string>
+    <string name="info_exposure">Belichting: </string>
+    <string name="info_camera_model">Cameramodel: </string>
+    <string name="info_aperture">Opening: </string>
+    <string name="info_iso">ISO: </string>
+    <string name="info_frame_rate">Framerate: </string>
+    <string name="copied_to_clipboard">Gekopieerd naar klembord</string>
+</resources>
