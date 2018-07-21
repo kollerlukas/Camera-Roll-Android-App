@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 
 import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.data.provider.retriever.Retriever;
 import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
-import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.util.StorageUtil;
 
 public class FilesProvider extends Provider {
@@ -17,46 +17,41 @@ public class FilesProvider extends Provider {
         public abstract void onDirLoaded(File_POJO dir);
     }
 
-    public FilesProvider(Context context) {
-        super(context);
+    public FilesProvider(Context c) {
+        super(c);
         retriever = new StorageRetriever();
     }
 
-    public void loadDir(final Activity context, String dirPath,
-                        FilesProvider.Callback callback) {
-
-        setCallback(callback);
-
-        ((StorageRetriever) retriever).loadFilesForDir(context, dirPath,
-                new Callback() {
-                    @Override
-                    public void onDirLoaded(File_POJO dir) {
-                        Callback callback = getCallback();
-                        if (callback != null) {
-                            callback.onDirLoaded(dir);
-                        }
-                    }
-
-                    @Override
-                    public void timeout() {
-                        Callback callback = getCallback();
-                        if (callback != null) {
-                            callback.timeout();
-                        }
-                    }
-
-                    @Override
-                    public void needPermission() {
-                        Callback callback = getCallback();
-                        if (callback != null) {
-                            callback.needPermission();
-                        }
-                    }
-                });
+    public static StorageRoot[] getRoots(Activity c) {
+        return StorageUtil.loadRoots(c);
     }
 
-    public static StorageRoot[] getRoots(Activity context) {
-        return StorageUtil.loadRoots(context);
-    }
+    public void loadDir(final Activity c, String dirPath, FilesProvider.Callback ca) {
+        setCallback(ca);
+        ((StorageRetriever) retriever).loadFilesForDir(c, dirPath, new Callback() {
+            @Override
+            public void onDirLoaded(File_POJO dir) {
+                Callback ca = getCallback();
+                if (ca != null) {
+                    ca.onDirLoaded(dir);
+                }
+            }
 
+            @Override
+            public void timeout() {
+                Callback ca = getCallback();
+                if (ca != null) {
+                    ca.timeout();
+                }
+            }
+
+            @Override
+            public void needPermission() {
+                Callback ca = getCallback();
+                if (ca != null) {
+                    ca.needPermission();
+                }
+            }
+        });
+    }
 }

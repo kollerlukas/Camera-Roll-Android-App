@@ -25,19 +25,19 @@ public abstract class Style {
     public abstract int getViewHolderLayoutRes();
 
     View inflateView(@NonNull ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return inflater.inflate(getViewHolderLayoutRes(), parent, false);
+        LayoutInflater inf = LayoutInflater.from(parent.getContext());
+        return inf.inflate(getViewHolderLayoutRes(), parent, false);
     }
 
     public RecyclerView.ViewHolder createViewHolderInstance(@NonNull ViewGroup parent) {
         return new SimpleAlbumHolder(inflateView(parent));
     }
 
-    public int getColumnCount(Context context) {
+    public int getColumnCount(Context c) {
         if (columnCount == -1) {
-            columnCount = retrieveColumnCount(context);
+            columnCount = retrieveColumnCount(c);
         }
-        Resources res = context.getResources();
+        Resources res = c.getResources();
         boolean landscape = res.getBoolean(R.bool.landscape);
         if (landscape && columnCountIncreasesInLandscape()) {
             return columnCount + 1;
@@ -49,20 +49,19 @@ public abstract class Style {
         return true;
     }
 
-    private void setColumnCount(Context context, int columnCount) {
+    private void setColumnCount(Context c, int columnCount) {
         if (!columnCountChangeable()) {
             return;
         }
         this.columnCount = columnCount;
-        Settings.saveInt(context, getColumnCountPrefKey(context), columnCount);
+        Settings.saveInt(c, getColumnCountPrefKey(c), columnCount);
     }
 
-    abstract String getColumnCountPrefKey(Context context);
+    abstract String getColumnCountPrefKey(Context c);
 
-    private int retrieveColumnCount(Context context) {
-        SharedPreferences sharedPreferences
-                = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getInt(getColumnCountPrefKey(context), getDefaultColumnCount());
+    private int retrieveColumnCount(Context c) {
+        SharedPreferences sP = PreferenceManager.getDefaultSharedPreferences(c);
+        return sP.getInt(getColumnCountPrefKey(c), getDefaultColumnCount());
     }
 
     abstract int getDefaultColumnCount();
@@ -71,15 +70,15 @@ public abstract class Style {
         return false;
     }
 
-    public float getGridSpacing(Context context) {
+    public float getGridSpacing(Context c) {
         if (gridSpacing == -1) {
-            gridSpacing = retrieveGridSpacing(context);
+            gridSpacing = retrieveGridSpacing(c);
         }
         return gridSpacing;
     }
 
-    private float retrieveGridSpacing(Context context) {
-        return context.getResources().getDimension(getGridSpacingRes());
+    private float retrieveGridSpacing(Context c) {
+        return c.getResources().getDimension(getGridSpacingRes());
     }
 
     abstract int getGridSpacingRes();
@@ -92,50 +91,47 @@ public abstract class Style {
                 .inflate(R.layout.pref_dialog_style_item, container, false);
     }
 
-    int getAccentColor(Context context) {
-        Settings settings = Settings.getInstance(context);
-        Theme theme = settings.getThemeInstance(context);
-        return theme.getAccentColor(context);
+    int getAccentColor(Context c) {
+        Settings settings = Settings.getInstance(c);
+        Theme t = settings.getThemeInstance(c);
+        return t.getAccentColor(c);
     }
 
-    void disableColumnCountButtons(View view) {
-        view.findViewById(R.id.column_count_buttons).setVisibility(View.GONE);
+    void disableColumnCountButtons(View v) {
+        v.findViewById(R.id.column_count_buttons).setVisibility(View.GONE);
     }
 
-    void setColumnCountButtonsClickListener(final View view) {
-        final TextView columnCountTV = view.findViewById(R.id.column_count);
-        columnCountTV.setText(String.valueOf(getColumnCount(view.getContext())));
+    void setColumnCountButtonsClickListener(final View v) {
+        final TextView columnCountTV = v.findViewById(R.id.column_count);
+        columnCountTV.setText(String.valueOf(getColumnCount(v.getContext())));
 
-        View.OnClickListener clickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int columnCount = getColumnCount(v.getContext());
-                switch (v.getId()) {
-                    case R.id.minus:
-                        if (columnCount > 1) {
-                            columnCount--;
-                        }
-                        break;
-                    case R.id.plus:
-                        columnCount++;
-                        break;
-                    default:
-                        break;
-                }
-                setColumnCount(v.getContext(), columnCount);
-                columnCountTV.setText(String.valueOf(columnCount));
+        View.OnClickListener clickListener = (View V) -> {
+            int columnCount = getColumnCount(V.getContext());
+            switch (V.getId()) {
+                case R.id.minus:
+                    if (columnCount > 1) {
+                        columnCount--;
+                    }
+                    break;
+                case R.id.plus:
+                    columnCount++;
+                    break;
+                default:
+                    break;
             }
+            setColumnCount(V.getContext(), columnCount);
+            columnCountTV.setText(String.valueOf(columnCount));
         };
 
-        Settings s = Settings.getInstance(view.getContext());
-        Theme theme = s.getThemeInstance(view.getContext());
-        int textColor = theme.getTextColorSecondary(view.getContext());
+        Settings s = Settings.getInstance(v.getContext());
+        Theme t = s.getThemeInstance(v.getContext());
+        int textColor = t.getTextColorSecondary(v.getContext());
 
-        ImageButton minus = view.findViewById(R.id.minus);
+        ImageButton minus = v.findViewById(R.id.minus);
         minus.setOnClickListener(clickListener);
         minus.setColorFilter(textColor);
 
-        ImageButton plus = view.findViewById(R.id.plus);
+        ImageButton plus = v.findViewById(R.id.plus);
         plus.setOnClickListener(clickListener);
         plus.setColorFilter(textColor);
     }

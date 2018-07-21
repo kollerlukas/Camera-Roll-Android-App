@@ -6,7 +6,7 @@
     <string name="virtual_albums">Віртуальні альбоми</string>
     <string name="create_virtual_album">Створити вірт. альбом</string>
     <string name="virtual_album_created">Вірт. альбом %1$s створено</string>
-    <string name="virtual_album_different_name">Будь ласка, виберіть інше ім'я</string>
+    <string name="virtual_album_different_name">Будь ласка, виберіть інше ім\'я</string>
     <string name="add_path_to_virtual_album">Додати шлях до вірт. альбому</string>
     <string name="added_path_to_virtual_album">Додано шлях до вірт. альбому %1$s</string>
     <string name="virtual_album_deleted">Вірт. альбом %1$s видалено</string>

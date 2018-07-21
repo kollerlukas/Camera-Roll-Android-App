@@ -24,20 +24,26 @@ public class ExoPlayerSeekbar extends AppCompatSeekBar implements TimeBar, SeekB
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
+    //@Override (doesn\'t override method from superclass)
     public void setListener(OnScrubListener listener) {
         setOnSeekBarChangeListener(this);
         this.listener = listener;
     }
 
     @Override
-    public void setKeyTimeIncrement(long time) {
+    public void addListener(OnScrubListener listener) {
+    }
 
+    @Override
+    public void removeListener(OnScrubListener listener) {
+    }
+
+    @Override
+    public void setKeyTimeIncrement(long time) {
     }
 
     @Override
     public void setKeyCountIncrement(int count) {
-
     }
 
     @Override
@@ -57,7 +63,6 @@ public class ExoPlayerSeekbar extends AppCompatSeekBar implements TimeBar, SeekB
 
     @Override
     public void setAdGroupTimesMs(@Nullable long[] adGroupTimesMs, @Nullable boolean[] playedAdGroups, int adGroupCount) {
-
     }
 
     @Override

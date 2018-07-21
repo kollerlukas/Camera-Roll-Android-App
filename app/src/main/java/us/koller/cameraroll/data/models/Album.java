@@ -10,8 +10,7 @@ import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.util.SortUtil;
 
-public class Album
-        implements Parcelable, SortUtil.Sortable {
+public class Album implements Parcelable, SortUtil.Sortable {
 
     private static final int NOT_HIDDEN = 1;
     private static final int HIDDEN = 2;
@@ -25,22 +24,20 @@ public class Album
 
     public Album() {
         albumItems = new ArrayList<>();
-
         excluded = false;
         pinned = false;
     }
 
-    public Album setPath(String path) {
-        this.path = path;
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Album createFromParcel(Parcel parcel) {
+            return new Album(parcel);
+        }
 
-        excluded = Provider.isDirExcluded(getPath(),
-                Provider.getExcludedPaths());
-
-        pinned = Provider.isAlbumPinned(getPath(),
-                Provider.getPinnedPaths());
-
-        return this;
-    }
+        @Override
+        public Album[] newArray(int i) {
+            return new Album[i];
+        }
+    };
 
     public boolean isHidden() {
         if (hidden != -1) {
@@ -70,9 +67,11 @@ public class Album
         return path;
     }
 
-    @Override
-    public String getName() {
-        return new File(getPath()).getName();
+    public Album setPath(String path) {
+        this.path = path;
+        excluded = Provider.isDirExcluded(getPath(), Provider.getExcludedPaths());
+        pinned = Provider.isAlbumPinned(getPath(), Provider.getPinnedPaths());
+        return this;
     }
 
     @Override
@@ -87,12 +86,13 @@ public class Album
     }
 
     @Override
-    public boolean pinned() {
-        return pinned;
+    public String getName() {
+        return new File(getPath()).getName();
     }
 
-    public ArrayList<AlbumItem> getAlbumItems() {
-        return albumItems;
+    @Override
+    public boolean pinned() {
+        return pinned;
     }
 
     @SuppressWarnings("unchecked")
@@ -101,6 +101,10 @@ public class Album
         hidden = parcel.readInt();
         albumItems = new ArrayList<>();
         albumItems = parcel.createTypedArrayList(AlbumItem.CREATOR);
+    }
+
+    public ArrayList<AlbumItem> getAlbumItems() {
+        return albumItems;
     }
 
     @Override
@@ -114,24 +118,13 @@ public class Album
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(path);
-        parcel.writeInt(hidden);
+    public void writeToParcel(Parcel p, int i) {
+        p.writeString(path);
+        p.writeInt(hidden);
         AlbumItem[] albumItems = new AlbumItem[this.albumItems.size()];
         for (int k = 0; k < albumItems.length; k++) {
             albumItems[k] = this.albumItems.get(k);
         }
-        parcel.writeTypedArray(albumItems, 0);
+        p.writeTypedArray(albumItems, 0);
     }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Album createFromParcel(Parcel parcel) {
-            return new Album(parcel);
-        }
-
-        @Override
-        public Album[] newArray(int i) {
-            return new Album[i];
-        }
-    };
 }

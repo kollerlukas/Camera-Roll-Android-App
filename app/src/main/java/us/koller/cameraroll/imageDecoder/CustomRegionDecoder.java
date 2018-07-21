@@ -23,24 +23,24 @@ public class CustomRegionDecoder implements ImageRegionDecoder {
     private final Object decoderLock = new Object();
 
     @Override
-    public Point init(Context context, Uri uri) throws Exception {
-        InputStream inputStream = context.getContentResolver().openInputStream(uri);
-        decoder = BitmapRegionDecoder.newInstance(inputStream, false);
+    public Point init(Context c, Uri uri) throws Exception {
+        InputStream iS = c.getContentResolver().openInputStream(uri);
+        decoder = BitmapRegionDecoder.newInstance(iS, false);
         options = new BitmapFactory.Options();
-        boolean use8BitColor = Settings.getInstance(context).use8BitColor();
+        boolean use8BitColor = Settings.getInstance(c).use8BitColor();
         options.inPreferredConfig = use8BitColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
         return new Point(this.decoder.getWidth(), this.decoder.getHeight());
     }
 
     @Override
-    public Bitmap decodeRegion(Rect rect, int sampleSize) {
+    public Bitmap decodeRegion(Rect r, int sampleSize) {
         synchronized (this.decoderLock) {
             options.inSampleSize = sampleSize;
-            Bitmap bitmap = this.decoder.decodeRegion(rect, options);
-            if (bitmap == null) {
+            Bitmap bmp = this.decoder.decodeRegion(r, options);
+            if (bmp == null) {
                 throw new RuntimeException("Region decoder returned null bitmap - image format may not be supported");
             } else {
-                return bitmap;
+                return bmp;
             }
         }
     }

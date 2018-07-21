@@ -29,18 +29,13 @@ public class GifViewHolder extends ViewHolder {
     }
 
     private void reloadGif() {
-        View view = itemView.findViewById(R.id.image);
-        ItemViewUtil.bindGif(this, (ImageView) view, albumItem);
+        View v = itemView.findViewById(R.id.image);
+        ItemViewUtil.bindGif(this, (ImageView) v, albumItem);
     }
 
     public void setAttacher(ImageView imageView) {
         attacher = new PhotoViewAttacher(imageView);
-        attacher.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
-            @Override
-            public void onViewTap(View view, float x, float y) {
-                imageOnClick(view);
-            }
-        });
+        attacher.setOnViewTapListener((View v, float x, float y) -> imageOnClick(v));
     }
 
     @Override

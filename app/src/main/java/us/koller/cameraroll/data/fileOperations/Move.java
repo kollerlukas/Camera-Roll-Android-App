@@ -19,6 +19,11 @@ public class Move extends FileOperation {
 
     private ArrayList<String> movedFilePaths;
 
+    private static boolean renameFile(File f, File nF) {
+        //moving file
+        return f.renameTo(nF);
+    }
+
     @Override
     String getNotificationTitle() {
         return getString(R.string.move);
@@ -30,29 +35,21 @@ public class Move extends FileOperation {
     }
 
     @Override
-    public void execute(Intent workIntent) {
-        File_POJO[] files = getFiles(workIntent);
-        File_POJO target = workIntent.getParcelableExtra(TARGET);
-
+    public void execute(Intent wI) {
+        File_POJO[] files = getFiles(wI);
+        File_POJO target = wI.getParcelableExtra(TARGET);
         movedFilePaths = new ArrayList<>();
-
         if (target == null) {
             return;
         }
-
         int success_count = 0;
-
         onProgress(success_count, files.length);
-
         //check if file is on removable storage
         boolean movingOntoRemovableStorage = Util.isOnRemovableStorage(target.getPath());
-
         /*if (movingOntoRemovableStorage) {
             //failed = true;
             Uri treeUri = getTreeUri(workIntent, target.getPath());
-            if (treeUri == null) {
-                return;
-            }
+            if (treeUri == null) { return; }
         } else {*/
         for (int i = files.length - 1; i >= 0; i--) {
             boolean movingFromRemovableStorage = Util.isOnRemovableStorage(files[i].getPath());
@@ -62,16 +59,15 @@ public class Move extends FileOperation {
                 //failed = true;
                 Uri treeUri;
                 if (movingFromRemovableStorage) {
-                    treeUri = getTreeUri(workIntent, files[i].getPath());
+                    treeUri = getTreeUri(wI, files[i].getPath());
                 } else {
-                    treeUri = getTreeUri(workIntent, target.getPath());
+                    treeUri = getTreeUri(wI, target.getPath());
                 }
 
                 if (treeUri == null) {
                     return;
                 }
-                result = copyAndDeleteFiles(getApplicationContext(), treeUri,
-                        files[i].getPath(), target.getPath());
+                result = copyAndDeleteFiles(getApplicationContext(), treeUri, files[i].getPath(), target.getPath());
                 //break;
             } else {
                 result = moveFile(files[i].getPath(), target.getPath());
@@ -85,10 +81,7 @@ public class Move extends FileOperation {
             onProgress(success_count, files.length);
         }
         //}
-
-        /*if (failed) {
-            showRemovableStorageToast();
-        } else */
+        /*if (failed) { showRemovableStorageToast();} else */
         if (success_count == 0) {
             onProgress(success_count, files.length);
         }
@@ -100,57 +93,48 @@ public class Move extends FileOperation {
     }
 
     private boolean moveFile(String path, String destination) {
-        ArrayList<String> oldPaths = Util.getAllChildPaths(new ArrayList<String>(), path);
-
-        File file = new File(path);
-        File newFile = new File(destination, file.getName());
+        ArrayList<String> oldPaths = Util.getAllChildPaths(new ArrayList<>(), path);
+        File f = new File(path);
+        File nF = new File(destination, f.getName());
 
         //moving file
-        boolean success = renameFile(file, newFile);
+        boolean success = renameFile(f, nF);
 
         //re-scan all paths
-        ArrayList<String> newPaths = Util.getAllChildPaths(new ArrayList<String>(), newFile.getPath());
+        ArrayList<String> newPaths = Util.getAllChildPaths(new ArrayList<>(), nF.getPath());
         addPathsToScan(oldPaths);
         addPathsToScan(newPaths);
         return success;
     }
 
-    private boolean copyAndDeleteFiles(Context context, Uri treeUri,
-                                       String path, String destination) {
-        Copy copy = new Copy();
+    private boolean copyAndDeleteFiles(Context context, Uri treeUri, String path, String destination) {
+        Copy c = new Copy();
         boolean result;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                 Environment.isExternalStorageRemovable(new File(path))) {
-            result = copy.copyFilesRecursively(context, null,
-                    path, destination, true);
+            result = c.copyFilesRecursively(context, null, path, destination, true);
         } else {
-            result = copy.copyFilesRecursively(context, treeUri,
-                    path, destination, true);
+            result = c.copyFilesRecursively(context, treeUri, path, destination, true);
         }
-        addPathsToScan(copy.getPathsToScan());
+        addPathsToScan(c.getPathsToScan());
         Log.d("Move", "copyAndDeleteFiles(): " + result);
         if (result) {
-            Delete delete = new Delete();
+            Delete d = new Delete();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                     && Environment.isExternalStorageRemovable(new File(path))) {
-                result = delete.deleteFileOnRemovableStorage(context, treeUri, path);
+                result = d.deleteFileOnRemovableStorage(context, treeUri, path);
             } else {
-                result = delete.deleteFile(path);
+                result = d.deleteFile(path);
             }
-            addPathsToScan(delete.getPathsToScan());
+            addPathsToScan(d.getPathsToScan());
         }
         return result;
     }
 
-    private static boolean renameFile(File file, File newFile) {
-        //moving file
-        return file.renameTo(newFile);
-    }
-
     @Override
     public Intent getDoneIntent() {
-        Intent intent = super.getDoneIntent();
-        intent.putExtra(MOVED_FILES_PATHS, movedFilePaths);
-        return intent;
+        Intent i = super.getDoneIntent();
+        i.putExtra(MOVED_FILES_PATHS, movedFilePaths);
+        return i;
     }
 }

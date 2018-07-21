@@ -25,51 +25,35 @@ public class VideoViewHolder extends ViewHolder {
 
         ItemViewUtil.bindTransitionView((ImageView) view, albumItem);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ItemActivity.videoOnClick(view.getContext(), albumItem);
-            }
-        });
+        view.setOnClickListener((View vv) -> ItemActivity.videoOnClick(vv.getContext(), albumItem));
         return v;
     }
 
     @Override
     public void onSharedElementEnter() {
-        final View view = itemView.findViewById(R.id.image);
+        final View v = itemView.findViewById(R.id.image);
 
         Resources res = itemView.getContext().getResources();
-        final Drawable playOverlay = VectorDrawableCompat.create(res,
-                R.drawable.play_indicator, itemView.getContext().getTheme());
+        final Drawable playOverlay = VectorDrawableCompat.create(res, R.drawable.play_indicator,
+                itemView.getContext().getTheme());
 
         if (playOverlay == null) {
             return;
         }
 
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                int dimen = (int) view.getContext().getResources()
-                        .getDimension(R.dimen.twenty_four_dp) * 2;
-
-                int left = view.getWidth() / 2 - dimen / 2;
-                int top = view.getHeight() / 2 - dimen / 2;
-
-                playOverlay.setBounds(left, top, left + dimen, top + dimen);
-                view.getOverlay().add(playOverlay);
-            }
+        v.post(() -> {
+            int dimen = (int) v.getContext().getResources().getDimension(R.dimen.twenty_four_dp) * 2;
+            int left = (v.getWidth() / 2) - dimen / 2;
+            int top = (v.getHeight() / 2) - dimen / 2;
+            playOverlay.setBounds(left, top, left + dimen, top + dimen);
+            v.getOverlay().add(playOverlay);
         });
     }
 
     @Override
     public void onSharedElementExit(final ItemActivity.Callback callback) {
-        final View view = itemView.findViewById(R.id.image);
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                view.getOverlay().clear();
-            }
-        });
+        final View v = itemView.findViewById(R.id.image);
+        v.post(() -> v.getOverlay().clear());
         callback.done();
     }
 }

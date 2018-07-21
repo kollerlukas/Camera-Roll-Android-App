@@ -45,31 +45,29 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     private void swapView(final boolean isReturning) {
-        final View view = itemView.findViewById(R.id.subsampling);
+        final View v = itemView.findViewById(R.id.subsampling);
         final View transitionView = itemView.findViewById(R.id.image);
         if (!isReturning) {
-            view.setVisibility(View.VISIBLE);
-            bindImageView(view, transitionView);
+            v.setVisibility(View.VISIBLE);
+            bindImageView(v, transitionView);
         } else {
             transitionView.setTranslationX(0);
-            view.setVisibility(View.INVISIBLE);
+            v.setVisibility(View.INVISIBLE);
             transitionView.setVisibility(View.VISIBLE);
         }
     }
 
-    void bindImageView(View view, final View transitionView) {
+    void bindImageView(View v, final View transitionView) {
         if (albumItem.error) {
             transitionView.setVisibility(View.VISIBLE);
             ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
             return;
         }
-
         if (imageViewWasBound) {
             return;
         }
 
-        final SubsamplingScaleImageView imageView
-                = (SubsamplingScaleImageView) view;
+        final SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) v;
 
         // use custom decoders
         imageView.setBitmapDecoderClass(getImageDecoderClass());
@@ -81,7 +79,7 @@ public class PhotoViewHolder extends ViewHolder {
         imageView.setDoubleTapZoomScale(1.0f);
 
         //imageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
-        int orientation = ExifUtil.getExifOrientationAngle(view.getContext(), albumItem);
+        int orientation = ExifUtil.getExifOrientationAngle(v.getContext(), albumItem);
         imageView.setOrientation(orientation);
 
         final GestureDetector gestureDetector
@@ -93,10 +91,11 @@ public class PhotoViewHolder extends ViewHolder {
                         return super.onSingleTapUp(e);
                     }
                 });
-        view.setOnTouchListener(new View.OnTouchListener() {
+        //TODO
+        v.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public boolean onTouch(View v, MotionEvent motionEvent) {
                 return gestureDetector.onTouchEvent(motionEvent);
             }
         });
@@ -115,7 +114,7 @@ public class PhotoViewHolder extends ViewHolder {
                 });
     }
 
-    private void scaleDown(final ItemActivity.Callback callback) {
+    private void scaleDown(final ItemActivity.Callback c) {
         final SubsamplingScaleImageView imageView = itemView.findViewById(R.id.subsampling);
         if (imageView != null) {
             try {
@@ -127,14 +126,14 @@ public class PhotoViewHolder extends ViewHolder {
                                     public void onComplete() {
                                         super.onComplete();
                                         swapView(true);
-                                        callback.done();
+                                        c.done();
                                         //imageView.recycle();
                                     }
                                 })
                         .start();
             } catch (NullPointerException e) {
                 swapView(true);
-                callback.done();
+                c.done();
                 //imageView.recycle();
             }
         }
@@ -146,13 +145,8 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     @Override
-    public void onSharedElementExit(final ItemActivity.Callback callback) {
-        scaleDown(new ItemActivity.Callback() {
-            @Override
-            public void done() {
-                callback.done();
-            }
-        });
+    public void onSharedElementExit(final ItemActivity.Callback c) {
+        scaleDown(c);
     }
 
     @Override
@@ -164,7 +158,6 @@ public class PhotoViewHolder extends ViewHolder {
         super.onDestroy();
     }
 
-
     @SuppressWarnings("WeakerAccess")
     public Class<? extends ImageDecoder> getImageDecoderClass() {
         return CustomImageDecoder.class;
@@ -175,6 +168,5 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     public void onImageLoaded() {
-
     }
 }

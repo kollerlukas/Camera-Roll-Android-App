@@ -11,10 +11,10 @@ import android.widget.TextView;
 import java.io.File;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
-import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.models.StorageRoot;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.MediaType;
 
 public class FileHolder extends RecyclerView.ViewHolder {

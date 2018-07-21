@@ -13,11 +13,8 @@ import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.util.DateTakenRetriever;
 
 public class AlbumLoader extends ItemLoader {
-
     private DateTakenRetriever dateRetriever;
-
     private ArrayList<Album> albums;
-
     private Album currentAlbum;
 
     public AlbumLoader() {
@@ -26,47 +23,44 @@ public class AlbumLoader extends ItemLoader {
 
     @Override
     public ItemLoader newInstance() {
-        DateTakenRetriever dateRetriever = this.dateRetriever != null ? new DateTakenRetriever() : null;
-        return new AlbumLoader().setDateRetriever(dateRetriever);
+        DateTakenRetriever dR = this.dateRetriever != null ? new DateTakenRetriever() : null;
+        return new AlbumLoader().setDateRetriever(dR);
     }
 
     @SuppressWarnings("WeakerAccess")
-    public AlbumLoader setDateRetriever(DateTakenRetriever dateRetriever) {
-        this.dateRetriever = dateRetriever;
+    public AlbumLoader setDateRetriever(DateTakenRetriever dR) {
+        this.dateRetriever = dR;
         return this;
     }
 
     @Override
-    public void onNewDir(final Context context, File dir) {
+    public void onNewDir(final Context c, File dir) {
         currentAlbum = new Album().setPath(dir.getPath());
 
         //loading dateTaken timeStamps asynchronously
         if (dateRetriever != null && dateRetriever.getCallback() == null) {
-            dateRetriever.setCallback(new DateTakenRetriever.Callback() {
-                @Override
-                public void done() {
-                    Intent intent = new Intent(MainActivity.RESORT);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
+            dateRetriever.setCallback(() -> {
+                Intent i = new Intent(MainActivity.RESORT);
+                LocalBroadcastManager.getInstance(c).sendBroadcast(i);
             });
         }
     }
 
     @Override
-    public void onFile(final Context context, File file) {
-        final AlbumItem albumItem = AlbumItem.getInstance(context, file.getPath());
-        if (albumItem != null) {
+    public void onFile(final Context c, File f) {
+        final AlbumItem aI = AlbumItem.getInstance(c, f.getPath());
+        if (aI != null) {
             if (dateRetriever != null) {
-                dateRetriever.retrieveDate(context, albumItem);
+                dateRetriever.retrieveDate(c, aI);
             }
             //preload uri
             //albumItem.preloadUri(context);
-            currentAlbum.getAlbumItems().add(albumItem);
+            currentAlbum.getAlbumItems().add(aI);
         }
     }
 
     @Override
-    public void onDirDone(Context context) {
+    public void onDirDone(Context c) {
         if (currentAlbum != null && currentAlbum.getAlbumItems().size() > 0) {
             albums.add(currentAlbum);
             currentAlbum = null;
@@ -75,9 +69,9 @@ public class AlbumLoader extends ItemLoader {
 
     @Override
     public Result getResult() {
-        Result result = new Result();
-        result.albums = albums;
+        Result r = new Result();
+        r.albums = albums;
         albums = new ArrayList<>();
-        return result;
+        return r;
     }
 }

@@ -26,9 +26,9 @@ public class RAWImageViewHolder extends PhotoViewHolder {
     }
 
     @Override
-    void bindImageView(View view, View transitionView) {
+    void bindImageView(View v, View transitionView) {
         addProgressBar();
-        super.bindImageView(view, transitionView);
+        super.bindImageView(v, transitionView);
     }
 
     @Override

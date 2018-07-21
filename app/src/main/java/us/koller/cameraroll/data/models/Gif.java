@@ -9,7 +9,6 @@ import us.koller.cameraroll.util.Util;
 
 public class Gif extends AlbumItem implements Parcelable {
     Gif() {
-
     }
 
     Gif(Parcel parcel) {
@@ -17,8 +16,8 @@ public class Gif extends AlbumItem implements Parcelable {
     }
 
     @Override
-    public int[] retrieveImageDimens(Context context) {
-        return Util.getImageDimensions(context, getUri(context));
+    public int[] retrieveImageDimens(Context c) {
+        return Util.getImageDimensions(c, getUri(c));
     }
 
     @Override
@@ -27,7 +26,7 @@ public class Gif extends AlbumItem implements Parcelable {
     }
 
     @Override
-    public String getType(Context context) {
-        return context.getString(R.string.gif);
+    public String getType(Context c) {
+        return c.getString(R.string.gif);
     }
 }

@@ -22,8 +22,7 @@ import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.Util;
 
-public abstract class AlbumItem
-        implements Parcelable, SortUtil.Sortable {
+public abstract class AlbumItem implements Parcelable, SortUtil.Sortable {
 
     private static final int PHOTO = 1;
     private static final int GIF = 2;
@@ -41,66 +40,58 @@ public abstract class AlbumItem
     public boolean isSharedElement = false;
     public boolean hasFadedIn = false;
 
-    //factory method
-    public static AlbumItem getInstance(String path) {
-        AlbumItem albumItem = null;
-        if (MediaType.isGif(path)) {
-            albumItem = new Gif();
-        } else if (MediaType.isRAWImage(path)) {
-            albumItem = new RAWImage();
-        } else if (MediaType.isImage(path)) {
-            albumItem = new Photo();
-        } else if (MediaType.isVideo(path)) {
-            albumItem = new Video();
+    @SuppressWarnings("WeakerAccess")
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        @Override
+        public AlbumItem createFromParcel(Parcel p) {
+            switch (p.readInt()) {
+                case VIDEO:
+                    return new Video(p);
+                case GIF:
+                    return new Gif(p);
+                case RAW:
+                    return new RAWImage(p);
+                default:
+                    return new Photo(p);
+            }
         }
 
-        if (albumItem != null) {
-            albumItem.setPath(path).setName(new File(path).getName());
+        public AlbumItem[] newArray(int i) {
+            return new AlbumItem[i];
         }
-        return albumItem;
+    };
+
+    AlbumItem(Parcel p) {
+        this.name = p.readString();
+        this.path = p.readString();
+        this.error = Boolean.parseBoolean(p.readString());
+        this.uri = Uri.parse(p.readString());
     }
 
-    public static AlbumItem getInstance(Context context, String path) {
-        if (MediaType.isVideo(path) && !Settings.getInstance(context).showVideos()) {
+    //factory method
+    public static AlbumItem getInstance(String path) {
+        AlbumItem aI = null;
+        if (MediaType.isGif(path)) {
+            aI = new Gif();
+        } else if (MediaType.isRAWImage(path)) {
+            aI = new RAWImage();
+        } else if (MediaType.isImage(path)) {
+            aI = new Photo();
+        } else if (MediaType.isVideo(path)) {
+            aI = new Video();
+        }
+
+        if (aI != null) {
+            aI.setPath(path).setName(new File(path).getName());
+        }
+        return aI;
+    }
+
+    public static AlbumItem getInstance(Context c, String path) {
+        if (MediaType.isVideo(path) && !Settings.getInstance(c).showVideos()) {
             return null;
         }
         return getInstance(path);
-    }
-
-    public static AlbumItem getInstance(final Context context, Uri uri) {
-        if (uri == null) {
-            return null;
-        }
-
-        String mimeType = MediaType.getMimeType(context, uri);
-        return getInstance(context, uri, mimeType);
-    }
-
-    public static AlbumItem getInstance(final Context context, Uri uri, String mimeType) {
-        if (uri == null) {
-            return null;
-        }
-
-        AlbumItem albumItem = null;
-        if (MediaType.checkGifMimeType(mimeType)) {
-            albumItem = new Gif();
-        } else if (MediaType.checkRAWMimeType(mimeType)) {
-            albumItem = new RAWImage();
-        } else if (MediaType.checkImageMimeType(mimeType)) {
-            albumItem = new Photo();
-        } else if (MediaType.checkVideoMimeType(mimeType)) {
-            albumItem = new Video();
-        }
-
-        if (albumItem != null) {
-            albumItem.setPath("N/A");
-            albumItem.setUri(uri);
-
-            //retrieve file name
-            String filename = InfoUtil.retrieveFileName(context, uri);
-            albumItem.setName(filename != null ? filename : "");
-        }
-        return albumItem;
     }
 
     public AlbumItem() {
@@ -119,6 +110,48 @@ public abstract class AlbumItem
         return this;
     }
 
+    public static AlbumItem getInstance(final Context c, Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+
+        String mimeType = MediaType.getMimeType(c, uri);
+        return getInstance(c, uri, mimeType);
+    }
+
+    public static AlbumItem getInstance(final Context c, Uri uri, String mimeType) {
+        if (uri == null) {
+            return null;
+        }
+
+        AlbumItem aI = null;
+        if (MediaType.checkGifMimeType(mimeType)) {
+            aI = new Gif();
+        } else if (MediaType.checkRAWMimeType(mimeType)) {
+            aI = new RAWImage();
+        } else if (MediaType.checkImageMimeType(mimeType)) {
+            aI = new Photo();
+        } else if (MediaType.checkVideoMimeType(mimeType)) {
+            aI = new Video();
+        }
+
+        if (aI != null) {
+            aI.setPath("N/A");
+            aI.setUri(uri);
+
+            //retrieve file name
+            String filename = InfoUtil.retrieveFileName(c, uri);
+            aI.setName(filename != null ? filename : "");
+        }
+        return aI;
+    }
+
+    public static AlbumItem getErrorItem() {
+        AlbumItem aI = new Photo();
+        aI.setPath("ERROR").setName("ERROR");
+        return aI;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -128,17 +161,16 @@ public abstract class AlbumItem
         return path;
     }
 
-    public void setDate(long dateTaken) {
-        this.dateTaken = dateTaken;
-    }
-
     @Override
     public long getDate() {
         if (dateTaken != -1) {
             return dateTaken;
         }
-
         return new File(getPath()).lastModified();
+    }
+
+    public void setDate(long dateTaken) {
+        this.dateTaken = dateTaken;
     }
 
     @Override
@@ -148,63 +180,51 @@ public abstract class AlbumItem
 
     @SuppressWarnings("unused")
     public void preloadUri(final Context context) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                getUri(context);
-            }
-        });
+        AsyncTask.execute(() -> getUri(context));
     }
 
     public void setUri(Uri uri) {
         this.uri = uri;
     }
 
-    public Uri getUri(Context context) {
+    public Uri getUri(Context c) {
         if (uri == null) {
-            setUri(StorageUtil.getContentUri(context, this));
+            setUri(StorageUtil.getContentUri(c, this));
         }
         return uri;
     }
 
-    public int[] getImageDimens(Context context) {
+    public int[] getImageDimens(Context c) {
         if (imageDimens == null) {
-            imageDimens = retrieveImageDimens(context);
+            imageDimens = retrieveImageDimens(c);
         }
         return new int[]{this.imageDimens[0], this.imageDimens[1]};
     }
 
-    public abstract int[] retrieveImageDimens(Context context);
+    public abstract int[] retrieveImageDimens(Context c);
 
-    public List<String> getTags(Context context) {
+    public List<String> getTags(Context c) {
         if (tags == null) {
-            retrieveTags(context);
+            retrieveTags(c);
         }
         return tags;
     }
 
-    private void retrieveTags(Context context) {
+    private void retrieveTags(Context c) {
         // TODO: implement
         tags = new LinkedList<>();
     }
 
     // returns whether the Operation was successful
-    public boolean addTag(Context context, String tag) {
+    public boolean addTag(Context c, String tag) {
         // TODO: implement
         return false;
     }
 
     // returns whether the Operation was successful
-    public boolean removeTag(Context context, String tag) {
+    public boolean removeTag(Context c, String tag) {
         // TODO: implement
         return false;
-    }
-
-    AlbumItem(Parcel parcel) {
-        this.name = parcel.readString();
-        this.path = parcel.readString();
-        this.error = Boolean.parseBoolean(parcel.readString());
-        this.uri = Uri.parse(parcel.readString());
     }
 
     @Override
@@ -218,7 +238,7 @@ public abstract class AlbumItem
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(Parcel p, int i) {
         int k;
         if (this instanceof RAWImage) {
             k = RAW;
@@ -229,52 +249,25 @@ public abstract class AlbumItem
         } else {
             k = PHOTO;
         }
-        parcel.writeInt(k);
-        parcel.writeString(name);
-        parcel.writeString(path);
-        parcel.writeString(String.valueOf(error));
-        parcel.writeString(String.valueOf(uri));
+        p.writeInt(k);
+        p.writeString(name);
+        p.writeString(path);
+        p.writeString(String.valueOf(error));
+        p.writeString(String.valueOf(uri));
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        @Override
-        public AlbumItem createFromParcel(Parcel parcel) {
-            switch (parcel.readInt()) {
-                case VIDEO:
-                    return new Video(parcel);
-                case GIF:
-                    return new Gif(parcel);
-                case RAW:
-                    return new RAWImage(parcel);
-                default:
-                    return new Photo(parcel);
-            }
-        }
-
-        public AlbumItem[] newArray(int i) {
-            return new AlbumItem[i];
-        }
-    };
-
-    public static AlbumItem getErrorItem() {
-        AlbumItem albumItem = new Photo();
-        albumItem.setPath("ERROR").setName("ERROR");
-        return albumItem;
-    }
-
-    public abstract String getType(Context context);
+    public abstract String getType(Context c);
 
     public Key getGlideSignature() {
-        File file = new File(getPath());
-        String lastModified = String.valueOf(file.lastModified());
+        File f = new File(getPath());
+        String lastModified = String.valueOf(f.lastModified());
         return new ObjectKey(lastModified);
     }
 
-    public RequestOptions getGlideRequestOptions(Context context) {
+    public RequestOptions getGlideRequestOptions(Context c) {
         return new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .error(Util.getErrorPlaceholder(context))
+                .error(Util.getErrorPlaceholder(c))
                 .signature(getGlideSignature());
     }
 }

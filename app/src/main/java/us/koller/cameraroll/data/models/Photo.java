@@ -13,11 +13,10 @@ public class Photo extends AlbumItem implements Parcelable {
     private Serializable imageViewSavedState;
 
     Photo() {
-
     }
 
-    Photo(Parcel parcel) {
-        super(parcel);
+    Photo(Parcel p) {
+        super(p);
     }
 
     public void putImageViewSavedState(Serializable imageViewSavedState) {
@@ -29,12 +28,12 @@ public class Photo extends AlbumItem implements Parcelable {
     }
 
     @Override
-    public int[] retrieveImageDimens(Context context) {
-        return Util.getImageDimensions(context, getUri(context));
+    public int[] retrieveImageDimens(Context c) {
+        return Util.getImageDimensions(c, getUri(c));
     }
 
     @Override
-    public String getType(Context context) {
-        return context.getString(R.string.photo);
+    public String getType(Context c) {
+        return c.getString(R.string.photo);
     }
 }

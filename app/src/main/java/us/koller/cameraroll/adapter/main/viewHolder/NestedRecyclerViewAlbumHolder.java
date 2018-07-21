@@ -27,14 +27,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.album.AlbumAdapter;
-import us.koller.cameraroll.data.models.AlbumItem;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
-import us.koller.cameraroll.data.models.Album;
-import us.koller.cameraroll.data.fileOperations.FileOperation;
-import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.adapter.album.AlbumAdapter;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.FileOperationDialogActivity;
 import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
@@ -43,56 +43,33 @@ import us.koller.cameraroll.util.StorageUtil;
 import us.koller.cameraroll.util.Util;
 import us.koller.cameraroll.util.animators.ColorFade;
 
-public class NestedRecyclerViewAlbumHolder extends AlbumHolder
-        implements Toolbar.OnMenuItemClickListener {
+public class NestedRecyclerViewAlbumHolder extends AlbumHolder implements Toolbar.OnMenuItemClickListener {
 
     @SuppressWarnings("FieldCanBeLocal")
     private static int SINGLE_LINE_MAX_ITEM_COUNT = 4;
-
     private Theme theme;
-
     public RecyclerView nestedRecyclerView;
-
     public int sharedElementReturnPosition = -1;
-
     private EqualSpacesItemDecoration itemDecoration;
-
     private SelectorModeManager manager;
-
-
-    private SelectorModeManager.OnBackPressedCallback onBackPressedCallback
-            = new SelectorModeManager.OnBackPressedCallback() {
-        @Override
-        public void cancelSelectorMode() {
-            NestedRecyclerViewAlbumHolder.this.cancelSelectorMode();
-        }
-    };
+    private SelectorModeManager.OnBackPressedCallback onBackPressedCallback =
+            NestedRecyclerViewAlbumHolder.this::cancelSelectorMode;
 
     abstract class SelectorCallback implements SelectorModeManager.Callback {
     }
 
-    private SelectorCallback callback
-            = new SelectorCallback() {
+    private SelectorCallback callback = new SelectorCallback() {
         @Override
         public void onSelectorModeEnter() {
-            final View rootView = ((Activity) nestedRecyclerView.getContext())
-                    .findViewById(R.id.root_view);
-
+            final View rootView = ((Activity) nestedRecyclerView.getContext()).findViewById(R.id.root_view);
             final Toolbar toolbar = rootView.findViewById(R.id.toolbar);
-
             if (theme.darkStatusBarIconsInSelectorMode()) {
                 Util.setDarkStatusBarIcons(rootView);
             } else {
                 Util.setLightStatusBarIcons(rootView);
             }
 
-            View.OnClickListener onClickListener
-                    = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    cancelSelectorMode();
-                }
-            };
+            View.OnClickListener onClickListener = (View view) -> cancelSelectorMode();
 
             //create selector-toolbar
             final Toolbar selectorToolbar = SelectorModeUtil.getSelectorModeToolbar(
@@ -105,8 +82,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     toolbar.getPaddingBottom());
 
             //add selector-toolbar
-            ((ViewGroup) toolbar.getParent()).addView(selectorToolbar,
-                    toolbar.getLayoutParams());
+            ((ViewGroup) toolbar.getParent()).addView(selectorToolbar, toolbar.getLayoutParams());
 
             selectorToolbar.requestLayout();
 
@@ -116,7 +92,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                         @Override
                         public void onGlobalLayout() {
                             selectorToolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
                             selectorToolbar.setTranslationY(-selectorToolbar.getHeight());
                             selectorToolbar.animate().translationY(0);
                         }
@@ -137,15 +112,13 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                     .translationY(-selectorToolbar.getHeight())
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-
+                        public void onAnimationEnd(Animator a) {
+                            super.onAnimationEnd(a);
                             if (theme.darkStatusBarIcons()) {
                                 Util.setDarkStatusBarIcons(rootView);
                             } else {
                                 Util.setLightStatusBarIcons(rootView);
                             }
-
                             //remove selector-toolbar
                             ((ViewGroup) rootView).removeView(selectorToolbar);
                         }
@@ -162,14 +135,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
             final String title = getContext().getString(R.string.selected_count, selectedItemCount);
 
-            ColorFade.fadeToolbarTitleColor(toolbar,
-                    theme.getAccentTextColor(getContext()),
-                    new ColorFade.ToolbarTitleFadeCallback() {
-                        @Override
-                        public void setTitle(Toolbar toolbar) {
-                            toolbar.setTitle(title);
-                        }
-                    });
+            ColorFade.fadeToolbarTitleColor(toolbar, theme.getAccentTextColor(getContext()), (Toolbar t) ->
+                    t.setTitle(title));
         }
     };
 
@@ -180,16 +147,15 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
         nestedRecyclerView = itemView.findViewById(R.id.nestedRecyclerView);
         if (nestedRecyclerView != null) {
-            itemDecoration = new EqualSpacesItemDecoration(
-                    (int) getContext().getResources().getDimension(R.dimen.album_grid_spacing), 2, true);
+            itemDecoration = new EqualSpacesItemDecoration((int) getContext().getResources().getDimension(R.dimen.album_grid_spacing), 2, true);
             nestedRecyclerView.addItemDecoration(itemDecoration);
         }
     }
 
-    public NestedRecyclerViewAlbumHolder setSelectorModeManager(SelectorModeManager manager) {
-        this.manager = manager;
-        if (!manager.onBackPressedCallbackAlreadySet()) {
-            manager.setOnBackPressedCallback(onBackPressedCallback);
+    public NestedRecyclerViewAlbumHolder setSelectorModeManager(SelectorModeManager m) {
+        this.manager = m;
+        if (!m.onBackPressedCallbackAlreadySet()) {
+            m.setOnBackPressedCallback(onBackPressedCallback);
         }
 
         //checking if SelectorCallback is already attached, if not attach it
@@ -263,35 +229,6 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
         }
     }
 
-    public interface StartSharedElementTransitionCallback {
-        void startPostponedEnterTransition();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void onSharedElement(final int sharedElementReturnPosition,
-                                final StartSharedElementTransitionCallback callback) {
-        this.sharedElementReturnPosition = sharedElementReturnPosition;
-
-        //to prevent: requestLayout() improperly called [...] during layout: running second layout pass
-        nestedRecyclerView.getViewTreeObserver()
-                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        nestedRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        nestedRecyclerView.scrollToPosition(sharedElementReturnPosition);
-                    }
-                });
-
-        nestedRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int l, int t, int r, int b,
-                                       int oL, int oT, int oR, int oB) {
-                nestedRecyclerView.removeOnLayoutChangeListener(this);
-                callback.startPostponedEnterTransition();
-            }
-        });
-    }
-
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         final String[] paths = ((NestedAdapter) nestedRecyclerView.getAdapter())
@@ -343,8 +280,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 String title;
                 if (paths.length == 1) {
                     AlbumItem albumItem = AlbumItem.getInstance(paths[0]);
-                    title = getContext().getString(R.string.delete_item,
-                            albumItem.getType(getContext()));
+                    title = getContext().getString(R.string.delete_item, albumItem.getType(getContext()));
                 } else {
                     title = getContext().getString(R.string.delete_files, paths.length);
                 }
@@ -352,19 +288,43 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 new AlertDialog.Builder(c, theme.getDialogThemeRes())
                         .setTitle(title)
                         .setNegativeButton(c.getString(R.string.no), null)
-                        .setPositiveButton(c.getString(R.string.delete), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                deleteItems(paths);
-                            }
-                        })
+                        .setPositiveButton(c.getString(R.string.delete), (DialogInterface dialogInterface, int i) ->
+                                deleteItems(paths))
                         .create().show();
                 break;
             default:
                 break;
         }
-
         return false;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void onSharedElement(final int sharedElementReturnPosition,
+                                final StartSharedElementTransitionCallback callback) {
+        this.sharedElementReturnPosition = sharedElementReturnPosition;
+
+        //to prevent: requestLayout() improperly called [...] during layout: running second layout pass
+        nestedRecyclerView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        nestedRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        nestedRecyclerView.scrollToPosition(sharedElementReturnPosition);
+                    }
+                });
+
+        nestedRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int l, int t, int r, int b,
+                                       int oL, int oT, int oR, int oB) {
+                nestedRecyclerView.removeOnLayoutChangeListener(this);
+                callback.startPostponedEnterTransition();
+            }
+        });
+    }
+
+    public interface StartSharedElementTransitionCallback {
+        void startPostponedEnterTransition();
     }
 
     private void cancelSelectorMode() {
@@ -409,15 +369,14 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
         private static final String SELECTOR_TOOLBAR_TAG = "SELECTOR_TOOLBAR_TAG";
 
-        static Toolbar getSelectorModeToolbar(Context context,
-                                              View.OnClickListener onClickListener,
+        static Toolbar getSelectorModeToolbar(Context c, View.OnClickListener onClickListener,
                                               Toolbar.OnMenuItemClickListener onItemClickListener) {
-            final Toolbar toolbar = new Toolbar(context);
+            final Toolbar toolbar = new Toolbar(c);
             toolbar.setTag(SELECTOR_TOOLBAR_TAG);
 
-            Theme theme = Settings.getInstance(context).getThemeInstance(context);
-            int accentColor = theme.getAccentColor(context);
-            int accentTextColor = theme.getAccentTextColor(context);
+            Theme theme = Settings.getInstance(c).getThemeInstance(c);
+            int accentColor = theme.getAccentColor(c);
+            int accentTextColor = theme.getAccentTextColor(c);
 
             toolbar.setBackgroundColor(accentColor);
 
@@ -432,7 +391,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 DrawableCompat.setTint(menuIcon.mutate(), accentTextColor);
             }
 
-            Drawable navIcon = ContextCompat.getDrawable(context,
+            Drawable navIcon = ContextCompat.getDrawable(c,
                     R.drawable.ic_clear_white);
             if (navIcon != null) {
                 DrawableCompat.wrap(navIcon);
@@ -443,7 +402,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             toolbar.setNavigationOnClickListener(onClickListener);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                toolbar.setElevation(context.getResources()
+                toolbar.setElevation(c.getResources()
                         .getDimension(R.dimen.toolbar_elevation));
             }
             return toolbar;

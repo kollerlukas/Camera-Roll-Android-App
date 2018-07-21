@@ -1,8 +1,8 @@
 <resources>
     <!--error messages-->
-    <string name="read_permission_denied">Camera Roll needs permission to access your Storage to be able to depict your pictures.</string>
-    <string name="grant_removable_storage_permission">Grant removable Storage Permission</string>
-    <string name="grant_removable_storage_permission_message">Please select the root folder of your removable Storage device (e.g. SD Card) on the next screen.</string>
+    <string name="read_permission_denied">Camera Roll needs permission to access your storage to be able to depict your pictures.</string>
+    <string name="grant_removable_storage_permission">Grant external storage permission</string>
+    <string name="grant_removable_storage_permission_message">Please select the root folder of your external storage device (e.g. Micro SD Card) on the next screen.</string>
     <!--general-->
     <string name="photo">Photo</string>
     <string name="raw_image">RAW Image</string>
@@ -46,33 +46,33 @@
     <!--ItemActivity-->
     <string name="set_as">Set as…</string>
     <string name="open_with">Open with…</string>
-    <string name="open_with_error">No App found to view your %1$s</string>
+    <string name="open_with_error">No app found to view your %1$s</string>
     <string name="print">Print</string>
     <string name="info">Info</string>
     <string name="share">Share</string>
     <string name="share_item">Share %1$s</string>
-    <string name="share_error">No App found to share your %1$s</string>
+    <string name="share_error">No app found to share your %1$s</string>
     <string name="edit">Edit</string>
     <string name="edit_item">Edit %1$s</string>
-    <string name="edit_error">No App found to edit your %1$s</string>
+    <string name="edit_error">No app found to edit your %1$s</string>
     <string name="delete">Delete</string>
     <string name="delete_item">Delete %1$s</string>
     <string name="delete_files">Delete %1$d files</string>
     <string name="move">Move</string>
-    <string name="move_item_to">Move %1$d Item to:</string>
-    <string name="move_items_to">Move %1$d Items to:</string>
-    <string name="move_error">Moving files to/from removable Storage doesn\'t work. Please just copy and delete the file.</string>
+    <string name="move_item_to">Move %1$d item to:</string>
+    <string name="move_items_to">Move %1$d items to:</string>
+    <string name="move_error">Moving files to/from removable storage doesn\'t work. Please just copy and delete the file.</string>
     <string name="copy">Copy</string>
-    <string name="copy_item_to">Copy %1$d Item to:</string>
-    <string name="copy_items_to">Copy %1$d Items to:</string>
+    <string name="copy_item_to">Copy %1$d item to:</string>
+    <string name="copy_items_to">Copy %1$d items to:</string>
     <string name="create">Create</string>
     <string name="new_folder">New Folder</string>
     <string name="rename">Rename</string>
     <string name="paste">Paste</string>
-    <string name="successfully_created_new_folder">successfully created a new folder</string>
-    <string name="successfully_renamed_file">successfully renamed file</string>
+    <string name="successfully_created_new_folder">Successfully created a new folder</string>
+    <string name="successfully_renamed_file">Successfully renamed file</string>
     <!--FileExplorerActivity-->
-    <string name="no_files">no files</string>
+    <string name="no_files">No files</string>
     <string name="storage">Storage</string>
     <string name="scan">Scan</string>
     <string name="scanning">Scanning…</string>
@@ -114,7 +114,7 @@
     <string name="both">Both</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">Exif Editor</string>
-    <string name="edit_exif">edit Exif</string>
+    <string name="edit_exif">Edit Exif</string>
     <string name="save">Save</string>
     <string name="changes_saved">Changes saved</string>
     <string name="clear_exif_data">Clear Exif Data</string>
@@ -124,11 +124,11 @@
     <string name="virtual_albums">Virtual Albums</string>
     <string name="create_virtual_album">Create Virtual Album</string>
     <string name="virtual_album_created">Virtual Album %1$s created</string>
-    <string name="virtual_album_different_name">Please choose a different Name</string>
+    <string name="virtual_album_different_name">Please choose a different name</string>
     <string name="add_path_to_virtual_album">Add path to Virtual Album</string>
     <string name="added_path_to_virtual_album">Added path to Virtual Album %1$s</string>
     <string name="virtual_album_deleted">Virtual Album %1$s deleted</string>
-    <string name="path_removed">path removed</string>
+    <string name="path_removed">Path removed</string>
     <string name="no_paths">No paths included</string>
     <string name="no_virtual_albums">No Virtual Albums</string>
     <!--info Dialog Strings-->
@@ -148,5 +148,5 @@
     <string name="info_aperture">Aperture: </string>
     <string name="info_iso">ISO: </string>
     <string name="info_frame_rate">Frame rate: </string>
-    <string name="copied_to_clipboard">Copied to Clipboard</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>

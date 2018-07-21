@@ -13,32 +13,27 @@ public class StylePreference extends DialogPreference {
     private int mDialogLayoutResId = R.layout.pref_dialog_style;
 
     @SuppressWarnings("unused")
-    public StylePreference(Context context) {
-        this(context, null);
+    public StylePreference(Context c) {
+        this(c, null);
     }
 
     @SuppressWarnings("WeakerAccess")
-    public StylePreference(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.dialogPreferenceStyle);
+    public StylePreference(Context c, AttributeSet attrs) {
+        this(c, attrs, R.attr.dialogPreferenceStyle);
     }
 
     @SuppressWarnings("WeakerAccess")
-    public StylePreference(Context context, AttributeSet attrs,
-                            int defStyleAttr) {
-        this(context, attrs, defStyleAttr, defStyleAttr);
+    public StylePreference(Context c, AttributeSet attrs, int defStyleAttr) {
+        this(c, attrs, defStyleAttr, defStyleAttr);
     }
 
     @SuppressWarnings("WeakerAccess")
-    public StylePreference(Context context, AttributeSet attrs,
-                            int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
+    public StylePreference(Context c, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(c, attrs, defStyleAttr, defStyleRes);
         setDialogLayoutResource(mDialogLayoutResId);
         setPositiveButtonText(android.R.string.ok);
         setNegativeButtonText(android.R.string.cancel);
-
-        style = getPersistedInt(getContext()
-                .getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE));
+        style = getPersistedInt(getContext().getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE));
     }
 
     public int getStyle() {
@@ -57,11 +52,9 @@ public class StylePreference extends DialogPreference {
     }
 
     @Override
-    protected void onSetInitialValue(boolean restorePersistedValue,
-                                     Object defaultValue) {
+    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         // Read the value. Use the default value if it is not possible.
-        setStyle(restorePersistedValue ?
-                getPersistedInt(style) : (int) defaultValue);
+        setStyle(restorePersistedValue ? getPersistedInt(style) : (int) defaultValue);
     }
 
     @Override

@@ -7,22 +7,20 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.Util;
 
 public class RAWImage extends Photo {
-
     RAWImage() {
-
     }
 
-    RAWImage(Parcel parcel) {
-        super(parcel);
-    }
-
-    @Override
-    public int[] retrieveImageDimens(Context context) {
-        return Util.getImageDimensions(context, getUri(context));
+    RAWImage(Parcel p) {
+        super(p);
     }
 
     @Override
-    public String getType(Context context) {
-        return context.getString(R.string.raw_image);
+    public int[] retrieveImageDimens(Context c) {
+        return Util.getImageDimensions(c, getUri(c));
+    }
+
+    @Override
+    public String getType(Context c) {
+        return c.getString(R.string.raw_image);
     }
 }
