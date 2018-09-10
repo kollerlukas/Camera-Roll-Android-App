@@ -59,9 +59,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
     public interface OnDataRetrievedCallback {
         void onDataRetrieved();
-
         void failed();
-
         Context getContext();
     }
 
@@ -70,67 +68,62 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         return mimeType != null && MediaType.doesSupportExifMimeType(mimeType);
     }
 
-    public void retrieveData(final AlbumItem albumItem, final boolean showColors, final OnDataRetrievedCallback callback) {
+    public void retrieveData(final AlbumItem albumItem, final boolean showColors,
+                             final OnDataRetrievedCallback callback) {
         if (albumItem == null) {
             callback.failed();
             return;
         }
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                infoItems = new ArrayList<>();
-                if (showColors) {
-                    infoItems.add(new InfoUtil.ColorsItem(albumItem.getPath()));
-                }
-
-                //infoItems.add(new InfoUtil.TagsItem(albumItem));
-
-                Context context = callback.getContext();
-
-                Uri uri = albumItem.getUri(context);
-
-                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filename), albumItem.getName())
-                        .setIconRes(R.drawable.ic_insert_drive_file_white));
-                infoItems.add(new InfoUtil.InfoItem(context.getString(R.string.info_filepath), albumItem.getPath())
-                        .setIconRes(R.drawable.ic_folder_white));
-                infoItems.add(InfoUtil.retrieveFileSize(context, uri).setIconRes(R.drawable.ic_memory_white));
-
-                ExifInterface exif = null;
-                if (exifSupported(context, albumItem)) {
-                    exif = ExifUtil.getExifInterface(context, albumItem);
-                }
-
-                infoItems.add(InfoUtil.retrieveDimensions(context, exif, albumItem)
-                        .setIconRes(R.drawable.ic_fullscreen_white));
-                infoItems.add(InfoUtil.retrieveFormattedDate(context, exif, albumItem)
-                        .setIconRes(R.drawable.ic_date_range_white));
-
-                if (exif != null) {
-                    infoItems.add(InfoUtil.retrieveLocation(context, exif)
-                            .setIconRes(R.drawable.ic_location_on_white));
-                    infoItems.add(InfoUtil.retrieveFocalLength(context, exif)
-                            .setIconRes(R.drawable.ic_straighten_white));
-                    infoItems.add(InfoUtil.retrieveExposure(context, exif)
-                            .setIconRes(R.drawable.ic_timelapse_white));
-                    infoItems.add(InfoUtil.retrieveModelAndMake(context, exif)
-                            .setIconRes(R.drawable.ic_camera_alt_white));
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        infoItems.add(InfoUtil.retrieveAperture(context, exif)
-                                .setIconRes(R.drawable.ic_camera_white));
-                        infoItems.add(InfoUtil.retrieveISO(context, exif)
-                                .setIconRes(R.drawable.ic_iso_white));
-                    }
-                }
-
-                if (albumItem instanceof Video) {
-                    infoItems.add(InfoUtil.retrieveVideoFrameRate(context, albumItem)
-                            .setIconRes(R.drawable.ic_movie_creation_white));
-                }
-
-                callback.onDataRetrieved();
+        AsyncTask.execute(() -> {
+            infoItems = new ArrayList<>();
+            if (showColors) {
+                infoItems.add(new InfoUtil.ColorsItem(albumItem.getPath()));
             }
+            //infoItems.add(new InfoUtil.TagsItem(albumItem));
+
+            Context c = callback.getContext();
+
+            Uri uri = albumItem.getUri(c);
+
+            infoItems.add(new InfoUtil.InfoItem(c.getString(R.string.info_filename), albumItem.getName())
+                    .setIconRes(R.drawable.ic_insert_drive_file_white));
+            infoItems.add(new InfoUtil.InfoItem(c.getString(R.string.info_filepath), albumItem.getPath())
+                    .setIconRes(R.drawable.ic_folder_white));
+            infoItems.add(InfoUtil.retrieveFileSize(c, uri).setIconRes(R.drawable.ic_memory_white));
+
+            ExifInterface exif = null;
+            if (exifSupported(c, albumItem)) {
+                exif = ExifUtil.getExifInterface(c, albumItem);
+            }
+
+            infoItems.add(InfoUtil.retrieveDimensions(c, exif, albumItem)
+                    .setIconRes(R.drawable.ic_fullscreen_white));
+            infoItems.add(InfoUtil.retrieveFormattedDate(c, exif, albumItem)
+                    .setIconRes(R.drawable.ic_date_range_white));
+
+            if (exif != null) {
+                infoItems.add(InfoUtil.retrieveLocation(c, exif)
+                        .setIconRes(R.drawable.ic_location_on_white));
+                infoItems.add(InfoUtil.retrieveFocalLength(c, exif)
+                        .setIconRes(R.drawable.ic_straighten_white));
+                infoItems.add(InfoUtil.retrieveExposure(c, exif)
+                        .setIconRes(R.drawable.ic_timelapse_white));
+                infoItems.add(InfoUtil.retrieveModelAndMake(c, exif)
+                        .setIconRes(R.drawable.ic_camera_alt_white));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    infoItems.add(InfoUtil.retrieveAperture(c, exif)
+                            .setIconRes(R.drawable.ic_camera_white));
+                    infoItems.add(InfoUtil.retrieveISO(c, exif)
+                            .setIconRes(R.drawable.ic_iso_white));
+                }
+            }
+            if (albumItem instanceof Video) {
+                infoItems.add(InfoUtil.retrieveVideoFrameRate(c, albumItem)
+                        .setIconRes(R.drawable.ic_movie_creation_white));
+            }
+            callback.onDataRetrieved();
         });
     }
 
@@ -196,13 +189,10 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         return infoItems.size();
     }
 
-
     /*ViewHolder classes*/
     static class InfoHolder extends RecyclerView.ViewHolder {
-
         TextView type, value;
         ImageView icon;
-
         InfoHolder(View itemView) {
             super(itemView);
             type = itemView.findViewById(R.id.tag);
@@ -231,9 +221,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     static class LocationHolder extends InfoHolder {
-
         private InfoUtil.LocationItem locationItem;
-
         private String featureName;
 
         LocationHolder(View itemView) {
@@ -250,12 +238,7 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 retrieveAddress(itemView.getContext(), locationItem.getValue());
 
                 if (!locationItem.getValue().equals(ExifUtil.NO_DATA)) {
-                    itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            launchLocation();
-                        }
-                    });
+                    itemView.setOnClickListener((View view) -> launchLocation());
                 } else {
                     itemView.setOnClickListener(null);
                 }
@@ -263,45 +246,37 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         }
 
         private void retrieveAddress(final Context context, final String locationString) {
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    String valueText = locationItem.getValue();
-                    String[] parts = locationString.split(",");
-                    try {
-                        double lat = Double.parseDouble(parts[0]);
-                        double lng = Double.parseDouble(parts[1]);
+            AsyncTask.execute(() -> {
+                String valueText = locationItem.getValue();
+                String[] parts = locationString.split(",");
+                try {
+                    double lat = Double.parseDouble(parts[0]);
+                    double lng = Double.parseDouble(parts[1]);
 
-                        Address address = InfoUtil.retrieveAddress(context, lat, lng);
-                        if (address != null) {
-                            featureName = address.getFeatureName();
-                            valueText = null;
-                            if (address.getLocality() != null) {
-                                valueText = address.getLocality();
-                            }
-                            if (address.getAdminArea() != null) {
-                                if (valueText != null) {
-                                    valueText += ", " + address.getAdminArea();
-                                } else {
-                                    valueText = address.getAdminArea();
-                                }
-                            }
-                            if (valueText == null) {
-                                valueText = locationString;
-                            }
-
+                    Address address = InfoUtil.retrieveAddress(context, lat, lng);
+                    if (address != null) {
+                        featureName = address.getFeatureName();
+                        valueText = null;
+                        if (address.getLocality() != null) {
+                            valueText = address.getLocality();
                         }
-                    } catch (NumberFormatException ignored) {
+                        if (address.getAdminArea() != null) {
+                            if (valueText != null) {
+                                valueText += ", " + address.getAdminArea();
+                            } else {
+                                valueText = address.getAdminArea();
+                            }
+                        }
+                        if (valueText == null) {
+                            valueText = locationString;
+                        }
+
                     }
-
-                    final String finalValueText = valueText;
-                    value.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            value.setText(finalValueText);
-                        }
-                    });
+                } catch (NumberFormatException ignored) {
                 }
+
+                final String finalValueText = valueText;
+                value.post(() -> value.setText(finalValueText));
             });
         }
 
@@ -323,25 +298,19 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     static class ColorHolder extends RecyclerView.ViewHolder {
-
         private Palette p;
         private Uri uri;
+        private View.OnClickListener onClickListener = (View v) -> {
+            String color = (String) v.getTag();
+            if (color != null) {
+                ClipboardManager clipboard = (ClipboardManager) v.getContext()
+                        .getSystemService(CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("label", color);
+                clipboard.setPrimaryClip(clip);
 
-        private View.OnClickListener onClickListener
-                = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String color = (String) view.getTag();
-                if (color != null) {
-                    ClipboardManager clipboard = (ClipboardManager) view.getContext()
-                            .getSystemService(CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("label", color);
-                    clipboard.setPrimaryClip(clip);
-
-                    Toast.makeText(view.getContext(),
-                            R.string.copied_to_clipboard,
-                            Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(v.getContext(),
+                        R.string.copied_to_clipboard,
+                        Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -371,12 +340,9 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                         public void onResourceReady(@NonNull final Bitmap bitmap, com.bumptech.glide.request
                                 .transition.Transition<? super Bitmap> transition) {
                             // Do something with bitmap here.
-                            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(@NonNull Palette palette) {
-                                    p = palette;
-                                    setColors(null);
-                                }
+                            Palette.from(bitmap).generate((@NonNull Palette palette) -> {
+                                p = palette;
+                                setColors(null);
                             });
                         }
                     });
@@ -398,33 +364,33 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             int defaultColor = Color.argb(0, 0, 0, 0);
 
                 /*Vibrant color*/
-            setColor((CardView) itemView.findViewById(R.id.vibrant_card),
-                    (TextView) itemView.findViewById(R.id.vibrant_text),
+            setColor(itemView.findViewById(R.id.vibrant_card),
+                    itemView.findViewById(R.id.vibrant_text),
                     p.getVibrantColor(defaultColor));
 
                 /*Vibrant Dark color*/
-            setColor((CardView) itemView.findViewById(R.id.vibrant_dark_card),
-                    (TextView) itemView.findViewById(R.id.vibrant_dark_text),
+            setColor(itemView.findViewById(R.id.vibrant_dark_card),
+                    itemView.findViewById(R.id.vibrant_dark_text),
                     p.getDarkVibrantColor(defaultColor));
 
                 /*Vibrant Light color*/
-            setColor((CardView) itemView.findViewById(R.id.vibrant_light_card),
-                    (TextView) itemView.findViewById(R.id.vibrant_light_text),
+            setColor(itemView.findViewById(R.id.vibrant_light_card),
+                    itemView.findViewById(R.id.vibrant_light_text),
                     p.getLightVibrantColor(defaultColor));
 
                 /*Muted color*/
-            setColor((CardView) itemView.findViewById(R.id.muted_card),
-                    (TextView) itemView.findViewById(R.id.muted_text),
+            setColor(itemView.findViewById(R.id.muted_card),
+                    itemView.findViewById(R.id.muted_text),
                     p.getMutedColor(defaultColor));
 
                 /*Muted Dark color*/
-            setColor((CardView) itemView.findViewById(R.id.muted_dark_card),
-                    (TextView) itemView.findViewById(R.id.muted_dark_text),
+            setColor(itemView.findViewById(R.id.muted_dark_card),
+                    itemView.findViewById(R.id.muted_dark_text),
                     p.getDarkMutedColor(defaultColor));
 
                 /*Muted Light color*/
-            setColor((CardView) itemView.findViewById(R.id.muted_light_card),
-                    (TextView) itemView.findViewById(R.id.muted_light_text),
+            setColor(itemView.findViewById(R.id.muted_light_card),
+                    itemView.findViewById(R.id.muted_light_text),
                     p.getLightMutedColor(defaultColor));
         }
 
@@ -439,7 +405,6 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             text.setTextColor(getTextColor(text.getContext(), color));
             String colorHex = String.format("#%06X", (0xFFFFFF & color));
             text.setText(colorHex);
-
             card.setTag(colorHex);
             card.setOnClickListener(onClickListener);
         }
@@ -455,10 +420,8 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     static class TagsHolder extends RecyclerView.ViewHolder {
-
         interface TagCallback {
             void removeTag(String tag);
-
             void addTag(String tag);
         }
 
@@ -477,12 +440,9 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
         }
 
         private static class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.TagHolder> {
-
             private static final int TAG_VIEW_TYPE = 1;
             private static final int ADD_TAG_VIEW_TYPE = 2;
-
             private List<String> tags;
-
             private TagCallback callback;
 
             TagsAdapter(final Context context, final AlbumItem albumItem) {
@@ -516,9 +476,9 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             @Override
             public TagHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 int layoutRes = viewType == TAG_VIEW_TYPE ? R.layout.info_tag : R.layout.info_add_tag;
-                View v = LayoutInflater.from(parent.getContext())
-                        .inflate(layoutRes, parent, false);
-                return viewType == TAG_VIEW_TYPE ? new TagHolder(v).setCallback(callback) : new AddTagHolder(v).setCallback(callback);
+                View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
+                return viewType == TAG_VIEW_TYPE ? new TagHolder(v).setCallback(callback)
+                        : new AddTagHolder(v).setCallback(callback);
             }
 
             @Override
@@ -533,16 +493,11 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 return tags.size() + 1;
             }
 
-            static class TagHolder extends RecyclerView.ViewHolder
-                    implements View.OnClickListener {
-
+            static class TagHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
                 TagCallback callback;
-
                 String tag;
-
                 TextView textView;
                 ImageView tagButton;
-
                 TagHolder(View itemView) {
                     super(itemView);
                     init();
@@ -573,9 +528,9 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 }
 
                 int getColor() {
-                    Context context = itemView.getContext();
-                    Theme theme = Settings.getInstance(context).getThemeInstance(context);
-                    return theme.getTextColorSecondary(context);
+                    Context c = itemView.getContext();
+                    Theme theme = Settings.getInstance(c).getThemeInstance(c);
+                    return theme.getTextColorSecondary(c);
                 }
 
                 @Override
@@ -583,8 +538,8 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                     callback.removeTag(tag);
                 }
 
-                public TagHolder setCallback(TagCallback callback) {
-                    this.callback = callback;
+                public TagHolder setCallback(TagCallback ca) {
+                    this.callback = ca;
                     return this;
                 }
             }
@@ -601,16 +556,12 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                 void init() {
                     editText = itemView.findViewById(R.id.edit_text);
                     setTextColor();
-                    editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                        @Override
-                        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                            callback.addTag(textView.getText().toString());
-                            textView.setText("");
-                            return false;
-                        }
+                    editText.setOnEditorActionListener((TextView tV, int i, KeyEvent keyEvent) -> {
+                        callback.addTag(tV.getText().toString());
+                        tV.setText("");
+                        return false;
                     });
                 }
-
                 @Override
                 void setTextColor() {
                     int color = getColor();

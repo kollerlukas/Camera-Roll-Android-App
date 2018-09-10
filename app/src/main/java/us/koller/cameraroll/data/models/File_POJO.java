@@ -10,33 +10,61 @@ import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.util.SortUtil;
 
 //simple POJO class
-public class File_POJO
-        implements Parcelable, SortUtil.Sortable {
-
+public class File_POJO implements Parcelable, SortUtil.Sortable {
     private String path;
     private String name;
-
     private ArrayList<File_POJO> children;
     public boolean isMedia;
     public boolean excluded;
+    @SuppressWarnings("WeakerAccess")
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public File_POJO createFromParcel(Parcel p) {
+            return new File_POJO(p);
+        }
+
+        @Override
+        public File_POJO[] newArray(int i) {
+            return new File_POJO[i];
+        }
+    };
 
     public File_POJO(String path, boolean isMedia) {
         this.path = path;
         this.isMedia = isMedia;
-
         children = new ArrayList<>();
-
-        excluded = Provider.isDirExcluded(getPath(),
-                Provider.getExcludedPaths());
-    }
-
-    public void addChild(File_POJO file) {
-        children.add(file);
+        excluded = Provider.isDirExcluded(getPath(), Provider.getExcludedPaths());
     }
 
     public File_POJO setName(String name) {
         this.name = name;
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public File_POJO(Parcel p) {
+        path = p.readString();
+        name = p.readString();
+        isMedia = Boolean.valueOf(p.readString());
+        children = p.createTypedArrayList(CREATOR);
+        excluded = Boolean.valueOf(p.readString());
+    }
+
+    @Override
+    public long getDate() {
+        //not needed
+        return new File(getPath()).lastModified();
+    }
+
+    public static File_POJO[] generateArray(Parcelable[] ps) {
+        File_POJO[] files = new File_POJO[ps.length];
+        for (int i = 0; i < ps.length; i++) {
+            files[i] = (File_POJO) ps[i];
+        }
+        return files;
+    }
+
+    public void addChild(File_POJO file) {
+        children.add(file);
     }
 
     @Override
@@ -46,12 +74,6 @@ public class File_POJO
         }
         String[] s = getPath().split("/");
         return s[s.length - 1];
-    }
-
-    @Override
-    public long getDate() {
-        //not needed
-        return new File(getPath()).lastModified();
     }
 
     @Override
@@ -78,44 +100,15 @@ public class File_POJO
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(path);
-        parcel.writeString(name);
-        parcel.writeString(String.valueOf(isMedia));
+    public void writeToParcel(Parcel p, int i) {
+        p.writeString(path);
+        p.writeString(name);
+        p.writeString(String.valueOf(isMedia));
         File_POJO[] children = new File_POJO[this.children.size()];
         for (int k = 0; k < children.length; k++) {
             children[k] = this.children.get(k);
         }
-        parcel.writeTypedArray(children, 0);
-        parcel.writeString(String.valueOf(excluded));
-    }
-
-    @SuppressWarnings("unchecked")
-    public File_POJO(Parcel parcel) {
-        path = parcel.readString();
-        name = parcel.readString();
-        isMedia = Boolean.valueOf(parcel.readString());
-        children = parcel.createTypedArrayList(CREATOR);
-        excluded = Boolean.valueOf(parcel.readString());
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public File_POJO createFromParcel(Parcel parcel) {
-            return new File_POJO(parcel);
-        }
-
-        @Override
-        public File_POJO[] newArray(int i) {
-            return new File_POJO[i];
-        }
-    };
-
-    public static File_POJO[] generateArray(Parcelable[] parcelables) {
-        File_POJO[] files = new File_POJO[parcelables.length];
-        for (int i = 0; i < parcelables.length; i++) {
-            files[i] = (File_POJO) parcelables[i];
-        }
-        return files;
+        p.writeTypedArray(children, 0);
+        p.writeString(String.valueOf(excluded));
     }
 }

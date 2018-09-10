@@ -46,7 +46,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Settings;
 
 public class VideoPlayerActivity extends ThemeableActivity {
 
@@ -347,7 +346,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
     public static class SimpleEventListener implements Player.EventListener {
 
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
 
         }
 
@@ -372,17 +371,27 @@ public class VideoPlayerActivity extends ThemeableActivity {
         }
 
         @Override
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+        }
+
+        @Override
         public void onPlayerError(ExoPlaybackException error) {
 
         }
 
         @Override
-        public void onPositionDiscontinuity() {
+        public void onPositionDiscontinuity(int reason) {
 
         }
 
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+        }
+
+        @Override
+        public void onSeekProcessed() {
 
         }
     }

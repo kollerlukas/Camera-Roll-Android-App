@@ -20,11 +20,8 @@ import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.ui.ItemActivity;
 
 public class ItemAdapter extends PagerAdapter {
-
     private Album album;
-
     private ArrayList<ViewHolder> viewHolders;
-
     private ItemActivity.ViewPagerOnInstantiateItemCallback callback;
 
     public ItemAdapter(Album album) {
@@ -32,8 +29,7 @@ public class ItemAdapter extends PagerAdapter {
         this.viewHolders = new ArrayList<>();
     }
 
-    public void addOnInstantiateItemCallback(
-            ItemActivity.ViewPagerOnInstantiateItemCallback callback) {
+    public void addOnInstantiateItemCallback(ItemActivity.ViewPagerOnInstantiateItemCallback callback) {
         this.callback = callback;
     }
 
@@ -77,7 +73,6 @@ public class ItemAdapter extends PagerAdapter {
                 callback = null;
             }
         }
-
         return v;
     }
 

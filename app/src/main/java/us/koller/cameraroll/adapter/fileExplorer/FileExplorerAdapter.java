@@ -33,15 +33,10 @@ public class FileExplorerAdapter extends RecyclerView.Adapter {
 
     public interface Callback {
         void onSelectorModeEnter();
-
         void onSelectorModeExit(File_POJO[] selected_items);
-
         void onItemSelected(int count);
-
         void onPickTargetModeEnter();
-
         void onPickTargetModeExit();
-
         void onDataChanged();
     }
 
@@ -76,56 +71,41 @@ public class FileExplorerAdapter extends RecyclerView.Adapter {
 
         ((FileHolder) holder).setSelected(selected_items[position]);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mode == SELECTOR_MODE) {
-                    onItemSelect(file);
-                } else if (file.isMedia) {
-                    int index = file.getPath().lastIndexOf("/");
-                    String path = file.getPath().substring(0, index);
+        holder.itemView.setOnClickListener((View v) -> {
+            if (mode == SELECTOR_MODE) {
+                onItemSelect(file);
+            } else if (file.isMedia) {
+                int index = file.getPath().lastIndexOf("/");
+                String path = file.getPath().substring(0, index);
 
-                    //load Album
-                    final Album album = new Album().setPath(path);
-                    AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
-                    if (albumItem != null) {
-                        album.getAlbumItems().add(albumItem);
-                    }
-
-                    if (albumItem != null) {
-                        //create intent
-                        Intent intent = new Intent(holder.itemView.getContext(), IntentReceiver.class)
-                                .setAction(Intent.ACTION_VIEW)
-                                .setData(albumItem.getUri(holder.itemView.getContext()));
-                        holder.itemView.getContext().startActivity(intent);
-                    }
-                } else {
-                    //to keep the ripple animation
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            directoryChangeCallback.changeDir(file.getPath());
-                        }
-                    }, 300);
+                //load Album
+                final Album album = new Album().setPath(path);
+                AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
+                if (albumItem != null) {
+                    album.getAlbumItems().add(albumItem);
                 }
+
+                if (albumItem != null) {
+                    //create intent
+                    Intent intent = new Intent(holder.itemView.getContext(), IntentReceiver.class)
+                            .setAction(Intent.ACTION_VIEW)
+                            .setData(albumItem.getUri(holder.itemView.getContext()));
+                    holder.itemView.getContext().startActivity(intent);
+                }
+            } else {
+                //to keep the ripple animation
+                new Handler().postDelayed(() -> directoryChangeCallback.changeDir(file.getPath())
+                        , 300);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                onItemSelect(file);
-                return true;
-            }
+        holder.itemView.setOnLongClickListener((View v) -> {
+            onItemSelect(file);
+            return true;
         });
 
         //clicking on folder icons also selects this item
-        holder.itemView.findViewById(R.id.folder_indicator).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onItemSelect(file);
-            }
-        });
+        holder.itemView.findViewById(R.id.folder_indicator).setOnClickListener((View v) -> onItemSelect(file));
     }
 
     private void onItemSelect(File_POJO file) {

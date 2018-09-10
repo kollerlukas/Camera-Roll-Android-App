@@ -9,14 +9,8 @@ import android.provider.MediaStore;
 public class ContentObserver extends android.database.ContentObserver {
 
     private static final Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
     public static boolean selfChange = false;
-
     private Listener listener;
-
-    public interface Listener {
-        void onChange(boolean selfChange, Uri uri);
-    }
 
     public ContentObserver(Handler handler) {
         super(handler);
@@ -34,17 +28,21 @@ public class ContentObserver extends android.database.ContentObserver {
         }
     }
 
-    public void unregister(Context context) {
-        ContentResolver resolver = context.getContentResolver();
-        resolver.unregisterContentObserver(this);
+    public void unregister(Context c) {
+        ContentResolver r = c.getContentResolver();
+        r.unregisterContentObserver(this);
     }
 
-    public void register(Context context) {
-        ContentResolver resolver = context.getContentResolver();
-        resolver.registerContentObserver(uri, false, this);
+    public void register(Context c) {
+        ContentResolver r = c.getContentResolver();
+        r.registerContentObserver(uri, false, this);
     }
 
-    public void setListener(Listener listener) {
-        this.listener = listener;
+    public void setListener(Listener l) {
+        this.listener = l;
+    }
+
+    public interface Listener {
+        void onChange(boolean selfChange, Uri uri);
     }
 }

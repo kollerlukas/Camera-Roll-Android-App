@@ -64,15 +64,12 @@ public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
 
         if (callback != null && dragSelectEnabled()) {
             dragSelectTouchListener = new DragSelectTouchListener()
-                    .withSelectListener(new DragSelectTouchListener.OnDragSelectListener() {
-                        @Override
-                        public void onSelectChange(int start, int end, boolean isSelected) {
-                            for (int i = start; i <= end; i++) {
-                                getSelectorManager().onItemSelect(getData()
-                                        .getAlbumItems().get(i).getPath());
-                                //update ViewHolder
-                                notifyItemChanged(i);
-                            }
+                    .withSelectListener((int start, int end, boolean isSelected) -> {
+                        for (int i = start; i <= end; i++) {
+                            getSelectorManager().onItemSelect(getData()
+                                    .getAlbumItems().get(i).getPath());
+                            //update ViewHolder
+                            notifyItemChanged(i);
                         }
                     });
             recyclerView.addOnItemTouchListener(dragSelectTouchListener);
@@ -131,38 +128,35 @@ public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
 
         holder.itemView.setTag(albumItem.getPath());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getSelectorMode()) {
-                    onItemSelected((AlbumItemHolder) holder);
-                } else {
-                    Log.d("AlbumAdapter", "onClick: " + getData().getPath());
-                    Context context = holder.itemView.getContext();
-                    Intent intent = new Intent(context, ItemActivity.class);
-                    intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
-                    intent.putExtra(ItemActivity.ALBUM_PATH, getData().getPath());
-                    intent.putExtra(ItemActivity.ITEM_POSITION, getData().getAlbumItems().indexOf(albumItem));
+        holder.itemView.setOnClickListener((View v) -> {
+            if (getSelectorMode()) {
+                onItemSelected((AlbumItemHolder) holder);
+            } else {
+                Log.d("AlbumAdapter", "onClick: " + getData().getPath());
+                Context context = holder.itemView.getContext();
+                Intent intent = new Intent(context, ItemActivity.class);
+                intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
+                intent.putExtra(ItemActivity.ALBUM_PATH, getData().getPath());
+                intent.putExtra(ItemActivity.ITEM_POSITION, getData().getAlbumItems().indexOf(albumItem));
 
-                    if (Settings.getInstance(context).showAnimations()) {
-                        ActivityOptionsCompat options =
-                                ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                        (Activity) context, holder.itemView.findViewById(R.id.image),
-                                        albumItem.getPath());
-                        ActivityCompat.startActivityForResult((Activity) context, intent,
-                                ItemActivity.VIEW_IMAGE, options.toBundle());
-                    } else {
-                        ActivityCompat.startActivityForResult((Activity) context, intent,
-                                ItemActivity.VIEW_IMAGE, null);
-                    }
+                if (Settings.getInstance(context).showAnimations()) {
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    (Activity) context, holder.itemView.findViewById(R.id.image),
+                                    albumItem.getPath());
+                    ActivityCompat.startActivityForResult((Activity) context, intent,
+                            ItemActivity.VIEW_IMAGE, options.toBundle());
+                } else {
+                    ActivityCompat.startActivityForResult((Activity) context, intent,
+                            ItemActivity.VIEW_IMAGE, null);
                 }
             }
         });
-
+        //TODO
         if (getSelectorManager().callbacksAttached()) {
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public boolean onLongClick(View view) {
+                public boolean onLongClick(View v) {
                     if (!getSelectorMode()) {
                         setSelectorMode(true);
                         clearSelectedItemsList();

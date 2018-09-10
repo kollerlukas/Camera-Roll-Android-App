@@ -16,13 +16,13 @@ import us.koller.cameraroll.data.Settings;
 public class CustomImageDecoder implements ImageDecoder {
 
     @Override
-    public Bitmap decode(Context context, Uri uri) throws Exception {
-        boolean use8BitColor = Settings.getInstance(context).use8BitColor();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = use8BitColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+    public Bitmap decode(Context c, Uri uri) throws Exception {
+        boolean use8BitColor = Settings.getInstance(c).use8BitColor();
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inPreferredConfig = use8BitColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
 
-        ContentResolver resolver = context.getContentResolver();
-        InputStream inputStream = resolver.openInputStream(uri);
-        return BitmapFactory.decodeStream(inputStream, null, options);
+        ContentResolver r = c.getContentResolver();
+        InputStream inputStream = r.openInputStream(uri);
+        return BitmapFactory.decodeStream(inputStream, null, o);
     }
 }

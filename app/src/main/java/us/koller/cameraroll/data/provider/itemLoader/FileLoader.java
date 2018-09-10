@@ -20,62 +20,58 @@ public class FileLoader extends ItemLoader {
         }
     }
 
+    private static void addFiles(File_POJO fs, File_POJO fTA) {
+        if (fs.getPath().equals(fTA.getPath())) {
+            fs.getChildren().addAll(fTA.getChildren());
+        } else if (fs.getPath().equals(fTA.getPath()
+                .replace("/" + fTA.getName(), ""))) {
+            fs.addChild(fTA);
+        } else {
+            File_POJO cF = fs;
+
+            String[] fTAP = fTA.getPath().split("/");
+            for (int i = 0; i < fTAP.length; i++) {
+                boolean found = false;
+                for (int k = 0; k < cF.getChildren().size(); k++) {
+                    if (fTAP[i].equals(cF.getChildren().get(k).getName())) {
+                        found = true;
+                        cF = cF.getChildren().get(k);
+                    }
+                }
+                if (found) {
+                    cF.addChild(fTA);
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
     public ItemLoader newInstance() {
         return new FileLoader();
     }
 
     @Override
-    public void onNewDir(Context context, File dir) {
-        dir_pojo = new File_POJO(dir.getPath(),
-                MediaType.isMedia(dir.getPath()));
+    public void onNewDir(Context c, File dir) {
+        dir_pojo = new File_POJO(dir.getPath(), MediaType.isMedia(dir.getPath()));
     }
 
     @Override
-    public void onFile(Context context, File file) {
-        File_POJO file_pojo = new File_POJO(file.getPath(),
-                MediaType.isMedia(file.getPath()));
+    public void onFile(Context c, File f) {
+        File_POJO file_pojo = new File_POJO(f.getPath(),
+                MediaType.isMedia(f.getPath()));
         dir_pojo.addChild(file_pojo);
     }
 
     @Override
-    public void onDirDone(Context context) {
+    public void onDirDone(Context c) {
         addFiles(allFiles, dir_pojo);
     }
 
     @Override
     public Result getResult() {
-        Result result = new Result();
-        result.files = dir_pojo;
-        return result;
-    }
-
-    private static void addFiles(File_POJO files, File_POJO filesToAdd) {
-        if (files.getPath().equals(filesToAdd.getPath())) {
-            files.getChildren().addAll(filesToAdd.getChildren());
-        } else if (files.getPath().equals(filesToAdd.getPath()
-                .replace("/" + filesToAdd.getName(), ""))) {
-            files.addChild(filesToAdd);
-        } else {
-            File_POJO currentFiles = files;
-
-            String[] filesToAddPath = filesToAdd.getPath().split("/");
-            for (int i = 0; i < filesToAddPath.length; i++) {
-                boolean found = false;
-                for (int k = 0; k < currentFiles.getChildren().size(); k++) {
-                    if (filesToAddPath[i].equals(
-                            currentFiles.getChildren().get(k).getName())) {
-                        found = true;
-                        currentFiles = currentFiles.getChildren().get(k);
-                    }
-                }
-
-                if (found) {
-                    currentFiles.addChild(filesToAdd);
-                    break;
-                }
-            }
-        }
-
+        Result r = new Result();
+        r.files = dir_pojo;
+        return r;
     }
 }

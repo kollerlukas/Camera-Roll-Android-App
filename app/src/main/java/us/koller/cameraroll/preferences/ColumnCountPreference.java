@@ -13,30 +13,26 @@ public class ColumnCountPreference extends DialogPreference {
     private int mDialogLayoutResId = R.layout.pref_dialog_style;
 
     @SuppressWarnings("unused")
-    public ColumnCountPreference(Context context) {
-        super(context);
+    public ColumnCountPreference(Context c) {
+        super(c);
     }
 
     @SuppressWarnings("unused")
-    public ColumnCountPreference(Context context, AttributeSet attrs) {
-        super(context, attrs, R.attr.dialogPreferenceStyle);
+    public ColumnCountPreference(Context c, AttributeSet attrs) {
+        super(c, attrs, R.attr.dialogPreferenceStyle);
     }
 
     @SuppressWarnings("unused")
-    public ColumnCountPreference(Context context, AttributeSet attrs,
-                                 int defStyleAttr) {
-        super(context, attrs, defStyleAttr, defStyleAttr);
+    public ColumnCountPreference(Context c, AttributeSet attrs, int defStyleAttr) {
+        super(c, attrs, defStyleAttr, defStyleAttr);
     }
 
     @SuppressWarnings("unused")
-    public ColumnCountPreference(Context context, AttributeSet attrs,
-                                 int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
+    public ColumnCountPreference(Context c, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(c, attrs, defStyleAttr, defStyleRes);
         setDialogLayoutResource(mDialogLayoutResId);
         setPositiveButtonText(android.R.string.ok);
         setNegativeButtonText(android.R.string.cancel);
-
         columnCount = getPersistedInt(Settings.DEFAULT_COLUMN_COUNT);
     }
 
@@ -46,20 +42,16 @@ public class ColumnCountPreference extends DialogPreference {
 
     void setColumnCount(int columnCount) {
         this.columnCount = columnCount;
-
         // Save to Shared Preferences
         persistInt(columnCount);
-
         //update summary
         setSummary(String.valueOf(columnCount));
     }
 
     @Override
-    protected void onSetInitialValue(boolean restorePersistedValue,
-                                     Object defaultValue) {
+    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         // Read the value. Use the default value if it is not possible.
-        setColumnCount(restorePersistedValue ?
-                getPersistedInt(columnCount) : (int) defaultValue);
+        setColumnCount(restorePersistedValue ? getPersistedInt(columnCount) : (int) defaultValue);
     }
 
     @Override

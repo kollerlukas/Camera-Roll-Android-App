@@ -11,8 +11,8 @@ import us.koller.cameraroll.R;
 
 public class Cards2 extends Style {
 
-    public static int getValue(Context context) {
-        return context.getResources().getInteger(R.integer.STYLE_CARDS_2_VALUE);
+    public static int getValue(Context c) {
+        return c.getResources().getInteger(R.integer.STYLE_CARDS_2_VALUE);
     }
 
     @Override
@@ -26,8 +26,8 @@ public class Cards2 extends Style {
     }
 
     @Override
-    String getColumnCountPrefKey(Context context) {
-        return context.getString(R.string.STYLE_CARDS_2_COLUMN_COUNT_PREF_KEY);
+    String getColumnCountPrefKey(Context c) {
+        return c.getString(R.string.STYLE_CARDS_2_COLUMN_COUNT_PREF_KEY);
     }
 
     @Override
@@ -42,19 +42,17 @@ public class Cards2 extends Style {
 
     @Override
     public View createPrefDialogView(@NonNull ViewGroup container) {
-        View view = inflatePrefDialogItemView(container);
+        View v = inflatePrefDialogItemView(container);
 
-        Context context = container.getContext();
+        Context c = container.getContext();
 
-        TextView name = view.findViewById(R.id.name);
-        name.setText(context.getString(R.string.STYLE_CARDS_2_NAME));
+        TextView name = v.findViewById(R.id.name);
+        name.setText(c.getString(R.string.STYLE_CARDS_2_NAME));
 
-        ImageView imageView = view.findViewById(R.id.image);
-        imageView.setImageResource(R.drawable.style_cards_2);
-        imageView.setColorFilter(getAccentColor(context));
-
-        setColumnCountButtonsClickListener(view);
-
-        return view;
+        ImageView iV = v.findViewById(R.id.image);
+        iV.setImageResource(R.drawable.style_cards_2);
+        iV.setColorFilter(getAccentColor(c));
+        setColumnCountButtonsClickListener(v);
+        return v;
     }
 }

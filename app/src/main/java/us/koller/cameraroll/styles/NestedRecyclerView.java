@@ -13,8 +13,8 @@ import us.koller.cameraroll.adapter.main.viewHolder.NestedRecyclerViewAlbumHolde
 
 public class NestedRecyclerView extends Style {
 
-    public static int getValue(Context context) {
-        return context.getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE);
+    public static int getValue(Context c) {
+        return c.getResources().getInteger(R.integer.STYLE_NESTED_RECYCLER_VIEW_VALUE);
     }
 
     @Override
@@ -33,8 +33,8 @@ public class NestedRecyclerView extends Style {
     }
 
     @Override
-    String getColumnCountPrefKey(Context context) {
-        return context.getString(R.string.STYLE_NESTED_RECYCLER_VIEW_COLUMN_COUNT_PREF_KEY);
+    String getColumnCountPrefKey(Context c) {
+        return c.getString(R.string.STYLE_NESTED_RECYCLER_VIEW_COLUMN_COUNT_PREF_KEY);
     }
 
     @Override
@@ -49,19 +49,17 @@ public class NestedRecyclerView extends Style {
 
     @Override
     public View createPrefDialogView(@NonNull ViewGroup container) {
-        View view = inflatePrefDialogItemView(container);
+        View v = inflatePrefDialogItemView(container);
 
-        Context context = container.getContext();
+        Context c = container.getContext();
 
-        TextView name = view.findViewById(R.id.name);
-        name.setText(context.getString(R.string.STYLE_NESTED_RECYCLER_VIEW_NAME));
+        TextView name = v.findViewById(R.id.name);
+        name.setText(c.getString(R.string.STYLE_NESTED_RECYCLER_VIEW_NAME));
 
-        ImageView imageView = view.findViewById(R.id.image);
-        imageView.setImageResource(R.drawable.style_nested_recycler_view);
-        imageView.setColorFilter(getAccentColor(context));
-
-        disableColumnCountButtons(view);
-
-        return view;
+        ImageView iV = v.findViewById(R.id.image);
+        iV.setImageResource(R.drawable.style_nested_recycler_view);
+        iV.setColorFilter(getAccentColor(c));
+        disableColumnCountButtons(v);
+        return v;
     }
 }

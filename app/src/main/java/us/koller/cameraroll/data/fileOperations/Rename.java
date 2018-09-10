@@ -19,9 +19,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
-import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.BaseActivity;
 import us.koller.cameraroll.util.StorageUtil;
 
@@ -30,6 +30,22 @@ public class Rename extends FileOperation {
     public static final String NEW_FILE_PATH = "NEW_FILE_PATH";
 
     private String newFilePath;
+
+    private static String getFileExtension(String filename) {
+        int index = filename.lastIndexOf(".");
+        if (index != -1) {
+            return filename.substring(index);
+        }
+        return "";
+    }
+
+    public static String getNewFilePath(String path, String nFN) {
+        File f = new File(path);
+        String fE = getFileExtension(f.getName());
+        String d = f.getPath().replace(f.getName(), "");
+        File newFile = new File(d, nFN + fE);
+        return newFile.getPath();
+    }
 
     @Override
     String getNotificationTitle() {
@@ -42,42 +58,36 @@ public class Rename extends FileOperation {
     }
 
     @Override
-    public void execute(Intent workIntent) {
-        final File_POJO[] files = getFiles(workIntent);
-        final String newFileName = workIntent.getStringExtra(FileOperation.NEW_FILE_NAME);
-        if (files.length > 0 && newFileName != null) {
+    public void execute(Intent wI) {
+        final File_POJO[] files = getFiles(wI);
+        final String nFN = wI.getStringExtra(FileOperation.NEW_FILE_NAME);
+        if (files.length > 0 && nFN != null) {
             final File_POJO file = files[0];
-            boolean result;
+            boolean r;
             if (FileOperation.Util.isOnRemovableStorage(file.getPath())) {
                 //file is on removable storage
-                Uri treeUri = getTreeUri(workIntent, file.getPath());
+                Uri treeUri = getTreeUri(wI, file.getPath());
                 if (treeUri == null) {
                     return;
                 }
-                result = renameFileRemovableStorage(getApplicationContext(), treeUri, file.getPath(), newFileName);
+                r = renameFileRemovableStorage(getApplicationContext(), treeUri, file.getPath(), nFN);
             } else {
-                result = renameFile(file.getPath(), newFileName);
+                r = renameFile(file.getPath(), nFN);
             }
-
-            if (!result) {
-                sendFailedBroadcast(workIntent, file.getPath());
+            if (!r) {
+                sendFailedBroadcast(wI, file.getPath());
             } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), getString(R.string.successfully_renamed_file),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), getString(R.string.successfully_renamed_file),
+                        Toast.LENGTH_SHORT).show());
             }
         }
     }
 
     @Override
     public Intent getDoneIntent() {
-        Intent intent = super.getDoneIntent();
-        intent.putExtra(NEW_FILE_PATH, newFilePath);
-        return intent;
+        Intent i = super.getDoneIntent();
+        i.putExtra(NEW_FILE_PATH, newFilePath);
+        return i;
     }
 
     @Override
@@ -85,67 +95,49 @@ public class Rename extends FileOperation {
         return FileOperation.RENAME;
     }
 
-    private static String getFileExtension(String filename) {
-        int index = filename.lastIndexOf(".");
-        if (index != -1) {
-            return filename.substring(index);
-        }
-        return "";
-    }
-
-    public static String getNewFilePath(String path, String newFileName) {
-        File file = new File(path);
-        String fileExtension = getFileExtension(file.getName());
-        String destination = file.getPath().replace(file.getName(), "");
-        File newFile = new File(destination, newFileName + fileExtension);
-        return newFile.getPath();
-    }
-
-    private boolean renameFile(String path, String newFileName) {
+    private boolean renameFile(String path, String nFN) {
         //keep old paths to remove them from MediaStore afterwards
-        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), path);
+        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), path);
 
-        File file = new File(path);
-        newFilePath = getNewFilePath(path, newFileName);
+        File f = new File(path);
+        newFilePath = getNewFilePath(path, nFN);
         File newFile = new File(newFilePath);
 
         //renaming file
-        boolean success = file.renameTo(newFile);
+        boolean success = f.renameTo(newFile);
 
         //re-scan all paths
-        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), newFile.getPath());
+        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), newFile.getPath());
         addPathsToScan(oldPaths);
         addPathsToScan(newPaths);
-
         return success;
     }
 
-    private boolean renameFileRemovableStorage(Context context, Uri treeUri, String path, String newFileName) {
+    private boolean renameFileRemovableStorage(Context c, Uri treeUri, String path, String newFileName) {
         //keep old paths to remove them from MediaStore afterwards
-        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), path);
+        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), path);
 
         newFilePath = getNewFilePath(path, newFileName);
         boolean success = false;
-        DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, new File(path));
-        if (file != null) {
-            success = file.renameTo(new File(newFilePath).getName());
+        DocumentFile f = StorageUtil.parseDocumentFile(c, treeUri, new File(path));
+        if (f != null) {
+            success = f.renameTo(new File(newFilePath).getName());
         }
 
         //re-scan all paths
-        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), newFilePath);
+        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), newFilePath);
         addPathsToScan(oldPaths);
         addPathsToScan(newPaths);
         return success;
     }
 
     public static class Util {
-
-        public static AlertDialog getRenameDialog(final BaseActivity activity,
+        public static AlertDialog getRenameDialog(final BaseActivity ba,
                                                   final File_POJO file,
-                                                  final BroadcastReceiver broadcastReceiver) {
+                                                  final BroadcastReceiver bR) {
 
-            Theme theme = Settings.getInstance(activity).getThemeInstance(activity);
-            ContextThemeWrapper wrapper = new ContextThemeWrapper(activity, theme.getDialogThemeRes());
+            Theme t = Settings.getInstance(ba).getThemeInstance(ba);
+            ContextThemeWrapper wrapper = new ContextThemeWrapper(ba, t.getDialogThemeRes());
 
             @SuppressLint("InflateParams")
             View dialogLayout = LayoutInflater.from(wrapper)
@@ -162,20 +154,15 @@ public class Rename extends FileOperation {
             AlertDialog dialog = new AlertDialog.Builder(wrapper)
                     .setTitle(R.string.rename)
                     .setView(dialogLayout)
-                    .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                    .setPositiveButton(R.string.rename, (DialogInterface dialogInterface, int i) -> {
                             final String newFileName = editText.getText().toString();
-
-                            if (broadcastReceiver != null) {
-                                activity.registerLocalBroadcastReceiver(broadcastReceiver);
-                            }
-
-                            final File_POJO[] files = new File_POJO[]{file};
-                            Intent intent = FileOperation.getDefaultIntent(activity, FileOperation.RENAME, files)
-                                            .putExtra(FileOperation.NEW_FILE_NAME, newFileName);
-                            activity.startService(intent);
+                        if (bR != null) {
+                            ba.registerLocalBroadcastReceiver(bR);
                         }
+                            final File_POJO[] files = new File_POJO[]{file};
+                        Intent intent = FileOperation.getDefaultIntent(ba, FileOperation.RENAME, files)
+                                            .putExtra(FileOperation.NEW_FILE_NAME, newFileName);
+                        ba.startService(intent);
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .create();

@@ -24,19 +24,16 @@ public class Delete extends FileOperation {
     }
 
     @Override
-    public void execute(Intent workIntent) {
-        final File_POJO[] files = getFiles(workIntent);
-
+    public void execute(Intent wI) {
+        final File_POJO[] files = getFiles(wI);
         int success_count = 0;
-
         onProgress(success_count, files.length);
-
         for (int i = 0; i < files.length; i++) {
             boolean result;
             //check if file is on removable storage
             if (Util.isOnRemovableStorage(files[i].getPath())) {
                 //file is on removable storage
-                Uri treeUri = getTreeUri(workIntent, files[i].getPath());
+                Uri treeUri = getTreeUri(wI, files[i].getPath());
                 if (treeUri == null) {
                     return;
                 }
@@ -49,15 +46,13 @@ public class Delete extends FileOperation {
                     deleteFile(parentPath);
                 }*/
             }
-
             if (result) {
                 success_count++;
                 onProgress(success_count, files.length);
             } else {
-                sendFailedBroadcast(workIntent, files[i].getPath());
+                sendFailedBroadcast(wI, files[i].getPath());
             }
         }
-
         if (success_count == 0) {
             onProgress(success_count, files.length);
         }
@@ -82,9 +77,9 @@ public class Delete extends FileOperation {
         return success;
     }
 
-    boolean deleteFileOnRemovableStorage(Context context, Uri treeUri, String path) {
+    boolean deleteFileOnRemovableStorage(Context c, Uri treeUri, String path) {
         boolean success = false;
-        DocumentFile file = StorageUtil.parseDocumentFile(context, treeUri, new File(path));
+        DocumentFile file = StorageUtil.parseDocumentFile(c, treeUri, new File(path));
         if (file != null) {
             success = file.delete();
         }

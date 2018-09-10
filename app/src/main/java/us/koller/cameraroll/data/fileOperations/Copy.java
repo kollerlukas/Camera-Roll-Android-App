@@ -21,6 +21,74 @@ import us.koller.cameraroll.util.StorageUtil;
 
 public class Copy extends FileOperation {
 
+    public static String getCopyFileName(String destinationPath) {
+        File dir = new File(destinationPath);
+        String copyName;
+        if (dir.exists()) {
+            copyName = dir.getPath();
+            if (copyName.contains(".")) {
+                int index = copyName.lastIndexOf(".");
+                copyName = copyName.substring(0, index) + " Copy" + copyName.substring(index, copyName.length());
+            } else {
+                copyName = copyName + " Copy";
+            }
+        } else {
+            copyName = dir.getPath();
+        }
+        return copyName;
+    }
+
+    //for files on non-removable storage
+    private static boolean copyFile(String path, String destination) throws IOException {
+        //create output directory if it doesn't exist
+        File dir = new File(destination);
+        if (new File(path).isDirectory()) {
+            return dir.mkdirs();
+        } else {
+            if (dir.createNewFile()) {
+                InputStream inputStream = new FileInputStream(path);
+                OutputStream outputStream = new FileOutputStream(dir);
+                return writeStream(inputStream, outputStream);
+            }
+        }
+        return false;
+    }
+
+    //for files on removable storage
+    static boolean copyFileOntoRemovableStorage(Context c, Uri treeUri,
+                                                String path, String d) throws IOException { /* d = destination */
+        String mimeType = MediaType.getMimeType(path);
+        DocumentFile file = DocumentFile.fromFile(new File(d));
+        if (file.exists()) {
+            int index = d.lastIndexOf(".");
+            d = d.substring(0, index) + " Copy"
+                    + d.substring(index, d.length());
+        }
+        DocumentFile destinationFile = StorageUtil.createDocumentFile(c, treeUri, d, mimeType);
+
+        if (destinationFile != null) {
+            ContentResolver resolver = c.getContentResolver();
+            OutputStream outputStream = resolver.openOutputStream(destinationFile.getUri());
+            InputStream inputStream = new FileInputStream(path);
+            return writeStream(inputStream, outputStream);
+        }
+        return false;
+    }
+
+    private static boolean writeStream(InputStream iS, OutputStream oS) throws IOException {
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        //copy the file content in bytes
+        while ((bytesRead = iS.read(buffer)) > 0) {
+            oS.write(buffer, 0, bytesRead);
+        }
+        // write the output file
+        oS.flush();
+        oS.close();
+        iS.close();
+        return true;
+    }
+
     @Override
     String getNotificationTitle() {
         return getString(R.string.copy);
@@ -71,29 +139,11 @@ public class Copy extends FileOperation {
         return FileOperation.COPY;
     }
 
-    public static String getCopyFileName(String destinationPath) {
-        File dir = new File(destinationPath);
-        String copyName;
-        if (dir.exists()) {
-            copyName = dir.getPath();
-            if (copyName.contains(".")) {
-                int index = copyName.lastIndexOf(".");
-                copyName = copyName.substring(0, index) + " Copy"
-                        + copyName.substring(index, copyName.length());
-            } else {
-                copyName = copyName + " Copy";
-            }
-        } else {
-            copyName = dir.getPath();
-        }
-        return copyName;
-    }
-
     //treeUri only needed for removable storage
-    boolean copyFilesRecursively(Context context, Uri treeUri, String path,
+    boolean copyFilesRecursively(Context c, Uri treeUri, String path,
                                  String destination, boolean result) {
         Log.d("Copy", "copyFilesRecursively() path = [" + path + "]");
-        File file = new File(path);
+        File f = new File(path);
         String destinationFilePath = getCopyFileName(new File(destination, new File(path).getName()).getPath());
         try {
             if (treeUri == null) {
@@ -101,14 +151,13 @@ public class Copy extends FileOperation {
                 result = result && copyFile(path, destinationFilePath);
             } else {
                 //file is on removable storage
-                if (file.isDirectory()) {
-                    result = result && StorageUtil.createDocumentDir(context, treeUri, destinationFilePath) != null;
+                if (f.isDirectory()) {
+                    result = result && StorageUtil.createDocumentDir(c, treeUri, destinationFilePath) != null;
                 } else {
-                    result = result && copyFileOntoRemovableStorage(context, treeUri, path, destinationFilePath);
+                    result = result && copyFileOntoRemovableStorage(c, treeUri, path, destinationFilePath);
                 }
             }
-
-            if (!file.isDirectory()) {
+            if (!f.isDirectory()) {
                 addPathToScan(destinationFilePath);
             }
         } catch (IOException e) {
@@ -116,67 +165,13 @@ public class Copy extends FileOperation {
             return false;
         }
 
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
+        if (f.isDirectory()) {
+            File[] files = f.listFiles();
             for (int i = 0; i < files.length; i++) {
-                copyFilesRecursively(context, treeUri, files[i].getPath(),
+                copyFilesRecursively(c, treeUri, files[i].getPath(),
                         destination + "/" + new File(destinationFilePath).getName() + "/", result);
             }
         }
         return result;
-    }
-
-    //for files on non-removable storage
-    private static boolean copyFile(String path, String destination) throws IOException {
-        //create output directory if it doesn't exist
-        File dir = new File(destination);
-        if (new File(path).isDirectory()) {
-            return dir.mkdirs();
-        } else {
-            if (dir.createNewFile()) {
-                InputStream inputStream = new FileInputStream(path);
-                OutputStream outputStream = new FileOutputStream(dir);
-                return writeStream(inputStream, outputStream);
-            }
-        }
-        return false;
-    }
-
-    //for files on removable storage
-    static boolean copyFileOntoRemovableStorage(Context context, Uri treeUri,
-                                                String path, String destination) throws IOException {
-        String mimeType = MediaType.getMimeType(path);
-        DocumentFile file = DocumentFile.fromFile(new File(destination));
-        if (file.exists()) {
-            int index = destination.lastIndexOf(".");
-            destination = destination.substring(0, index) + " Copy"
-                    + destination.substring(index, destination.length());
-        }
-        DocumentFile destinationFile = StorageUtil.createDocumentFile(context, treeUri, destination, mimeType);
-
-        if (destinationFile != null) {
-            ContentResolver resolver = context.getContentResolver();
-            OutputStream outputStream = resolver.openOutputStream(destinationFile.getUri());
-            InputStream inputStream = new FileInputStream(path);
-            return writeStream(inputStream, outputStream);
-        }
-        return false;
-    }
-
-
-    private static boolean writeStream(InputStream inputStream, OutputStream outputStream) throws IOException {
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        //copy the file content in bytes
-        while ((bytesRead = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-        // write the output file
-        outputStream.flush();
-        outputStream.close();
-
-        inputStream.close();
-
-        return true;
     }
 }

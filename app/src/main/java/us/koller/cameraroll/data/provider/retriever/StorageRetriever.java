@@ -14,11 +14,11 @@ import java.util.Arrays;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.FilesProvider;
+import us.koller.cameraroll.data.provider.MediaProvider;
+import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.provider.itemLoader.AlbumLoader;
 import us.koller.cameraroll.data.provider.itemLoader.FileLoader;
 import us.koller.cameraroll.data.provider.itemLoader.ItemLoader;
-import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 
@@ -35,111 +35,84 @@ public class StorageRetriever extends Retriever {
     private Handler handler;
     private Runnable timeout;
 
-    interface StorageSearchCallback {
-        void onThreadResult(ItemLoader.Result result);
-
-        void done();
-    }
-
     @Override
-    void loadAlbums(final Activity context, final boolean hiddenFolders) {
+    void loadAlbums(final Activity c, final boolean hiddenFolders) {
         final long startTime = System.currentTimeMillis();
-
         final ArrayList<Album> albums = new ArrayList<>();
 
         //handle timeout after 10 seconds
         handler = new Handler();
-        timeout = new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, "timeout", Toast.LENGTH_SHORT).show();
-                MediaProvider.OnMediaLoadedCallback callback = getCallback();
-                if (callback != null) {
-                    callback.timeout();
-                }
+        timeout = (() -> {
+            Toast.makeText(c, "timeout", Toast.LENGTH_SHORT).show();
+            MediaProvider.OnMediaLoadedCallback callback = getCallback();
+            if (callback != null) {
+                callback.timeout();
             }
-        };
+        });
         handler.postDelayed(timeout, 10000);
 
         //load media from storage
-        AsyncTask.execute(new Runnable() {
+        AsyncTask.execute(() -> searchStorage(c, new StorageSearchCallback() {
             @Override
-            public void run() {
-                searchStorage(context,
-                        new StorageSearchCallback() {
-
-                            @Override
-                            public void onThreadResult(ItemLoader.Result result) {
-                                if (result != null) {
-                                    albums.addAll(result.albums);
-                                }
-                            }
-
-                            @Override
-                            public void done() {
-                                if (!hiddenFolders) {
-                                    for (int i = albums.size() - 1; i >= 0; i--) {
-                                        if (albums.get(i) == null || albums.get(i).isHidden()) {
-                                            albums.remove(i);
-                                        }
-                                    }
-                                }
-
-                                //done loading media from storage
-                                MediaProvider.OnMediaLoadedCallback callback = getCallback();
-                                if (callback != null) {
-                                    callback.onMediaLoaded(albums);
-                                }
-                                cancelTimeout();
-                                Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
-                                        + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
-                            }
-                        });
+            public void onThreadResult(ItemLoader.Result r) {
+                if (r != null) {
+                    albums.addAll(r.albums);
+                }
             }
-        });
+
+            @Override
+            public void done() {
+                if (!hiddenFolders) {
+                    for (int i = albums.size() - 1; i >= 0; i--) {
+                        if (albums.get(i) == null || albums.get(i).isHidden()) {
+                            albums.remove(i);
+                        }
+                    }
+                }
+                //done loading media from storage
+                MediaProvider.OnMediaLoadedCallback ca = getCallback();
+                if (ca != null) {
+                    ca.onMediaLoaded(albums);
+                }
+                cancelTimeout();
+                Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
+                        + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
+            }
+        }));
     }
 
-    public void loadFilesForDir(final Activity context, String dirPath,
-                                final FilesProvider.Callback callback) {
-
+    public void loadFilesForDir(final Activity c, String dirPath, final FilesProvider.Callback ca) {
         if (new File(dirPath).isFile()) {
-            callback.onDirLoaded(null);
+            ca.onDirLoaded(null);
             return;
         }
 
         threads = new ArrayList<>();
 
-        Thread.Callback threadCallback = new Thread.Callback() {
-            @Override
-            public void done(Thread thread, ItemLoader.Result result) {
-                File_POJO files = result.files;
-                boolean filesContainMedia = false;
-                for (int i = 0; i < files.getChildren().size(); i++) {
-                    if (files.getChildren().get(i) != null &&
-                            MediaType.isMedia(
-                                    files.getChildren().get(i).getPath())) {
-                        filesContainMedia = true;
-                        break;
-                    }
+        Thread.Callback tCa = (Thread t, ItemLoader.Result r) -> {
+            File_POJO files = r.files;
+            boolean filesContainMedia = false;
+            for (int i = 0; i < files.getChildren().size(); i++) {
+                if (files.getChildren().get(i) != null &&
+                        MediaType.isMedia(files.getChildren().get(i).getPath())) {
+                    filesContainMedia = true;
+                    break;
                 }
-
-                if (filesContainMedia) {
-                    SortUtil.sortByDate(files.getChildren());
-                } else {
-                    SortUtil.sortByName(files.getChildren());
-                }
-                callback.onDirLoaded(files);
-                thread.cancel();
-                threads = null;
             }
+            if (filesContainMedia) {
+                SortUtil.sortByDate(files.getChildren());
+            } else {
+                SortUtil.sortByName(files.getChildren());
+            }
+            ca.onDirLoaded(files);
+            t.cancel();
+            threads = null;
         };
 
         final File[] files = new File[]{new File(dirPath)};
-        Thread thread = new Thread(context, files, new FileLoader())
-                .notSearchSubDirs()
-                .setCallback(threadCallback);
-        threads.add(thread);
-        thread.start();
+        Thread t = new Thread(c, files, new FileLoader()).notSearchSubDirs().setCallback(tCa);
+        threads.add(t);
+        t.start();
     }
 
     private void cancelTimeout() {
@@ -161,36 +134,28 @@ public class StorageRetriever extends Retriever {
         }
     }
 
-    private void searchStorage(final Activity context, final StorageSearchCallback callback) {
-        File[] dirs = Provider.getDirectoriesToSearch(context);
-
+    private void searchStorage(final Activity c, final StorageSearchCallback ca) {
+        File[] dirs = Provider.getDirectoriesToSearch(c);
         threads = new ArrayList<>();
-
-        Thread.Callback threadCallback = new Thread.Callback() {
-            @Override
-            public void done(Thread thread, ItemLoader.Result result) {
-                callback.onThreadResult(result);
-                threads.remove(thread);
-                thread.cancel();
-                if (threads.size() == 0) {
-                    callback.done();
-                    threads = null;
-                }
+        Thread.Callback threadCallback = (Thread t, ItemLoader.Result r) -> {
+            ca.onThreadResult(r);
+            threads.remove(t);
+            t.cancel();
+            if (threads.size() == 0) {
+                ca.done();
+                threads = null;
             }
         };
-
         final File[][] threadDirs = divideDirs(dirs);
-
         /*DateTakenRetriever dateRetriever = new DateTakenRetriever();*/
-
         for (int i = 0; i < THREAD_COUNT; i++) {
             final File[] files = threadDirs[i];
             if (files.length > 0) {
-                ItemLoader itemLoader = new AlbumLoader()/*.setDateRetriever(dateRetriever)*/;
-                Thread thread = new Thread(context, files, itemLoader)
+                ItemLoader iL = new AlbumLoader()/*.setDateRetriever(dateRetriever)*/;
+                Thread t = new Thread(c, files, iL)
                         .setCallback(threadCallback);
-                threads.add(thread);
-                thread.start();
+                threads.add(t);
+                t.start();
             }
         }
     }
@@ -219,38 +184,41 @@ public class StorageRetriever extends Retriever {
         File[][] threadDirs = new File[THREAD_COUNT][dirs.length / THREAD_COUNT + 1];
         int index = 0;
         for (int i = 0; i < THREAD_COUNT; i++) {
-            File[] threadDir = Arrays.copyOfRange(dirs, index, index + threadDirs_sizes[i]);
-            threadDirs[i] = threadDir;
+            File[] tD = Arrays.copyOfRange(dirs, index, index + threadDirs_sizes[i]);
+            threadDirs[i] = tD;
             index = index + threadDirs_sizes[i];
         }
         return threadDirs;
     }
 
+    interface StorageSearchCallback {
+        void onThreadResult(ItemLoader.Result r);
+
+        void done();
+    }
+
     //Thread classes
     static abstract class AbstractThread extends java.lang.Thread {
-
         Context context;
         File[] dirs;
         ItemLoader itemLoader;
-
         Callback callback;
-
         boolean searchSubDirs = true;
 
-        public interface Callback {
-            void done(Thread thread, ItemLoader.Result result);
-        }
-
-        AbstractThread(Context context, File[] dirs, ItemLoader itemLoader) {
-            this.context = context;
+        AbstractThread(Context c, File[] dirs, ItemLoader iL) {
+            this.context = c;
             this.dirs = dirs;
-            this.itemLoader = itemLoader;
+            this.itemLoader = iL;
         }
 
         @SuppressWarnings("unchecked")
-        public <T extends AbstractThread> T setCallback(Callback callback) {
-            this.callback = callback;
+        public <T extends AbstractThread> T setCallback(Callback ca) {
+            this.callback = ca;
             return (T) this;
+        }
+
+        public interface Callback {
+            void done(Thread thread, ItemLoader.Result r);
         }
 
         @SuppressWarnings("unchecked")
@@ -258,14 +226,12 @@ public class StorageRetriever extends Retriever {
             this.searchSubDirs = false;
             return (T) this;
         }
-
         abstract void cancel();
     }
 
     public static class Thread extends AbstractThread {
-
-        Thread(Context context, File[] dirs, ItemLoader itemLoader) {
-            super(context, dirs, itemLoader);
+        Thread(Context c, File[] dirs, ItemLoader iL) {
+            super(c, dirs, iL);
         }
 
         @Override
@@ -285,35 +251,30 @@ public class StorageRetriever extends Retriever {
             }
         }
 
-        private void recursivelySearchStorage(final Context context,
-                                              final File file) {
+        private void recursivelySearchStorage(final Context c, final File file) {
             if (interrupted() || file == null) {
                 return;
             }
-
             if (file.isFile()) {
                 return;
             }
-
-            itemLoader.onNewDir(context, file);
+            itemLoader.onNewDir(c, file);
             File[] files = file.listFiles();
             if (files != null) {
                 for (int i = 0; i < files.length; i++) {
-                    itemLoader.onFile(context, files[i]);
+                    itemLoader.onFile(c, files[i]);
                 }
-                itemLoader.onDirDone(context);
-
+                itemLoader.onDirDone(c);
                 if (searchSubDirs) {
                     //search sub-directories
                     for (int i = 0; i < files.length; i++) {
                         if (files[i].isDirectory()) {
-                            recursivelySearchStorage(context, files[i]);
+                            recursivelySearchStorage(c, files[i]);
                         }
                     }
                 }
             }
         }
-
         public void cancel() {
             context = null;
             callback = null;

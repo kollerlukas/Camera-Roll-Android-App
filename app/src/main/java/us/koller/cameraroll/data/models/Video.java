@@ -13,17 +13,15 @@ import us.koller.cameraroll.R;
 import us.koller.cameraroll.util.Util;
 
 public class Video extends AlbumItem implements Parcelable {
-
     Video() {
-
     }
 
-    Video(Parcel parcel) {
-        super(parcel);
+    Video(Parcel p) {
+        super(p);
     }
 
     @Override
-    public int[] retrieveImageDimens(Context context) {
+    public int[] retrieveImageDimens(Context c) {
         try {
             return Util.getVideoDimensions(getPath());
         } catch (FileNotFoundException e) {
@@ -33,14 +31,14 @@ public class Video extends AlbumItem implements Parcelable {
     }
 
     public int retrieveFrameRate() {
-        MediaExtractor extractor = new MediaExtractor();
+        MediaExtractor me = new MediaExtractor();
         int frameRate = -1;
         try {
             //Adjust data source as per the requirement if file, URI, etc.
-            extractor.setDataSource(getPath());
-            int numTracks = extractor.getTrackCount();
+            me.setDataSource(getPath());
+            int numTracks = me.getTrackCount();
             for (int i = 0; i < numTracks; i++) {
-                MediaFormat format = extractor.getTrackFormat(i);
+                MediaFormat format = me.getTrackFormat(i);
                 if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
                     frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE);
                 }
@@ -49,7 +47,7 @@ public class Video extends AlbumItem implements Parcelable {
             e.printStackTrace();
         } finally {
             //Release stuff
-            extractor.release();
+            me.release();
         }
         return frameRate;
     }
@@ -60,7 +58,7 @@ public class Video extends AlbumItem implements Parcelable {
     }
 
     @Override
-    public String getType(Context context) {
-        return context.getString(R.string.video);
+    public String getType(Context c) {
+        return c.getString(R.string.video);
     }
 }

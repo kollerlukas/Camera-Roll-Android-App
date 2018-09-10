@@ -11,8 +11,8 @@ import us.koller.cameraroll.R;
 
 public class Parallax extends Style {
 
-    public static int getValue(Context context) {
-        return context.getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE);
+    public static int getValue(Context c) {
+        return c.getResources().getInteger(R.integer.STYLE_PARALLAX_VALUE);
     }
 
     @Override
@@ -21,8 +21,8 @@ public class Parallax extends Style {
     }
 
     @Override
-    String getColumnCountPrefKey(Context context) {
-        return context.getString(R.string.STYLE_PARALLAX_COLUMN_COUNT_PREF_KEY);
+    String getColumnCountPrefKey(Context c) {
+        return c.getString(R.string.STYLE_PARALLAX_COLUMN_COUNT_PREF_KEY);
     }
 
     @Override
@@ -37,19 +37,17 @@ public class Parallax extends Style {
 
     @Override
     public View createPrefDialogView(@NonNull ViewGroup container) {
-        ViewGroup viewGroup = inflatePrefDialogItemView(container);
+        ViewGroup vG = inflatePrefDialogItemView(container);
 
-        Context context = container.getContext();
+        Context c = container.getContext();
 
-        TextView name = viewGroup.findViewById(R.id.name);
-        name.setText(context.getString(R.string.STYLE_PARALLAX_NAME));
+        TextView name = vG.findViewById(R.id.name);
+        name.setText(c.getString(R.string.STYLE_PARALLAX_NAME));
 
-        ImageView imageView = viewGroup.findViewById(R.id.image);
-        imageView.setImageResource(R.drawable.style_parallax);
-        imageView.setColorFilter(getAccentColor(context));
-
-        setColumnCountButtonsClickListener(viewGroup);
-
-        return viewGroup;
+        ImageView iV = vG.findViewById(R.id.image);
+        iV.setImageResource(R.drawable.style_parallax);
+        iV.setColorFilter(getAccentColor(c));
+        setColumnCountButtonsClickListener(vG);
+        return vG;
     }
 }

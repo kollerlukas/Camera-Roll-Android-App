@@ -33,12 +33,28 @@ public class MediaStoreRetriever extends Retriever {
             MediaStore.Video.VideoColumns.DATE_TAKEN,
             BaseColumns._ID};
 
+    public static String getPathForUri(Context c, Uri uri) {
+        CursorLoader cL = new CursorLoader(c, uri, new String[]{MediaStore.Files.FileColumns.DATA},
+                null, null, null);
+        try {
+            final Cursor crsr = cL.loadInBackground();
+            if (crsr != null && crsr.getCount() > 0) {
+                crsr.moveToFirst();
+                return crsr.getString(crsr.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA));
+            }
+            return null;
+        } catch (SecurityException e) {
+            Toast.makeText(c, "Permission Error", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
     @Override
-    void loadAlbums(final Activity context, boolean hiddenFolders) {
+    void loadAlbums(final Activity c, boolean hiddenFolders) {
 
         final long startTime = System.currentTimeMillis();
 
-        final ArrayList<Album> albums = new ArrayList<>();
+        final ArrayList<Album> as = new ArrayList<>();
 
         // Return only video and image metadata.
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
@@ -50,7 +66,7 @@ public class MediaStoreRetriever extends Retriever {
         Uri queryUri = MediaStore.Files.getContentUri("external");
 
         CursorLoader cursorLoader = new CursorLoader(
-                context,
+                c,
                 queryUri,
                 projection,
                 selection,
@@ -65,81 +81,75 @@ public class MediaStoreRetriever extends Retriever {
 
         //search hiddenFolders
         if (hiddenFolders) {
-            ArrayList<Album> hiddenAlbums = checkHiddenFolders(context);
-            albums.addAll(hiddenAlbums);
+            ArrayList<Album> hiddenAlbums = checkHiddenFolders(c);
+            as.addAll(hiddenAlbums);
         }
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (cursor.moveToFirst()) {
-                    String path;
-                    long dateTaken, id;
-                    int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-                    int idColumn = cursor.getColumnIndex(BaseColumns._ID);
+        AsyncTask.execute(() -> {
+            if (cursor.moveToFirst()) {
+                String path;
+                long dateTaken, id;
+                int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+                int idColumn = cursor.getColumnIndex(BaseColumns._ID);
 
-                    do {
-                        path = cursor.getString(pathColumn);
-                        AlbumItem albumItem = AlbumItem.getInstance(context, path);
-                        if (albumItem != null) {
-                            //set dateTaken
-                            int dateTakenColumn = cursor.getColumnIndex(
-                                    !(albumItem instanceof Video) ?
-                                            MediaStore.Images.ImageColumns.DATE_TAKEN :
-                                            MediaStore.Video.VideoColumns.DATE_TAKEN);
-                            dateTaken = cursor.getLong(dateTakenColumn);
-                            albumItem.setDate(dateTaken);
+                do {
+                    path = cursor.getString(pathColumn);
+                    AlbumItem aI = AlbumItem.getInstance(c, path);
+                    if (aI != null) {
+                        //set dateTaken
+                        int dateTakenColumn = cursor.getColumnIndex(
+                                !(aI instanceof Video) ?
+                                        MediaStore.Images.ImageColumns.DATE_TAKEN :
+                                        MediaStore.Video.VideoColumns.DATE_TAKEN);
+                        dateTaken = cursor.getLong(dateTakenColumn);
+                        aI.setDate(dateTaken);
 
-                            id = cursor.getLong(idColumn);
-                            Uri uri = ContentUris.withAppendedId(
-                                    MediaStore.Files.getContentUri("external"), id);
-                            albumItem.setUri(uri);
+                        id = cursor.getLong(idColumn);
+                        Uri uri = ContentUris.withAppendedId(
+                                MediaStore.Files.getContentUri("external"), id);
+                        aI.setUri(uri);
 
-                            //search bucket
-                            boolean foundBucket = false;
-                            for (int i = 0; i < albums.size(); i++) {
-                                if (albums.get(i).getPath().equals(FileOperation.Util.getParentPath(path))) {
-                                    albums.get(i).getAlbumItems().add(0, albumItem);
-                                    foundBucket = true;
-                                    break;
-                                }
-                            }
-
-                            if (!foundBucket) {
-                                //no bucket found
-                                String bucketPath = FileOperation.Util.getParentPath(path);
-                                if (bucketPath != null) {
-                                    albums.add(new Album().setPath(bucketPath));
-                                    albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
-                                }
+                        //search bucket
+                        boolean foundBucket = false;
+                        for (int i = 0; i < as.size(); i++) {
+                            if (as.get(i).getPath().equals(FileOperation.Util.getParentPath(path))) {
+                                as.get(i).getAlbumItems().add(0, aI);
+                                foundBucket = true;
+                                break;
                             }
                         }
 
-                    } while (cursor.moveToNext());
-
-                }
-                cursor.close();
-
-                //done loading media with content resolver
-                MediaProvider.OnMediaLoadedCallback callback = getCallback();
-                if (callback != null) {
-                    callback.onMediaLoaded(albums);
-                }
-
-                Log.d("MediaStoreRetriever", "onMediaLoaded(): "
-                        + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
+                        if (!foundBucket) {
+                            //no bucket found
+                            String bucketPath = FileOperation.Util.getParentPath(path);
+                            if (bucketPath != null) {
+                                as.add(new Album().setPath(bucketPath));
+                                as.get(as.size() - 1).getAlbumItems().add(0, aI);
+                            }
+                        }
+                    }
+                } while (cursor.moveToNext());
             }
+            cursor.close();
+
+            //done loading media with content resolver
+            MediaProvider.OnMediaLoadedCallback ca = getCallback();
+            if (ca != null) {
+                ca.onMediaLoaded(as);
+            }
+
+            Log.d("MediaStoreRetriever", "onMediaLoaded(): "
+                    + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
         });
     }
 
     @Override
     public void onDestroy() {
-
     }
 
-    private ArrayList<Album> checkHiddenFolders(final Activity context) {
+    private ArrayList<Album> checkHiddenFolders(final Activity c) {
 
-        ArrayList<Album> hiddenAlbums = new ArrayList<>();
+        ArrayList<Album> hAs = new ArrayList<>();
 
         // Scan all no Media files
         String nonMediaCondition = MediaStore.Files.FileColumns.MEDIA_TYPE
@@ -153,64 +163,41 @@ public class MediaStoreRetriever extends Retriever {
 
         // make query for non media files with file title contain ".nomedia" as
         // text on External Media URI
-        Cursor cursor = context.getContentResolver().query(
+        Cursor crsr = c.getContentResolver().query(
                 MediaStore.Files.getContentUri("external"),
                 new String[]{MediaStore.Files.FileColumns.DATA},
                 selection,
                 params,
                 MediaStore.Images.Media.DATE_TAKEN);
 
-        if (cursor == null || cursor.getCount() == 0) {
-            return hiddenAlbums;
+        if (crsr == null || crsr.getCount() == 0) {
+            return hAs;
         }
 
-        if (cursor.moveToFirst()) {
-            int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-
+        if (crsr.moveToFirst()) {
+            int pathColumn = crsr.getColumnIndex(MediaStore.Files.FileColumns.DATA);
             do {
-                String path = cursor.getString(pathColumn);
+                String path = crsr.getString(pathColumn);
                 path = path.replace(MediaProvider.FILE_TYPE_NO_MEDIA, "");
                 File dir = new File(path);
-                final Album album = new Album().setPath(path);
+                final Album a = new Album().setPath(path);
 
                 File[] files = dir.listFiles();
 
                 if (files != null) {
                     for (int i = 0; i < files.length; i++) {
-                        AlbumItem albumItem = AlbumItem.getInstance(files[i].getPath());
-                        if (albumItem != null) {
-                            album.getAlbumItems().add(albumItem);
+                        AlbumItem aI = AlbumItem.getInstance(files[i].getPath());
+                        if (aI != null) {
+                            a.getAlbumItems().add(aI);
                         }
                     }
                 }
-
-                if (album.getAlbumItems().size() > 0) {
-                    hiddenAlbums.add(album);
+                if (a.getAlbumItems().size() > 0) {
+                    hAs.add(a);
                 }
-            } while (cursor.moveToNext());
+            } while (crsr.moveToNext());
         }
-        cursor.close();
-
-        return hiddenAlbums;
+        crsr.close();
+        return hAs;
     }
-
-    public static String getPathForUri(Context context, Uri uri) {
-        CursorLoader cursorLoader = new CursorLoader(
-                context, uri, new String[]{MediaStore.Files.FileColumns.DATA},
-                null, null, null);
-
-        try {
-            final Cursor cursor = cursorLoader.loadInBackground();
-
-            if (cursor != null && cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA));
-            }
-            return null;
-        } catch (SecurityException e) {
-            Toast.makeText(context, "Permission Error", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-    }
-
 }

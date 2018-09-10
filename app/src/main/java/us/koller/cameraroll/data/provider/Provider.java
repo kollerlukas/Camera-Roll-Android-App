@@ -58,52 +58,29 @@ public abstract class Provider {
 
     public interface Callback {
         void timeout();
-
         void needPermission();
     }
 
-    Provider(Context context) {
+    Provider(Context c) {
         if (excludedPaths == null) {
-            loadExcludedPaths(context);
+            loadExcludedPaths(c);
         }
-
         if (pinnedPaths == null) {
-            loadPinnedPaths(context);
+            loadPinnedPaths(c);
         }
     }
 
-    void setCallback(Callback callback) {
-        this.callback = callback;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Callback> T getCallback() {
-        if (callback != null) {
-            return (T) callback;
-        }
-        return null;
-    }
-
-    public void onDestroy() {
-        setCallback(null);
-
-        if (retriever != null) {
-            retriever.onDestroy();
-        }
-    }
-
-    public static ArrayList<VirtualAlbum> getVirtualAlbums(Context context) {
+    public static ArrayList<VirtualAlbum> getVirtualAlbums(Context c) {
         if (virtualAlbums == null) {
-            virtualAlbums = loadVirtualAlbums(context);
+            virtualAlbums = loadVirtualAlbums(c);
         }
         return virtualAlbums;
     }
 
-    private static ArrayList<VirtualAlbum> loadVirtualAlbums(Context context) {
+    private static ArrayList<VirtualAlbum> loadVirtualAlbums(Context c) {
         virtualAlbums = new ArrayList<>();
-
         try {
-            ArrayList<String> temp = loadPathsArrayList(context, VIRTUAL_DIRECTORIES_NAME);
+            ArrayList<String> temp = loadPathsArrayList(c, VIRTUAL_DIRECTORIES_NAME);
             for (int i = 0; i < temp.size(); i++) {
                 virtualAlbums.add(new VirtualAlbum(temp.get(i)));
             }
@@ -111,31 +88,30 @@ public abstract class Provider {
             // no file found
             virtualAlbums.addAll(Arrays.asList(defaultVirtualAlbums));
         }
-
         return virtualAlbums;
     }
 
-    public static void addVirtualAlbum(Context context, VirtualAlbum virtualAlbum) {
+    public static void addVirtualAlbum(Context c, VirtualAlbum vA) {
         if (virtualAlbums == null) {
-            virtualAlbums = loadVirtualAlbums(context);
+            virtualAlbums = loadVirtualAlbums(c);
         }
-        virtualAlbums.add(virtualAlbum);
+        virtualAlbums.add(vA);
     }
 
-    public static void removeVirtualAlbum(Context context, VirtualAlbum virtualAlbum) {
+    public static void removeVirtualAlbum(Context c, VirtualAlbum vA) {
         if (virtualAlbums == null) {
-            virtualAlbums = loadVirtualAlbums(context);
+            virtualAlbums = loadVirtualAlbums(c);
         }
-        virtualAlbums.remove(virtualAlbum);
+        virtualAlbums.remove(vA);
     }
 
-    public static void saveVirtualAlbums(Context context) {
+    public static void saveVirtualAlbums(Context c) {
         try {
             ArrayList<String> temp = new ArrayList<>();
             for (int i = 0; i < virtualAlbums.size(); i++) {
                 temp.add(virtualAlbums.get(i).toString());
             }
-            savePathsArrayList(context, temp, VIRTUAL_DIRECTORIES_NAME);
+            savePathsArrayList(c, temp, VIRTUAL_DIRECTORIES_NAME);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -161,54 +137,39 @@ public abstract class Provider {
         return false;
     }
 
-    public static void pinPath(Context context, String path) {
+    public static void pinPath(Context c, String path) {
         if (pinnedPaths == null) {
-            pinnedPaths = loadPinnedPaths(context);
+            pinnedPaths = loadPinnedPaths(c);
         }
-
         if (!pinnedPaths.contains(path)) {
             pinnedPaths.add(path);
         }
     }
 
-    public static void unpinPath(Context context, String path) {
+    public static void unpinPath(Context c, String path) {
         if (pinnedPaths == null) {
-            pinnedPaths = loadPinnedPaths(context);
+            pinnedPaths = loadPinnedPaths(c);
         }
-
         pinnedPaths.remove(path);
     }
 
-    public static ArrayList<String> loadPinnedPaths(Context context) {
+    public static ArrayList<String> loadPinnedPaths(Context c) {
         pinnedPaths = new ArrayList<>();
-
         try {
-            pinnedPaths = loadPathsArrayList(context, PINNED_PATHS_NAME);
+            pinnedPaths = loadPathsArrayList(c, PINNED_PATHS_NAME);
         } catch (IOException e) {
             // no file found
             pinnedPaths.addAll(Arrays.asList(defaultPinnedPaths));
         }
-
         return excludedPaths;
     }
 
-    public static void savePinnedPaths(Context context) {
+    public static void savePinnedPaths(Context c) {
         try {
-            savePathsArrayList(context, pinnedPaths, PINNED_PATHS_NAME);
+            savePathsArrayList(c, pinnedPaths, PINNED_PATHS_NAME);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static boolean isPathPermanentlyExcluded(String path) {
-        boolean permanentlyExcluded = false;
-        for (int i = 0; i < Provider.permanentlyExcludedPaths.length; i++) {
-            if (path.contains(Provider.permanentlyExcludedPaths[i])) {
-                permanentlyExcluded = true;
-                break;
-            }
-        }
-        return permanentlyExcluded;
     }
 
     private static boolean searchDir(String path) {
@@ -232,7 +193,6 @@ public abstract class Provider {
                 }
             }
         }
-
         return search;
     }
 
@@ -240,11 +200,9 @@ public abstract class Provider {
         if (isPathPermanentlyExcluded(path)) {
             return true;
         }
-
         if (excludedPaths == null) {
             return false;
         }
-
         boolean excluded = false;
         for (int i = 0; i < excludedPaths.size(); i++) {
             if (path.contains(excludedPaths.get(i))) {
@@ -255,24 +213,19 @@ public abstract class Provider {
         return excluded;
     }
 
-    public static boolean isDirExcludedBecauseParentDirIsExcluded
-            (String path, ArrayList<String> excludedPaths) {
-        if (!isDirExcluded(path, excludedPaths)) {
-            return false;
-        }
+    public static ArrayList<String> getExcludedPaths() {
+        return excludedPaths;
+    }
 
-        boolean excludedBecauseParent = true;
-        for (int i = 0; i < excludedPaths.size(); i++) {
-            if (path.equals(excludedPaths.get(i))) {
-                excludedBecauseParent = false;
+    public static boolean isPathPermanentlyExcluded(String path) {
+        boolean permanentlyExcluded = false;
+        for (int i = 0; i < Provider.permanentlyExcludedPaths.length; i++) {
+            if (path.contains(Provider.permanentlyExcludedPaths[i])) {
+                permanentlyExcluded = true;
                 break;
             }
         }
-        return excludedBecauseParent;
-    }
-
-    public static ArrayList<String> getExcludedPaths() {
-        return excludedPaths;
+        return permanentlyExcluded;
     }
 
     public static void addExcludedPath(Context context, String path) {
@@ -291,38 +244,40 @@ public abstract class Provider {
         excludedPaths.remove(path);
     }
 
-    public static ArrayList<String> loadExcludedPaths(Context context) {
-        excludedPaths = new ArrayList<>();
-
-        try {
-            excludedPaths = loadPathsArrayList(context, EXCLUDED_PATHS_NAME);
-        } catch (IOException e) {
-            // no file found
-            excludedPaths.addAll(Arrays.asList(defaultExcludedPaths));
+    public static boolean isDirExcludedBecauseParentDirIsExcluded
+            (String path, ArrayList<String> excludedPaths) {
+        if (!isDirExcluded(path, excludedPaths)) {
+            return false;
         }
 
-        return excludedPaths;
+        boolean excludedBecauseParent = true;
+        for (int i = 0; i < excludedPaths.size(); i++) {
+            if (path.equals(excludedPaths.get(i))) {
+                excludedBecauseParent = false;
+                break;
+            }
+        }
+        return excludedBecauseParent;
     }
 
-    public static void saveExcludedPaths(Context context) {
+    public static void saveExcludedPaths(Context c) {
         try {
-            savePathsArrayList(context, excludedPaths, EXCLUDED_PATHS_NAME);
+            savePathsArrayList(c, excludedPaths, EXCLUDED_PATHS_NAME);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static ArrayList<String> loadPathsArrayList(Context context, String filename) throws IOException {
+    private static ArrayList<String> loadPathsArrayList(Context c, String filename) throws IOException {
         ArrayList<String> paths = new ArrayList<>();
 
         //read file
-        ArrayList<String> lines = readFromFile(context, filename);
+        ArrayList<String> lines = readFromFile(c, filename);
         paths.addAll(lines);
-
         return paths;
     }
 
-    private static void savePathsArrayList(Context context, ArrayList<String> paths, String filename) throws IOException {
+    private static void savePathsArrayList(Context c, ArrayList<String> paths, String filename) throws IOException {
         if (paths == null) {
             return;
         }
@@ -333,7 +288,18 @@ public abstract class Provider {
             sb.append(paths.get(i)).append('\n');
         }
 
-        writeToFile(context, filename, sb.toString());
+        writeToFile(c, filename, sb.toString());
+    }
+
+    public static ArrayList<String> loadExcludedPaths(Context context) {
+        excludedPaths = new ArrayList<>();
+        try {
+            excludedPaths = loadPathsArrayList(context, EXCLUDED_PATHS_NAME);
+        } catch (IOException e) {
+            // no file found
+            excludedPaths.addAll(Arrays.asList(defaultExcludedPaths));
+        }
+        return excludedPaths;
     }
 
     private static ArrayList<String> readFromFile(Context context, String filename) throws IOException {
@@ -347,25 +313,18 @@ public abstract class Provider {
             lines.add(line);
         }
         fis.close();
-
         return lines;
     }
 
-    private static void writeToFile(Context context, String filename, String data) throws IOException {
+    private static void writeToFile(Context c, String filename, String data) throws IOException {
         //write to file
-        FileOutputStream fos
-                = context.openFileOutput(filename, Context.MODE_PRIVATE);
+        FileOutputStream fos = c.openFileOutput(filename, Context.MODE_PRIVATE);
         fos.write(data.getBytes());
         fos.close();
     }
 
-    public static File[] getDirectoriesToSearch(Context context) {
-        FileFilter filter = new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file != null && Provider.searchDir(file.getPath());
-            }
-        };
+    public static File[] getDirectoriesToSearch(Context c) {
+        FileFilter filter = (File f) -> f != null && Provider.searchDir(f.getPath());
 
         //external Directory
         File dir = Environment.getExternalStorageDirectory();
@@ -377,7 +336,7 @@ public abstract class Provider {
         //handle removable storage (e.g. SDCards)
         ArrayList<File> temp = new ArrayList<>();
         temp.addAll(Arrays.asList(dirs));
-        File[] removableStorageRoots = StorageUtil.getRemovableStorageRoots(context);
+        File[] removableStorageRoots = StorageUtil.getRemovableStorageRoots(c);
         for (int i = 0; i < removableStorageRoots.length; i++) {
             File root = removableStorageRoots[i];
             File[] files = root.listFiles(filter);
@@ -391,5 +350,24 @@ public abstract class Provider {
             dirs[i] = temp.get(i);
         }
         return dirs;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Callback> T getCallback() {
+        if (callback != null) {
+            return (T) callback;
+        }
+        return null;
+    }
+
+    void setCallback(Callback ca) {
+        this.callback = ca;
+    }
+
+    public void onDestroy() {
+        setCallback(null);
+        if (retriever != null) {
+            retriever.onDestroy();
+        }
     }
 }

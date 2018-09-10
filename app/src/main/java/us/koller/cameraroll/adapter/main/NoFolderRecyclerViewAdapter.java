@@ -22,17 +22,17 @@ public class NoFolderRecyclerViewAdapter extends AbstractRecyclerViewAdapter<Arr
     private AlbumAdapter albumAdapter;
     private SelectorModeManager.Callback callback;
 
-    public NoFolderRecyclerViewAdapter(SelectorModeManager.Callback callback, RecyclerView recyclerView, boolean pick_photos) {
+    public NoFolderRecyclerViewAdapter(SelectorModeManager.Callback ca, RecyclerView rV, boolean pick_photos) {
         super(pick_photos);
-        context = recyclerView.getContext();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        context = rV.getContext();
+        rV.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
+            public void onScrollStateChanged(RecyclerView rv, int newState) {
+                super.onScrollStateChanged(rv, newState);
             }
         });
-        albumAdapter = new AlbumAdapter(this, recyclerView, new Album(), pick_photos);
-        this.callback = callback;
+        albumAdapter = new AlbumAdapter(this, rV, new Album(), pick_photos);
+        this.callback = ca;
     }
 
     @Override
@@ -89,8 +89,8 @@ public class NoFolderRecyclerViewAdapter extends AbstractRecyclerViewAdapter<Arr
     }
 
     @Override
-    public void setSelectorModeManager(SelectorModeManager selectorManager) {
-        albumAdapter.setSelectorModeManager(selectorManager);
+    public void setSelectorModeManager(SelectorModeManager sM) {
+        albumAdapter.setSelectorModeManager(sM);
     }
 
     @Override

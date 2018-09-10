@@ -39,9 +39,9 @@ import java.util.Locale;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.ContentObserver;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.File_POJO;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;
@@ -75,216 +75,13 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
     public FileOperation() {
         super("");
-
         pathsToScan = new ArrayList<>();
-    }
-
-    @Override
-    protected void onHandleIntent(Intent workIntent) {
-        notifBuilder = createNotificationBuilder();
-        notifBuilder.setProgress(1, 0, false);
-        Notification notification = notifBuilder.build();
-        startForeground(NOTIFICATION_ID, notification);
-        NotificationManager manager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (manager != null) {
-            manager.notify(NOTIFICATION_ID, notification);
-        }
-
-        ContentObserver.selfChange = true;
-
-        execute(workIntent);
-
-        if (autoSendDoneBroadcast()) {
-            if (pathsToScan.size() > 0) {
-                onProgress(-1, -1);
-                scanPaths(getApplicationContext(), new Util.MediaScannerCallback() {
-                    @Override
-                    public void onAllPathsScanned() {
-                        sendDoneBroadcast();
-                        stopForeground(true);
-
-                    }
-                });
-            } else {
-                sendDoneBroadcast();
-                stopForeground(true);
-            }
-        } else {
-            ContentObserver.selfChange = false;
-            stopForeground(true);
-        }
-    }
-
-    private NotificationCompat.Builder createNotificationBuilder() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel(getApplicationContext());
-        }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
-                getString(R.string.file_op_channel_id))
-                .setContentTitle(getNotificationTitle());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder.setSmallIcon(getNotificationSmallIconRes());
-        }
-        return builder;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private static void createNotificationChannel(Context context) {
-        NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel mChannel = new NotificationChannel(
-                context.getString(R.string.file_op_channel_id),
-                context.getString(R.string.file_op_channel_name),
-                NotificationManager.IMPORTANCE_LOW);
-        mChannel.setDescription(context.getString(R.string.file_op_channel_description));
-        if (mNotificationManager != null) {
-            mNotificationManager.createNotificationChannel(mChannel);
-        }
-    }
-
-    private NotificationCompat.Builder getNotificationBuilder() {
-        return notifBuilder;
-    }
-
-    abstract String getNotificationTitle();
-
-    public abstract int getNotificationSmallIconRes();
-
-    public abstract void execute(Intent workIntent);
-
-    public void addPathToScan(String path) {
-        pathsToScan.add(path);
-    }
-
-    public void addPathsToScan(List<String> paths) {
-        pathsToScan.addAll(paths);
-    }
-
-    ArrayList<String> getPathsToScan() {
-        return pathsToScan;
-    }
-
-    public boolean autoSendDoneBroadcast() {
-        return true;
-    }
-
-    public void sendDoneBroadcast() {
-        ContentObserver.selfChange = false;
-        showToast(getString(R.string.done));
-        Intent intent = getDoneIntent();
-        sendLocalBroadcast(intent);
-    }
-
-    public void sendFailedBroadcast(Intent workIntent, String path) {
-        Intent intent = new Intent(FAILED);
-        intent.putExtra(FILES, path);
-        intent.putExtra(WORK_INTENT, workIntent);
-        sendLocalBroadcast(intent);
-    }
-
-    public void requestPermissionForRemovableStorageBroadcast(Intent workIntent) {
-        Intent intent = new Intent(NEED_REMOVABLE_STORAGE_PERMISSION);
-        intent.putExtra(WORK_INTENT, workIntent);
-        sendLocalBroadcast(intent);
-    }
-
-    public Intent getDoneIntent() {
-        Intent intent = new Intent(RESULT_DONE);
-        intent.putExtra(TYPE, this.getType());
-        return intent;
-    }
-
-    public void sendLocalBroadcast(Intent intent) {
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-    }
-
-    public abstract int getType();
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @SuppressWarnings("unused")
-    public void onProgress(final int progress, final int totalNumber) {
-        NotificationCompat.Builder notifBuilder = getNotificationBuilder();
-        if (progress >= 0) {
-            notifBuilder.setProgress(totalNumber, progress, false);
-        } else {
-            notifBuilder.setProgress(0, 0, true);
-        }
-        //notifBuilder.setProgress(0, 0, true);
-        NotificationManager manager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (manager != null) {
-            manager.notify(NOTIFICATION_ID, notifBuilder.build());
-        }
-    }
-
-    public void showToast(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void runOnUiThread(Runnable r) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(r);
-    }
-
-    public static File_POJO[] getFiles(Intent workIntent) {
-        Parcelable[] parcelables = workIntent.getParcelableArrayExtra(FILES);
-        return File_POJO.generateArray(parcelables);
-    }
-
-    public static Intent getDefaultIntent(Context context, int action, File_POJO[] files) {
-        String actionString = Util.getActionString(context, EMPTY);
-        Class service = null;
-        switch (action) {
-            case COPY:
-                service = Copy.class;
-                actionString = Util.getActionString(context, COPY);
-                break;
-            case MOVE:
-                service = Move.class;
-                actionString = Util.getActionString(context, MOVE);
-                break;
-            case DELETE:
-                service = Delete.class;
-                actionString = Util.getActionString(context, DELETE);
-                break;
-            case NEW_DIR:
-                service = NewDirectory.class;
-                actionString = Util.getActionString(context, NEW_DIR);
-                break;
-            case RENAME:
-                service = Rename.class;
-                actionString = Util.getActionString(context, RENAME);
-                break;
-            default:
-                break;
-        }
-        if (service != null) {
-            return new Intent(context, service)
-                    .setAction(actionString)
-                    .putExtra(FileOperation.FILES, files);
-        }
-        return new Intent();
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(getType());
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         @Override
-        public FileOperation createFromParcel(Parcel parcel) {
-            switch (parcel.readInt()) {
+        public FileOperation createFromParcel(Parcel p) {
+            switch (p.readInt()) {
                 case MOVE:
                     return new Move();
                 case COPY:
@@ -305,11 +102,198 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private static void createNotificationChannel(Context c) {
+        NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel nc = new NotificationChannel(
+                c.getString(R.string.file_op_channel_id),
+                c.getString(R.string.file_op_channel_name),
+                NotificationManager.IMPORTANCE_LOW);
+        nc.setDescription(c.getString(R.string.file_op_channel_description));
+        if (nm != null) {
+            nm.createNotificationChannel(nc);
+        }
+    }
 
-    public Uri getTreeUri(Intent workIntent, String path) {
+    public static File_POJO[] getFiles(Intent wI) {
+        Parcelable[] p = wI.getParcelableArrayExtra(FILES);
+        return File_POJO.generateArray(p);
+    }
+
+    public static Intent getDefaultIntent(Context c, int action, File_POJO[] files) {
+        String aS = Util.getActionString(c, EMPTY);
+        Class service = null;
+        switch (action) {
+            case COPY:
+                service = Copy.class;
+                aS = Util.getActionString(c, COPY);
+                break;
+            case MOVE:
+                service = Move.class;
+                aS = Util.getActionString(c, MOVE);
+                break;
+            case DELETE:
+                service = Delete.class;
+                aS = Util.getActionString(c, DELETE);
+                break;
+            case NEW_DIR:
+                service = NewDirectory.class;
+                aS = Util.getActionString(c, NEW_DIR);
+                break;
+            case RENAME:
+                service = Rename.class;
+                aS = Util.getActionString(c, RENAME);
+                break;
+            default:
+                break;
+        }
+        if (service != null) {
+            return new Intent(c, service)
+                    .setAction(aS)
+                    .putExtra(FileOperation.FILES, files);
+        }
+        return new Intent();
+    }
+
+    abstract String getNotificationTitle();
+
+    public abstract int getNotificationSmallIconRes();
+
+    @Override
+    protected void onHandleIntent(Intent wI) {
+        notifBuilder = createNotificationBuilder();
+        notifBuilder.setProgress(1, 0, false);
+        Notification n = notifBuilder.build();
+        startForeground(NOTIFICATION_ID, n);
+        NotificationManager nm =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null) {
+            nm.notify(NOTIFICATION_ID, n);
+        }
+        ContentObserver.selfChange = true;
+        execute(wI);
+        if (autoSendDoneBroadcast()) {
+            if (pathsToScan.size() > 0) {
+                onProgress(-1, -1);
+                scanPaths(getApplicationContext(), () -> {
+                    sendDoneBroadcast();
+                    stopForeground(true);
+                });
+            } else {
+                sendDoneBroadcast();
+                stopForeground(true);
+            }
+        } else {
+            ContentObserver.selfChange = false;
+            stopForeground(true);
+        }
+    }
+
+    private NotificationCompat.Builder createNotificationBuilder() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(getApplicationContext());
+        }
+        NotificationCompat.Builder b = new NotificationCompat.Builder(this,
+                getString(R.string.file_op_channel_id))
+                .setContentTitle(getNotificationTitle());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            b.setSmallIcon(getNotificationSmallIconRes());
+        }
+        return b;
+    }
+
+    private NotificationCompat.Builder getNotificationBuilder() {
+        return notifBuilder;
+    }
+
+    public abstract void execute(Intent wI);
+
+    public void addPathToScan(String path) {
+        pathsToScan.add(path);
+    }
+
+    public void addPathsToScan(List<String> paths) {
+        pathsToScan.addAll(paths);
+    }
+
+    ArrayList<String> getPathsToScan() {
+        return pathsToScan;
+    }
+
+    public boolean autoSendDoneBroadcast() {
+        return true;
+    }
+
+    public void sendDoneBroadcast() {
+        ContentObserver.selfChange = false;
+        showToast(getString(R.string.done));
+        Intent i = getDoneIntent();
+        sendLocalBroadcast(i);
+    }
+
+    public void sendFailedBroadcast(Intent wI, String path) {
+        Intent i = new Intent(FAILED);
+        i.putExtra(FILES, path);
+        i.putExtra(WORK_INTENT, wI);
+        sendLocalBroadcast(i);
+    }
+
+    public abstract int getType();
+
+    public void requestPermissionForRemovableStorageBroadcast(Intent wI) {
+        Intent i = new Intent(NEED_REMOVABLE_STORAGE_PERMISSION);
+        i.putExtra(WORK_INTENT, wI);
+        sendLocalBroadcast(i);
+    }
+
+    public Intent getDoneIntent() {
+        Intent i = new Intent(RESULT_DONE);
+        i.putExtra(TYPE, this.getType());
+        return i;
+    }
+
+    public void sendLocalBroadcast(Intent i) {
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(i);
+    }
+
+    public void runOnUiThread(Runnable r) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(r);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @SuppressWarnings("unused")
+    public void onProgress(final int progress, final int totalNumber) {
+        NotificationCompat.Builder nB = getNotificationBuilder();
+        if (progress >= 0) {
+            nB.setProgress(totalNumber, progress, false);
+        } else {
+            nB.setProgress(0, 0, true);
+        }
+        //nB.setProgress(0, 0, true);
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null) {
+            nm.notify(NOTIFICATION_ID, nB.build());
+        }
+    }
+
+    public void showToast(final String message) {
+        runOnUiThread(() -> Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show());
+    }
+
+    @Override
+    public void writeToParcel(Parcel p, int i) {
+        p.writeInt(getType());
+    }
+
+    public Uri getTreeUri(Intent wI, String path) {
         Log.d("FileOperation", "getTreeUri");
         Uri treeUri;
-        String treeUriExtra = workIntent.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
+        String treeUriExtra = wI.getStringExtra(FileOperation.REMOVABLE_STORAGE_TREE_URI);
         if (treeUriExtra != null) {
             treeUri = Uri.parse(treeUriExtra);
         } else {
@@ -323,7 +307,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             if (file != null) {
                 return treeUri;
             } else {
-                requestPermissionForRemovableStorageBroadcast(workIntent);
+                requestPermissionForRemovableStorageBroadcast(wI);
             }
         } else {
             return treeUri;
@@ -331,45 +315,45 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         return null;
     }
 
-    void scanPaths(final Context context, final Util.MediaScannerCallback callback) {
+    void scanPaths(final Context c, final Util.MediaScannerCallback ca) {
         String[] paths = new String[pathsToScan.size()];
         pathsToScan.toArray(paths);
-        Util.scanPaths(context, paths, callback);
+        Util.scanPaths(c, paths, ca);
     }
 
     public static class Util {
-        public static IntentFilter getIntentFilter(IntentFilter filter) {
-            filter.addAction(FileOperation.RESULT_DONE);
-            filter.addAction(FileOperation.FAILED);
-            return filter;
+        public static IntentFilter getIntentFilter(IntentFilter f) {
+            f.addAction(FileOperation.RESULT_DONE);
+            f.addAction(FileOperation.FAILED);
+            return f;
         }
 
-        public static String getActionString(Context context, int type) {
+        public static String getActionString(Context c, int type) {
             switch (type) {
                 case EMPTY:
                     return "empty";
                 case MOVE:
-                    return context.getString(R.string.move);
+                    return c.getString(R.string.move);
                 case COPY:
-                    return context.getString(R.string.copy);
+                    return c.getString(R.string.copy);
                 case DELETE:
-                    return context.getString(R.string.delete);
+                    return c.getString(R.string.delete);
                 case NEW_DIR:
-                    return context.getString(R.string.new_folder);
+                    return c.getString(R.string.new_folder);
                 case RENAME:
-                    return context.getString(R.string.rename);
+                    return c.getString(R.string.rename);
                 default:
                     break;
             }
             return "";
         }
 
-        public static int getActionInt(Context context, String action) {
-            if (action.equals(context.getString(R.string.move))) {
+        public static int getActionInt(Context c, String action) {
+            if (action.equals(c.getString(R.string.move))) {
                 return MOVE;
-            } else if (action.equals(context.getString(R.string.copy))) {
+            } else if (action.equals(c.getString(R.string.copy))) {
                 return COPY;
-            } else if (action.equals(context.getString(R.string.delete))) {
+            } else if (action.equals(c.getString(R.string.delete))) {
                 return DELETE;
             }
             return EMPTY;
@@ -377,9 +361,9 @@ public abstract class FileOperation extends IntentService implements Parcelable 
 
         static boolean isOnRemovableStorage(String path) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                File file = new File(path);
+                File f = new File(path);
                 try {
-                    if (file.exists() && Environment.isExternalStorageRemovable(file)) {
+                    if (f.exists() && Environment.isExternalStorageRemovable(f)) {
                         return true;
                     }
                 } catch (IllegalArgumentException e) {
@@ -390,10 +374,10 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         }
 
         public static ArrayList<String> getAllChildPaths(ArrayList<String> paths, String path) {
-            File file = new File(path);
-            if (file.exists()) {
-                if (file.isDirectory()) {
-                    File[] children = file.listFiles();
+            File f = new File(path);
+            if (f.exists()) {
+                if (f.isDirectory()) {
+                    File[] children = f.listFiles();
                     for (int i = 0; i < children.length; i++) {
                         getAllChildPaths(paths, children[i].getPath());
                     }
@@ -404,108 +388,92 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             return paths;
         }
 
-        public interface MediaScannerCallback {
-            void onAllPathsScanned();
+        public static void scanPaths(final Context c, final String[] paths, final MediaScannerCallback ca) {
+            scanPaths(c, paths, ca, false);
         }
 
-        public static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback) {
-            scanPaths(context, paths, callback, false);
-        }
-
-        public static void scanPathsWithNotification(final Context context, final String[] paths) {
-            scanPaths(context, paths, null, true);
+        public static void scanPathsWithNotification(final Context c, final String[] paths) {
+            scanPaths(c, paths, null, true);
         }
 
         @SuppressLint("ShowToast")
-        private static void scanPaths(final Context context, final String[] paths, final MediaScannerCallback callback, final boolean withNotification) {
+        private static void scanPaths(final Context c, final String[] paths, final MediaScannerCallback msc, final boolean withNotification) {
             Log.i("FileOperation", "scanPaths(), paths: " + Arrays.toString(paths));
             if (paths == null) {
-                if (callback != null) {
-                    callback.onAllPathsScanned();
+                if (msc != null) {
+                    msc.onAllPathsScanned();
                 }
                 return;
             }
 
             //create notification
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                createNotificationChannel(context);
+                createNotificationChannel(c);
             }
-            final NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context,
-                    context.getString(R.string.file_op_channel_id))
-                    .setContentTitle("Scanning...");
+            final NotificationCompat.Builder nB = new NotificationCompat.Builder(c,
+                    c.getString(R.string.file_op_channel_id)).setContentTitle("Scanning...");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                notifBuilder.setSmallIcon(R.drawable.ic_autorenew_white);
+                nB.setSmallIcon(R.drawable.ic_autorenew_white);
             }
-            notifBuilder.setProgress(paths.length, 0, false);
-            final NotificationManager manager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            nB.setProgress(paths.length, 0, false);
+            final NotificationManager ma = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
 
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < paths.length; i++) {
-                        String path = paths[i];
-                        if (MediaType.isMedia(path)) {
-                            Uri contentUri = MediaStore.Files.getContentUri("external");
-                            ContentResolver resolver = context.getContentResolver();
-                            if (new File(path).exists()) {
-                                AlbumItem albumItem = AlbumItem.getInstance(path);
-                                ContentValues values = new ContentValues();
-                                if (albumItem instanceof Video) {
-                                    values.put(MediaStore.Video.Media.DATA, path);
-                                    values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
-                                } else {
-                                    values.put(MediaStore.Images.Media.DATA, path);
-                                    values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
-                                    try {
-                                        ExifInterface exif = new ExifInterface(path);
-                                        Locale locale = us.koller.cameraroll.util.Util.getLocale(context);
-                                        String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
-                                        try {
-                                            Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
-                                            long dateTaken = date.getTime();
-                                            values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
-                                        } catch (ParseException ignored) {
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                resolver.insert(contentUri, values);
+            AsyncTask.execute(() -> {
+                for (int i = 0; i < paths.length; i++) {
+                    String path = paths[i];
+                    if (MediaType.isMedia(path)) {
+                        Uri contentUri = MediaStore.Files.getContentUri("external");
+                        ContentResolver cr = c.getContentResolver();
+                        if (new File(path).exists()) {
+                            AlbumItem albumItem = AlbumItem.getInstance(path);
+                            ContentValues cv = new ContentValues();
+                            if (albumItem instanceof Video) {
+                                cv.put(MediaStore.Video.Media.DATA, path);
+                                cv.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
                             } else {
-                                resolver.delete(contentUri,
-                                        MediaStore.MediaColumns.DATA + "='" + path + "'",
-                                        null);
+                                cv.put(MediaStore.Images.Media.DATA, path);
+                                cv.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
+                                try {
+                                    ExifInterface exif = new ExifInterface(path);
+                                    Locale l = us.koller.cameraroll.util.Util.getLocale(c);
+                                    String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
+                                    try {
+                                        Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", l).parse(dateString);
+                                        long dateTaken = date.getTime();
+                                        cv.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
+                                    } catch (ParseException ignored) {
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
+                            cr.insert(contentUri, cv);
+                        } else {
+                            cr.delete(contentUri, MediaStore.MediaColumns.DATA + "='" + path + "'", null);
                         }
-
-                        if (withNotification) {
-                            notifBuilder.setProgress(paths.length, i, false);
-                            if (manager != null) {
-                                manager.notify(NOTIFICATION_ID, notifBuilder.build());
-                            }
+                    }
+                    if (withNotification) {
+                        nB.setProgress(paths.length, i, false);
+                        if (ma != null) {
+                            ma.notify(NOTIFICATION_ID, nB.build());
                         }
-
                     }
-
-                    if (manager != null) {
-                        manager.cancel(NOTIFICATION_ID);
-                    }
-
-                    if (callback != null) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onAllPathsScanned();
-                            }
-                        });
-                    }
+                }
+                if (ma != null) {
+                    ma.cancel(NOTIFICATION_ID);
+                }
+                if (msc != null) {
+                    new Handler(Looper.getMainLooper()).post(() -> msc.onAllPathsScanned());
                 }
             });
         }
 
         public static String getParentPath(String path) {
             return new File(path).getParent();
+        }
+
+        public interface MediaScannerCallback {
+            void onAllPathsScanned();
         }
     }
 }

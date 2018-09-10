@@ -36,9 +36,9 @@ public abstract class ViewHolder {
         return v;
     }
 
-    void imageOnClick(View view) {
+    void imageOnClick(View v) {
         try {
-            ((ItemActivity) view.getContext()).imageOnClick();
+            ((ItemActivity) v.getContext()).imageOnClick();
         } catch (ClassCastException e) {
             e.printStackTrace();
         }

@@ -12,6 +12,11 @@ import us.koller.cameraroll.util.StorageUtil;
 
 public class NewDirectory extends FileOperation {
 
+    private static boolean createNewFolder(String nFP) {
+        File dir = new File(nFP);
+        return !dir.exists() && dir.mkdirs();
+    }
+
     @Override
     String getNotificationTitle() {
         return getString(R.string.new_folder);
@@ -23,8 +28,8 @@ public class NewDirectory extends FileOperation {
     }
 
     @Override
-    public void execute(Intent workIntent) {
-        final File_POJO[] files = getFiles(workIntent);
+    public void execute(Intent wI) {
+        final File_POJO[] files = getFiles(wI);
         if (files.length > 0) {
             final File_POJO file = files[0];
 
@@ -33,28 +38,24 @@ public class NewDirectory extends FileOperation {
 
             Uri treeUri = null;
             if (writingOntoRemovableStorage) {
-                treeUri = getTreeUri(workIntent, null);
+                treeUri = getTreeUri(wI, null);
                 if (treeUri == null) {
                     return;
                 }
             }
 
-            boolean result;
+            boolean r;
             if (!writingOntoRemovableStorage) {
-                result = createNewFolder(file.getPath());
+                r = createNewFolder(file.getPath());
             } else {
-                result = StorageUtil.createDocumentDir(getApplicationContext(), treeUri, file.getPath()) != null;
+                r = StorageUtil.createDocumentDir(getApplicationContext(), treeUri, file.getPath()) != null;
             }
 
-            if (!result) {
-                sendFailedBroadcast(workIntent, file.getPath());
+            if (!r) {
+                sendFailedBroadcast(wI, file.getPath());
             } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), getString(R.string.successfully_created_new_folder), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() ->
+                        Toast.makeText(getApplicationContext(), getString(R.string.successfully_created_new_folder), Toast.LENGTH_SHORT).show());
             }
         }
     }
@@ -62,10 +63,5 @@ public class NewDirectory extends FileOperation {
     @Override
     public int getType() {
         return FileOperation.NEW_DIR;
-    }
-
-    private static boolean createNewFolder(String newFolderPath) {
-        File dir = new File(newFolderPath);
-        return !dir.exists() && dir.mkdirs();
     }
 }

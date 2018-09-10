@@ -8,14 +8,13 @@ import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
 
 public class SimpleAlbumHolder extends AlbumHolder {
-
     public SimpleAlbumHolder(View itemView) {
         super(itemView);
     }
 
     @Override
-    public void setAlbum(Album album) {
-        super.setAlbum(album);
+    public void setAlbum(Album a) {
+        super.setAlbum(a);
         final ImageView image = itemView.findViewById(R.id.image);
         if (image instanceof ParallaxImageView) {
             ((ParallaxImageView) image).setParallaxTranslation();

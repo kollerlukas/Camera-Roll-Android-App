@@ -14,8 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.themes.Theme;
 
 public class ColumnCountPreferenceDialogFragment
         extends DialogFragment implements DialogInterface.OnClickListener {
@@ -24,10 +24,10 @@ public class ColumnCountPreferenceDialogFragment
     private int whichButtonClicked;
     private Preference preference;
 
-    public static ColumnCountPreferenceDialogFragment newInstance(Preference preference) {
-        ColumnCountPreferenceDialogFragment fragment = new ColumnCountPreferenceDialogFragment();
-        fragment.setPreference(preference);
-        return fragment;
+    public static ColumnCountPreferenceDialogFragment newInstance(Preference pref) {
+        ColumnCountPreferenceDialogFragment frag = new ColumnCountPreferenceDialogFragment();
+        frag.setPreference(pref);
+        return frag;
     }
 
     @NonNull
@@ -41,40 +41,37 @@ public class ColumnCountPreferenceDialogFragment
             }
         }
 
-        @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext())
+        @SuppressLint("InflateParams") View v = LayoutInflater.from(getContext())
                 .inflate(R.layout.pref_dialog_column_count, null);
 
-        final TextView textView = view.findViewById(R.id.column_count);
+        final TextView textView = v.findViewById(R.id.column_count);
         textView.setText(String.valueOf(columnCount));
 
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (view.getId() == R.id.minus) {
-                    if (columnCount > 1) {
-                        columnCount--;
-                    }
-                } else {
-                    columnCount++;
+        View.OnClickListener onClickListener = (View V) -> {
+            if (V.getId() == R.id.minus) {
+                if (columnCount > 1) {
+                    columnCount--;
                 }
-                textView.setText(String.valueOf(columnCount));
+            } else {
+                columnCount++;
             }
+            textView.setText(String.valueOf(columnCount));
         };
 
         Theme theme = Settings.getInstance(getContext()).getThemeInstance(getContext());
         int textColorSec = theme.getTextColorSecondary(getContext());
 
-        ImageButton minus = view.findViewById(R.id.minus);
+        ImageButton minus = v.findViewById(R.id.minus);
         minus.setColorFilter(textColorSec);
         minus.setOnClickListener(onClickListener);
 
-        ImageButton plus = view.findViewById(R.id.plus);
+        ImageButton plus = v.findViewById(R.id.plus);
         plus.setColorFilter(textColorSec);
         plus.setOnClickListener(onClickListener);
 
         return new AlertDialog.Builder(getContext())
                 .setTitle(R.string.column_count)
-                .setView(view)
+                .setView(v)
                 .setPositiveButton(R.string.ok, this)
                 .setNegativeButton(R.string.cancel, null)
                 .create();
@@ -86,20 +83,17 @@ public class ColumnCountPreferenceDialogFragment
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
+    public void onDismiss(DialogInterface d) {
+        super.onDismiss(d);
         if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE
                 && preference instanceof ColumnCountPreference) {
-            ColumnCountPreference columnCountPreference =
-                    ((ColumnCountPreference) preference);
-            columnCountPreference.setColumnCount(columnCount);
-
-            Settings.getInstance(getActivity())
-                    .setColumnCount(columnCount);
+            ColumnCountPreference cCP = ((ColumnCountPreference) preference);
+            cCP.setColumnCount(columnCount);
+            Settings.getInstance(getActivity()).setColumnCount(columnCount);
         }
     }
 
-    public void setPreference(Preference preference) {
-        this.preference = preference;
+    public void setPreference(Preference pref) {
+        this.preference = pref;
     }
 }

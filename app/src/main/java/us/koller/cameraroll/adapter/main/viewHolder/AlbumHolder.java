@@ -29,7 +29,6 @@ import us.koller.cameraroll.ui.widget.ParallaxImageView;
 import us.koller.cameraroll.util.animators.ColorFade;
 
 public abstract class AlbumHolder extends RecyclerView.ViewHolder {
-
     private Album album;
 
     AlbumHolder(View itemView) {
@@ -84,10 +83,8 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
             ImageView removableStorageIndicator = itemView.findViewById(R.id.removable_storage_indicator);
             if (removableStorageIndicator != null) {
                 try {
-                    boolean removable = Environment
-                            .isExternalStorageRemovable(new File(album.getPath()));
-                    removableStorageIndicator
-                            .setVisibility(removable ? View.VISIBLE : View.GONE);
+                    boolean removable = Environment.isExternalStorageRemovable(new File(album.getPath()));
+                    removableStorageIndicator.setVisibility(removable ? View.VISIBLE : View.GONE);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
@@ -138,7 +135,6 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
     }
 
     public void onItemChanged() {
-
     }
 
     public Context getContext() {
