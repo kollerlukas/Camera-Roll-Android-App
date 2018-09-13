@@ -3,6 +3,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/set_aspect_ratio"
+        android:icon="@drawable/ic_image_aspect_ratio_white"
+        android:title="@string/sort_by"
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <group
+                android:id="@+id/aspect_ratio_group"
+                android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/aspect_ratio_free"
+                    android:icon="@drawable/ic_crop_free_white"
+                    android:title="@string/aspect_ratio_free"
+                    android:checked="true" />
+
+                <item
+                    android:id="@+id/aspect_ratio_original"
+                    android:icon="@drawable/ic_crop_original_white"
+                    android:title="@string/aspect_ratio_original" />
+
+                <item
+                    android:id="@+id/aspect_ratio_square"
+                    android:icon="@drawable/ic_crop_square_white"
+                    android:title="@string/aspect_ratio_square" />
+
+                <item
+                    android:id="@+id/aspect_ratio_3_2"
+                    android:icon="@drawable/ic_crop_3_2_white"
+                    android:title="@string/aspect_ratio_3_2" />
+
+                <item
+                    android:id="@+id/aspect_ratio_4_3"
+                    android:icon="@drawable/ic_crop_4_3_white"
+                    android:title="@string/aspect_ratio_4_3" />
+
+                <item
+                    android:id="@+id/aspect_ratio_16_9"
+                    android:icon="@drawable/ic_crop_16_9_white"
+                    android:title="@string/aspect_ratio_16_9" />
+            </group>
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/rotate"
         android:icon="@drawable/ic_rotate_90_degrees_ccw_white"
         android:title="@string/rotate"

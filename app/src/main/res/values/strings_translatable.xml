@@ -105,6 +105,12 @@
     <string name="export">Export</string>
     <string name="editing_file_format_not_supported">This file format is not supported for editing</string>
     <string name="success">Success!</string>
+    <string name="aspect_ratio_free">Free</string>
+    <string name="aspect_ratio_original">Original</string>
+    <string name="aspect_ratio_square">Square</string>
+    <string name="aspect_ratio_3_2" translatable="false">3:2</string>
+    <string name="aspect_ratio_4_3" translatable="false">4:3</string>
+    <string name="aspect_ratio_16_9" translatable="false">16:9</string>
     <!--SetWallpaperActivity-->
     <string name="wallpaper">Wallpaper</string>
     <string name="set_wallpaper">Set Wallpaper</string>

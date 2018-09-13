@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -67,6 +66,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private Paint cropRectCornerPaint;
     private Paint guidelinePaint;
     private Paint backgroundPaint;
+    // aspectRation < 0: free aspect ratio; otherwise: deltaY * aspectRation = deltaX
+    private double aspectRatio = -1.0;
 
     private int touchedCorner = NO_CORNER;
     private boolean touching = false;
@@ -83,6 +84,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         void onResult(Result result);
     }
 
+    /**
+     * Result object for the imageView, containing the cropped bitmap.
+     **/
     public class Result {
 
         private Uri uri;
@@ -102,21 +106,30 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         }
     }
 
+    /**
+     * Store the current state of the ImageView to preserve it across configuration changes.
+     **/
     public static class State extends ImageViewState {
 
         private int[] cropRect;
+        private double aspectRatio;
 
-        State(float scale, PointF center, int orientation, Rect cropRect) {
+        State(float scale, PointF center, int orientation, Rect cropRect, double aspectRatio) {
             super(scale, center, orientation);
             this.cropRect = new int[]{
                     cropRect.left, cropRect.top,
                     cropRect.right, cropRect.bottom};
+            this.aspectRatio = aspectRatio;
         }
 
         Rect getCropRect() {
             return new Rect(
                     cropRect[0], cropRect[1],
                     cropRect[2], cropRect[3]);
+        }
+
+        double getAspectRatio() {
+            return aspectRatio;
         }
     }
 
@@ -166,6 +179,12 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         backgroundPaint.setAlpha(100);
     }
 
+    /**
+     * Load an image into the imageView.
+     *
+     * @param uri   for the image to be loaded
+     * @param state the state for the imageView (might be null)
+     **/
     public void loadImage(Uri uri, State state) {
         setProgressBarVisibility(VISIBLE);
 
@@ -180,6 +199,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
         if (state != null) {
             cropRect = state.getCropRect();
+            setAspectRatio(state.getAspectRatio());
         }
         setImage(ImageSource.uri(uri), state);
     }
@@ -192,13 +212,17 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     protected void onImageLoaded() {
         super.onImageLoaded();
         if (cropRect == null) {
-            cropRect = getImageRect();
+            cropRect = getMaxCenteredCropRect();
+            Log.d("CropImageView", "onImageLoaded: " + cropRect);
         }
         autoZoom(false);
 
         setProgressBarVisibility(GONE);
     }
 
+    /**
+     * Rotate the image by 90°.
+     **/
     public void rotate90Degree() {
         cropRect = rotateRect90Degree(cropRect);
         int orientation = getOrientation() + 90;
@@ -206,6 +230,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
             orientation = orientation % 360;
         }
         setOrientation(orientation);
+        // invert the aspectRatio
+        aspectRatio = 1 / aspectRatio;
         post(new Runnable() {
             @Override
             public void run() {
@@ -214,12 +240,20 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         });
     }
 
+    /**
+     * Restore the ImageView to initial state.
+     **/
     public void restore() {
         setOrientation(0);
-        cropRect = getImageRect();
+        cropRect = getMaxCenteredCropRect();
         autoZoom(false);
     }
 
+    /**
+     * Method to call when the cropped bitmap is needed.
+     *
+     * @param onResultListener listener for the resulting cropped bitmap
+     **/
     public void getCroppedBitmap(final OnResultListener onResultListener) {
         setProgressBarVisibility(VISIBLE);
         AsyncTask.execute(new Runnable() {
@@ -285,10 +319,16 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (touchedCorner != NO_CORNER) {
-                    cropRect = getNewRect(motionEvent);
+                    Rect newCropRect = getNewRect(motionEvent.getX(), motionEvent.getY());
+                    if (newCropRect != null) {
+                        cropRect = newCropRect;
+                    }
                     consumed = true;
                 } else {
-                    cropRect = getMovedRect(motionEvent);
+                    Rect newCropRect = getMovedRect(motionEvent);
+                    if (newCropRect != null) {
+                        cropRect = newCropRect;
+                    }
                     consumed = true;
                 }
 
@@ -316,12 +356,22 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         return consumed || super.onTouchEvent(motionEvent);
     }
 
+    /**
+     * Get the center of the current cropRect.
+     *
+     * @return the center of the current cropRect
+     **/
     private PointF getCenterOfCropRect() {
         return new PointF(
                 cropRect.centerX(),
                 cropRect.centerY());
     }
 
+    /**
+     * Calculate the new zoom Scale for the image
+     *
+     * @return new scale
+     **/
     private float getNewScale() {
         int width = getWidth() - (padding[0] + padding[2]);
         float scaleWidth = (float) width / (cropRect.right - cropRect.left);
@@ -334,6 +384,9 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         return scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
     }
 
+    /**
+     * Set if the ImageView should zoom in and out according to the current cropRect
+     **/
     private void autoZoom(boolean animate) {
         //auto-zoom
         float scale = getNewScale();
@@ -348,6 +401,12 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         }
     }
 
+    /**
+     * Returns the touched corner to the associated motionEvent.
+     *
+     * @param motionEvent the associated MotionEvent
+     * @return one of: NO_CORNER, TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT or BOTTOM_LEFT
+     **/
     private int getTouchedCorner(MotionEvent motionEvent) {
         PointF currentTouchPos = new PointF(motionEvent.getX(), motionEvent.getY());
         if (cropRect == null) {
@@ -389,49 +448,62 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         return NO_CORNER;
     }
 
-    private Rect getNewRect(MotionEvent motionEvent) {
-        PointF currentTouchPos = viewToSourceCoord(
-                motionEvent.getX(), motionEvent.getY());
+    /**
+     * Get the new cropRect after a motionEvent from the x and y coordinate.
+     *
+     * @param x x-coordinate of the associated MotionEvent
+     * @param y y-coordinate of the associated MotionEvent
+     * @return the new cropRect; might be null if cropRect didn't change; bounds need to be checked!
+     **/
+    private Rect getNewRect(float x, float y) {
+        PointF currentTouchPos = viewToSourceCoord(x, y);
 
-        if (touchedCorner == TOP_LEFT) {
-            Rect newCropRect = new Rect(
-                    (int) currentTouchPos.x,
-                    (int) currentTouchPos.y,
-                    cropRect.right,
-                    cropRect.bottom);
-            return checkRectBounds(newCropRect, true);
-        }
+        boolean freeAspectRatio = aspectRatio < 0.0;
 
-        if (touchedCorner == TOP_RIGHT) {
-            Rect newCropRect = new Rect(
-                    cropRect.left,
-                    (int) currentTouchPos.y,
-                    (int) currentTouchPos.x,
-                    cropRect.bottom);
-            return checkRectBounds(newCropRect, true);
-        }
-
-        if (touchedCorner == BOTTOM_RIGHT) {
-            Rect newCropRect = new Rect(
-                    cropRect.left,
-                    cropRect.top,
-                    (int) currentTouchPos.x,
-                    (int) currentTouchPos.y);
-            return checkRectBounds(newCropRect, true);
-        }
-
-        if (touchedCorner == BOTTOM_LEFT) {
-            Rect newCropRect = new Rect(
-                    (int) currentTouchPos.x,
-                    cropRect.top,
-                    cropRect.right,
-                    (int) currentTouchPos.y);
-            return checkRectBounds(newCropRect, true);
+        if (freeAspectRatio) {
+            if (touchedCorner == TOP_LEFT) {
+                return checkRectBounds(new Rect((int) currentTouchPos.x, (int) currentTouchPos.y,
+                        cropRect.right, cropRect.bottom), true);
+            } else if (touchedCorner == TOP_RIGHT) {
+                return checkRectBounds(new Rect(cropRect.left, (int) currentTouchPos.y,
+                        (int) currentTouchPos.x, cropRect.bottom), true);
+            } else if (touchedCorner == BOTTOM_RIGHT) {
+                return checkRectBounds(new Rect(cropRect.left, cropRect.top,
+                        (int) currentTouchPos.x, (int) currentTouchPos.y), true);
+            } else if (touchedCorner == BOTTOM_LEFT) {
+                return checkRectBounds(new Rect((int) currentTouchPos.x, cropRect.top,
+                        cropRect.right, (int) currentTouchPos.y), true);
+            }
+        } else {
+            // fixed aspectRatio
+            if (touchedCorner == TOP_LEFT) {
+                int delta = (int) Math.max(currentTouchPos.x - cropRect.left, currentTouchPos.y - cropRect.top);
+                return checkRectBounds(new Rect((int) Math.round(cropRect.left + delta * aspectRatio), cropRect.top + delta,
+                        cropRect.right, cropRect.bottom), true);
+            } else if (touchedCorner == TOP_RIGHT) {
+                int delta = (int) Math.max(cropRect.right - currentTouchPos.x, currentTouchPos.y - cropRect.top);
+                return checkRectBounds(new Rect(cropRect.left, cropRect.top + delta,
+                        (int) Math.round(cropRect.right - delta * aspectRatio), cropRect.bottom), true);
+            } else if (touchedCorner == BOTTOM_RIGHT) {
+                int delta = (int) Math.max(cropRect.right - currentTouchPos.x, cropRect.bottom - currentTouchPos.y);
+                return checkRectBounds(new Rect(cropRect.left, cropRect.top,
+                        (int) Math.round(cropRect.right - delta * aspectRatio), cropRect.bottom - delta), true);
+            } else if (touchedCorner == BOTTOM_LEFT) {
+                int delta = (int) Math.max(currentTouchPos.x - cropRect.left, cropRect.bottom - currentTouchPos.y);
+                return checkRectBounds(new Rect((int) Math.round(cropRect.left + delta * aspectRatio), cropRect.top,
+                        cropRect.right, cropRect.bottom - delta), true);
+            }
         }
 
         return null;
     }
 
+    /**
+     * Get the moved cropRect from the motionEvent.
+     *
+     * @param motionEvent the associated MotionEvent
+     * @return the moved cropRect; might be null if cropRect didn't change
+     **/
     private Rect getMovedRect(MotionEvent motionEvent) {
         if (cropRect == null) {
             return null;
@@ -447,17 +519,25 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
             int deltaX = (int) (oldTouchPos.x - currentTouchPos.x);
             int deltaY = (int) (oldTouchPos.y - currentTouchPos.y);
 
-            Rect newCropRect = new Rect(
+            return checkRectBounds(new Rect(
                     cropRect.left + deltaX,
                     cropRect.top + deltaY,
                     cropRect.right + deltaX,
-                    cropRect.bottom + deltaY);
-            return checkRectBounds(newCropRect, false);
+                    cropRect.bottom + deltaY), false);
         } else {
             return cropRect;
         }
     }
 
+    /**
+     * Checks the bounds and size of the current cropRect:
+     * - checks if inside image
+     * - checks that cropRect is bigger than min size
+     *
+     * @param cropRect the Rect that should be checked
+     * @param resize   flag if the cropRect can be resized or only translated to be made valid
+     * @return a valid cropRect; might be null if cropRect didn't change
+     **/
     private Rect checkRectBounds(Rect cropRect, boolean resize) {
         Rect image = getImageRect();
         Rect newCropRect = cropRect;
@@ -465,68 +545,144 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         int width = newCropRect.width();
         int height = newCropRect.height();
 
-        if (image.left > newCropRect.left) {
-            newCropRect = new Rect(image.left, newCropRect.top,
-                    resize ? newCropRect.right : image.left + width,
-                    newCropRect.bottom);
+        if (!image.contains(newCropRect)) {
+            if (aspectRatio >= 0.0) {
+                if (resize) {
+                    // new cropRect to big => try and fix size
+                    // check corners
+                    if (touchedCorner == TOP_LEFT) {
+                        if (image.left > newCropRect.left) {
+                            int delta = (int) ((image.left - newCropRect.left) / aspectRatio);
+                            newCropRect = new Rect(image.left, newCropRect.top + delta,
+                                    newCropRect.right, newCropRect.bottom);
+                        }
+                        if (image.top > newCropRect.top) {
+                            int delta = (int) ((image.top - newCropRect.top) * aspectRatio);
+                            newCropRect = new Rect(newCropRect.left + delta, image.top,
+                                    newCropRect.right, newCropRect.bottom);
+                        }
+                    } else if (touchedCorner == TOP_RIGHT) {
+                        if (image.right < newCropRect.right) {
+                            int delta = (int) ((newCropRect.right - image.right) / aspectRatio);
+                            newCropRect = new Rect(newCropRect.left, newCropRect.top + delta,
+                                    image.right, newCropRect.bottom);
+                        }
+                        if (image.top > newCropRect.top) {
+                            int delta = (int) ((image.top - newCropRect.top) * aspectRatio);
+                            newCropRect = new Rect(newCropRect.left, image.top,
+                                    newCropRect.right - delta, newCropRect.bottom);
+                        }
+                    } else if (touchedCorner == BOTTOM_RIGHT) {
+                        if (image.right < newCropRect.right) {
+                            int delta = (int) ((newCropRect.right - image.right) / aspectRatio);
+                            newCropRect = new Rect(newCropRect.left, newCropRect.top,
+                                    image.right, newCropRect.bottom - delta);
+                        }
+                        if (image.bottom < newCropRect.bottom) {
+                            int delta = (int) ((newCropRect.bottom - image.bottom) * aspectRatio);
+                            newCropRect = new Rect(newCropRect.left, newCropRect.top,
+                                    newCropRect.right - delta, image.bottom);
+                        }
+                    } else if (touchedCorner == BOTTOM_LEFT) {
+                        if (image.left > newCropRect.left) {
+                            int delta = (int) ((image.left - newCropRect.left) / aspectRatio);
+                            newCropRect = new Rect(image.left, newCropRect.top,
+                                    newCropRect.right, newCropRect.bottom - delta);
+                        }
+                        if (image.bottom < newCropRect.bottom) {
+                            int delta = (int) ((newCropRect.bottom - image.bottom) * aspectRatio);
+                            newCropRect = new Rect(newCropRect.left + delta, newCropRect.top,
+                                    newCropRect.right, image.bottom);
+                        }
+                    }
+                } else {
+                    // check edges
+                    // left edges
+                    if (image.left > newCropRect.left) {
+                        newCropRect = new Rect(image.left, newCropRect.top,
+                                image.left + width, newCropRect.bottom);
+                    }
+                    // top edge
+                    if (image.top > newCropRect.top) {
+                        newCropRect = new Rect(newCropRect.left, image.top,
+                                newCropRect.right, image.top + height);
+                    }
+                    // right edge
+                    if (image.right < newCropRect.right) {
+                        newCropRect = new Rect(image.right - width, newCropRect.top,
+                                image.right, newCropRect.bottom);
+                    }
+                    // bottom edge
+                    if (image.bottom < newCropRect.bottom) {
+                        newCropRect = new Rect(newCropRect.left, image.bottom - height,
+                                newCropRect.right, image.bottom);
+                    }
+                }
+            } else {
+                // cropRect not inside => try to fix it
+                if (image.left > newCropRect.left) {
+                    newCropRect = new Rect(image.left, newCropRect.top,
+                            resize ? newCropRect.right : image.left + width,
+                            newCropRect.bottom);
+                }
+
+                if (image.top > newCropRect.top) {
+                    newCropRect = new Rect(newCropRect.left, image.top, newCropRect.right,
+                            resize ? newCropRect.bottom : image.top + height);
+                }
+
+                if (image.right < newCropRect.right) {
+                    newCropRect = new Rect(resize ? newCropRect.left : image.right - width,
+                            newCropRect.top, image.right, newCropRect.bottom);
+                }
+
+                if (image.bottom < newCropRect.bottom) {
+                    newCropRect = new Rect(newCropRect.left,
+                            resize ? newCropRect.top : image.bottom - height,
+                            newCropRect.right, image.bottom);
+                }
+            }
         }
 
-        if (image.top > newCropRect.top) {
-            newCropRect = new Rect(
-                    newCropRect.left, image.top, newCropRect.right,
-                    resize ? newCropRect.bottom : image.top + height);
-        }
-
-        if (image.right < newCropRect.right) {
-            newCropRect = new Rect(
-                    resize ? newCropRect.left : image.right - width,
-                    newCropRect.top, image.right, newCropRect.bottom);
-        }
-
-        if (image.bottom < newCropRect.bottom) {
-            newCropRect = new Rect(newCropRect.left,
-                    resize ? newCropRect.top : image.bottom - height,
-                    newCropRect.right, image.bottom);
-        }
-
+        Rect minRect = getMinCropRect();
         //check min size
         width = newCropRect.width();
-        if (width < minCropRectSize) {
+        if (width < minRect.width()) {
             if (touchedCorner == TOP_LEFT) {
-                newCropRect = new Rect(newCropRect.right - minCropRectSize,
+                newCropRect = new Rect(newCropRect.right - minRect.width(),
                         newCropRect.top, newCropRect.right, newCropRect.bottom);
             } else if (touchedCorner == TOP_RIGHT) {
                 newCropRect = new Rect(newCropRect.left, newCropRect.top,
-                        newCropRect.left + minCropRectSize,
+                        newCropRect.left + minRect.width(),
                         newCropRect.bottom);
             } else if (touchedCorner == BOTTOM_RIGHT) {
                 newCropRect = new Rect(newCropRect.left, newCropRect.top,
-                        newCropRect.left + minCropRectSize,
+                        newCropRect.left + minRect.width(),
                         newCropRect.bottom);
             } else if (touchedCorner == BOTTOM_LEFT) {
-                newCropRect = new Rect(newCropRect.right - minCropRectSize,
+                newCropRect = new Rect(newCropRect.right - minRect.width(),
                         newCropRect.top, newCropRect.right, newCropRect.bottom);
             }
         }
 
         height = newCropRect.height();
-        if (height < minCropRectSize) {
+        if (height < minRect.height()) {
             if (touchedCorner == TOP_LEFT) {
                 newCropRect = new Rect(newCropRect.left,
-                        newCropRect.bottom - minCropRectSize,
+                        newCropRect.bottom - minRect.height(),
                         newCropRect.right, newCropRect.bottom);
             } else if (touchedCorner == TOP_RIGHT) {
                 newCropRect = new Rect(newCropRect.left,
-                        newCropRect.bottom - minCropRectSize,
+                        newCropRect.bottom - minRect.height(),
                         newCropRect.right, newCropRect.bottom);
             } else if (touchedCorner == BOTTOM_RIGHT) {
                 newCropRect = new Rect(newCropRect.left, newCropRect.top,
                         newCropRect.right,
-                        newCropRect.top + minCropRectSize);
+                        newCropRect.top + minRect.height());
             } else if (touchedCorner == BOTTOM_LEFT) {
                 newCropRect = new Rect(newCropRect.left,
                         newCropRect.top, newCropRect.right,
-                        newCropRect.top + minCropRectSize);
+                        newCropRect.top + minRect.height());
             }
         }
 
@@ -698,7 +854,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     public State getCropImageViewState() {
         ImageViewState state = getState();
         if (state != null) {
-            return new State(state.getScale(), state.getCenter(), state.getOrientation(), cropRect);
+            return new State(state.getScale(), state.getCenter(), state.getOrientation(),
+                    cropRect, aspectRatio);
         }
         return null;
     }
@@ -713,5 +870,84 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         if (progressBar != null) {
             progressBar.setVisibility(visibility);
         }
+    }
+
+    @SuppressWarnings("unused")
+    public double getAspectRatio() {
+        return aspectRatio;
+    }
+
+    /**
+     * Set the an aspectRatio for the cropRect.
+     *
+     * @param aspectRatio smaller 0: free aspectRatio
+     *                    greater 0: a = aspectRation * b; where a and b are the sides of the cropping rect
+     **/
+    public void setAspectRatio(double aspectRatio) {
+        if (this.aspectRatio == aspectRatio) {
+            return;
+        }
+        this.aspectRatio = aspectRatio;
+        // update the cropRect
+        if (isImageLoaded() && aspectRatio > 0.0) {
+            cropRect = getMaxCenteredCropRect();
+            autoZoom(false);
+        }
+    }
+
+    /**
+     * Sets the aspect ratio to free.
+     **/
+    public void setFreeAspectRatio() {
+        setAspectRatio(-1.0);
+    }
+
+    /**
+     * Set the original aspect ratio of the image as fixed aspect ratio.
+     **/
+    public void setOriginalAspectRatioFixed() {
+        if (!isImageLoaded()) {
+            // if no image was loaded set the aspect ratio to free
+            setAspectRatio(-1.0);
+            return;
+        }
+        Rect imageRect = getImageRect();
+        setAspectRatio((double) (imageRect.width()) / (double) (imageRect.height()));
+    }
+
+    /**
+     * Returns the max possible cropRect that is inside the image.
+     *
+     * @return max centered cropRect; might be null if no image was loaded
+     **/
+    private Rect getMaxCenteredCropRect() {
+        if (!isImageLoaded()) {
+            return null;
+        }
+        if (aspectRatio < 0.0) {
+            return getImageRect();
+        } else {
+            Rect imageRect = getImageRect();
+            int imageHeight = imageRect.bottom - imageRect.top, imageWidth = imageRect.right - imageRect.left;
+            if (imageHeight * aspectRatio <= imageWidth) {
+                int padding = (int) ((imageWidth - (imageHeight * aspectRatio)) / 2);
+                return new Rect(padding,
+                        0,
+                        (int) ((imageHeight * aspectRatio) + padding),
+                        imageHeight);
+            } else {
+                int padding = (int) ((imageHeight - (imageWidth / aspectRatio)) / 2);
+                return new Rect(0,
+                        padding,
+                        imageWidth,
+                        (int) ((imageWidth / aspectRatio) + padding));
+            }
+        }
+    }
+
+    private Rect getMinCropRect() {
+        return new Rect(0, 0,
+                aspectRatio < 0.0 ? minCropRectSize : (int) (minCropRectSize * aspectRatio),
+                minCropRectSize);
     }
 }

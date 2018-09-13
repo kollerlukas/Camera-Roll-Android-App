@@ -329,6 +329,7 @@ public class EditImageActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final CropImageView imageView = findViewById(R.id.cropImageView);
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -344,8 +345,31 @@ public class EditImageActivity extends AppCompatActivity {
             case R.id.done:
                 done(item.getActionView());
                 break;
+            case R.id.aspect_ratio_free:
+                item.setChecked(true);
+                imageView.setFreeAspectRatio();
+                break;
+            case R.id.aspect_ratio_original:
+                item.setChecked(true);
+                imageView.setOriginalAspectRatioFixed();
+                break;
+            case R.id.aspect_ratio_square:
+                item.setChecked(true);
+                imageView.setAspectRatio(1.0);
+                break;
+            case R.id.aspect_ratio_3_2:
+                item.setChecked(true);
+                imageView.setAspectRatio(3.0 / 2.0);
+                break;
+            case R.id.aspect_ratio_4_3:
+                item.setChecked(true);
+                imageView.setAspectRatio(4.0 / 3.0);
+                break;
+            case R.id.aspect_ratio_16_9:
+                item.setChecked(true);
+                imageView.setAspectRatio(16.0 / 9.0);
+                break;
             case R.id.restore:
-                CropImageView imageView = findViewById(R.id.cropImageView);
                 imageView.restore();
                 break;
             default:

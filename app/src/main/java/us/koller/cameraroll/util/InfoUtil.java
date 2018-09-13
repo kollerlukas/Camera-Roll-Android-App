@@ -204,7 +204,7 @@ public class InfoUtil {
         Object apertureObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_F_NUMBER);
         String aperture;
         if (apertureObject != null) {
-            aperture = "f/" + String.valueOf(apertureObject);
+            aperture = "ƒ/" + String.valueOf(apertureObject);
         } else {
             aperture = ExifUtil.NO_DATA;
         }
