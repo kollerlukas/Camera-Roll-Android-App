@@ -37,7 +37,7 @@
     <string name="item_count">%1$d stavka</string>
     <string name="items_count">%1$d stavki</string>
     <!--AlbumActivity-->
-    <string name="exclude">Izuzmi</string>
+    <string name="exclude">Izostavi</string>
     <string name="pin_album">Prikvači album</string>
     <string name="file_deleted">%1$d datoteka izbrisana</string>
     <string name="files_deleted">%1$d datoteka izbrisano</string>
