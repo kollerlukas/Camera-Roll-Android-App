@@ -1,5 +1,8 @@
 package us.koller.cameraroll.ui.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,6 +24,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ProgressBar;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -37,6 +41,7 @@ import us.koller.cameraroll.imageDecoder.RAWImageBitmapRegionDecoder;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class CropImageView extends SubsamplingScaleImageView implements View.OnTouchListener {
 
     private static final int MIN_CROP_RECT_SIZE_DP = 50;
@@ -47,6 +52,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private static final int CORNER_STROKE_WIDTH_DP = 3;
     private static final int CORNER_LENGTH_DP = 16;
     private static final int CORNER_COLOR_RES = R.color.white;
+    private static final int CORNER_COLOR_RES_COLORED = R.color.colorAccent;
 
     private static final int GUIDELINE_STROKE_WIDTH_DP = 1;
     private static final int GUIDELINE_COLOR_RES = R.color.white;
@@ -64,6 +70,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
     private Rect cropRect;
     private Paint cropRectPaint;
     private Paint cropRectCornerPaint;
+    private Paint cropRectCornerPaintColored;
     private Paint guidelinePaint;
     private Paint backgroundPaint;
     // aspectRation < 0: free aspect ratio; otherwise: deltaY * aspectRation = deltaX
@@ -168,6 +175,13 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         cropRectCornerPaint.setStrokeWidth(Util.dpToPx(getContext(), CORNER_STROKE_WIDTH_DP));
         cropRectCornerPaint.setStyle(Paint.Style.STROKE);
 
+        cropRectCornerPaintColored = new Paint();
+        cropRectCornerPaintColored
+                .setColor(ContextCompat.getColor(getContext(), CORNER_COLOR_RES_COLORED));
+        cropRectCornerPaintColored
+                .setStrokeWidth(Util.dpToPx(getContext(), CORNER_STROKE_WIDTH_DP));
+        cropRectCornerPaintColored.setStyle(Paint.Style.STROKE);
+
         guidelinePaint = new Paint();
         guidelinePaint.setColor(ContextCompat.getColor(getContext(), GUIDELINE_COLOR_RES));
         guidelinePaint.setStrokeWidth(Util.dpToPx(getContext(), GUIDELINE_STROKE_WIDTH_DP));
@@ -245,8 +259,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
      **/
     public void restore() {
         setOrientation(0);
-        cropRect = getMaxCenteredCropRect();
-        autoZoom(false);
+        setCropRect(getMaxCenteredCropRect(), false);
+        autoZoom(true);
     }
 
     /**
@@ -321,13 +335,13 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
                 if (touchedCorner != NO_CORNER) {
                     Rect newCropRect = getNewRect(motionEvent.getX(), motionEvent.getY());
                     if (newCropRect != null) {
-                        cropRect = newCropRect;
+                        setCropRect(newCropRect);
                     }
                     consumed = true;
                 } else {
                     Rect newCropRect = getMovedRect(motionEvent);
                     if (newCropRect != null) {
-                        cropRect = newCropRect;
+                        setCropRect(newCropRect);
                     }
                     consumed = true;
                 }
@@ -477,20 +491,28 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         } else {
             // fixed aspectRatio
             if (touchedCorner == TOP_LEFT) {
-                int delta = (int) Math.max(currentTouchPos.x - cropRect.left, currentTouchPos.y - cropRect.top);
-                return checkRectBounds(new Rect((int) Math.round(cropRect.left + delta * aspectRatio), cropRect.top + delta,
+                int delta = (int) Math.max(currentTouchPos.x - cropRect.left,
+                        currentTouchPos.y - cropRect.top);
+                return checkRectBounds(new Rect((int) Math.round(cropRect.left
+                        + delta * aspectRatio), cropRect.top + delta,
                         cropRect.right, cropRect.bottom), true);
             } else if (touchedCorner == TOP_RIGHT) {
-                int delta = (int) Math.max(cropRect.right - currentTouchPos.x, currentTouchPos.y - cropRect.top);
+                int delta = (int) Math.max(cropRect.right - currentTouchPos.x,
+                        currentTouchPos.y - cropRect.top);
                 return checkRectBounds(new Rect(cropRect.left, cropRect.top + delta,
-                        (int) Math.round(cropRect.right - delta * aspectRatio), cropRect.bottom), true);
+                        (int) Math.round(cropRect.right - delta * aspectRatio),
+                        cropRect.bottom), true);
             } else if (touchedCorner == BOTTOM_RIGHT) {
-                int delta = (int) Math.max(cropRect.right - currentTouchPos.x, cropRect.bottom - currentTouchPos.y);
+                int delta = (int) Math.max(cropRect.right - currentTouchPos.x,
+                        cropRect.bottom - currentTouchPos.y);
                 return checkRectBounds(new Rect(cropRect.left, cropRect.top,
-                        (int) Math.round(cropRect.right - delta * aspectRatio), cropRect.bottom - delta), true);
+                        (int) Math.round(cropRect.right - delta * aspectRatio),
+                        cropRect.bottom - delta), true);
             } else if (touchedCorner == BOTTOM_LEFT) {
-                int delta = (int) Math.max(currentTouchPos.x - cropRect.left, cropRect.bottom - currentTouchPos.y);
-                return checkRectBounds(new Rect((int) Math.round(cropRect.left + delta * aspectRatio), cropRect.top,
+                int delta = (int) Math.max(currentTouchPos.x - cropRect.left,
+                        cropRect.bottom - currentTouchPos.y);
+                return checkRectBounds(new Rect((int) Math.round(cropRect.left
+                        + delta * aspectRatio), cropRect.top,
                         cropRect.right, cropRect.bottom - delta), true);
             }
         }
@@ -704,7 +726,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         Rect imageRect = getImageRect();
         int newWidth = cropRect.height();
         int newHeight = cropRect.width();
-        Point newTopLeft = new Point(imageRect.height() - (cropRect.top + cropRect.height()), cropRect.left);
+        Point newTopLeft = new Point(imageRect.height()
+                - (cropRect.top + cropRect.height()), cropRect.left);
         return new Rect(newTopLeft.x, newTopLeft.y,
                 newTopLeft.x + newWidth, newTopLeft.y + newHeight);
     }
@@ -761,14 +784,16 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         matrix.postRotate(0, bounds.centerX(), bounds.centerY());
         matrix.postTranslate(topLeft.x, topLeft.y);
         tlCorner.transform(matrix);
-        canvas.drawPath(tlCorner, cropRectCornerPaint);
+        canvas.drawPath(tlCorner, /*aspectRatio < 0.0 ?*/ cropRectCornerPaint
+                /*: cropRectCornerPaintColored*/);
 
         Path trCorner = getCornerPath();
         matrix = new Matrix();
         matrix.postRotate(90, bounds.centerX(), bounds.centerY());
         matrix.postTranslate(bottomRight.x - (bounds.width() + cornerStrokeWidth), topLeft.y);
         trCorner.transform(matrix);
-        canvas.drawPath(trCorner, cropRectCornerPaint);
+        canvas.drawPath(trCorner, /*aspectRatio < 0.0 ?*/ cropRectCornerPaint
+                /*: cropRectCornerPaintColored*/);
 
         Path brCorner = getCornerPath();
         matrix = new Matrix();
@@ -776,14 +801,16 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         matrix.postTranslate(bottomRight.x - (bounds.width() + cornerStrokeWidth),
                 bottomRight.y - (bounds.height() + cornerStrokeWidth));
         brCorner.transform(matrix);
-        canvas.drawPath(brCorner, cropRectCornerPaint);
+        canvas.drawPath(brCorner, /*aspectRatio < 0.0 ?*/ cropRectCornerPaint
+                /*: cropRectCornerPaintColored*/);
 
         Path blCorner = getCornerPath();
         matrix = new Matrix();
         matrix.postRotate(270, bounds.centerX(), bounds.centerY());
         matrix.postTranslate(topLeft.x, bottomRight.y - (bounds.height() + cornerStrokeWidth));
         blCorner.transform(matrix);
-        canvas.drawPath(blCorner, cropRectCornerPaint);
+        canvas.drawPath(blCorner, /*aspectRatio < 0.0 ?*/ cropRectCornerPaint
+                /*: cropRectCornerPaintColored*/);
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
@@ -802,13 +829,28 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
-        if (topLeftImageRect == null || bottomRightImageRect == null ||
-                topLeft == null || bottomRight == null) {
+        if (topLeftImageRect == null || bottomRightImageRect == null
+                || topLeft == null || bottomRight == null) {
             return;
+        }
+
+        // only draw the visible parts of the bg
+        if (topLeftImageRect.x < getX()) {
+            topLeftImageRect.x = getX();
+        }
+        if (topLeftImageRect.y < getY()) {
+            topLeftImageRect.y = getY();
+        }
+        if (bottomRightImageRect.x > getX() + getWidth()) {
+            bottomRightImageRect.x = getX() + getWidth();
+        }
+        if (bottomRightImageRect.y > getY() + getHeight()) {
+            bottomRightImageRect.y = getY() + getHeight();
         }
 
         Path background = new Path();
         background.setFillType(Path.FillType.EVEN_ODD);
+
         background.moveTo(topLeft.x, topLeft.y);
         background.lineTo(bottomRight.x, topLeft.y);
         background.lineTo(bottomRight.x, bottomRight.y);
@@ -846,7 +888,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
 
             Path horizontalGuideline = new Path();
             horizontalGuideline.moveTo(topLeft.x + strokeWidth, topLeft.y + thirdHeight * i);
-            horizontalGuideline.lineTo(bottomRight.x - strokeWidth, topLeft.y + thirdHeight * i);
+            horizontalGuideline.lineTo(bottomRight.x - strokeWidth,
+                    topLeft.y + thirdHeight * i);
             canvas.drawPath(horizontalGuideline, guidelinePaint);
         }
     }
@@ -881,7 +924,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
      * Set the an aspectRatio for the cropRect.
      *
      * @param aspectRatio smaller 0: free aspectRatio
-     *                    greater 0: a = aspectRation * b; where a and b are the sides of the cropping rect
+     *                    greater 0: a = aspectRation * b
+     *                    where a and b are the sides of the cropping rect
      **/
     public void setAspectRatio(double aspectRatio) {
         if (this.aspectRatio == aspectRatio) {
@@ -890,8 +934,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         this.aspectRatio = aspectRatio;
         // update the cropRect
         if (isImageLoaded() && aspectRatio > 0.0) {
-            cropRect = getMaxCenteredCropRect();
-            autoZoom(false);
+            setCropRect(getMaxCenteredCropRect(), true);
+            //autoZoom(true);
         }
     }
 
@@ -928,7 +972,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
             return getImageRect();
         } else {
             Rect imageRect = getImageRect();
-            int imageHeight = imageRect.bottom - imageRect.top, imageWidth = imageRect.right - imageRect.left;
+            int imageHeight = imageRect.bottom - imageRect.top,
+                    imageWidth = imageRect.right - imageRect.left;
             if (imageHeight * aspectRatio <= imageWidth) {
                 int padding = (int) ((imageWidth - (imageHeight * aspectRatio)) / 2);
                 return new Rect(padding,
@@ -945,9 +990,71 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         }
     }
 
+    /**
+     * Returns the minimal valid cropRect.
+     *
+     * @return minimal valid cropRect.
+     **/
     private Rect getMinCropRect() {
         return new Rect(0, 0,
                 aspectRatio < 0.0 ? minCropRectSize : (int) (minCropRectSize * aspectRatio),
                 minCropRectSize);
+    }
+
+    /**
+     * Set a new cropRect. When animate is set to true the view is automatically autoZoomed.
+     *
+     * @param cropRect new cropRect
+     * @param animate  between the old and new cropRect
+     **/
+    public void setCropRect(final Rect cropRect, boolean animate) {
+        if (!animate || this.cropRect == null || cropRect == null) {
+            setCropRect(cropRect);
+            return;
+        }
+
+        final Rect oldCropRect = this.cropRect;
+
+        final Rect delta = new Rect(
+                cropRect.left - oldCropRect.left,
+                cropRect.top - oldCropRect.top,
+                cropRect.right - oldCropRect.right,
+                cropRect.bottom - oldCropRect.bottom);
+
+        ValueAnimator animator = ValueAnimator.ofInt(0, 100);
+        animator.setDuration(300);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float animatedValue = valueAnimator.getAnimatedFraction();
+                setCropRect(new Rect(
+                        (int) (oldCropRect.left + delta.left * animatedValue),
+                        (int) (oldCropRect.top + delta.top * animatedValue),
+                        (int) (oldCropRect.right + delta.right * animatedValue),
+                        (int) (oldCropRect.bottom + delta.bottom * animatedValue)));
+                autoZoom(false);
+            }
+        });
+        animator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        setCropRect(cropRect);
+                        autoZoom(false);
+                    }
+                });
+        animator.start();
+    }
+
+    /**
+     * Set a new cropRect.
+     *
+     * @param cropRect new cropRect
+     **/
+    public void setCropRect(Rect cropRect) {
+        this.cropRect = cropRect;
+        //invalidate();
     }
 }
