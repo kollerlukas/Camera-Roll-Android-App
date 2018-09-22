@@ -35,8 +35,7 @@ public class PhotoViewHolder extends ViewHolder {
         final View transitionView = itemView.findViewById(R.id.image);
 
         //hide transitionView, when config was changed
-        if (albumItem instanceof Photo
-                && ((Photo) albumItem).getImageViewSavedState() != null) {
+        if (albumItem instanceof Photo && ((Photo) albumItem).getImageViewSavedState() != null) {
             transitionView.setVisibility(View.INVISIBLE);
         }
         ItemViewUtil.bindTransitionView((ImageView) transitionView, albumItem);
@@ -57,6 +56,7 @@ public class PhotoViewHolder extends ViewHolder {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     void bindImageView(View view, final View transitionView) {
         if (albumItem.error) {
             transitionView.setVisibility(View.VISIBLE);
@@ -93,13 +93,7 @@ public class PhotoViewHolder extends ViewHolder {
                         return super.onSingleTapUp(e);
                     }
                 });
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return gestureDetector.onTouchEvent(motionEvent);
-            }
-        });
+        view.setOnTouchListener((view1, motionEvent) -> gestureDetector.onTouchEvent(motionEvent));
 
         ItemViewUtil.bindSubsamplingImageView(
                 imageView,
@@ -147,12 +141,7 @@ public class PhotoViewHolder extends ViewHolder {
 
     @Override
     public void onSharedElementExit(final ItemActivity.Callback callback) {
-        scaleDown(new ItemActivity.Callback() {
-            @Override
-            public void done() {
-                callback.done();
-            }
-        });
+        scaleDown(callback);
     }
 
     @Override
@@ -175,6 +164,5 @@ public class PhotoViewHolder extends ViewHolder {
     }
 
     public void onImageLoaded() {
-
     }
 }

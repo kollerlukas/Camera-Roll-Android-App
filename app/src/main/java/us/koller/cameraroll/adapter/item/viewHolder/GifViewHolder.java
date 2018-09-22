@@ -35,12 +35,7 @@ public class GifViewHolder extends ViewHolder {
 
     public void setAttacher(ImageView imageView) {
         attacher = new PhotoViewAttacher(imageView);
-        attacher.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
-            @Override
-            public void onViewTap(View view, float x, float y) {
-                imageOnClick(view);
-            }
-        });
+        attacher.setOnViewTapListener((view, x, y) -> imageOnClick(view));
     }
 
     @Override

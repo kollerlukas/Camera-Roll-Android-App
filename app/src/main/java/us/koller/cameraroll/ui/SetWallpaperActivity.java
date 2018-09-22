@@ -1,7 +1,6 @@
 package us.koller.cameraroll.ui;
 
 import android.app.WallpaperManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -9,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -95,44 +92,38 @@ public class SetWallpaperActivity extends AppCompatActivity {
 
         //setting window insets manually
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            toolbar.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    // clear this listener so insets aren't re-applied
-                    toolbar.setOnApplyWindowInsetsListener(null);
+            toolbar.setOnApplyWindowInsetsListener((view, insets) -> {
+                // clear this listener so insets aren't re-applied
+                toolbar.setOnApplyWindowInsetsListener(null);
 
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            toolbar.getPaddingBottom());
+                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingBottom());
 
-                    return insets.consumeSystemWindowInsets();
-                }
+                return insets.consumeSystemWindowInsets();
             });
         } else {
-            toolbar.getViewTreeObserver()
-                    .addOnGlobalLayoutListener(
-                            new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    toolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                    // hacky way of getting window insets on pre-Lollipop
-                                    // somewhat works...
-                                    int[] screenSize = Util.getScreenSize(SetWallpaperActivity.this);
+            toolbar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    toolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    // hacky way of getting window insets on pre-Lollipop
+                    // somewhat works...
+                    int[] screenSize = Util.getScreenSize(SetWallpaperActivity.this);
 
-                                    int[] windowInsets = new int[]{
-                                            Math.abs(screenSize[0] - toolbar.getLeft()),
-                                            Math.abs(screenSize[1] - toolbar.getTop()),
-                                            Math.abs(screenSize[2] - toolbar.getRight()),
-                                            Math.abs(0)};
+                    int[] windowInsets = new int[]{
+                            Math.abs(screenSize[0] - toolbar.getLeft()),
+                            Math.abs(screenSize[1] - toolbar.getTop()),
+                            Math.abs(screenSize[2] - toolbar.getRight()),
+                            Math.abs(0)};
 
-                                    toolbar.setPadding(toolbar.getPaddingStart() + windowInsets[0],
-                                            toolbar.getPaddingTop() + windowInsets[1],
-                                            toolbar.getPaddingEnd() + windowInsets[2],
-                                            toolbar.getPaddingBottom());
-                                }
-                            });
+                    toolbar.setPadding(toolbar.getPaddingStart() + windowInsets[0],
+                            toolbar.getPaddingTop() + windowInsets[1],
+                            toolbar.getPaddingEnd() + windowInsets[2],
+                            toolbar.getPaddingBottom());
+                }
+            });
         }
 
         //needed to achieve transparent navBar
@@ -171,27 +162,23 @@ public class SetWallpaperActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.set_wallpaper)
                     .setItems(new CharSequence[]{
-                                    getString(R.string.home_screen),
-                                    getString(R.string.lock_screen),
-                                    getString(R.string.both)},
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    switch (i) {
-                                        case 0:
-                                            setWallpaper(HOME_SCREEN);
-                                            break;
-                                        case 1:
-                                            setWallpaper(LOCK_SCREEN);
-                                            break;
-                                        case 2:
-                                            setWallpaper(BOTH);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                            }).create().show();
+                            getString(R.string.home_screen),
+                            getString(R.string.lock_screen),
+                            getString(R.string.both)}, (dialogInterface, i) -> {
+                        switch (i) {
+                            case 0:
+                                setWallpaper(HOME_SCREEN);
+                                break;
+                            case 1:
+                                setWallpaper(LOCK_SCREEN);
+                                break;
+                            case 2:
+                                setWallpaper(BOTH);
+                                break;
+                            default:
+                                break;
+                        }
+                    }).create().show();
         } else {
             // on phones below Api level 24 can't set Home- & Lock-Screen Wallpapers individually
             setWallpaper(0);

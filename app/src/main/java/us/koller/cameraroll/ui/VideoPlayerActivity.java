@@ -11,14 +11,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageButton;
@@ -46,7 +44,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.Settings;
 
 public class VideoPlayerActivity extends ThemeableActivity {
 
@@ -79,15 +76,11 @@ public class VideoPlayerActivity extends ThemeableActivity {
             playPause.setImageResource(R.drawable.ic_pause_white);
         }
 
-        playPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (player != null) {
-                    player.setPlayWhenReady(!player.getPlayWhenReady());
-                }
+        playPause.setOnClickListener(view -> {
+            if (player != null) {
+                player.setPlayWhenReady(!player.getPlayWhenReady());
             }
         });
-
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,8 +106,7 @@ public class VideoPlayerActivity extends ThemeableActivity {
                             playbackControlView.setVisibility(View.VISIBLE);
                         }
 
-                        float toolbar_translationY = i == View.VISIBLE ? 0
-                                : -(toolbar.getHeight());
+                        float toolbar_translationY = i == View.VISIBLE ? 0 : -(toolbar.getHeight());
                         toolbar.animate()
                                 .translationY(toolbar_translationY)
                                 .setInterpolator(new AccelerateDecelerateInterpolator())
@@ -153,23 +145,19 @@ public class VideoPlayerActivity extends ThemeableActivity {
         final View bottomBarControls = findViewById(R.id.controls);
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
 
-                    toolbar.setPadding(insets.getSystemWindowInsetLeft(),
-                            insets.getSystemWindowInsetTop(),
-                            insets.getSystemWindowInsetRight(), 0);
+                toolbar.setPadding(insets.getSystemWindowInsetLeft(),
+                        insets.getSystemWindowInsetTop(),
+                        insets.getSystemWindowInsetRight(), 0);
 
-                    bottomBarControls.setPadding(insets.getSystemWindowInsetLeft(),
-                            0, insets.getSystemWindowInsetRight(),
-                            insets.getSystemWindowInsetBottom());
+                bottomBarControls.setPadding(insets.getSystemWindowInsetLeft(),
+                        0, insets.getSystemWindowInsetRight(),
+                        insets.getSystemWindowInsetBottom());
 
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -348,42 +336,34 @@ public class VideoPlayerActivity extends ThemeableActivity {
 
         @Override
         public void onTimelineChanged(Timeline timeline, Object manifest) {
-
         }
 
         @Override
         public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
-
         }
 
         @Override
         public void onLoadingChanged(boolean isLoading) {
-
         }
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
         }
 
         @Override
         public void onRepeatModeChanged(int repeatMode) {
-
         }
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
-
         }
 
         @Override
         public void onPositionDiscontinuity() {
-
         }
 
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
         }
     }
 }

@@ -60,10 +60,10 @@ public class FileLoader extends ItemLoader {
             File_POJO currentFiles = files;
 
             String[] filesToAddPath = filesToAdd.getPath().split("/");
-            for (int i = 0; i < filesToAddPath.length; i++) {
+            for (String aFilesToAddPath : filesToAddPath) {
                 boolean found = false;
                 for (int k = 0; k < currentFiles.getChildren().size(); k++) {
-                    if (filesToAddPath[i].equals(
+                    if (aFilesToAddPath.equals(
                             currentFiles.getChildren().get(k).getName())) {
                         found = true;
                         currentFiles = currentFiles.getChildren().get(k);
@@ -76,6 +76,5 @@ public class FileLoader extends ItemLoader {
                 }
             }
         }
-
     }
 }

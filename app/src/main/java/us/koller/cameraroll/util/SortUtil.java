@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.models.Album;
 
 public class SortUtil {
 
@@ -42,19 +42,16 @@ public class SortUtil {
                 return;
             case BY_SIZE:
                 // Sorting
-                Collections.sort(albums, new Comparator<Album>() {
-                    @Override
-                    public int compare(Album a1, Album a2) {
-                        if (a1 != null && a2 != null) {
-                            if (a1.pinned() ^ a2.pinned()) {
-                                return a2.pinned() ? 1 : -1;
-                            }
-                            Integer a1_size = a1.getAlbumItems().size();
-                            Integer a2_size = a2.getAlbumItems().size();
-                            return a2_size.compareTo(a1_size);
+                Collections.sort(albums, (a1, a2) -> {
+                    if (a1 != null && a2 != null) {
+                        if (a1.pinned() ^ a2.pinned()) {
+                            return a2.pinned() ? 1 : -1;
                         }
-                        return 0;
+                        Integer a1_size = a1.getAlbumItems().size();
+                        Integer a2_size = a2.getAlbumItems().size();
+                        return a2_size.compareTo(a1_size);
                     }
+                    return 0;
                 });
                 break;
             default:
@@ -77,23 +74,13 @@ public class SortUtil {
 
     public static void sortByName(ArrayList<? extends Sortable> sortables) {
         // Sorting
-        /*Collections.sort(sortables, new Comparator<Sortable>() {
-            @Override
-            public int compare(Sortable s1, Sortable s2) {
-                return compareNames(s1, s2);
-            }
-        });*/
+        /*Collections.sort(sortables, (Comparator<Sortable>) SortUtil::compareNames);*/
         Collections.sort(sortables, new AlphanumNameComparator());
     }
 
     public static void sortByDate(ArrayList<? extends Sortable> sortables) {
         // Sorting
-        Collections.sort(sortables, new Comparator<Sortable>() {
-            @Override
-            public int compare(Sortable s1, Sortable s2) {
-                return compareDate(s1, s2);
-            }
-        });
+        Collections.sort(sortables, (Comparator<Sortable>) SortUtil::compareDate);
     }
 
     private static int compareNames(Sortable s1, Sortable s2) {

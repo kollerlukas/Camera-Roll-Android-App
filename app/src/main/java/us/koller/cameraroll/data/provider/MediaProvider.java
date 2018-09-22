@@ -10,11 +10,11 @@ import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.retriever.MediaStoreRetriever;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
 import us.koller.cameraroll.util.SortUtil;
 
@@ -179,12 +179,7 @@ public class MediaProvider extends Provider {
     public static void loadAlbum(final Activity context, final String path,
                                  final OnAlbumLoadedCallback callback) {
         if (path == null) {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onAlbumLoaded(null);
-                }
-            });
+            context.runOnUiThread(() -> callback.onAlbumLoaded(null));
             return;
         }
 
@@ -214,12 +209,7 @@ public class MediaProvider extends Provider {
                     if (virtualDirectories.get(i).getPath().equals(path)) {
                         final VirtualAlbum album = virtualDirectories.get(i);
                         album.create(context, albums);
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onAlbumLoaded(album);
-                            }
-                        });
+                        context.runOnUiThread(() -> callback.onAlbumLoaded(album));
                         return;
                     }
                 }
@@ -230,22 +220,12 @@ public class MediaProvider extends Provider {
                 }
                 int sortBy = Settings.getInstance(context).sortAlbumsBy();
                 SortUtil.sort(album.getAlbumItems(), sortBy);
-                context.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onAlbumLoaded(album);
-                    }
-                });
+                context.runOnUiThread(() -> callback.onAlbumLoaded(album));
             } else {
                 for (int i = 0; i < albums.size(); i++) {
                     if (albums.get(i).getPath().equals(path)) {
                         final Album album = albums.get(i);
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onAlbumLoaded(album);
-                            }
-                        });
+                        context.runOnUiThread(() -> callback.onAlbumLoaded(album));
                         return;
                     }
                 }

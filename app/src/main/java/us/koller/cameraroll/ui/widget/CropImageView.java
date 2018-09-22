@@ -246,12 +246,7 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         setOrientation(orientation);
         // invert the aspectRatio
         aspectRatio = 1 / aspectRatio;
-        post(new Runnable() {
-            @Override
-            public void run() {
-                autoZoom(false);
-            }
-        });
+        post(() -> autoZoom(false));
     }
 
     /**
@@ -270,54 +265,51 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
      **/
     public void getCroppedBitmap(final OnResultListener onResultListener) {
         setProgressBarVisibility(VISIBLE);
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ContentResolver resolver = getContext().getContentResolver();
-                    InputStream inputStream = resolver.openInputStream(imageUri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        AsyncTask.execute(() -> {
+            try {
+                ContentResolver resolver = getContext().getContentResolver();
+                InputStream inputStream = resolver.openInputStream(imageUri);
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
-                    //rotate image
-                    Matrix matrix = new Matrix();
-                    matrix.postRotate(getOrientation() + getRotation());
+                //rotate image
+                Matrix matrix = new Matrix();
+                matrix.postRotate(getOrientation() + getRotation());
 
-                    bitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                            bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                        bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
-                    byte[] bitmapData = outputStream.toByteArray();
-                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bitmapData);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                byte[] bitmapData = outputStream.toByteArray();
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bitmapData);
 
-                    BitmapRegionDecoder decoder = BitmapRegionDecoder.
-                            newInstance(byteArrayInputStream, false);
+                BitmapRegionDecoder decoder = BitmapRegionDecoder.
+                        newInstance(byteArrayInputStream, false);
 
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 1;
-                    options.inJustDecodeBounds = false;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 1;
+                options.inJustDecodeBounds = false;
 
-                    Bitmap croppedBitmap = decoder.decodeRegion(cropRect, options);
-                    decoder.recycle();
+                Bitmap croppedBitmap = decoder.decodeRegion(cropRect, options);
+                decoder.recycle();
 
-                    final Result result = new Result(imageUri, croppedBitmap);
-                    CropImageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            onResultListener.onResult(result);
-                            setProgressBarVisibility(GONE);
-                        }
-                    });
-                } catch (Exception | OutOfMemoryError e) {
-                    e.printStackTrace();
-                    CropImageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            onResultListener.onResult(new Result(getImageUri(), null));
-                            setProgressBarVisibility(GONE);
-                        }
-                    });
-                }
+                final Result result = new Result(imageUri, croppedBitmap);
+                CropImageView.this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onResultListener.onResult(result);
+                        setProgressBarVisibility(GONE);
+                    }
+                });
+            } catch (Exception | OutOfMemoryError e) {
+                e.printStackTrace();
+                CropImageView.this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onResultListener.onResult(new Result(getImageUri(), null));
+                        setProgressBarVisibility(GONE);
+                    }
+                });
             }
         });
     }
@@ -428,7 +420,8 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         }
         PointF topLeft = sourceToViewCoord(cropRect.left, cropRect.top);
         PointF bottomRight = sourceToViewCoord(cropRect.right, cropRect.bottom);
-        Rect cropRect = new Rect((int) topLeft.x, (int) topLeft.y,
+        Rect cropRect = new Rect(
+                (int) topLeft.x, (int) topLeft.y,
                 (int) bottomRight.x, (int) bottomRight.y);
 
         if (currentTouchPos.x > cropRect.left - touchDelta
@@ -1024,17 +1017,14 @@ public class CropImageView extends SubsamplingScaleImageView implements View.OnT
         ValueAnimator animator = ValueAnimator.ofInt(0, 100);
         animator.setDuration(300);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                float animatedValue = valueAnimator.getAnimatedFraction();
-                setCropRect(new Rect(
-                        (int) (oldCropRect.left + delta.left * animatedValue),
-                        (int) (oldCropRect.top + delta.top * animatedValue),
-                        (int) (oldCropRect.right + delta.right * animatedValue),
-                        (int) (oldCropRect.bottom + delta.bottom * animatedValue)));
-                autoZoom(false);
-            }
+        animator.addUpdateListener(valueAnimator -> {
+            float animatedValue = valueAnimator.getAnimatedFraction();
+            setCropRect(new Rect(
+                    (int) (oldCropRect.left + delta.left * animatedValue),
+                    (int) (oldCropRect.top + delta.top * animatedValue),
+                    (int) (oldCropRect.right + delta.right * animatedValue),
+                    (int) (oldCropRect.bottom + delta.bottom * animatedValue)));
+            autoZoom(false);
         });
         animator.addListener(
                 new AnimatorListenerAdapter() {

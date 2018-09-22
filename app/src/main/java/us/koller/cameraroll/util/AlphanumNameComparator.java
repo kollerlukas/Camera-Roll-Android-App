@@ -3,7 +3,7 @@ package us.koller.cameraroll.util;
 import java.util.Comparator;
 
 /**
- * Heavily ispired by David Koelle's AlphanumComparator
+ * Heavily inspired by David Koelle's AlphanumComparator
  * link: http://www.davekoelle.com/files/AlphanumComparator.java
  */
 

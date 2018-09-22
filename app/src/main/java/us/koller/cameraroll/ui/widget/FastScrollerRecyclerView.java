@@ -47,6 +47,7 @@ public class FastScrollerRecyclerView extends RecyclerView {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void setPadding(int left, int top, int right, int bottom) {
         super.setPadding(left, top, right, bottom);
@@ -66,22 +67,18 @@ public class FastScrollerRecyclerView extends RecyclerView {
                 mHandle.setTranslationY(fastScroller.getPaddingTop());
             }
 
-            fastScroller.setOnHandleTouchListener(new OnTouchListener() {
-                @Override
-                @SuppressLint("ClickableViewAccessibility")
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    switch (motionEvent.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            fastScrolling = true;
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            fastScrolling = false;
-                            break;
-                        default:
-                            break;
-                    }
-                    return false;
+            fastScroller.setOnHandleTouchListener((view, motionEvent) -> {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        fastScrolling = true;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        fastScrolling = false;
+                        break;
+                    default:
+                        break;
                 }
+                return false;
             });
 
             fastScroller.requestLayout();

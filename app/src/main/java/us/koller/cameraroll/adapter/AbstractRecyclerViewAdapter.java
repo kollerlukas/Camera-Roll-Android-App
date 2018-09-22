@@ -38,7 +38,7 @@ public abstract class AbstractRecyclerViewAdapter<T> extends RecyclerView.Adapte
         getSelectorManager().saveInstanceState(state);
     }
 
-    public boolean pickPhotos() {
+    protected boolean pickPhotos() {
         return pick_photos;
     }
 }

@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -23,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -94,41 +92,32 @@ public class EditImageActivity extends AppCompatActivity {
         imageView.loadImage(uri, state);
 
         final Button doneButton = findViewById(R.id.done_button);
-        doneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                done(view);
-            }
-        });
+        doneButton.setOnClickListener(this::done);
 
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
         final View actionArea = findViewById(R.id.action_area);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
 
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            toolbar.getPaddingBottom());
+                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingBottom());
 
-                    actionArea.setPadding(actionArea.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            actionArea.getPaddingTop(),
-                            actionArea.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            actionArea.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                actionArea.setPadding(actionArea.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        actionArea.getPaddingTop(),
+                        actionArea.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        actionArea.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    imageView.setPadding(imageView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            imageView.getPaddingTop()/* + insets.getSystemWindowInsetTop()*/,
-                            imageView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            imageView.getPaddingBottom()/* + insets.getSystemWindowInsetBottom()*/);
+                imageView.setPadding(imageView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        imageView.getPaddingTop()/* + insets.getSystemWindowInsetTop()*/,
+                        imageView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        imageView.getPaddingBottom()/* + insets.getSystemWindowInsetBottom()*/);
 
-                    return insets.consumeSystemWindowInsets();
-                }
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -188,56 +177,50 @@ public class EditImageActivity extends AppCompatActivity {
     public void done(View v) {
         CropImageView cropImageView = findViewById(R.id.cropImageView);
         final ExifUtil.ExifItem[] exifData = ExifUtil.retrieveExifData(this, cropImageView.getImageUri());
-        cropImageView.getCroppedBitmap(new CropImageView.OnResultListener() {
-            @Override
-            public void onResult(final CropImageView.Result result) {
-                final BottomSheetDialog dialog = new BottomSheetDialog(EditImageActivity.this);
-                @SuppressLint("InflateParams")
-                View sheetView = EditImageActivity.this.getLayoutInflater()
-                        .inflate(R.layout.edit_image_export_dialog, null);
+        cropImageView.getCroppedBitmap(result -> {
+            final BottomSheetDialog dialog = new BottomSheetDialog(EditImageActivity.this);
+            @SuppressLint("InflateParams")
+            View sheetView = EditImageActivity.this.getLayoutInflater()
+                    .inflate(R.layout.edit_image_export_dialog, null);
 
-                View save = sheetView.findViewById(R.id.save);
-                View export = sheetView.findViewById(R.id.export);
+            View save = sheetView.findViewById(R.id.save);
+            View export = sheetView.findViewById(R.id.export);
 
-                View.OnClickListener clickListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                        switch (view.getId()) {
-                            case R.id.save:
-                                saveCroppedImage(result.getImageUri(), result.getCroppedBitmap(), exifData);
-                                break;
-                            case R.id.export:
-                                EditImageActivity.this.result = result;
-                                EditImageActivity.this.exifData = exifData;
+            View.OnClickListener clickListener = view -> {
+                dialog.dismiss();
+                switch (view.getId()) {
+                    case R.id.save:
+                        saveCroppedImage(result.getImageUri(), result.getCroppedBitmap(), exifData);
+                        break;
+                    case R.id.export:
+                        EditImageActivity.this.result = result;
+                        EditImageActivity.this.exifData = exifData;
 
-                                Uri imageUri = getIntent().getData();
-                                String filename = InfoUtil.retrieveFileName(EditImageActivity.this, imageUri);
-                                if (filename == null) {
-                                    filename = "image_edit.jpeg";
-                                }
-
-                                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                                intent.setType("image/jpeg");
-                                intent.putExtra(Intent.EXTRA_TITLE, filename);
-                                startActivityForResult(intent, STORAGE_FRAMEWORK_REQUEST_CODE);
-                                break;
-                            default:
-                                break;
+                        Uri imageUri = getIntent().getData();
+                        String filename = InfoUtil.retrieveFileName(EditImageActivity.this, imageUri);
+                        if (filename == null) {
+                            filename = "image_edit.jpeg";
                         }
-                    }
-                };
 
-                save.setOnClickListener(clickListener);
-                if (imagePath == null) {
-                    save.setEnabled(false);
-                    save.setAlpha(0.5f);
+                        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                        intent.setType("image/jpeg");
+                        intent.putExtra(Intent.EXTRA_TITLE, filename);
+                        startActivityForResult(intent, STORAGE_FRAMEWORK_REQUEST_CODE);
+                        break;
+                    default:
+                        break;
                 }
-                export.setOnClickListener(clickListener);
+            };
 
-                dialog.setContentView(sheetView);
-                dialog.show();
+            save.setOnClickListener(clickListener);
+            if (imagePath == null) {
+                save.setEnabled(false);
+                save.setAlpha(0.5f);
             }
+            export.setOnClickListener(clickListener);
+
+            dialog.setContentView(sheetView);
+            dialog.show();
         });
     }
 
@@ -264,52 +247,42 @@ public class EditImageActivity extends AppCompatActivity {
 
         final String newPath = MediaStoreRetriever.getPathForUri(EditImageActivity.this, uri);
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
+        AsyncTask.execute(() -> {
+            try {
+                OutputStream outputStream;
                 try {
-                    OutputStream outputStream;
-                    try {
-                        outputStream = getContentResolver().openOutputStream(uri);
-                    } catch (SecurityException e) {
-                        outputStream = null;
-                    }
-
-                    if (outputStream != null) {
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, outputStream);
-                        outputStream.flush();
-                        outputStream.close();
-                    } else {
-                        return;
-                    }
-
-                    //save Exif-Data
-                    if (exifData != null) {
-                        ExifUtil.saveExifData(newPath, exifData);
-                    }
-
-                    //scan path
-                    if (imagePath != null) {
-                        FileOperation.Util.scanPaths(EditImageActivity.this, new String[]{newPath},
-                                new FileOperation.Util.MediaScannerCallback() {
-                                    @Override
-                                    public void onAllPathsScanned() {
-                                        Intent intent = new Intent(FileOperation.RESULT_DONE);
-                                        LocalBroadcastManager.getInstance(EditImageActivity.this).sendBroadcast(intent);
-                                    }
-                                });
-                    }
-
-                    EditImageActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(EditImageActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    outputStream = getContentResolver().openOutputStream(uri);
+                } catch (SecurityException e) {
+                    outputStream = null;
                 }
+
+                if (outputStream != null) {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                } else {
+                    return;
+                }
+
+                //save Exif-Data
+                if (exifData != null) {
+                    ExifUtil.saveExifData(newPath, exifData);
+                }
+
+                //scan path
+                if (imagePath != null) {
+                    FileOperation.Util.scanPaths(EditImageActivity.this, new String[]{newPath}, () -> {
+                        Intent intent = new Intent(FileOperation.RESULT_DONE);
+                        LocalBroadcastManager.getInstance(EditImageActivity.this).sendBroadcast(intent);
+                    });
+                }
+
+                EditImageActivity.this.runOnUiThread(() -> {
+                    Toast.makeText(EditImageActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
+                    finish();
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
     }

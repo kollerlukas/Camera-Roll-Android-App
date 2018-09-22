@@ -64,15 +64,12 @@ public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
 
         if (callback != null && dragSelectEnabled()) {
             dragSelectTouchListener = new DragSelectTouchListener()
-                    .withSelectListener(new DragSelectTouchListener.OnDragSelectListener() {
-                        @Override
-                        public void onSelectChange(int start, int end, boolean isSelected) {
-                            for (int i = start; i <= end; i++) {
-                                getSelectorManager().onItemSelect(getData()
-                                        .getAlbumItems().get(i).getPath());
-                                //update ViewHolder
-                                notifyItemChanged(i);
-                            }
+                    .withSelectListener((start, end, isSelected) -> {
+                        for (int i = start; i <= end; i++) {
+                            getSelectorManager().onItemSelect(getData()
+                                    .getAlbumItems().get(i).getPath());
+                            //update ViewHolder
+                            notifyItemChanged(i);
                         }
                     });
             recyclerView.addOnItemTouchListener(dragSelectTouchListener);
@@ -131,55 +128,49 @@ public class AlbumAdapter extends AbstractRecyclerViewAdapter<Album> {
 
         holder.itemView.setTag(albumItem.getPath());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getSelectorMode()) {
-                    onItemSelected((AlbumItemHolder) holder);
-                } else {
-                    Log.d("AlbumAdapter", "onClick: " + getData().getPath());
-                    Context context = holder.itemView.getContext();
-                    Intent intent = new Intent(context, ItemActivity.class);
-                    intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
-                    intent.putExtra(ItemActivity.ALBUM_PATH, getData().getPath());
-                    intent.putExtra(ItemActivity.ITEM_POSITION, getData().getAlbumItems().indexOf(albumItem));
+        holder.itemView.setOnClickListener(view -> {
+            if (getSelectorMode()) {
+                onItemSelected((AlbumItemHolder) holder);
+            } else {
+                Log.d("AlbumAdapter", "onClick: " + getData().getPath());
+                Context context = holder.itemView.getContext();
+                Intent intent = new Intent(context, ItemActivity.class);
+                intent.putExtra(ItemActivity.ALBUM_ITEM, albumItem);
+                intent.putExtra(ItemActivity.ALBUM_PATH, getData().getPath());
+                intent.putExtra(ItemActivity.ITEM_POSITION, getData().getAlbumItems().indexOf(albumItem));
 
-                    if (Settings.getInstance(context).showAnimations()) {
-                        ActivityOptionsCompat options =
-                                ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                        (Activity) context, holder.itemView.findViewById(R.id.image),
-                                        albumItem.getPath());
-                        ActivityCompat.startActivityForResult((Activity) context, intent,
-                                ItemActivity.VIEW_IMAGE, options.toBundle());
-                    } else {
-                        ActivityCompat.startActivityForResult((Activity) context, intent,
-                                ItemActivity.VIEW_IMAGE, null);
-                    }
+                if (Settings.getInstance(context).showAnimations()) {
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    (Activity) context, holder.itemView.findViewById(R.id.image),
+                                    albumItem.getPath());
+                    ActivityCompat.startActivityForResult((Activity) context, intent,
+                            ItemActivity.VIEW_IMAGE, options.toBundle());
+                } else {
+                    ActivityCompat.startActivityForResult((Activity) context, intent,
+                            ItemActivity.VIEW_IMAGE, null);
                 }
             }
         });
 
         if (getSelectorManager().callbacksAttached()) {
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    if (!getSelectorMode()) {
-                        setSelectorMode(true);
-                        clearSelectedItemsList();
-                    }
-
-                    onItemSelected((AlbumItemHolder) holder);
-
-                    if (dragSelectEnabled()) {
-                        //notify DragSelectTouchListener
-                        boolean selected = getSelectorManager().isItemSelected(albumItem.getPath());
-                        if (selected) {
-                            int position = getData().getAlbumItems().indexOf(albumItem);
-                            dragSelectTouchListener.startDragSelection(position);
-                        }
-                    }
-                    return true;
+            holder.itemView.setOnLongClickListener(view -> {
+                if (!getSelectorMode()) {
+                    setSelectorMode(true);
+                    clearSelectedItemsList();
                 }
+
+                onItemSelected((AlbumItemHolder) holder);
+
+                if (dragSelectEnabled()) {
+                    //notify DragSelectTouchListener
+                    boolean selected1 = getSelectorManager().isItemSelected(albumItem.getPath());
+                    if (selected1) {
+                        int position1 = getData().getAlbumItems().indexOf(albumItem);
+                        dragSelectTouchListener.startDragSelection(position1);
+                    }
+                }
+                return true;
             });
         }
     }

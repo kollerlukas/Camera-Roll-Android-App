@@ -7,11 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.ui.EditImageActivity;
 import us.koller.cameraroll.ui.ItemActivity;
-import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.ui.VideoPlayerActivity;
 

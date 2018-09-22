@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +38,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -56,25 +53,24 @@ import java.util.Map;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.item.InfoRecyclerViewAdapter;
-import us.koller.cameraroll.adapter.item.viewHolder.ViewHolder;
 import us.koller.cameraroll.adapter.item.ItemAdapter;
+import us.koller.cameraroll.adapter.item.viewHolder.ViewHolder;
+import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.fileOperations.Move;
+import us.koller.cameraroll.data.fileOperations.Rename;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
-import us.koller.cameraroll.data.fileOperations.FileOperation;
-import us.koller.cameraroll.data.fileOperations.Rename;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.models.Gif;
 import us.koller.cameraroll.data.models.Photo;
-import us.koller.cameraroll.data.models.RAWImage;
-import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Video;
-import us.koller.cameraroll.util.ParallaxTransformer;
-import us.koller.cameraroll.util.animators.ColorFade;
+import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.util.MediaType;
+import us.koller.cameraroll.util.ParallaxTransformer;
 import us.koller.cameraroll.util.SimpleTransitionListener;
 import us.koller.cameraroll.util.Util;
+import us.koller.cameraroll.util.animators.ColorFade;
 
 public class ItemActivity extends ThemeableActivity {
 
@@ -199,24 +195,20 @@ public class ItemActivity extends ThemeableActivity {
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            toolbar.getPaddingBottom());
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingBottom());
 
-                    bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            bottomBar.getPaddingTop(),
-                            bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                bottomBar.setPadding(bottomBar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        bottomBar.getPaddingTop(),
+                        bottomBar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        bottomBar.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -260,15 +252,11 @@ public class ItemActivity extends ThemeableActivity {
                 path = getIntent().getStringExtra(ALBUM_PATH);
             }
             Log.d("ItemActivity", "loadAlbum() " + path);
-            MediaProvider.loadAlbum(this, path,
-                    new MediaProvider.OnAlbumLoadedCallback() {
-                        @Override
-                        public void onAlbumLoaded(Album album) {
-                            Log.d("ItemActivity", "onAlbumLoaded()");
-                            ItemActivity.this.album = album;
-                            ItemActivity.this.onAlbumLoaded(savedInstanceState);
-                        }
-                    });
+            MediaProvider.loadAlbum(this, path, album -> {
+                Log.d("ItemActivity", "onAlbumLoaded()");
+                ItemActivity.this.album = album;
+                ItemActivity.this.onAlbumLoaded(savedInstanceState);
+            });
         } else {
             album = getIntent().getExtras().getParcelable(ALBUM);
             onAlbumLoaded(savedInstanceState);
@@ -321,15 +309,9 @@ public class ItemActivity extends ThemeableActivity {
                 //set new AlbumItem
                 albumItem = album.getAlbumItems().get(position);
                 ColorFade.fadeToolbarTitleColor(toolbar, color,
-                        new ColorFade.ToolbarTitleFadeCallback() {
-                            @Override
-                            public void setTitle(Toolbar toolbar) {
-                                toolbar.setTitle(albumItem.getName() != null ? albumItem.getName() : "");
-                            }
-                        });
+                        toolbar -> toolbar.setTitle(albumItem.getName() != null ? albumItem.getName() : ""));
 
-                ViewHolder viewHolder = ((ItemAdapter) viewPager.getAdapter())
-                        .findViewHolderByTag(albumItem.getPath());
+                ViewHolder viewHolder = ((ItemAdapter) viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
                 if (viewHolder != null) {
                     onShowViewHolder(viewHolder);
                 }
@@ -344,16 +326,12 @@ public class ItemActivity extends ThemeableActivity {
             if (viewHolder != null) {
                 onShowViewHolder(viewHolder);
             } else {
-                ((ItemAdapter) viewPager.getAdapter())
-                        .addOnInstantiateItemCallback(new ViewPagerOnInstantiateItemCallback() {
-                            @Override
-                            public boolean onInstantiateItem(ViewHolder viewHolder) {
-                                if (viewHolder.albumItem.getPath().equals(albumItem.getPath())) {
-                                    onShowViewHolder(viewHolder);
-                                    return false;
-                                }
-                                return true;
-                            }
+                ((ItemAdapter) viewPager.getAdapter()).addOnInstantiateItemCallback(viewHolder1 -> {
+                    if (viewHolder1.albumItem.getPath().equals(albumItem.getPath())) {
+                        onShowViewHolder(viewHolder1);
+                        return false;
+                    }
+                    return true;
                         });
             }
         }
@@ -560,13 +538,9 @@ public class ItemActivity extends ThemeableActivity {
         new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(getString(R.string.delete_item, albumItem.getType(this)) + "?")
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        deletePhoto();
-                    }
-                })
-                .create().show();
+                .setPositiveButton(getString(R.string.delete), (dialogInterface, i) -> deletePhoto())
+                .create()
+                .show();
     }
 
     public void deletePhoto() {
@@ -644,19 +618,15 @@ public class ItemActivity extends ThemeableActivity {
                                     @Override
                                     public void onMediaLoaded(ArrayList<Album> albums) {
                                         //reload activity
-                                        MediaProvider.loadAlbum(activity, albumPath,
-                                                new MediaProvider.OnAlbumLoadedCallback() {
-                                                    @Override
-                                                    public void onAlbumLoaded(Album album) {
-                                                        ItemActivity.this.albumItem = null;
-                                                        ItemActivity.this.album = album;
-                                                        ItemActivity.this.onAlbumLoaded(null);
+                                        MediaProvider.loadAlbum(activity, albumPath, album -> {
+                                            ItemActivity.this.albumItem = null;
+                                            ItemActivity.this.album = album;
+                                            ItemActivity.this.onAlbumLoaded(null);
 
-                                                        //notify AlbumActivity
-                                                        LocalBroadcastManager.getInstance(ItemActivity.this)
-                                                                .sendBroadcast(new Intent(AlbumActivity.ALBUM_ITEM_RENAMED));
-                                                    }
-                                                });
+                                            //notify AlbumActivity
+                                            LocalBroadcastManager.getInstance(ItemActivity.this)
+                                                    .sendBroadcast(new Intent(AlbumActivity.ALBUM_ITEM_RENAMED));
+                                        });
                                     }
 
                                     @Override
@@ -683,7 +653,7 @@ public class ItemActivity extends ThemeableActivity {
 
         final View rootView = LayoutInflater.from(this)
                 .inflate(R.layout.info_dialog_layout,
-                        (ViewGroup) findViewById(R.id.root_view), false);
+                        findViewById(R.id.root_view), false);
 
         final View loadingBar = rootView.findViewById(R.id.progress_bar);
         loadingBar.setVisibility(View.VISIBLE);
@@ -695,22 +665,14 @@ public class ItemActivity extends ThemeableActivity {
                 .setTitle(getString(R.string.info))
                 .setView(rootView)
                 .setPositiveButton(R.string.done, null)
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        infoDialog = null;
-                    }
-                });
+                .setOnDismissListener(dialogInterface -> infoDialog = null);
         if (exifSupported && !view_only) {
-            builder.setNeutralButton(R.string.edit_exif, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent =
-                            new Intent(ItemActivity.this,
-                                    ExifEditorActivity.class);
-                    intent.putExtra(ExifEditorActivity.ALBUM_ITEM, albumItem);
-                    startActivity(intent);
-                }
+            builder.setNeutralButton(R.string.edit_exif, (dialogInterface, i) -> {
+                Intent intent =
+                        new Intent(ItemActivity.this,
+                                ExifEditorActivity.class);
+                intent.putExtra(ExifEditorActivity.ALBUM_ITEM, albumItem);
+                startActivity(intent);
             });
         }
         infoDialog = builder.create();
@@ -771,12 +733,7 @@ public class ItemActivity extends ThemeableActivity {
         Drawable d = ((ImageView) v).getDrawable();
         if (d instanceof Animatable && showAnimations()) {
             ((Animatable) d).start();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    bottomBarAction(v);
-                }
-            }, (int) (400 * Util.getAnimatorSpeed(this)));
+            new Handler().postDelayed(() -> bottomBarAction(v), (int) (400 * Util.getAnimatorSpeed(this)));
         } else {
             bottomBarAction(v);
         }
@@ -838,22 +795,17 @@ public class ItemActivity extends ThemeableActivity {
     }
 
     private void showSystemUI(final boolean show) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                getWindow().getDecorView().setSystemUiVisibility(show ?
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN :
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            }
-        });
+        new Handler().post(() -> getWindow().getDecorView().setSystemUiVisibility(show ?
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN :
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY));
 
         showUI(show);
     }
@@ -909,12 +861,7 @@ public class ItemActivity extends ThemeableActivity {
                 ViewHolder viewHolder = ((ItemAdapter)
                         viewPager.getAdapter()).findViewHolderByTag(albumItem.getPath());
                 if (viewHolder != null) {
-                    viewHolder.onSharedElementExit(new ItemActivity.Callback() {
-                        @Override
-                        public void done() {
-                            setResultAndFinish();
-                        }
-                    });
+                    viewHolder.onSharedElementExit(this::setResultAndFinish);
                 }
             }
         }
@@ -976,53 +923,48 @@ public class ItemActivity extends ThemeableActivity {
                     case DATA_CHANGED:
                         final int albumItemIndex = album.getAlbumItems().indexOf(albumItem);
                         String albumPath = getIntent().getStringExtra(ALBUM_PATH);
-                        MediaProvider.loadAlbum(ItemActivity.this, albumPath,
-                                new MediaProvider.OnAlbumLoadedCallback() {
-                                    @Override
-                                    public void onAlbumLoaded(Album album) {
-                                        if (album == null) {
-                                            Toast.makeText(ItemActivity.this, "Error: Album null", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                            return;
-                                        }
-                                        int index = albumItemIndex;
-                                        ItemActivity.this.album = album;
-                                        if (index >= album.getAlbumItems().size()) {
-                                            index = album.getAlbumItems().size() - 1;
-                                        }
-                                        if (index >= 0) {
-                                            ((ItemAdapter) viewPager.getAdapter()).setAlbum(album);
-                                            albumItem = album.getAlbumItems().get(index);
-                                            viewPager.getAdapter().notifyDataSetChanged();
-                                            viewPager.setCurrentItem(index);
+                        MediaProvider.loadAlbum(ItemActivity.this, albumPath, album -> {
+                            if (album == null) {
+                                Toast.makeText(ItemActivity.this, "Error: Album null",
+                                        Toast.LENGTH_SHORT).show();
+                                finish();
+                                return;
+                            }
+                            int index = albumItemIndex;
+                            ItemActivity.this.album = album;
+                            if (index >= album.getAlbumItems().size()) {
+                                index = album.getAlbumItems().size() - 1;
+                            }
+                            if (index >= 0) {
+                                ((ItemAdapter) viewPager.getAdapter()).setAlbum(album);
+                                albumItem = album.getAlbumItems().get(index);
+                                viewPager.getAdapter().notifyDataSetChanged();
+                                viewPager.setCurrentItem(index);
 
-                                            final ActionBar actionBar = getSupportActionBar();
-                                            if (actionBar != null) {
-                                                actionBar.setTitle(albumItem.getName());
-                                            }
+                                final ActionBar actionBar = getSupportActionBar();
+                                if (actionBar != null) {
+                                    actionBar.setTitle(albumItem.getName());
+                                }
 
-                                            ItemAdapter adapter = (ItemAdapter) viewPager.getAdapter();
-                                            ViewHolder viewHolder = adapter.findViewHolderByTag(albumItem.getPath());
-                                            if (viewHolder != null) {
-                                                onShowViewHolder(viewHolder);
-                                            } else {
-                                                ((ItemAdapter) viewPager.getAdapter())
-                                                        .addOnInstantiateItemCallback(new ViewPagerOnInstantiateItemCallback() {
-                                                            @Override
-                                                            public boolean onInstantiateItem(ViewHolder viewHolder) {
-                                                                if (viewHolder.albumItem.getPath().equals(albumItem.getPath())) {
-                                                                    onShowViewHolder(viewHolder);
-                                                                    return false;
-                                                                }
-                                                                return true;
-                                                            }
-                                                        });
-                                            }
-                                        } else {
-                                            finish();
-                                        }
-                                    }
-                                });
+                                ItemAdapter adapter = (ItemAdapter) viewPager.getAdapter();
+                                ViewHolder viewHolder = adapter.findViewHolderByTag(albumItem.getPath());
+                                if (viewHolder != null) {
+                                    onShowViewHolder(viewHolder);
+                                } else {
+                                    ((ItemAdapter) viewPager.getAdapter())
+                                            .addOnInstantiateItemCallback(viewHolder1 -> {
+                                                if (viewHolder1.albumItem.getPath()
+                                                        .equals(albumItem.getPath())) {
+                                                    onShowViewHolder(viewHolder1);
+                                                    return false;
+                                                }
+                                                return true;
+                                            });
+                                }
+                            } else {
+                                finish();
+                            }
+                        });
                         break;
                     default:
                         break;

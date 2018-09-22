@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -46,23 +44,13 @@ public class ExcludePathsActivity extends ThemeableActivity {
 
     private FilesProvider filesProvider;
 
-    private OnDirectoryChangeCallback directoryChangeCallback =
-            new OnDirectoryChangeCallback() {
-                @Override
-                public void changeDir(String path) {
-                    loadDirectory(path);
-                }
-            };
-    private OnExcludedPathChange excludedPathChangeCallback =
-            new OnExcludedPathChange() {
-                @Override
-                public void onExcludedPathChange(String path, boolean exclude) {
-                    Context context = ExcludePathsActivity.this;
-                    if (exclude) {
-                        Provider.addExcludedPath(context, path);
-                    } else {
-                        Provider.removeExcludedPath(context, path);
-                    }
+    private OnDirectoryChangeCallback directoryChangeCallback = this::loadDirectory;
+    private OnExcludedPathChange excludedPathChangeCallback = (path, exclude) -> {
+        Context context = ExcludePathsActivity.this;
+        if (exclude) {
+            Provider.addExcludedPath(context, path);
+        } else {
+            Provider.removeExcludedPath(context, path);
                 }
             };
 
@@ -97,24 +85,20 @@ public class ExcludePathsActivity extends ThemeableActivity {
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            toolbar.getPaddingBottom());
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingBottom());
 
-                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop(),
-                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        recyclerView.getPaddingTop(),
+                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -185,8 +169,8 @@ public class ExcludePathsActivity extends ThemeableActivity {
     public void loadRoots() {
         StorageRoot[] storageRoots = FilesProvider.getRoots(this);
         roots = new StorageRoot(STORAGE_ROOTS);
-        for (int i = 0; i < storageRoots.length; i++) {
-            roots.addChild(storageRoots[i]);
+        for (StorageRoot storageRoot : storageRoots) {
+            roots.addChild(storageRoot);
         }
 
         currentDir = roots;
@@ -206,46 +190,33 @@ public class ExcludePathsActivity extends ThemeableActivity {
         final FilesProvider.Callback callback = new FilesProvider.Callback() {
             @Override
             public void onDirLoaded(final File_POJO dir) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        filesProvider.onDestroy();
-                        snackbar.dismiss();
-                        if (dir == null) {
-                            return;
-                        }
-                        File_POJO currentDir = removeFiles(dir);
-                        if (currentDir == null) {
-                            return;
-                        }
-                        ExcludePathsActivity.this.currentDir = currentDir;
-                        if (recyclerViewAdapter != null) {
-                            recyclerViewAdapter.setFiles(currentDir);
-                            recyclerViewAdapter.notifyDataSetChanged();
-                            onPathChanged();
-                        }
+                runOnUiThread(() -> {
+                    filesProvider.onDestroy();
+                    snackbar.dismiss();
+                    if (dir == null) {
+                        return;
+                    }
+                    File_POJO currentDir = removeFiles(dir);
+                    if (currentDir == null) {
+                        return;
+                    }
+                    ExcludePathsActivity.this.currentDir = currentDir;
+                    if (recyclerViewAdapter != null) {
+                        recyclerViewAdapter.setFiles(currentDir);
+                        recyclerViewAdapter.notifyDataSetChanged();
+                        onPathChanged();
                     }
                 });
             }
 
             @Override
             public void timeout() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
+                runOnUiThread(ExcludePathsActivity.this::finish);
             }
 
             @Override
             public void needPermission() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
+                runOnUiThread(ExcludePathsActivity.this::finish);
             }
         };
         filesProvider.loadDir(this, path, callback);
@@ -338,8 +309,7 @@ public class ExcludePathsActivity extends ThemeableActivity {
         toolbar.setBackgroundColor(toolbarColor);
         toolbar.setTitleTextColor(textColorPrimary);
 
-        if (theme.darkStatusBarIcons() &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (theme.darkStatusBarIcons() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
@@ -358,30 +328,11 @@ public class ExcludePathsActivity extends ThemeableActivity {
         private OnDirectoryChangeCallback directoryChangeCallback;
         private OnExcludedPathChange excludedPathChangeCallback;
 
-        private static class FileHolder extends
-                us.koller.cameraroll.adapter.fileExplorer.viewHolder.FileHolder {
-
-            FileHolder(View itemView) {
-                super(itemView);
-            }
-
-            @Override
-            public void setFile(File_POJO file) {
-                super.setFile(file);
-                CheckBox checkBox = itemView.findViewById(R.id.checkbox);
-                checkBox.setTag(file.getPath());
-                setOnCheckedChangeListener(null);
-                checkBox.setChecked(file.excluded);
-                ArrayList<String> excludedPaths = Provider.getExcludedPaths();
-                boolean enabled = !Provider.isDirExcludedBecauseParentDirIsExcluded(
-                        file.getPath(), excludedPaths);
-                checkBox.setEnabled(enabled);
-            }
-
-            void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
-                CheckBox checkBox = itemView.findViewById(R.id.checkbox);
-                checkBox.setOnCheckedChangeListener(onCheckedChangeListener);
-            }
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.excluded_paths_file_cover,
+                    parent, false);
+            return new FileHolder(v);
         }
 
         public RecyclerViewAdapter(OnDirectoryChangeCallback directoryChangeCallback,
@@ -400,24 +351,39 @@ public class ExcludePathsActivity extends ThemeableActivity {
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.excluded_paths_file_cover, parent, false);
-            return new FileHolder(v);
-        }
-
-        @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             final File_POJO file = files.getChildren().get(position);
 
             ((FileHolder) holder).setFile(file);
             ((FileHolder) holder).setOnCheckedChangeListener(this);
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    directoryChangeCallback.changeDir(file.getPath());
-                }
-            });
+            holder.itemView.setOnClickListener(view -> directoryChangeCallback.changeDir(file.getPath()));
+        }
+
+        private static class FileHolder extends
+                us.koller.cameraroll.adapter.fileExplorer.viewHolder.FileHolder {
+
+            FileHolder(View itemView) {
+                super(itemView);
+            }
+
+            @Override
+            public void setFile(File_POJO file) {
+                super.setFile(file);
+                CheckBox checkBox = itemView.findViewById(R.id.checkbox);
+                checkBox.setTag(file.getPath());
+                setOnCheckedChangeListener(null);
+                checkBox.setChecked(file.excluded);
+                ArrayList<String> excludedPaths = Provider.getExcludedPaths();
+                boolean enabled = Provider.isDirExcludedBecauseParentDirIsExcluded(
+                        file.getPath(), excludedPaths);
+                checkBox.setEnabled(enabled);
+            }
+
+            void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
+                CheckBox checkBox = itemView.findViewById(R.id.checkbox);
+                checkBox.setOnCheckedChangeListener(onCheckedChangeListener);
+            }
         }
 
         @Override

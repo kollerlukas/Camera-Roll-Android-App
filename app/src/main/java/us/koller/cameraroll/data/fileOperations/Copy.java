@@ -118,8 +118,8 @@ public class Copy extends FileOperation {
 
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                copyFilesRecursively(context, treeUri, files[i].getPath(),
+            for (File file1 : files) {
+                copyFilesRecursively(context, treeUri, file1.getPath(),
                         destination + "/" + new File(destinationFilePath).getName() + "/", result);
             }
         }

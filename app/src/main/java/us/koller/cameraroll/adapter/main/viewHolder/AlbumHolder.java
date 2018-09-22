@@ -142,9 +142,6 @@ public abstract class AlbumHolder extends RecyclerView.ViewHolder {
     }
 
     public Context getContext() {
-        if (itemView == null) {
-            return null;
-        }
         return itemView.getContext();
     }
 }

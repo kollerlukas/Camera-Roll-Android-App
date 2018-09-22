@@ -1,13 +1,11 @@
 package us.koller.cameraroll.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.media.ExifInterface;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
@@ -24,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -131,24 +128,20 @@ public class ExifEditorActivity extends ThemeableActivity {
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            toolbar.getPaddingBottom());
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingBottom());
 
-                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop(),
-                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        recyclerView.getPaddingTop(),
+                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -209,25 +202,15 @@ public class ExifEditorActivity extends ThemeableActivity {
             case R.id.clear_exif_data:
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.clear_exif_data)
-                        .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                // remove all Exif data
-                                ExifUtil.removeExifData(exifInterface, new ExifUtil.Callback() {
-                                    @Override
-                                    public void done(final boolean success) {
-                                        ExifEditorActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                int stringRes = success ? R.string.changes_saved : R.string.error;
-                                                Toast.makeText(ExifEditorActivity.this, stringRes, Toast.LENGTH_SHORT).show();
-                                                RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                                                recyclerView.getAdapter().notifyDataSetChanged();
-                                            }
-                                        });
-                                    }
-                                });
-                            }
+                        .setPositiveButton(R.string.remove, (dialogInterface, i) -> {
+                            // remove all Exif data
+                            ExifUtil.removeExifData(exifInterface, success ->
+                                    ExifEditorActivity.this.runOnUiThread(() -> {
+                                        int stringRes = success ? R.string.changes_saved : R.string.error;
+                                        Toast.makeText(ExifEditorActivity.this, stringRes, Toast.LENGTH_SHORT).show();
+                                        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+                                        recyclerView.getAdapter().notifyDataSetChanged();
+                                    }));
                         })
                         .setNegativeButton(R.string.cancel, null)
                         .create().show();
@@ -245,26 +228,15 @@ public class ExifEditorActivity extends ThemeableActivity {
     }
 
     public void saveChanges() {
-        ExifUtil.saveChanges(exifInterface, editedItems, new ExifUtil.Callback() {
-            @Override
-            public void done(final boolean success) {
-                ExifEditorActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ExifEditorActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                int stringRes = success ? R.string.changes_saved : R.string.error;
-                                Toast.makeText(ExifEditorActivity.this, stringRes, Toast.LENGTH_SHORT).show();
-                                if (success) {
-                                    showSaveButton(false);
-                                }
+        ExifUtil.saveChanges(exifInterface, editedItems, success ->
+                ExifEditorActivity.this.runOnUiThread(() ->
+                        ExifEditorActivity.this.runOnUiThread(() -> {
+                            int stringRes = success ? R.string.changes_saved : R.string.error;
+                            Toast.makeText(ExifEditorActivity.this, stringRes, Toast.LENGTH_SHORT).show();
+                            if (success) {
+                                showSaveButton(false);
                             }
-                        });
-                    }
-                });
-            }
-        });
+                        })));
     }
 
     @Override
@@ -289,8 +261,7 @@ public class ExifEditorActivity extends ThemeableActivity {
         toolbar.setBackgroundColor(toolbarColor);
         toolbar.setTitleTextColor(textColorPrimary);
 
-        if (theme.darkStatusBarIcons() &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (theme.darkStatusBarIcons() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 

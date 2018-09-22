@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
@@ -41,7 +40,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.ArrayList;
@@ -49,27 +47,27 @@ import java.util.List;
 import java.util.Map;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.data.fileOperations.Move;
-import us.koller.cameraroll.data.models.VirtualAlbum;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.album.AlbumAdapter;
+import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.fileOperations.Move;
+import us.koller.cameraroll.data.fileOperations.Rename;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
-import us.koller.cameraroll.data.fileOperations.FileOperation;
-import us.koller.cameraroll.data.fileOperations.Rename;
 import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.data.models.VirtualAlbum;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.data.provider.Provider;
-import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.widget.FastScrollerRecyclerView;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.SwipeBackCoordinatorLayout;
+import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 import us.koller.cameraroll.util.StorageUtil;
-import us.koller.cameraroll.util.animators.ColorFade;
-import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.Util;
+import us.koller.cameraroll.util.animators.ColorFade;
 
 public class AlbumActivity extends ThemeableActivity
         implements SwipeBackCoordinatorLayout.OnSwipeListener, SelectorModeManager.Callback {
@@ -134,8 +132,7 @@ public class AlbumActivity extends ThemeableActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
-        pick_photos = getIntent().getAction() != null
-                && getIntent().getAction().equals(MainActivity.PICK_PHOTOS);
+        pick_photos = getIntent().getAction() != null && getIntent().getAction().equals(MainActivity.PICK_PHOTOS);
         allowMultiple = getIntent().getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
 
         MediaProvider.checkPermission(this);
@@ -194,14 +191,11 @@ public class AlbumActivity extends ThemeableActivity
             Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
         }
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (recyclerViewAdapter != null && recyclerViewAdapter.isSelectorModeActive()) {
-                    recyclerViewAdapter.cancelSelectorMode(null);
-                } else {
-                    onBackPressed();
-                }
+        toolbar.setNavigationOnClickListener(view -> {
+            if (recyclerViewAdapter != null && recyclerViewAdapter.isSelectorModeActive()) {
+                recyclerViewAdapter.cancelSelectorMode(null);
+            } else {
+                onBackPressed();
             }
         });
 
@@ -226,8 +220,7 @@ public class AlbumActivity extends ThemeableActivity
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (recyclerViewAdapter.isSelectorModeActive()
-                        || pick_photos) {
+                if (recyclerViewAdapter.isSelectorModeActive() || pick_photos) {
                     return;
                 }
 
@@ -239,8 +232,7 @@ public class AlbumActivity extends ThemeableActivity
                     }
                 } else if (translationY > 0) {
                     translationY = 0;
-                    if (theme.elevatedToolbar() &&
-                            !recyclerView.canScrollVertically(-1)) {
+                    if (theme.elevatedToolbar() && !recyclerView.canScrollVertically(-1)) {
                         toolbar.setActivated(false);
                     }
                 }
@@ -283,32 +275,28 @@ public class AlbumActivity extends ThemeableActivity
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd(),
-                            toolbar.getPaddingBottom());
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                toolbar.setPadding(toolbar.getPaddingStart(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd(),
+                        toolbar.getPaddingBottom());
 
-                    ViewGroup.MarginLayoutParams toolbarParams
-                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                    toolbar.setLayoutParams(toolbarParams);
+                ViewGroup.MarginLayoutParams toolbarParams
+                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                toolbar.setLayoutParams(toolbarParams);
 
-                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    fab.setTranslationY(-insets.getSystemWindowInsetBottom());
-                    fab.setTranslationX(-insets.getSystemWindowInsetRight());
+                fab.setTranslationY(-insets.getSystemWindowInsetBottom());
+                fab.setTranslationX(-insets.getSystemWindowInsetRight());
 
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -363,14 +351,10 @@ public class AlbumActivity extends ThemeableActivity
         } else {
             path = getIntent().getStringExtra(ALBUM_PATH);
         }
-        MediaProvider.loadAlbum(this, path,
-                new MediaProvider.OnAlbumLoadedCallback() {
-                    @Override
-                    public void onAlbumLoaded(Album album) {
-                        AlbumActivity.this.album = album;
-                        AlbumActivity.this.onAlbumLoaded(savedInstanceState);
-                    }
-                });
+        MediaProvider.loadAlbum(this, path, album -> {
+            AlbumActivity.this.album = album;
+            AlbumActivity.this.onAlbumLoaded(savedInstanceState);
+        });
 
     }
 
@@ -415,7 +399,7 @@ public class AlbumActivity extends ThemeableActivity
             menu.findItem(R.id.rename).setVisible(false);
         } else {
             //setup exclude checkbox
-            boolean enabled = !Provider
+            boolean enabled = Provider
                     .isDirExcludedBecauseParentDirIsExcluded(album.getPath(),
                             Provider.getExcludedPaths());
             menu.findItem(R.id.exclude).setEnabled(enabled);
@@ -574,14 +558,10 @@ public class AlbumActivity extends ThemeableActivity
                                     @Override
                                     public void onMediaLoaded(ArrayList<Album> albums) {
                                         //reload activity
-                                        MediaProvider.loadAlbum(activity, newFilePath,
-                                                new MediaProvider.OnAlbumLoadedCallback() {
-                                                    @Override
-                                                    public void onAlbumLoaded(Album album) {
-                                                        AlbumActivity.this.album = album;
-                                                        AlbumActivity.this.onAlbumLoaded(null);
-                                                    }
-                                                });
+                                        MediaProvider.loadAlbum(activity, newFilePath, album -> {
+                                            AlbumActivity.this.album = album;
+                                            AlbumActivity.this.onAlbumLoaded(null);
+                                        });
                                     }
 
                                     @Override
@@ -657,15 +637,12 @@ public class AlbumActivity extends ThemeableActivity
 
         //noinspection deprecation
         snackbar = Snackbar.make(findViewById(R.id.root_view), message, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        for (int i = 0; i < deletedItems.length; i++) {
-                            AlbumItem albumItem = deletedItems[i];
-                            int index = indices[i];
-                            album.getAlbumItems().add(index, albumItem);
-                            recyclerViewAdapter.notifyItemInserted(index);
-                        }
+                .setAction(R.string.undo, view -> {
+                    for (int i = 0; i < deletedItems.length; i++) {
+                        AlbumItem albumItem = deletedItems[i];
+                        int index = indices[i];
+                        album.getAlbumItems().add(index, albumItem);
+                        recyclerViewAdapter.notifyItemInserted(index);
                     }
                 })
                 .setCallback(new Snackbar.Callback() {
@@ -788,25 +765,22 @@ public class AlbumActivity extends ThemeableActivity
                 ((Animatable) navIcon).start();
                 ColorFade.fadeDrawableColor(navIcon, textColorSecondary, accentTextColor);
             }
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Drawable d;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                                ContextCompat.getDrawable(AlbumActivity.this,
-                                        R.drawable.cancel_to_back_avd);
-                        //mutating avd to reset it
-                        drawable.mutate();
-                        d = drawable;
-                    } else {
-                        d = ContextCompat.getDrawable(AlbumActivity.this,
-                                R.drawable.ic_clear_white);
-                    }
-                    d = DrawableCompat.wrap(d);
-                    DrawableCompat.setTint(d.mutate(), accentTextColor);
-                    toolbar.setNavigationIcon(d);
+            new Handler().postDelayed(() -> {
+                Drawable d;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                            ContextCompat.getDrawable(AlbumActivity.this,
+                                    R.drawable.cancel_to_back_avd);
+                    //mutating avd to reset it
+                    drawable.mutate();
+                    d = drawable;
+                } else {
+                    d = ContextCompat.getDrawable(AlbumActivity.this,
+                            R.drawable.ic_clear_white);
                 }
+                d = DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d.mutate(), accentTextColor);
+                toolbar.setNavigationIcon(d);
             }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
         } else {
             toolbar.setBackgroundColor(accentColor);
@@ -843,13 +817,7 @@ public class AlbumActivity extends ThemeableActivity
 
         ColorFade.fadeBackgroundColor(toolbar, accentColor, toolbarColor);
 
-        ColorFade.fadeToolbarTitleColor(toolbar, textColorPrimary,
-                new ColorFade.ToolbarTitleFadeCallback() {
-                    @Override
-                    public void setTitle(Toolbar toolbar) {
-                        toolbar.setTitle(album.getName());
-                    }
-                });
+        ColorFade.fadeToolbarTitleColor(toolbar, textColorPrimary, toolbar1 -> toolbar1.setTitle(album.getName()));
 
         final Drawable selectAll = menu.findItem(R.id.select_all).getIcon();
         ColorFade.fadeDrawableAlpha(selectAll, 0);
@@ -862,27 +830,24 @@ public class AlbumActivity extends ThemeableActivity
             ((Animatable) navIcon).start();
             ColorFade.fadeDrawableColor(navIcon, accentTextColor, textColorSecondary);
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Drawable d;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
-                            ContextCompat.getDrawable(AlbumActivity.this,
-                                    R.drawable.back_to_cancel_avd);
-                    //mutating avd to reset it
-                    drawable.mutate();
-                    d = drawable;
-                } else {
-                    d = ContextCompat.getDrawable(AlbumActivity.this,
-                            R.drawable.ic_arrow_back_white);
-                }
-                d = DrawableCompat.wrap(d);
-                DrawableCompat.setTint(d.mutate(), textColorSecondary);
-                toolbar.setNavigationIcon(d);
-                handleMenuVisibilityForSelectorMode(false);
-                selectAll.setAlpha(100);
+        new Handler().postDelayed(() -> {
+            Drawable d;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                        ContextCompat.getDrawable(AlbumActivity.this,
+                                R.drawable.back_to_cancel_avd);
+                //mutating avd to reset it
+                drawable.mutate();
+                d = drawable;
+            } else {
+                d = ContextCompat.getDrawable(AlbumActivity.this,
+                        R.drawable.ic_arrow_back_white);
             }
+            d = DrawableCompat.wrap(d);
+            DrawableCompat.setTint(d.mutate(), textColorSecondary);
+            toolbar.setNavigationIcon(d);
+            handleMenuVisibilityForSelectorMode(false);
+            selectAll.setAlpha(100);
         }, navIcon instanceof Animatable ? (int) (500 * Util.getAnimatorSpeed(this)) : 0);
 
         if (!pick_photos) {
@@ -895,13 +860,7 @@ public class AlbumActivity extends ThemeableActivity
         if (selectedItemCount != 0) {
             Toolbar toolbar = findViewById(R.id.toolbar);
             final String title = getString(R.string.selected_count, selectedItemCount);
-            ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor,
-                    new ColorFade.ToolbarTitleFadeCallback() {
-                        @Override
-                        public void setTitle(Toolbar toolbar) {
-                            toolbar.setTitle(title);
-                        }
-                    });
+            ColorFade.fadeToolbarTitleColor(toolbar, accentTextColor, toolbar1 -> toolbar1.setTitle(title));
         }
 
         if (selectedItemCount > 0) {
@@ -926,12 +885,10 @@ public class AlbumActivity extends ThemeableActivity
         new AlertDialog.Builder(AlbumActivity.this, theme.getDialogThemeRes())
                 .setTitle(getString(R.string.delete_files, selected_items.length) + "?")
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        deleteAlbumItemsSnackbar(selected_items);
-                    }
-                }).create().show();
+                .setPositiveButton(getString(R.string.delete), (dialogInterface, i) ->
+                        deleteAlbumItemsSnackbar(selected_items))
+                .create()
+                .show();
     }
 
     public void fabClicked() {
@@ -948,8 +905,8 @@ public class AlbumActivity extends ThemeableActivity
         //share multiple items
         String[] selected_items_paths = recyclerViewAdapter.cancelSelectorMode(this);
         ArrayList<Uri> uris = new ArrayList<>();
-        for (int i = 0; i < selected_items_paths.length; i++) {
-            uris.add(StorageUtil.getContentUri(this, selected_items_paths[i]));
+        for (String selected_items_path : selected_items_paths) {
+            uris.add(StorageUtil.getContentUri(this, selected_items_path));
         }
 
         Intent intent = new Intent()
@@ -967,18 +924,12 @@ public class AlbumActivity extends ThemeableActivity
     public void animateFab(final boolean show, boolean click) {
         final FloatingActionButton fab = findViewById(R.id.fab);
 
-        if ((fab.getScaleX() == 1.0f && show)
-                || (fab.getScaleX() == 0.0f && !show)) {
+        if ((fab.getScaleX() == 1.0f && show) || (fab.getScaleX() == 0.0f && !show)) {
             return;
         }
 
         if (show) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    fabClicked();
-                }
-            });
+            fab.setOnClickListener(view -> fabClicked());
         } else {
             fab.setOnClickListener(null);
         }
@@ -1158,14 +1109,10 @@ public class AlbumActivity extends ThemeableActivity
                     case ALBUM_ITEM_RENAMED:
                     case DATA_CHANGED:
                         String albumPath = getIntent().getStringExtra(ALBUM_PATH);
-                        MediaProvider.loadAlbum(AlbumActivity.this, albumPath,
-                                new MediaProvider.OnAlbumLoadedCallback() {
-                                    @Override
-                                    public void onAlbumLoaded(Album album) {
-                                        AlbumActivity.this.album = album;
-                                        AlbumActivity.this.onAlbumLoaded(null);
-                                    }
-                                });
+                        MediaProvider.loadAlbum(AlbumActivity.this, albumPath, album -> {
+                            AlbumActivity.this.album = album;
+                            AlbumActivity.this.onAlbumLoaded(null);
+                        });
                         break;
                     default:
                         break;

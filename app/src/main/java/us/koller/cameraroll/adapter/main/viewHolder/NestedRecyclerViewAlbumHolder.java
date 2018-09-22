@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -27,14 +26,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.adapter.album.AlbumAdapter;
-import us.koller.cameraroll.data.models.AlbumItem;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
-import us.koller.cameraroll.data.models.Album;
-import us.koller.cameraroll.data.fileOperations.FileOperation;
-import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.adapter.album.AlbumAdapter;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.models.AlbumItem;
+import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.FileOperationDialogActivity;
 import us.koller.cameraroll.ui.widget.EqualSpacesItemDecoration;
@@ -59,20 +58,13 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     private SelectorModeManager manager;
 
-
     private SelectorModeManager.OnBackPressedCallback onBackPressedCallback
-            = new SelectorModeManager.OnBackPressedCallback() {
-        @Override
-        public void cancelSelectorMode() {
-            NestedRecyclerViewAlbumHolder.this.cancelSelectorMode();
-        }
-    };
+            = NestedRecyclerViewAlbumHolder.this::cancelSelectorMode;
 
     abstract class SelectorCallback implements SelectorModeManager.Callback {
     }
 
-    private SelectorCallback callback
-            = new SelectorCallback() {
+    private SelectorCallback callback = new SelectorCallback() {
         @Override
         public void onSelectorModeEnter() {
             final View rootView = ((Activity) nestedRecyclerView.getContext())
@@ -86,13 +78,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 Util.setLightStatusBarIcons(rootView);
             }
 
-            View.OnClickListener onClickListener
-                    = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    cancelSelectorMode();
-                }
-            };
+            View.OnClickListener onClickListener = view -> cancelSelectorMode();
 
             //create selector-toolbar
             final Toolbar selectorToolbar = SelectorModeUtil.getSelectorModeToolbar(
@@ -164,12 +150,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
             ColorFade.fadeToolbarTitleColor(toolbar,
                     theme.getAccentTextColor(getContext()),
-                    new ColorFade.ToolbarTitleFadeCallback() {
-                        @Override
-                        public void setTitle(Toolbar toolbar) {
-                            toolbar.setTitle(title);
-                        }
-                    });
+                    toolbar1 -> toolbar1.setTitle(title));
         }
     };
 
@@ -294,8 +275,7 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        final String[] paths = ((NestedAdapter) nestedRecyclerView.getAdapter())
-                .cancelSelectorMode((Activity) getContext());
+        final String[] paths = ((NestedAdapter) nestedRecyclerView.getAdapter()).cancelSelectorMode((Activity) getContext());
 
         cancelSelectorMode();
 
@@ -311,8 +291,8 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
             case R.id.share:
                 //share multiple items
                 ArrayList<Uri> uris = new ArrayList<>();
-                for (int i = 0; i < paths.length; i++) {
-                    uris.add(StorageUtil.getContentUri(getContext(), paths[i]));
+                for (String path : paths) {
+                    uris.add(StorageUtil.getContentUri(getContext(), path));
                 }
 
                 intent = new Intent();
@@ -352,13 +332,9 @@ public class NestedRecyclerViewAlbumHolder extends AlbumHolder
                 new AlertDialog.Builder(c, theme.getDialogThemeRes())
                         .setTitle(title)
                         .setNegativeButton(c.getString(R.string.no), null)
-                        .setPositiveButton(c.getString(R.string.delete), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                deleteItems(paths);
-                            }
-                        })
-                        .create().show();
+                        .setPositiveButton(c.getString(R.string.delete), (dialogInterface, i) -> deleteItems(paths))
+                        .create()
+                        .show();
                 break;
             default:
                 break;

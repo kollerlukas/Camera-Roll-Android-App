@@ -22,8 +22,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.themes.Theme;
 
 public abstract class ThemeableActivity extends BaseActivity {
 
@@ -141,7 +141,7 @@ public abstract class ThemeableActivity extends BaseActivity {
     }
 
     private static ArrayList<View> findViewsWithTag(String TAG, ViewGroup rootView) {
-        return findViewsWithTag(TAG, rootView, new ArrayList<View>());
+        return findViewsWithTag(TAG, rootView, new ArrayList<>());
     }
 
     private static ArrayList<View> findViewsWithTag(String TAG, ViewGroup rootView,
@@ -218,13 +218,10 @@ public abstract class ThemeableActivity extends BaseActivity {
     public void addStatusBarOverlay(final Toolbar toolbar) {
         int statusBarColor = getStatusBarColor();
         statusBarOverlay = new ColorDrawable(statusBarColor);
-        toolbar.post(new Runnable() {
-            @Override
-            public void run() {
-                statusBarOverlay.setBounds(new Rect(0, 0,
-                        toolbar.getWidth(), toolbar.getPaddingTop()));
-                toolbar.getOverlay().add(statusBarOverlay);
-            }
+        toolbar.post(() -> {
+            statusBarOverlay.setBounds(new Rect(0, 0,
+                    toolbar.getWidth(), toolbar.getPaddingTop()));
+            toolbar.getOverlay().add(statusBarOverlay);
         });
     }
 

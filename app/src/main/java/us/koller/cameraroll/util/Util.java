@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -12,7 +11,6 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.media.ExifInterface;
 import android.support.v4.content.res.ResourcesCompat;
@@ -21,8 +19,6 @@ import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +29,8 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.themes.Theme;
 
 public class Util {
 
@@ -124,24 +120,13 @@ public class Util {
 
     public static void setDarkStatusBarIcons(final View v) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            v.post(new Runnable() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                public void run() {
-                    v.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                }
-            });
+            v.post(() -> v.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR));
         }
     }
 
     public static void setLightStatusBarIcons(final View v) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            v.post(new Runnable() {
-                @Override
-                public void run() {
-                    v.setSystemUiVisibility(0);
-                }
-            });
+            v.post(() -> v.setSystemUiVisibility(0));
         }
     }
 
@@ -163,12 +148,9 @@ public class Util {
         Snackbar snackbar = Snackbar.make(rootView,
                 R.string.read_permission_denied,
                 Snackbar.LENGTH_INDEFINITE);
-        snackbar.getView().setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(rootView.getContext(), R.string.read_permission_denied, Toast.LENGTH_SHORT).show();
-                return false;
-            }
+        snackbar.getView().setOnLongClickListener(view -> {
+            Toast.makeText(rootView.getContext(), R.string.read_permission_denied, Toast.LENGTH_SHORT).show();
+            return false;
         });
         return snackbar;
     }

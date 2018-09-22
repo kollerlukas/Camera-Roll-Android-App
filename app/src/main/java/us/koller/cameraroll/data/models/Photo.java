@@ -13,7 +13,6 @@ public class Photo extends AlbumItem implements Parcelable {
     private Serializable imageViewSavedState;
 
     Photo() {
-
     }
 
     Photo(Parcel parcel) {

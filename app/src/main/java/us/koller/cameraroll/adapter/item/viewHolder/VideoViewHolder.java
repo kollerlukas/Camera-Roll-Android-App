@@ -25,12 +25,7 @@ public class VideoViewHolder extends ViewHolder {
 
         ItemViewUtil.bindTransitionView((ImageView) view, albumItem);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ItemActivity.videoOnClick(view.getContext(), albumItem);
-            }
-        });
+        view.setOnClickListener(view1 -> ItemActivity.videoOnClick(view1.getContext(), albumItem));
         return v;
     }
 
@@ -46,30 +41,22 @@ public class VideoViewHolder extends ViewHolder {
             return;
         }
 
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                int dimen = (int) view.getContext().getResources()
-                        .getDimension(R.dimen.twenty_four_dp) * 2;
+        view.post(() -> {
+            int dimen = (int) view.getContext().getResources()
+                    .getDimension(R.dimen.twenty_four_dp) * 2;
 
-                int left = view.getWidth() / 2 - dimen / 2;
-                int top = view.getHeight() / 2 - dimen / 2;
+            int left = view.getWidth() / 2 - dimen / 2;
+            int top = view.getHeight() / 2 - dimen / 2;
 
-                playOverlay.setBounds(left, top, left + dimen, top + dimen);
-                view.getOverlay().add(playOverlay);
-            }
+            playOverlay.setBounds(left, top, left + dimen, top + dimen);
+            view.getOverlay().add(playOverlay);
         });
     }
 
     @Override
     public void onSharedElementExit(final ItemActivity.Callback callback) {
         final View view = itemView.findViewById(R.id.image);
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                view.getOverlay().clear();
-            }
-        });
+        view.post(view.getOverlay()::clear);
         callback.done();
     }
 }

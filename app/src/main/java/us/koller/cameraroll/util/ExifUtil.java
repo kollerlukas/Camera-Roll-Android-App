@@ -683,8 +683,7 @@ public class ExifUtil {
     public static void saveExifData(String path, ExifItem[] exifData) {
         try {
             ExifInterface exif = new ExifInterface(path);
-            for (int i = 0; i < exifData.length; i++) {
-                ExifItem exifItem = exifData[i];
+            for (ExifItem exifItem : exifData) {
                 exif.setAttribute(exifItem.getTag(), exifItem.getValue());
             }
             exif.saveAttributes();
@@ -721,23 +720,20 @@ public class ExifUtil {
         if (exifInterface == null) {
             return;
         }
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                boolean success = true;
-                for (ExifItem item : editedItems) {
-                    exifInterface.setAttribute(item.getTag(), item.getValue());
-                }
-                try {
-                    exifInterface.saveAttributes();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    success = false;
-                }
+        AsyncTask.execute(() -> {
+            boolean success = true;
+            for (ExifItem item : editedItems) {
+                exifInterface.setAttribute(item.getTag(), item.getValue());
+            }
+            try {
+                exifInterface.saveAttributes();
+            } catch (IOException e) {
+                e.printStackTrace();
+                success = false;
+            }
 
-                if (callback != null) {
-                    callback.done(success);
-                }
+            if (callback != null) {
+                callback.done(success);
             }
         });
     }
@@ -751,24 +747,21 @@ public class ExifUtil {
         if (exifInterface == null) {
             return;
         }
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                boolean success = true;
-                // remove all Exif data
-                for (String tag : valuesToRemove) {
-                    exifInterface.setAttribute(tag, null);
-                }
-                try {
-                    exifInterface.saveAttributes();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    success = false;
-                }
+        AsyncTask.execute(() -> {
+            boolean success = true;
+            // remove all Exif data
+            for (String tag : valuesToRemove) {
+                exifInterface.setAttribute(tag, null);
+            }
+            try {
+                exifInterface.saveAttributes();
+            } catch (IOException e) {
+                e.printStackTrace();
+                success = false;
+            }
 
-                if (callback != null) {
-                    callback.done(success);
-                }
+            if (callback != null) {
+                callback.done(success);
             }
         });
     }

@@ -51,21 +51,18 @@ public class DateTakenRetriever {
     }
 
     private void startRetrieving(final Context context) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                running = true;
-                while (queue.size() > 0) {
-                    AlbumItem albumItem = queue.get(0);
-                    Log.d("DateTakenRetriever", "tryToRetrieveDateTaken: " + albumItem.getName());
-                    tryToRetrieveDateTaken(context, albumItem);
-                    queue.remove(albumItem);
-                }
-                running = false;
+        AsyncTask.execute(() -> {
+            running = true;
+            while (queue.size() > 0) {
+                AlbumItem albumItem = queue.get(0);
+                Log.d("DateTakenRetriever", "tryToRetrieveDateTaken: " + albumItem.getName());
+                tryToRetrieveDateTaken(context, albumItem);
+                queue.remove(albumItem);
+            }
+            running = false;
 
-                if (getCallback() != null) {
-                    getCallback().done();
-                }
+            if (getCallback() != null) {
+                getCallback().done();
             }
         });
     }

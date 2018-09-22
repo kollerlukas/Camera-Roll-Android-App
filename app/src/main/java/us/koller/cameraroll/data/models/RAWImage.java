@@ -9,7 +9,6 @@ import us.koller.cameraroll.util.Util;
 public class RAWImage extends Photo {
 
     RAWImage() {
-
     }
 
     RAWImage(Parcel parcel) {

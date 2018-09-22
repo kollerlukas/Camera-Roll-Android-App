@@ -24,13 +24,13 @@ public class StylePreference extends DialogPreference {
 
     @SuppressWarnings("WeakerAccess")
     public StylePreference(Context context, AttributeSet attrs,
-                            int defStyleAttr) {
+                           int defStyleAttr) {
         this(context, attrs, defStyleAttr, defStyleAttr);
     }
 
     @SuppressWarnings("WeakerAccess")
     public StylePreference(Context context, AttributeSet attrs,
-                            int defStyleAttr, int defStyleRes) {
+                           int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         setDialogLayoutResource(mDialogLayoutResId);

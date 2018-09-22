@@ -54,8 +54,8 @@ public class Album
             File dir = new File(getPath());
             File[] files = dir.listFiles();
             if (files != null) {
-                for (int i = 0; i < files.length; i++) {
-                    if (files[i].getName().equals(MediaProvider.FILE_TYPE_NO_MEDIA)) {
+                for (File file : files) {
+                    if (file.getName().equals(MediaProvider.FILE_TYPE_NO_MEDIA)) {
                         hidden = HIDDEN;
                         return true;
                     }

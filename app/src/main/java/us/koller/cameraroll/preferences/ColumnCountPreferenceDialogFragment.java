@@ -14,8 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.themes.Theme;
 
 public class ColumnCountPreferenceDialogFragment
         extends DialogFragment implements DialogInterface.OnClickListener {
@@ -47,18 +47,15 @@ public class ColumnCountPreferenceDialogFragment
         final TextView textView = view.findViewById(R.id.column_count);
         textView.setText(String.valueOf(columnCount));
 
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (view.getId() == R.id.minus) {
-                    if (columnCount > 1) {
-                        columnCount--;
-                    }
-                } else {
-                    columnCount++;
+        View.OnClickListener onClickListener = view1 -> {
+            if (view1.getId() == R.id.minus) {
+                if (columnCount > 1) {
+                    columnCount--;
                 }
-                textView.setText(String.valueOf(columnCount));
+            } else {
+                columnCount++;
             }
+            textView.setText(String.valueOf(columnCount));
         };
 
         Theme theme = Settings.getInstance(getContext()).getThemeInstance(getContext());
@@ -88,8 +85,7 @@ public class ColumnCountPreferenceDialogFragment
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE
-                && preference instanceof ColumnCountPreference) {
+        if (whichButtonClicked == DialogInterface.BUTTON_POSITIVE && preference instanceof ColumnCountPreference) {
             ColumnCountPreference columnCountPreference =
                     ((ColumnCountPreference) preference);
             columnCountPreference.setColumnCount(columnCount);

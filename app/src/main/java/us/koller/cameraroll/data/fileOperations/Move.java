@@ -100,7 +100,7 @@ public class Move extends FileOperation {
     }
 
     private boolean moveFile(String path, String destination) {
-        ArrayList<String> oldPaths = Util.getAllChildPaths(new ArrayList<String>(), path);
+        ArrayList<String> oldPaths = Util.getAllChildPaths(new ArrayList<>(), path);
 
         File file = new File(path);
         File newFile = new File(destination, file.getName());
@@ -109,7 +109,7 @@ public class Move extends FileOperation {
         boolean success = renameFile(file, newFile);
 
         //re-scan all paths
-        ArrayList<String> newPaths = Util.getAllChildPaths(new ArrayList<String>(), newFile.getPath());
+        ArrayList<String> newPaths = Util.getAllChildPaths(new ArrayList<>(), newFile.getPath());
         addPathsToScan(oldPaths);
         addPathsToScan(newPaths);
         return success;

@@ -16,7 +16,6 @@ public abstract class ItemLoader {
     }
 
     ItemLoader() {
-
     }
 
     @SuppressWarnings("unused")

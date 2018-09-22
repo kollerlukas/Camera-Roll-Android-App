@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -39,18 +37,18 @@ import java.util.Map;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.AbstractRecyclerViewAdapter;
+import us.koller.cameraroll.adapter.SelectorModeManager;
+import us.koller.cameraroll.adapter.main.MainAdapter;
 import us.koller.cameraroll.adapter.main.NoFolderRecyclerViewAdapter;
+import us.koller.cameraroll.adapter.main.viewHolder.NestedRecyclerViewAlbumHolder;
 import us.koller.cameraroll.data.ContentObserver;
+import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.styles.NestedRecyclerView;
 import us.koller.cameraroll.styles.Style;
 import us.koller.cameraroll.themes.Theme;
-import us.koller.cameraroll.adapter.SelectorModeManager;
-import us.koller.cameraroll.adapter.main.MainAdapter;
-import us.koller.cameraroll.adapter.main.viewHolder.NestedRecyclerViewAlbumHolder;
-import us.koller.cameraroll.data.models.Album;
-import us.koller.cameraroll.data.fileOperations.FileOperation;
-import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.ui.widget.FastScrollerRecyclerView;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
 import us.koller.cameraroll.ui.widget.ParallaxImageView;
@@ -165,12 +163,7 @@ public class MainActivity extends ThemeableActivity {
                 DrawableCompat.setTint(navIcon.mutate(), accentTextColor);
                 toolbar.setNavigationIcon(navIcon);
             }
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    finish();
-                }
-            });
+            toolbar.setNavigationOnClickListener(view -> finish());
 
             Util.colorToolbarOverflowMenuIcon(toolbar, accentTextColor);
             if (theme.darkStatusBarIconsInSelectorMode()) {
@@ -246,8 +239,7 @@ public class MainActivity extends ThemeableActivity {
                     }
                 } else if (translationY > 0) {
                     translationY = 0;
-                    if (theme.elevatedToolbar() &&
-                            !recyclerView.canScrollVertically(-1)) {
+                    if (theme.elevatedToolbar() && !recyclerView.canScrollVertically(-1)) {
                         toolbar.setActivated(false);
                     }
                 }
@@ -270,12 +262,7 @@ public class MainActivity extends ThemeableActivity {
         });
 
         final FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fabClicked(view);
-            }
-        });
+        fab.setOnClickListener(this::fabClicked);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Drawable d = ContextCompat.getDrawable(this,
                     R.drawable.ic_camera_lens_avd);
@@ -293,83 +280,77 @@ public class MainActivity extends ThemeableActivity {
         fab.setImageDrawable(d);
 
         if (pick_photos || !settings.getCameraShortcut()) {
-            fab.setVisibility(View.GONE);
+            fab.hide();
         }
 
         //setting window insets manually
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                Log.d("MainActivity", "onApplyWindowInsets()"
+                        + "[" + insets.getSystemWindowInsetLeft() + ", " +
+                        insets.getSystemWindowInsetTop() + ", " +
+                        insets.getSystemWindowInsetRight() + ", " +
+                        insets.getSystemWindowInsetBottom() + "]");
+
+                toolbar.setPadding(toolbar.getPaddingStart(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd(),
+                        toolbar.getPaddingBottom());
+
+                ViewGroup.MarginLayoutParams toolbarParams
+                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                toolbarParams.leftMargin = insets.getSystemWindowInsetLeft();
+                toolbarParams.rightMargin = insets.getSystemWindowInsetRight();
+                toolbar.setLayoutParams(toolbarParams);
+
+                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+
+                fab.setTranslationY(-insets.getSystemWindowInsetBottom());
+                fab.setTranslationX(-insets.getSystemWindowInsetRight());
+
+                return insets.consumeSystemWindowInsets();
+            });
+        } else {
+            rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    Log.d("MainActivity", "onApplyWindowInsets()"
-                            + "[" + insets.getSystemWindowInsetLeft() + ", " +
-                            insets.getSystemWindowInsetTop() + ", " +
-                            insets.getSystemWindowInsetRight() + ", " +
-                            insets.getSystemWindowInsetBottom() + "]");
+                public void onGlobalLayout() {
+                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    // hacky way of getting window insets on pre-Lollipop
+                    // somewhat works...
+                    int[] screenSize = Util.getScreenSize(MainActivity.this);
+
+                    int[] windowInsets = new int[]{
+                            Math.abs(screenSize[0] - rootView.getLeft()),
+                            Math.abs(screenSize[1] - rootView.getTop()),
+                            Math.abs(screenSize[2] - rootView.getRight()),
+                            Math.abs(screenSize[3] - rootView.getBottom())};
 
                     toolbar.setPadding(toolbar.getPaddingStart(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                            toolbar.getPaddingTop() + windowInsets[1],
                             toolbar.getPaddingEnd(),
                             toolbar.getPaddingBottom());
 
                     ViewGroup.MarginLayoutParams toolbarParams
                             = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin = insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin = insets.getSystemWindowInsetRight();
+                    toolbarParams.leftMargin += windowInsets[0];
+                    toolbarParams.rightMargin += windowInsets[2];
                     toolbar.setLayoutParams(toolbarParams);
 
-                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                    recyclerView.setPadding(recyclerView.getPaddingStart() + windowInsets[0],
+                            recyclerView.getPaddingTop() + windowInsets[1],
+                            recyclerView.getPaddingEnd() + windowInsets[2],
+                            recyclerView.getPaddingBottom() + windowInsets[3]);
 
-                    fab.setTranslationY(-insets.getSystemWindowInsetBottom());
-                    fab.setTranslationX(-insets.getSystemWindowInsetRight());
-
-                    return insets.consumeSystemWindowInsets();
+                    fab.setTranslationX(-windowInsets[2]);
+                    fab.setTranslationY(-windowInsets[3]);
                 }
             });
-        } else {
-            rootView.getViewTreeObserver()
-                    .addOnGlobalLayoutListener(
-                            new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                    // hacky way of getting window insets on pre-Lollipop
-                                    // somewhat works...
-                                    int[] screenSize = Util.getScreenSize(MainActivity.this);
-
-                                    int[] windowInsets = new int[]{
-                                            Math.abs(screenSize[0] - rootView.getLeft()),
-                                            Math.abs(screenSize[1] - rootView.getTop()),
-                                            Math.abs(screenSize[2] - rootView.getRight()),
-                                            Math.abs(screenSize[3] - rootView.getBottom())};
-
-                                    toolbar.setPadding(toolbar.getPaddingStart(),
-                                            toolbar.getPaddingTop() + windowInsets[1],
-                                            toolbar.getPaddingEnd(),
-                                            toolbar.getPaddingBottom());
-
-                                    ViewGroup.MarginLayoutParams toolbarParams
-                                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                                    toolbarParams.leftMargin += windowInsets[0];
-                                    toolbarParams.rightMargin += windowInsets[2];
-                                    toolbar.setLayoutParams(toolbarParams);
-
-                                    recyclerView.setPadding(recyclerView.getPaddingStart() + windowInsets[0],
-                                            recyclerView.getPaddingTop() + windowInsets[1],
-                                            recyclerView.getPaddingEnd() + windowInsets[2],
-                                            recyclerView.getPaddingBottom() + windowInsets[3]);
-
-                                    fab.setTranslationX(-windowInsets[2]);
-                                    fab.setTranslationY(-windowInsets[3]);
-                                }
-                            });
         }
 
         //needed for transparent statusBar
@@ -411,17 +392,9 @@ public class MainActivity extends ThemeableActivity {
                 //postponing transition until sharedElement is laid out
                 postponeEnterTransition();
                 setExitSharedElementCallback(mCallback);
+                //sharedElement is laid out --> start transition
                 final NestedRecyclerViewAlbumHolder
-                        .StartSharedElementTransitionCallback callback =
-                        new NestedRecyclerViewAlbumHolder
-                                .StartSharedElementTransitionCallback() {
-                            @Override
-                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                            public void startPostponedEnterTransition() {
-                                //sharedElement is laid out --> start transition
-                                MainActivity.this.startPostponedEnterTransition();
-                            }
-                        };
+                        .StartSharedElementTransitionCallback callback = MainActivity.this::startPostponedEnterTransition;
 
                 final int finalIndex = index;
                 recyclerView.scrollToPosition(index);
@@ -490,19 +463,16 @@ public class MainActivity extends ThemeableActivity {
                 final ArrayList<Album> albumsWithVirtualDirs =
                         MediaProvider.getAlbumsWithVirtualDirectories(MainActivity.this);
                 if (albums != null) {
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MainActivity.this.albums = albumsWithVirtualDirs;
-                            recyclerViewAdapter.setData(albumsWithVirtualDirs);
+                    MainActivity.this.runOnUiThread(() -> {
+                        MainActivity.this.albums = albumsWithVirtualDirs;
+                        recyclerViewAdapter.setData(albumsWithVirtualDirs);
 
-                            snackbar.dismiss();
+                        snackbar.dismiss();
 
-                            if (mediaProvider != null) {
-                                mediaProvider.onDestroy();
-                            }
-                            mediaProvider = null;
+                        if (mediaProvider != null) {
+                            mediaProvider.onDestroy();
                         }
+                        mediaProvider = null;
                     });
                 }
             }
@@ -513,15 +483,12 @@ public class MainActivity extends ThemeableActivity {
                 snackbar.dismiss();
                 snackbar = Snackbar.make(findViewById(R.id.root_view),
                         R.string.loading_failed, Snackbar.LENGTH_INDEFINITE);
-                snackbar.setAction(getString(R.string.retry), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (mediaProvider != null) {
-                            mediaProvider.onDestroy();
-                        }
-                        refreshPhotos();
-                        snackbar.dismiss();
+                snackbar.setAction(getString(R.string.retry), view -> {
+                    if (mediaProvider != null) {
+                        mediaProvider.onDestroy();
                     }
+                    refreshPhotos();
+                    snackbar.dismiss();
                 });
                 Util.showSnackbar(snackbar);
 
@@ -579,8 +546,7 @@ public class MainActivity extends ThemeableActivity {
         switch (item.getItemId()) {
             case R.id.camera_shortcut:
                 Drawable d = item.getIcon();
-                if (d instanceof Animatable
-                        && !((Animatable) d).isRunning()) {
+                if (d instanceof Animatable && !((Animatable) d).isRunning()) {
                     ((Animatable) d).start();
                     fabClicked(null);
                 }
@@ -634,20 +600,14 @@ public class MainActivity extends ThemeableActivity {
         final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view),
                 "Sorting...", Snackbar.LENGTH_INDEFINITE);
         Util.showSnackbar(snackbar);
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                //SortUtil.sortAlbums(MainActivity.this, MediaProvider.getAlbums());
-                final ArrayList<Album> albums = MediaProvider.getAlbumsWithVirtualDirectories(MainActivity.this);
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainActivity.this.albums = albums;
-                        recyclerViewAdapter.setData(albums);
-                        snackbar.dismiss();
-                    }
-                });
-            }
+        AsyncTask.execute(() -> {
+            //SortUtil.sortAlbums(MainActivity.this, MediaProvider.getAlbums());
+            final ArrayList<Album> albums = MediaProvider.getAlbumsWithVirtualDirectories(MainActivity.this);
+            MainActivity.this.runOnUiThread(() -> {
+                MainActivity.this.albums = albums;
+                recyclerViewAdapter.setData(albums);
+                snackbar.dismiss();
+            });
         });
     }
 
@@ -659,16 +619,13 @@ public class MainActivity extends ThemeableActivity {
                 ((Animatable) drawable).start();
             }
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent();
-                i.setAction(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-                if (i.resolveActivity(getPackageManager()) != null) {
-                    startActivity(i);
-                } else {
-                    Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
-                }
+        new Handler().postDelayed(() -> {
+            Intent i = new Intent();
+            i.setAction(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+            if (i.resolveActivity(getPackageManager()) != null) {
+                startActivity(i);
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
             }
         }, (int) (500 * Util.getAnimatorSpeed(this)));
     }
@@ -736,14 +693,11 @@ public class MainActivity extends ThemeableActivity {
         super.onPause();
 
         observer = new ContentObserver(new Handler());
-        observer.setListener(new ContentObserver.Listener() {
-            @Override
-            public void onChange(boolean selfChange, Uri uri) {
-                Log.d("MainActivity", "onChange()");
-                MediaProvider.dataChanged = true;
-                //observer.unregister(MainActivity.this);
-                //observer = null;
-            }
+        observer.setListener((selfChange, uri) -> {
+            Log.d("MainActivity", "onChange()");
+            MediaProvider.dataChanged = true;
+            //observer.unregister(MainActivity.this);
+            //observer = null;
         });
         observer.register(this);
     }

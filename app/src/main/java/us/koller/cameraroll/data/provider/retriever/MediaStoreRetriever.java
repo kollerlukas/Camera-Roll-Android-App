@@ -69,66 +69,63 @@ public class MediaStoreRetriever extends Retriever {
             albums.addAll(hiddenAlbums);
         }
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (cursor.moveToFirst()) {
-                    String path;
-                    long dateTaken, id;
-                    int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-                    int idColumn = cursor.getColumnIndex(BaseColumns._ID);
+        AsyncTask.execute(() -> {
+            if (cursor.moveToFirst()) {
+                String path;
+                long dateTaken, id;
+                int pathColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+                int idColumn = cursor.getColumnIndex(BaseColumns._ID);
 
-                    do {
-                        path = cursor.getString(pathColumn);
-                        AlbumItem albumItem = AlbumItem.getInstance(context, path);
-                        if (albumItem != null) {
-                            //set dateTaken
-                            int dateTakenColumn = cursor.getColumnIndex(
-                                    !(albumItem instanceof Video) ?
-                                            MediaStore.Images.ImageColumns.DATE_TAKEN :
-                                            MediaStore.Video.VideoColumns.DATE_TAKEN);
-                            dateTaken = cursor.getLong(dateTakenColumn);
-                            albumItem.setDate(dateTaken);
+                do {
+                    path = cursor.getString(pathColumn);
+                    AlbumItem albumItem = AlbumItem.getInstance(context, path);
+                    if (albumItem != null) {
+                        //set dateTaken
+                        int dateTakenColumn = cursor.getColumnIndex(
+                                !(albumItem instanceof Video) ?
+                                        MediaStore.Images.ImageColumns.DATE_TAKEN :
+                                        MediaStore.Video.VideoColumns.DATE_TAKEN);
+                        dateTaken = cursor.getLong(dateTakenColumn);
+                        albumItem.setDate(dateTaken);
 
-                            id = cursor.getLong(idColumn);
-                            Uri uri = ContentUris.withAppendedId(
-                                    MediaStore.Files.getContentUri("external"), id);
-                            albumItem.setUri(uri);
+                        id = cursor.getLong(idColumn);
+                        Uri uri = ContentUris.withAppendedId(
+                                MediaStore.Files.getContentUri("external"), id);
+                        albumItem.setUri(uri);
 
-                            //search bucket
-                            boolean foundBucket = false;
-                            for (int i = 0; i < albums.size(); i++) {
-                                if (albums.get(i).getPath().equals(FileOperation.Util.getParentPath(path))) {
-                                    albums.get(i).getAlbumItems().add(0, albumItem);
-                                    foundBucket = true;
-                                    break;
-                                }
-                            }
-
-                            if (!foundBucket) {
-                                //no bucket found
-                                String bucketPath = FileOperation.Util.getParentPath(path);
-                                if (bucketPath != null) {
-                                    albums.add(new Album().setPath(bucketPath));
-                                    albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
-                                }
+                        //search bucket
+                        boolean foundBucket = false;
+                        for (int i = 0; i < albums.size(); i++) {
+                            if (albums.get(i).getPath().equals(FileOperation.Util.getParentPath(path))) {
+                                albums.get(i).getAlbumItems().add(0, albumItem);
+                                foundBucket = true;
+                                break;
                             }
                         }
 
-                    } while (cursor.moveToNext());
+                        if (!foundBucket) {
+                            //no bucket found
+                            String bucketPath = FileOperation.Util.getParentPath(path);
+                            if (bucketPath != null) {
+                                albums.add(new Album().setPath(bucketPath));
+                                albums.get(albums.size() - 1).getAlbumItems().add(0, albumItem);
+                            }
+                        }
+                    }
 
-                }
-                cursor.close();
+                } while (cursor.moveToNext());
 
-                //done loading media with content resolver
-                MediaProvider.OnMediaLoadedCallback callback = getCallback();
-                if (callback != null) {
-                    callback.onMediaLoaded(albums);
-                }
-
-                Log.d("MediaStoreRetriever", "onMediaLoaded(): "
-                        + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
             }
+            cursor.close();
+
+            //done loading media with content resolver
+            MediaProvider.OnMediaLoadedCallback callback = getCallback();
+            if (callback != null) {
+                callback.onMediaLoaded(albums);
+            }
+
+            Log.d("MediaStoreRetriever", "onMediaLoaded(): "
+                    + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
         });
     }
 
@@ -176,8 +173,8 @@ public class MediaStoreRetriever extends Retriever {
                 File[] files = dir.listFiles();
 
                 if (files != null) {
-                    for (int i = 0; i < files.length; i++) {
-                        AlbumItem albumItem = AlbumItem.getInstance(files[i].getPath());
+                    for (File file : files) {
+                        AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
                         if (albumItem != null) {
                             album.getAlbumItems().add(albumItem);
                         }
@@ -212,5 +209,4 @@ public class MediaStoreRetriever extends Retriever {
             return null;
         }
     }
-
 }

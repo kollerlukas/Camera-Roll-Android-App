@@ -119,8 +119,8 @@ public class MediaType {
         if (path == null) {
             return false;
         }
-        for (int i = 0; i < extensions.length; i++) {
-            if (path.toLowerCase().endsWith(extensions[i])) {
+        for (String extension : extensions) {
+            if (path.toLowerCase().endsWith(extension)) {
                 return true;
             }
         }

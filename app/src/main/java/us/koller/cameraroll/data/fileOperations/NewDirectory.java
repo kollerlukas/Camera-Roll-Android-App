@@ -49,12 +49,8 @@ public class NewDirectory extends FileOperation {
             if (!result) {
                 sendFailedBroadcast(workIntent, file.getPath());
             } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), getString(R.string.successfully_created_new_folder), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(),
+                        getString(R.string.successfully_created_new_folder), Toast.LENGTH_SHORT).show());
             }
         }
     }

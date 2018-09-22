@@ -3,7 +3,6 @@ package us.koller.cameraroll.data.fileOperations;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
@@ -19,9 +18,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
-import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.BaseActivity;
 import us.koller.cameraroll.util.StorageUtil;
 
@@ -62,13 +61,9 @@ public class Rename extends FileOperation {
             if (!result) {
                 sendFailedBroadcast(workIntent, file.getPath());
             } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), getString(R.string.successfully_renamed_file),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(),
+                        getString(R.string.successfully_renamed_file),
+                        Toast.LENGTH_SHORT).show());
             }
         }
     }
@@ -103,7 +98,7 @@ public class Rename extends FileOperation {
 
     private boolean renameFile(String path, String newFileName) {
         //keep old paths to remove them from MediaStore afterwards
-        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), path);
+        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), path);
 
         File file = new File(path);
         newFilePath = getNewFilePath(path, newFileName);
@@ -113,7 +108,7 @@ public class Rename extends FileOperation {
         boolean success = file.renameTo(newFile);
 
         //re-scan all paths
-        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), newFile.getPath());
+        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), newFile.getPath());
         addPathsToScan(oldPaths);
         addPathsToScan(newPaths);
 
@@ -122,7 +117,7 @@ public class Rename extends FileOperation {
 
     private boolean renameFileRemovableStorage(Context context, Uri treeUri, String path, String newFileName) {
         //keep old paths to remove them from MediaStore afterwards
-        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), path);
+        ArrayList<String> oldPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), path);
 
         newFilePath = getNewFilePath(path, newFileName);
         boolean success = false;
@@ -132,7 +127,7 @@ public class Rename extends FileOperation {
         }
 
         //re-scan all paths
-        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<String>(), newFilePath);
+        ArrayList<String> newPaths = FileOperation.Util.getAllChildPaths(new ArrayList<>(), newFilePath);
         addPathsToScan(oldPaths);
         addPathsToScan(newPaths);
         return success;
@@ -162,20 +157,17 @@ public class Rename extends FileOperation {
             AlertDialog dialog = new AlertDialog.Builder(wrapper)
                     .setTitle(R.string.rename)
                     .setView(dialogLayout)
-                    .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            final String newFileName = editText.getText().toString();
+                    .setPositiveButton(R.string.rename, (dialogInterface, i) -> {
+                        final String newFileName = editText.getText().toString();
 
-                            if (broadcastReceiver != null) {
-                                activity.registerLocalBroadcastReceiver(broadcastReceiver);
-                            }
-
-                            final File_POJO[] files = new File_POJO[]{file};
-                            Intent intent = FileOperation.getDefaultIntent(activity, FileOperation.RENAME, files)
-                                            .putExtra(FileOperation.NEW_FILE_NAME, newFileName);
-                            activity.startService(intent);
+                        if (broadcastReceiver != null) {
+                            activity.registerLocalBroadcastReceiver(broadcastReceiver);
                         }
+
+                        final File_POJO[] files = new File_POJO[]{file};
+                        Intent intent = FileOperation.getDefaultIntent(activity, FileOperation.RENAME, files)
+                                .putExtra(FileOperation.NEW_FILE_NAME, newFileName);
+                        activity.startService(intent);
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .create();

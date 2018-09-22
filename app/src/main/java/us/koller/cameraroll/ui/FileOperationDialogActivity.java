@@ -32,9 +32,9 @@ import java.util.Objects;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.AlbumItem;
-import us.koller.cameraroll.data.fileOperations.FileOperation;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.MediaProvider;
 import us.koller.cameraroll.ui.widget.GridMarginDecoration;
@@ -133,7 +133,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
     public void showFolderSelectorDialog(final File_POJO[] files) {
         View v = LayoutInflater.from(this)
                 .inflate(R.layout.file_operation_dialog,
-                        (ViewGroup) findViewById(R.id.root_view),
+                        findViewById(R.id.root_view),
                         false);
 
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
@@ -180,35 +180,19 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         dialog = new AlertDialog.Builder(this, theme.getDialogThemeRes())
                 .setTitle(title)
                 .setView(v)
-                .setPositiveButton(R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                onDestroyListener = new OnDestroyListener() {
-                                    @Override
-                                    public void onDestroy() {
-                                        String path = recyclerViewAdapter.getSelectedPath();
-                                        if (path != null) {
-                                            executeAction(files, path);
-                                        }
-                                    }
-                                };
+                .setPositiveButton(R.string.ok, (dialogInterface, i) ->
+                        onDestroyListener = () -> {
+                            String path = recyclerViewAdapter.getSelectedPath();
+                            if (path != null) {
+                                executeAction(files, path);
                             }
                         })
-                .setNeutralButton(getString(R.string.new_folder), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        creatingNewFolder = true;
-                        createNewFolder(files);
-                    }
+                .setNeutralButton(getString(R.string.new_folder), (dialogInterface, i) -> {
+                    creatingNewFolder = true;
+                    createNewFolder(files);
                 })
                 .setNegativeButton(R.string.cancel, null)
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        onDialogDismiss();
-                    }
-                })
+                .setOnDismissListener(dialogInterface -> onDialogDismiss())
                 .create();
 
         dialog.show();
@@ -231,7 +215,7 @@ public class FileOperationDialogActivity extends ThemeableActivity {
 
     public void createNewFolderDialog(final NewFolderCallback callback) {
         View dialogLayout = LayoutInflater.from(this).inflate(R.layout.input_dialog_layout,
-                (ViewGroup) findViewById(R.id.root_view), false);
+                findViewById(R.id.root_view), false);
 
         final EditText editText = dialogLayout.findViewById(R.id.edit_text);
 
@@ -274,18 +258,12 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                         startService(intent);
                     }
                 })
-                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //showFolderSelectorDialog();
-                    }
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    //showFolderSelectorDialog();
                 })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        creatingNewFolder = false;
-                        onDialogDismiss();
-                    }
+                .setOnDismissListener(dialogInterface -> {
+                    creatingNewFolder = false;
+                    onDialogDismiss();
                 })
                 .create();
         //noinspection ConstantConditions
@@ -312,7 +290,6 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         }
     }
 
-
     @Override
     public int getDarkThemeRes() {
         return R.style.CameraRoll_Theme_Translucent_FileOperationDialog;
@@ -333,79 +310,9 @@ public class FileOperationDialogActivity extends ThemeableActivity {
         private ArrayList<Album> albums;
         private int selected_position = -1;
 
-        static class ViewHolder extends RecyclerView.ViewHolder {
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-            }
-
-            private void setSelected(boolean selected) {
-                //final View imageView = itemView.findViewById(R.id.image);
-                final View card = itemView.findViewById(R.id.card);
-
-                if (selected) {
-                    final Drawable selectorOverlay = Util
-                            .getAlbumItemSelectorOverlay(card.getContext());
-                    Context context = card.getContext();
-                    int tintColor = Settings.getInstance(context)
-                            .getThemeInstance(context)
-                            .getAccentColorLight(context);
-                    final Drawable colorDrawable1 = new ColorDrawable(tintColor),
-                            colorDrawable2 = new ColorDrawable(tintColor);
-                    colorDrawable1.setAlpha(138);
-                    colorDrawable2.setAlpha(138);
-                    card.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            card.getOverlay().clear();
-                            if (selectorOverlay != null) {
-                                int width = card.getWidth(), height = card.getHeight();
-                                int start = (width - height) / 2;
-                                //noinspection SuspiciousNameCombination
-                                selectorOverlay.setBounds(start, 0, start + height, height);
-                                colorDrawable1.setBounds(0, 0, start, height);
-                                colorDrawable2.setBounds(start + height, 0, width, height);
-                                card.getOverlay().add(selectorOverlay);
-                                card.getOverlay().add(colorDrawable1);
-                                card.getOverlay().add(colorDrawable2);
-                            }
-                        }
-                    });
-                } else {
-                    card.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            card.getOverlay().clear();
-                        }
-                    });
-                }
-            }
-        }
-
-        RecyclerViewAdapter() {
-            albums = MediaProvider.getAlbums();
-            if (albums != null && albums.size() == 0) {
-                albums.add(MediaProvider.getErrorAlbum());
-            }
-        }
-
-        String getSelectedPath() {
-            if (selected_position == -1) {
-                return null;
-            }
-            return albums.get(selected_position).getPath();
-        }
-
-        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.file_op_view_holder, parent, false);
-            return new ViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
+        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder,
+                                     @SuppressLint("RecyclerView") final int position) {
             final Album album = albums.get(position);
             ((TextView) holder.itemView.findViewById(R.id.name))
                     .setText(album.getName());
@@ -445,19 +352,79 @@ public class FileOperationDialogActivity extends ThemeableActivity {
                 removableStorageIndicator.setVisibility(onRemovableStorage ? View.VISIBLE : View.GONE);
             }
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int oldSelectedPosition = selected_position;
-                    if (selected_position != position) {
-                        //un-select old item
-                        notifyItemChanged(oldSelectedPosition);
-                        selected_position = position;
-                    }
-                    //select new item
-                    notifyItemChanged(selected_position);
+            holder.itemView.setOnClickListener(view -> {
+                int oldSelectedPosition = selected_position;
+                if (selected_position != position) {
+                    //un-select old item
+                    notifyItemChanged(oldSelectedPosition);
+                    selected_position = position;
                 }
+                //select new item
+                notifyItemChanged(selected_position);
             });
+        }
+
+        RecyclerViewAdapter() {
+            albums = MediaProvider.getAlbums();
+            if (albums != null && albums.size() == 0) {
+                albums.add(MediaProvider.getErrorAlbum());
+            }
+        }
+
+        String getSelectedPath() {
+            if (selected_position == -1) {
+                return null;
+            }
+            return albums.get(selected_position).getPath();
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.file_op_view_holder, parent, false);
+            return new ViewHolder(v);
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+            }
+
+            private void setSelected(boolean selected) {
+                //final View imageView = itemView.findViewById(R.id.image);
+                final View card = itemView.findViewById(R.id.card);
+
+                if (selected) {
+                    final Drawable selectorOverlay = Util
+                            .getAlbumItemSelectorOverlay(card.getContext());
+                    Context context = card.getContext();
+                    int tintColor = Settings.getInstance(context)
+                            .getThemeInstance(context)
+                            .getAccentColorLight(context);
+                    final Drawable colorDrawable1 = new ColorDrawable(tintColor),
+                            colorDrawable2 = new ColorDrawable(tintColor);
+                    colorDrawable1.setAlpha(138);
+                    colorDrawable2.setAlpha(138);
+                    card.post(() -> {
+                        card.getOverlay().clear();
+                        if (selectorOverlay != null) {
+                            int width = card.getWidth(), height = card.getHeight();
+                            int start = (width - height) / 2;
+                            //noinspection SuspiciousNameCombination
+                            selectorOverlay.setBounds(start, 0, start + height, height);
+                            colorDrawable1.setBounds(0, 0, start, height);
+                            colorDrawable2.setBounds(start + height, 0, width, height);
+                            card.getOverlay().add(selectorOverlay);
+                            card.getOverlay().add(colorDrawable1);
+                            card.getOverlay().add(colorDrawable2);
+                        }
+                    });
+                } else {
+                    card.post(card.getOverlay()::clear);
+                }
+            }
         }
 
         @Override

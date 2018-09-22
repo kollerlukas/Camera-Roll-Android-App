@@ -108,8 +108,8 @@ public class StorageUtil {
         temp.add(externalStorage);
 
         File[] removableStorageRoots = getRemovableStorageRoots(context);
-        for (int i = 0; i < removableStorageRoots.length; i++) {
-            temp.add(new StorageRoot(removableStorageRoots[i].getPath()));
+        for (File removableStorageRoot : removableStorageRoots) {
+            temp.add(new StorageRoot(removableStorageRoot.getPath()));
         }
 
         StorageRoot[] roots = new StorageRoot[temp.size()];
@@ -120,9 +120,9 @@ public class StorageUtil {
         File[] roots = context.getExternalFilesDirs("external");
         ArrayList<File> rootsArrayList = new ArrayList<>();
 
-        for (int i = 0; i < roots.length; i++) {
-            if (roots[i] != null) {
-                String path = roots[i].getPath();
+        for (File root : roots) {
+            if (root != null) {
+                String path = root.getPath();
                 int index = path.lastIndexOf("/Android/data/");
                 if (index > 0) {
                     path = path.substring(0, index);
@@ -140,9 +140,9 @@ public class StorageUtil {
 
     private static String getSdCardRootPath(Context context, String path) {
         File[] roots = getRemovableStorageRoots(context);
-        for (int i = 0; i < roots.length; i++) {
-            if (path.startsWith(roots[i].getPath())) {
-                return roots[i].getPath();
+        for (File root : roots) {
+            if (path.startsWith(root.getPath())) {
+                return root.getPath();
             }
         }
         return null;
@@ -179,9 +179,9 @@ public class StorageUtil {
             treeRoot = DocumentFile.fromTreeUri(context, treeUri);
             String[] pathParts = path.split("/");
             DocumentFile documentFile = treeRoot;
-            for (int i = 0; i < pathParts.length; i++) {
+            for (String pathPart : pathParts) {
                 if (documentFile != null) {
-                    documentFile = documentFile.findFile(pathParts[i]);
+                    documentFile = documentFile.findFile(pathPart);
                 } else {
                     return null;
                 }

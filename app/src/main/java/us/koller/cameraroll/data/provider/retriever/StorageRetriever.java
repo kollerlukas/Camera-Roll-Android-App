@@ -14,11 +14,11 @@ import java.util.Arrays;
 import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.models.File_POJO;
 import us.koller.cameraroll.data.provider.FilesProvider;
+import us.koller.cameraroll.data.provider.MediaProvider;
+import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.data.provider.itemLoader.AlbumLoader;
 import us.koller.cameraroll.data.provider.itemLoader.FileLoader;
 import us.koller.cameraroll.data.provider.itemLoader.ItemLoader;
-import us.koller.cameraroll.data.provider.MediaProvider;
-import us.koller.cameraroll.data.provider.Provider;
 import us.koller.cameraroll.util.MediaType;
 import us.koller.cameraroll.util.SortUtil;
 
@@ -49,54 +49,46 @@ public class StorageRetriever extends Retriever {
 
         //handle timeout after 10 seconds
         handler = new Handler();
-        timeout = new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, "timeout", Toast.LENGTH_SHORT).show();
-                MediaProvider.OnMediaLoadedCallback callback = getCallback();
-                if (callback != null) {
-                    callback.timeout();
-                }
+        timeout = () -> {
+            Toast.makeText(context, "timeout", Toast.LENGTH_SHORT).show();
+            MediaProvider.OnMediaLoadedCallback callback = getCallback();
+            if (callback != null) {
+                callback.timeout();
             }
         };
         handler.postDelayed(timeout, 10000);
 
         //load media from storage
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                searchStorage(context,
-                        new StorageSearchCallback() {
+        AsyncTask.execute(() -> searchStorage(context,
+                new StorageSearchCallback() {
 
-                            @Override
-                            public void onThreadResult(ItemLoader.Result result) {
-                                if (result != null) {
-                                    albums.addAll(result.albums);
+                    @Override
+                    public void onThreadResult(ItemLoader.Result result) {
+                        if (result != null) {
+                            albums.addAll(result.albums);
+                        }
+                    }
+
+                    @Override
+                    public void done() {
+                        if (!hiddenFolders) {
+                            for (int i = albums.size() - 1; i >= 0; i--) {
+                                if (albums.get(i) == null || albums.get(i).isHidden()) {
+                                    albums.remove(i);
                                 }
                             }
+                        }
 
-                            @Override
-                            public void done() {
-                                if (!hiddenFolders) {
-                                    for (int i = albums.size() - 1; i >= 0; i--) {
-                                        if (albums.get(i) == null || albums.get(i).isHidden()) {
-                                            albums.remove(i);
-                                        }
-                                    }
-                                }
-
-                                //done loading media from storage
-                                MediaProvider.OnMediaLoadedCallback callback = getCallback();
-                                if (callback != null) {
-                                    callback.onMediaLoaded(albums);
-                                }
-                                cancelTimeout();
-                                Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
-                                        + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
-                            }
-                        });
-            }
-        });
+                        //done loading media from storage
+                        MediaProvider.OnMediaLoadedCallback callback = getCallback();
+                        if (callback != null) {
+                            callback.onMediaLoaded(albums);
+                        }
+                        cancelTimeout();
+                        Log.d("StorageRetriever", "onMediaLoaded(" + String.valueOf(THREAD_COUNT)
+                                + "): " + String.valueOf(System.currentTimeMillis() - startTime) + " ms");
+                    }
+                }));
     }
 
     public void loadFilesForDir(final Activity context, String dirPath,
@@ -109,29 +101,26 @@ public class StorageRetriever extends Retriever {
 
         threads = new ArrayList<>();
 
-        Thread.Callback threadCallback = new Thread.Callback() {
-            @Override
-            public void done(Thread thread, ItemLoader.Result result) {
-                File_POJO files = result.files;
-                boolean filesContainMedia = false;
-                for (int i = 0; i < files.getChildren().size(); i++) {
-                    if (files.getChildren().get(i) != null &&
-                            MediaType.isMedia(
-                                    files.getChildren().get(i).getPath())) {
-                        filesContainMedia = true;
-                        break;
-                    }
+        Thread.Callback threadCallback = (thread, result) -> {
+            File_POJO files = result.files;
+            boolean filesContainMedia = false;
+            for (int i = 0; i < files.getChildren().size(); i++) {
+                if (files.getChildren().get(i) != null &&
+                        MediaType.isMedia(
+                                files.getChildren().get(i).getPath())) {
+                    filesContainMedia = true;
+                    break;
                 }
-
-                if (filesContainMedia) {
-                    SortUtil.sortByDate(files.getChildren());
-                } else {
-                    SortUtil.sortByName(files.getChildren());
-                }
-                callback.onDirLoaded(files);
-                thread.cancel();
-                threads = null;
             }
+
+            if (filesContainMedia) {
+                SortUtil.sortByDate(files.getChildren());
+            } else {
+                SortUtil.sortByName(files.getChildren());
+            }
+            callback.onDirLoaded(files);
+            thread.cancel();
+            threads = null;
         };
 
         final File[] files = new File[]{new File(dirPath)};
@@ -166,16 +155,13 @@ public class StorageRetriever extends Retriever {
 
         threads = new ArrayList<>();
 
-        Thread.Callback threadCallback = new Thread.Callback() {
-            @Override
-            public void done(Thread thread, ItemLoader.Result result) {
-                callback.onThreadResult(result);
-                threads.remove(thread);
-                thread.cancel();
-                if (threads.size() == 0) {
-                    callback.done();
-                    threads = null;
-                }
+        Thread.Callback threadCallback = (thread, result) -> {
+            callback.onThreadResult(result);
+            threads.remove(thread);
+            thread.cancel();
+            if (threads.size() == 0) {
+                callback.done();
+                threads = null;
             }
         };
 
@@ -197,9 +183,9 @@ public class StorageRetriever extends Retriever {
 
     private File[][] divideDirs(File[] dirs) {
         ArrayList<File> dirsList = new ArrayList<>();
-        for (int i = 0; i < dirs.length; i++) {
-            if (dirs[i].listFiles() != null) {
-                dirsList.add(dirs[i]);
+        for (File dir : dirs) {
+            if (dir.listFiles() != null) {
+                dirsList.add(dir);
             }
         }
         dirs = new File[dirsList.size()];
@@ -272,8 +258,8 @@ public class StorageRetriever extends Retriever {
         public void run() {
             super.run();
             if (dirs != null) {
-                for (int i = 0; i < dirs.length; i++) {
-                    recursivelySearchStorage(context, dirs[i]);
+                for (File dir : dirs) {
+                    recursivelySearchStorage(context, dir);
                 }
             }
             done();
@@ -298,16 +284,16 @@ public class StorageRetriever extends Retriever {
             itemLoader.onNewDir(context, file);
             File[] files = file.listFiles();
             if (files != null) {
-                for (int i = 0; i < files.length; i++) {
-                    itemLoader.onFile(context, files[i]);
+                for (File file1 : files) {
+                    itemLoader.onFile(context, file1);
                 }
                 itemLoader.onDirDone(context);
 
                 if (searchSubDirs) {
                     //search sub-directories
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i].isDirectory()) {
-                            recursivelySearchStorage(context, files[i]);
+                    for (File file1 : files) {
+                        if (file1.isDirectory()) {
+                            recursivelySearchStorage(context, file1);
                         }
                     }
                 }

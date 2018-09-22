@@ -50,18 +50,15 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
             final ImageView imageView = itemView.findViewById(R.id.image);
             final Drawable indicatorOverlay
                     = ContextCompat.getDrawable(itemView.getContext(), indicatorRes);
-            imageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    final int overlayPadding = (int) (imageView.getWidth() * 0.05f);
-                    final int overlayDimens = (int) (imageView.getWidth() * 0.3f);
-                    indicatorOverlay.setBounds(
-                            imageView.getWidth() - overlayDimens - overlayPadding,
-                            imageView.getHeight() - overlayDimens,
-                            imageView.getWidth() - overlayPadding,
-                            imageView.getHeight());
-                    imageView.getOverlay().add(indicatorOverlay);
-                }
+            imageView.post(() -> {
+                final int overlayPadding = (int) (imageView.getWidth() * 0.05f);
+                final int overlayDimens = (int) (imageView.getWidth() * 0.3f);
+                indicatorOverlay.setBounds(
+                        imageView.getWidth() - overlayDimens - overlayPadding,
+                        imageView.getHeight() - overlayDimens,
+                        imageView.getWidth() - overlayPadding,
+                        imageView.getHeight());
+                imageView.getOverlay().add(indicatorOverlay);
             });
         }
     }
@@ -99,7 +96,7 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
 
     void fadeIn() {
         albumItem.hasFadedIn = true;
-        ColorFade.fadeSaturation((ImageView) itemView.findViewById(R.id.image));
+        ColorFade.fadeSaturation(itemView.findViewById(R.id.image));
     }
 
     public void setSelected(boolean selected) {
@@ -123,23 +120,15 @@ public abstract class AlbumItemHolder extends RecyclerView.ViewHolder {
             selectorOverlay = Util.getAlbumItemSelectorOverlay(imageView.getContext());
         }
         if (selected) {
-            imageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    imageView.getOverlay().remove(selectorOverlay);
-                    selectorOverlay.setBounds(0, 0,
-                            imageView.getWidth(),
-                            imageView.getHeight());
-                    imageView.getOverlay().add(selectorOverlay);
-                }
+            imageView.post(() -> {
+                imageView.getOverlay().remove(selectorOverlay);
+                selectorOverlay.setBounds(0, 0,
+                        imageView.getWidth(),
+                        imageView.getHeight());
+                imageView.getOverlay().add(selectorOverlay);
             });
         } else {
-            imageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    imageView.getOverlay().remove(selectorOverlay);
-                }
-            });
+            imageView.post(() -> imageView.getOverlay().remove(selectorOverlay));
         }
     }
 }

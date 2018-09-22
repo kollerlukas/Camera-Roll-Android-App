@@ -5,7 +5,6 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -65,12 +63,9 @@ public class AboutActivity extends ThemeableActivity
             //noinspection deprecation
             version.setText(Html.fromHtml(versionName));
             version.setTextColor(theme.getAccentTextColor(this));
-            version.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    Toast.makeText(view.getContext(), "versionCode: " + String.valueOf(versionCode), Toast.LENGTH_SHORT).show();
-                    return false;
-                }
+            version.setOnLongClickListener(view -> {
+                Toast.makeText(view.getContext(), "versionCode: " + String.valueOf(versionCode), Toast.LENGTH_SHORT).show();
+                return false;
             });
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -84,53 +79,46 @@ public class AboutActivity extends ThemeableActivity
         final View rootView = findViewById(R.id.root_view);
 
         final NestedScrollView scrollView = findViewById(R.id.scroll_view);
-        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY,
-                                       int oldScrollX, int oldScrollY) {
-                int statusBarHeight = toolbar.getPaddingTop();
-                if (scrollY > header.getHeight() - statusBarHeight / 2) {
-                    if (theme.darkStatusBarIcons()) {
-                        Util.setDarkStatusBarIcons(rootView);
+        scrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener)
+                (nestedScrollView, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                    int statusBarHeight = toolbar.getPaddingTop();
+                    if (scrollY > header.getHeight() - statusBarHeight / 2) {
+                        if (theme.darkStatusBarIcons()) {
+                            Util.setDarkStatusBarIcons(rootView);
+                        } else {
+                            Util.setLightStatusBarIcons(rootView);
+                        }
                     } else {
-                        Util.setLightStatusBarIcons(rootView);
+                        if (theme.darkStatusBarIconsInSelectorMode()) {
+                            Util.setDarkStatusBarIcons(rootView);
+                        } else {
+                            Util.setLightStatusBarIcons(rootView);
+                        }
                     }
-                } else {
-                    if (theme.darkStatusBarIconsInSelectorMode()) {
-                        Util.setDarkStatusBarIcons(rootView);
-                    } else {
-                        Util.setLightStatusBarIcons(rootView);
-                    }
-                }
-            }
-        });
+                });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                @Override
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
-                            toolbar.getPaddingBottom());
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                        toolbar.getPaddingBottom());
 
-                    aboutText.setPadding(aboutText.getPaddingStart(),
-                            aboutText.getPaddingTop(),
-                            aboutText.getPaddingEnd(),
-                            aboutText.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                aboutText.setPadding(aboutText.getPaddingStart(),
+                        aboutText.getPaddingTop(),
+                        aboutText.getPaddingEnd(),
+                        aboutText.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                // TODO: fix "the id R.id.swipeBackView has already been looked up in this method"
+                View viewGroup = findViewById(R.id.swipeBackView);
+                ViewGroup.MarginLayoutParams viewGroupParams
+                        = (ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams();
+                viewGroupParams.leftMargin += insets.getSystemWindowInsetLeft();
+                viewGroupParams.rightMargin += insets.getSystemWindowInsetRight();
+                viewGroup.setLayoutParams(viewGroupParams);
 
-                    View viewGroup = findViewById(R.id.swipeBackView);
-                    ViewGroup.MarginLayoutParams viewGroupParams
-                            = (ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams();
-                    viewGroupParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    viewGroupParams.rightMargin += insets.getSystemWindowInsetRight();
-                    viewGroup.setLayoutParams(viewGroupParams);
-
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
 
             //set status bar icon color

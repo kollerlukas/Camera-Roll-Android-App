@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 
 import us.koller.cameraroll.data.models.File_POJO;
+import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.data.provider.retriever.Retriever;
 import us.koller.cameraroll.data.provider.retriever.StorageRetriever;
-import us.koller.cameraroll.data.models.StorageRoot;
 import us.koller.cameraroll.util.StorageUtil;
 
 public class FilesProvider extends Provider {
@@ -58,5 +58,4 @@ public class FilesProvider extends Provider {
     public static StorageRoot[] getRoots(Activity context) {
         return StorageUtil.loadRoots(context);
     }
-
 }

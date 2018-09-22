@@ -28,13 +28,10 @@ public class ColorFade {
 
     public static void fadeBackgroundColor(final View v, final int startColor, final int endColor) {
         ValueAnimator animator = getDefaultValueAnimator();
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int color = getAnimatedColor(startColor, endColor,
-                        valueAnimator.getAnimatedFraction());
-                v.setBackgroundColor(color);
-            }
+        animator.addUpdateListener(valueAnimator -> {
+            int color = getAnimatedColor(startColor, endColor,
+                    valueAnimator.getAnimatedFraction());
+            v.setBackgroundColor(color);
         });
         animator.start();
     }
@@ -73,15 +70,11 @@ public class ColorFade {
         final AnimUtils.ObservableColorMatrix matrix = new AnimUtils.ObservableColorMatrix();
         final ObjectAnimator saturation = ObjectAnimator.ofFloat(
                 matrix, AnimUtils.ObservableColorMatrix.SATURATION, 0f, 1f);
-        saturation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener
-                () {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                // just animating the color matrix does not invalidate the
-                // drawable so need this update listener.  Also have to create a
-                // new CMCF as the matrix is immutable :(
-                imageView.setColorFilter(new ColorMatrixColorFilter(matrix));
-            }
+        saturation.addUpdateListener(valueAnimator -> {
+            // just animating the color matrix does not invalidate the
+            // drawable so need this update listener.  Also have to create a
+            // new CMCF as the matrix is immutable :(
+            imageView.setColorFilter(new ColorMatrixColorFilter(matrix));
         });
         saturation.setDuration(2000L);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -137,12 +130,7 @@ public class ColorFade {
         if (finalTextView != null) {
             fadeOut = getDefaultValueAnimator();
             fadeOut.setDuration(250);
-            fadeOut.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    finalTextView.setAlpha(1 - valueAnimator.getAnimatedFraction());
-                }
-            });
+            fadeOut.addUpdateListener(valueAnimator -> finalTextView.setAlpha(1 - valueAnimator.getAnimatedFraction()));
             fadeOut.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -168,13 +156,8 @@ public class ColorFade {
                 }
             });
         }
-        fadeIn.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                toolbar.setTitleTextColor(getAnimatedColor(transparent, color,
-                        valueAnimator.getAnimatedFraction()));
-            }
-        });
+        fadeIn.addUpdateListener(valueAnimator -> toolbar.setTitleTextColor(getAnimatedColor(transparent, color,
+                valueAnimator.getAnimatedFraction())));
 
         toolbarTitleAnimSet = new AnimatorSet();
         if (fadeOut != null) {
@@ -202,14 +185,11 @@ public class ColorFade {
     public static void fadeDrawableColor(final Drawable d, final int startColor, final int endColor) {
         DrawableCompat.wrap(d);
         ValueAnimator animator = getDefaultValueAnimator();
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int animatedColor = getAnimatedColor(startColor, endColor,
-                        valueAnimator.getAnimatedFraction());
-                DrawableCompat.setTint(d, animatedColor);
+        animator.addUpdateListener(valueAnimator -> {
+            int animatedColor = getAnimatedColor(startColor, endColor,
+                    valueAnimator.getAnimatedFraction());
+            DrawableCompat.setTint(d, animatedColor);
 
-            }
         });
         AnimatorSet set = new AnimatorSet();
         set.play(animator);
@@ -225,12 +205,7 @@ public class ColorFade {
 
     public static void fadeDrawableAlpha(final Drawable d, int endAlpha) {
         ValueAnimator animator = getDefaultValueAnimator(d.getAlpha(), endAlpha);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                d.setAlpha((Integer) valueAnimator.getAnimatedValue());
-            }
-        });
+        animator.addUpdateListener(valueAnimator -> d.setAlpha((Integer) valueAnimator.getAnimatedValue()));
         animator.start();
     }
 }

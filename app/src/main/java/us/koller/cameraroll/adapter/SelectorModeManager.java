@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import us.koller.cameraroll.data.models.AlbumItem;
-import us.koller.cameraroll.data.Settings;
-import us.koller.cameraroll.util.SortUtil;
 
 //simple wrapper class to handle the Selector Mode and selected items
 public class SelectorModeManager {
@@ -40,17 +38,14 @@ public class SelectorModeManager {
     public static class SimpleCallback implements Callback {
         @Override
         public void onSelectorModeEnter() {
-
         }
 
         @Override
         public void onSelectorModeExit() {
-
         }
 
         @Override
         public void onItemSelected(int selectedItemCount) {
-
         }
     }
 
@@ -117,19 +112,9 @@ public class SelectorModeManager {
         return selected;
     }
 
-    public void selectAll(String[] paths) {
-        ArrayList<String> itemsToSelect = new ArrayList<>();
-        for (int i = 0; i < paths.length; i++) {
-            if (!selected_items_paths.contains(paths[i])) {
-                itemsToSelect.add(paths[i]);
-            }
-        }
-        selected_items_paths.addAll(itemsToSelect);
-        if (callbacks != null) {
-            for (int i = 0; i < callbacks.size(); i++) {
-                callbacks.get(i).onItemSelected(selected_items_paths.size());
-            }
-        }
+    public static AlbumItem[] createAlbumItemArray(String[] arr) {
+        ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(arr));
+        return createAlbumItemArray(arrayList);
     }
 
     public int getSelectedItemCount() {
@@ -214,10 +199,19 @@ public class SelectorModeManager {
         }
     }
 
-    public static AlbumItem[] createAlbumItemArray(String[] arr) {
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.addAll(Arrays.asList(arr));
-        return createAlbumItemArray(arrayList);
+    public void selectAll(String[] paths) {
+        ArrayList<String> itemsToSelect = new ArrayList<>();
+        for (String path : paths) {
+            if (!selected_items_paths.contains(path)) {
+                itemsToSelect.add(path);
+            }
+        }
+        selected_items_paths.addAll(itemsToSelect);
+        if (callbacks != null) {
+            for (int i = 0; i < callbacks.size(); i++) {
+                callbacks.get(i).onItemSelected(selected_items_paths.size());
+            }
+        }
     }
 
     private static AlbumItem[] createAlbumItemArray(ArrayList<String> arr) {

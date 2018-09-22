@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,33 +66,30 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewAdapter(virtualAlbums);
-        onVirtualAlbumChangedListener = new RecyclerViewAdapter.OnVirtualAlbumChangedListener() {
-            @Override
-            public void onVirtualAlbumChanged(VirtualAlbum album) {
-                menu.findItem(R.id.add_virtual_album).setVisible(album == null);
+        onVirtualAlbumChangedListener = album -> {
+            menu.findItem(R.id.add_virtual_album).setVisible(album == null);
 
-                if (album != null) {
-                    toolbar.setTitle(album.getName());
-                    toolbar.setTitleTextColor(accentColor);
+            if (album != null) {
+                toolbar.setTitle(album.getName());
+                toolbar.setTitleTextColor(accentColor);
+            } else {
+                toolbar.setTitle(toolbarTitle);
+                toolbar.setTitleTextColor(toolbarTitleColor);
+            }
+
+            if (album == null) {
+                if (virtualAlbums.size() == 0) {
+                    emptyStateText.setText(R.string.no_virtual_albums);
+                    emptyStateText.setVisibility(View.VISIBLE);
                 } else {
-                    toolbar.setTitle(toolbarTitle);
-                    toolbar.setTitleTextColor(toolbarTitleColor);
+                    emptyStateText.setVisibility(View.GONE);
                 }
-
-                if (album == null) {
-                    if (virtualAlbums.size() == 0) {
-                        emptyStateText.setText(R.string.no_virtual_albums);
-                        emptyStateText.setVisibility(View.VISIBLE);
-                    } else {
-                        emptyStateText.setVisibility(View.GONE);
-                    }
+            } else {
+                if (album.getDirectories().size() == 0) {
+                    emptyStateText.setText(R.string.no_paths);
+                    emptyStateText.setVisibility(View.VISIBLE);
                 } else {
-                    if (album.getDirectories().size() == 0) {
-                        emptyStateText.setText(R.string.no_paths);
-                        emptyStateText.setVisibility(View.VISIBLE);
-                    } else {
-                        emptyStateText.setVisibility(View.GONE);
-                    }
+                    emptyStateText.setVisibility(View.GONE);
                 }
             }
         };
@@ -103,24 +98,20 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
 
         final ViewGroup rootView = findViewById(R.id.root_view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            toolbar.getPaddingBottom());
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                toolbar.setPadding(toolbar.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        toolbar.getPaddingBottom());
 
-                    recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            recyclerView.getPaddingTop(),
-                            recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                recyclerView.setPadding(recyclerView.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        recyclerView.getPaddingTop(),
+                        recyclerView.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        recyclerView.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -175,15 +166,11 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
                 onBackPressed();
                 break;
             case R.id.add_virtual_album:
-                AlertDialog dialog = VirtualAlbum.Util.getCreateVirtualAlbumDialog(this,
-                        new VirtualAlbum.Util.OnCreateVirtualAlbumCallback() {
-                            @Override
-                            public void onVirtualAlbumCreated(VirtualAlbum virtualAlbum) {
-                                virtualAlbums = Provider.getVirtualAlbums(VirtualAlbumsActivity.this);
-                                adapter.notifyDataSetChanged();
-                                onVirtualAlbumChangedListener.onVirtualAlbumChanged(null);
-                            }
-                        });
+                AlertDialog dialog = VirtualAlbum.Util.getCreateVirtualAlbumDialog(this, virtualAlbum -> {
+                    virtualAlbums = Provider.getVirtualAlbums(VirtualAlbumsActivity.this);
+                    adapter.notifyDataSetChanged();
+                    onVirtualAlbumChangedListener.onVirtualAlbumChanged(null);
+                });
                 dialog.show();
                 break;
             default:
@@ -221,8 +208,7 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
         toolbar.setBackgroundColor(toolbarColor);
         toolbar.setTitleTextColor(textColorPrimary);
 
-        if (theme.darkStatusBarIcons() &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (theme.darkStatusBarIcons() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Util.setDarkStatusBarIcons(findViewById(R.id.root_view));
         }
 
@@ -343,74 +329,56 @@ public class VirtualAlbumsActivity extends ThemeableActivity {
             if (holder instanceof VirtualAlbumHolder) {
                 final VirtualAlbum virtualAlbum = virtualAlbums.get(position);
                 ((VirtualAlbumHolder) holder).bind(virtualAlbum);
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        currentAlbum = virtualAlbum;
-                        //Handler to keep ripple animation
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                notifyDataSetChanged();
+                holder.itemView.setOnClickListener(view -> {
+                    currentAlbum = virtualAlbum;
+                    //Handler to keep ripple animation
+                    new Handler().postDelayed(() -> {
+                        notifyDataSetChanged();
+                        if (listener != null) {
+                            listener.onVirtualAlbumChanged(currentAlbum);
+                        }
+                    }, /*300*/0);
+                });
+                ((VirtualAlbumHolder) holder).deleteButton.
+                        setOnClickListener(view -> {
+                            final int index = virtualAlbums.indexOf(virtualAlbum);
+                            Provider.removeVirtualAlbum(view.getContext(), virtualAlbum);
+                            virtualAlbums = Provider.getVirtualAlbums(view.getContext());
+                            //Handler to keep ripple animation
+                            new Handler().postDelayed(() -> {
+                                //notifyDataSetChanged();
+                                notifyItemRemoved(index);
                                 if (listener != null) {
                                     listener.onVirtualAlbumChanged(currentAlbum);
                                 }
-                            }
-                        }, /*300*/0);
-                    }
-                });
-                ((VirtualAlbumHolder) holder).deleteButton.
-                        setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(final View view) {
-                                final int index = virtualAlbums.indexOf(virtualAlbum);
-                                Provider.removeVirtualAlbum(view.getContext(), virtualAlbum);
-                                virtualAlbums = Provider.getVirtualAlbums(view.getContext());
-                                //Handler to keep ripple animation
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //notifyDataSetChanged();
-                                        notifyItemRemoved(index);
-                                        if (listener != null) {
-                                            listener.onVirtualAlbumChanged(currentAlbum);
-                                        }
 
-                                        String message = view.getContext()
-                                                .getString(R.string.virtual_album_deleted, virtualAlbum.getName());
-                                        Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
-                                    }
-                                }, /*300*/0);
+                                String message = view.getContext()
+                                        .getString(R.string.virtual_album_deleted, virtualAlbum.getName());
+                                Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
+                            }, /*300*/0);
 
-                                if (virtualAlbum.pinned()) {
-                                    //remove virtualAlbum from pinnedPaths
-                                    Provider.unpinPath(view.getContext(), virtualAlbum.getPath());
-                                    Provider.savePinnedPaths(view.getContext());
-                                }
+                            if (virtualAlbum.pinned()) {
+                                //remove virtualAlbum from pinnedPaths
+                                Provider.unpinPath(view.getContext(), virtualAlbum.getPath());
+                                Provider.savePinnedPaths(view.getContext());
                             }
                         });
             } else {
                 final String path = currentAlbum.getDirectories().get(position);
                 ((PathHolder) holder).bind(path);
                 ((PathHolder) holder).deleteButton.
-                        setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(final View view) {
-                                final int index = currentAlbum.getDirectories().indexOf(path);
-                                currentAlbum.removeDirectory(path);
-                                //Handler to keep ripple animation
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //notifyDataSetChanged();
-                                        notifyItemRemoved(index);
-                                        if (listener != null) {
-                                            listener.onVirtualAlbumChanged(currentAlbum);
-                                        }
-                                        Toast.makeText(view.getContext(), R.string.path_removed, Toast.LENGTH_SHORT).show();
-                                    }
-                                }, /*300*/0);
-                            }
+                        setOnClickListener(view -> {
+                            final int index = currentAlbum.getDirectories().indexOf(path);
+                            currentAlbum.removeDirectory(path);
+                            //Handler to keep ripple animation
+                            new Handler().postDelayed(() -> {
+                                //notifyDataSetChanged();
+                                notifyItemRemoved(index);
+                                if (listener != null) {
+                                    listener.onVirtualAlbumChanged(currentAlbum);
+                                }
+                                Toast.makeText(view.getContext(), R.string.path_removed, Toast.LENGTH_SHORT).show();
+                            }, /*300*/0);
                         });
             }
         }

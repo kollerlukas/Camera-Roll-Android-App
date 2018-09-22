@@ -106,25 +106,22 @@ public abstract class Style {
         final TextView columnCountTV = view.findViewById(R.id.column_count);
         columnCountTV.setText(String.valueOf(getColumnCount(view.getContext())));
 
-        View.OnClickListener clickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int columnCount = getColumnCount(v.getContext());
-                switch (v.getId()) {
-                    case R.id.minus:
-                        if (columnCount > 1) {
-                            columnCount--;
-                        }
-                        break;
-                    case R.id.plus:
-                        columnCount++;
-                        break;
-                    default:
-                        break;
-                }
-                setColumnCount(v.getContext(), columnCount);
-                columnCountTV.setText(String.valueOf(columnCount));
+        View.OnClickListener clickListener = v -> {
+            int columnCount = getColumnCount(v.getContext());
+            switch (v.getId()) {
+                case R.id.minus:
+                    if (columnCount > 1) {
+                        columnCount--;
+                    }
+                    break;
+                case R.id.plus:
+                    columnCount++;
+                    break;
+                default:
+                    break;
             }
+            setColumnCount(v.getContext(), columnCount);
+            columnCountTV.setText(String.valueOf(columnCount));
         };
 
         Settings s = Settings.getInstance(view.getContext());

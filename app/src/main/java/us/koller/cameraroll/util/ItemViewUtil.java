@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -60,16 +59,10 @@ public class ItemViewUtil {
 
     public static void bindTransitionView(final ImageView imageView, final AlbumItem albumItem) {
         //handle timeOut
-        if (albumItem.isSharedElement
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                public void run() {
-                    albumItem.isSharedElement = false;
-                    ((AppCompatActivity) imageView.getContext())
-                            .startPostponedEnterTransition();
-                }
+        if (albumItem.isSharedElement && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            new Handler().postDelayed(() -> {
+                albumItem.isSharedElement = false;
+                ((AppCompatActivity) imageView.getContext()).startPostponedEnterTransition();
             }, 100);
         }
         ViewCompat.setTransitionName(imageView, albumItem.getPath());
@@ -82,8 +75,7 @@ public class ItemViewUtil {
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
                         albumItem.error = true;
-                        if (albumItem.isSharedElement
-                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (albumItem.isSharedElement && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
                             ((AppCompatActivity) imageView.getContext())
                                     .startPostponedEnterTransition();
@@ -94,8 +86,7 @@ public class ItemViewUtil {
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                    DataSource dataSource, boolean isFirstResource) {
-                        if (albumItem.isSharedElement
-                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (albumItem.isSharedElement && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             albumItem.isSharedElement = false;
                             ((AppCompatActivity) imageView.getContext())
                                     .startPostponedEnterTransition();

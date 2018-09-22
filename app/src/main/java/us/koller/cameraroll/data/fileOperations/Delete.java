@@ -31,18 +31,18 @@ public class Delete extends FileOperation {
 
         onProgress(success_count, files.length);
 
-        for (int i = 0; i < files.length; i++) {
+        for (File_POJO file : files) {
             boolean result;
             //check if file is on removable storage
-            if (Util.isOnRemovableStorage(files[i].getPath())) {
+            if (Util.isOnRemovableStorage(file.getPath())) {
                 //file is on removable storage
-                Uri treeUri = getTreeUri(workIntent, files[i].getPath());
+                Uri treeUri = getTreeUri(workIntent, file.getPath());
                 if (treeUri == null) {
                     return;
                 }
-                result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, files[i].getPath());
+                result = deleteFileOnRemovableStorage(getApplicationContext(), treeUri, file.getPath());
             } else {
-                result = deleteFile(files[i].getPath());
+                result = deleteFile(file.getPath());
                 //Delete Album, when empty
                 /*String parentPath = Util.getParentPath(files[i].getPath());
                 if (result && Util.isDirectoryEmpty(parentPath)) {
@@ -54,7 +54,7 @@ public class Delete extends FileOperation {
                 success_count++;
                 onProgress(success_count, files.length);
             } else {
-                sendFailedBroadcast(workIntent, files[i].getPath());
+                sendFailedBroadcast(workIntent, file.getPath());
             }
         }
 
@@ -73,8 +73,8 @@ public class Delete extends FileOperation {
         File file = new File(path);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                deleteFile(files[i].getPath());
+            for (File file1 : files) {
+                deleteFile(file1.getPath());
             }
         }
         success = file.delete();

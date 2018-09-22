@@ -148,12 +148,7 @@ public abstract class AlbumItem
 
     @SuppressWarnings("unused")
     public void preloadUri(final Context context) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                getUri(context);
-            }
-        });
+        AsyncTask.execute(() -> getUri(context));
     }
 
     public void setUri(Uri uri) {

@@ -22,7 +22,9 @@ public class NoFolderRecyclerViewAdapter extends AbstractRecyclerViewAdapter<Arr
     private AlbumAdapter albumAdapter;
     private SelectorModeManager.Callback callback;
 
-    public NoFolderRecyclerViewAdapter(SelectorModeManager.Callback callback, RecyclerView recyclerView, boolean pick_photos) {
+    public NoFolderRecyclerViewAdapter(SelectorModeManager.Callback callback,
+                                       RecyclerView recyclerView,
+                                       boolean pick_photos) {
         super(pick_photos);
         context = recyclerView.getContext();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

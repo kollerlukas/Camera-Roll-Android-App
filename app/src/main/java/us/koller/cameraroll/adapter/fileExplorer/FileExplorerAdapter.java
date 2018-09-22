@@ -76,56 +76,40 @@ public class FileExplorerAdapter extends RecyclerView.Adapter {
 
         ((FileHolder) holder).setSelected(selected_items[position]);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mode == SELECTOR_MODE) {
-                    onItemSelect(file);
-                } else if (file.isMedia) {
-                    int index = file.getPath().lastIndexOf("/");
-                    String path = file.getPath().substring(0, index);
+        holder.itemView.setOnClickListener(view -> {
+            if (mode == SELECTOR_MODE) {
+                onItemSelect(file);
+            } else if (file.isMedia) {
+                int index = file.getPath().lastIndexOf("/");
+                String path = file.getPath().substring(0, index);
 
-                    //load Album
-                    final Album album = new Album().setPath(path);
-                    AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
-                    if (albumItem != null) {
-                        album.getAlbumItems().add(albumItem);
-                    }
-
-                    if (albumItem != null) {
-                        //create intent
-                        Intent intent = new Intent(holder.itemView.getContext(), IntentReceiver.class)
-                                .setAction(Intent.ACTION_VIEW)
-                                .setData(albumItem.getUri(holder.itemView.getContext()));
-                        holder.itemView.getContext().startActivity(intent);
-                    }
-                } else {
-                    //to keep the ripple animation
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            directoryChangeCallback.changeDir(file.getPath());
-                        }
-                    }, 300);
+                //load Album
+                final Album album = new Album().setPath(path);
+                AlbumItem albumItem = AlbumItem.getInstance(file.getPath());
+                if (albumItem != null) {
+                    album.getAlbumItems().add(albumItem);
                 }
+
+                if (albumItem != null) {
+                    //create intent
+                    Intent intent = new Intent(holder.itemView.getContext(), IntentReceiver.class)
+                            .setAction(Intent.ACTION_VIEW)
+                            .setData(albumItem.getUri(holder.itemView.getContext()));
+                    holder.itemView.getContext().startActivity(intent);
+                }
+            } else {
+                //to keep the ripple animation
+                new Handler().postDelayed(() -> directoryChangeCallback.changeDir(file.getPath()), 300);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                onItemSelect(file);
-                return true;
-            }
+        holder.itemView.setOnLongClickListener(view -> {
+            onItemSelect(file);
+            return true;
         });
 
         //clicking on folder icons also selects this item
-        holder.itemView.findViewById(R.id.folder_indicator).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onItemSelect(file);
-            }
-        });
+        holder.itemView.findViewById(R.id.folder_indicator).setOnClickListener(view -> onItemSelect(file));
     }
 
     private void onItemSelect(File_POJO file) {
@@ -159,8 +143,8 @@ public class FileExplorerAdapter extends RecyclerView.Adapter {
 
     private int getSelectedCount() {
         int selected_items_count = 0;
-        for (int i = 0; i < selected_items.length; i++) {
-            selected_items_count += selected_items[i] ? 1 : 0;
+        for (boolean selected_item : selected_items) {
+            selected_items_count += selected_item ? 1 : 0;
         }
         return selected_items_count;
     }
@@ -205,9 +189,9 @@ public class FileExplorerAdapter extends RecyclerView.Adapter {
         mode = SELECTOR_MODE;
         selected_items = new boolean[files.getChildren().size()];
         //select items
-        for (int i = 0; i < selectedItems.length; i++) {
+        for (File_POJO selectedItem : selectedItems) {
             for (int k = 0; k < files.getChildren().size(); k++) {
-                if (selectedItems[i].getPath()
+                if (selectedItem.getPath()
                         .equals(files.getChildren().get(k).getPath())) {
                     onItemSelect(files.getChildren().get(k));
                 }

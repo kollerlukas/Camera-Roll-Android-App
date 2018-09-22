@@ -13,13 +13,13 @@ import java.util.ArrayList;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.adapter.AbstractRecyclerViewAdapter;
-import us.koller.cameraroll.styles.Style;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.adapter.SelectorModeManager;
 import us.koller.cameraroll.adapter.main.viewHolder.AlbumHolder;
 import us.koller.cameraroll.adapter.main.viewHolder.NestedRecyclerViewAlbumHolder;
-import us.koller.cameraroll.data.models.Album;
 import us.koller.cameraroll.data.Settings;
+import us.koller.cameraroll.data.models.Album;
+import us.koller.cameraroll.styles.Style;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.ui.AlbumActivity;
 import us.koller.cameraroll.ui.MainActivity;
 import us.koller.cameraroll.ui.ThemeableActivity;
@@ -60,42 +60,39 @@ public class MainAdapter extends AbstractRecyclerViewAdapter<ArrayList<Album>> {
 
         ((AlbumHolder) holder).setAlbum(album);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(holder.itemView.getContext(), AlbumActivity.class);
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(holder.itemView.getContext(), AlbumActivity.class);
 
-                //intent.putExtra(AlbumActivity.ALBUM, album);
-                intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
+            //intent.putExtra(AlbumActivity.ALBUM, album);
+            intent.putExtra(AlbumActivity.ALBUM_PATH, album.getPath());
 
-                if (pickPhotos()) {
-                    Context c = holder.itemView.getContext();
-                    boolean allowMultiple = false;
-                    if (c instanceof Activity) {
-                        Activity a = (Activity) c;
-                        allowMultiple = a.getIntent()
-                                .getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-                    }
-                    intent.setAction(MainActivity.PICK_PHOTOS);
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
-                } else {
-                    intent.setAction(AlbumActivity.VIEW_ALBUM);
+            if (pickPhotos()) {
+                Context c = holder.itemView.getContext();
+                boolean allowMultiple = false;
+                if (c instanceof Activity) {
+                    Activity a = (Activity) c;
+                    allowMultiple = a.getIntent()
+                            .getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
                 }
+                intent.setAction(MainActivity.PICK_PHOTOS);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+            } else {
+                intent.setAction(AlbumActivity.VIEW_ALBUM);
+            }
 
-                ActivityOptionsCompat options;
-                Activity context = (Activity) holder.itemView.getContext();
-                if (!pickPhotos()) {
-                    //noinspection unchecked
-                    options = ActivityOptionsCompat.makeSceneTransitionAnimation(context);
-                    context.startActivityForResult(intent,
-                            MainActivity.REFRESH_PHOTOS_REQUEST_CODE, options.toBundle());
-                } else {
-                    View toolbar = context.findViewById(R.id.toolbar);
-                    options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            context, toolbar, context.getString(R.string.toolbar_transition_name));
-                    context.startActivityForResult(intent,
-                            MainActivity.PICK_PHOTOS_REQUEST_CODE, options.toBundle());
-                }
+            ActivityOptionsCompat options;
+            Activity context = (Activity) holder.itemView.getContext();
+            if (!pickPhotos()) {
+                //noinspection unchecked
+                options = ActivityOptionsCompat.makeSceneTransitionAnimation(context);
+                context.startActivityForResult(intent,
+                        MainActivity.REFRESH_PHOTOS_REQUEST_CODE, options.toBundle());
+            } else {
+                View toolbar = context.findViewById(R.id.toolbar);
+                options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        context, toolbar, context.getString(R.string.toolbar_transition_name));
+                context.startActivityForResult(intent,
+                        MainActivity.PICK_PHOTOS_REQUEST_CODE, options.toBundle());
             }
         });
     }

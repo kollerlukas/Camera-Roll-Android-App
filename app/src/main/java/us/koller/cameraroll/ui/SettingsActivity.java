@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -19,17 +18,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
 
 import java.util.Arrays;
 
 import us.koller.cameraroll.R;
-import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.preferences.ColumnCountPreference;
 import us.koller.cameraroll.preferences.ColumnCountPreferenceDialogFragment;
 import us.koller.cameraroll.preferences.StylePreference;
 import us.koller.cameraroll.preferences.StylePreferenceDialogFragment;
+import us.koller.cameraroll.themes.Theme;
 import us.koller.cameraroll.util.Util;
 
 public class SettingsActivity extends ThemeableActivity {
@@ -52,30 +50,26 @@ public class SettingsActivity extends ThemeableActivity {
         final View rootView = findViewById(R.id.root_view);
         final View container = findViewById(R.id.preference_fragment_container);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-                public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
-                            toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
-                            toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
-                            toolbar.getPaddingBottom());
+            rootView.setOnApplyWindowInsetsListener((view, insets) -> {
+                toolbar.setPadding(toolbar.getPaddingStart() /*+ insets.getSystemWindowInsetLeft()*/,
+                        toolbar.getPaddingTop() + insets.getSystemWindowInsetTop(),
+                        toolbar.getPaddingEnd() /*+ insets.getSystemWindowInsetRight()*/,
+                        toolbar.getPaddingBottom());
 
-                    ViewGroup.MarginLayoutParams toolbarParams
-                            = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-                    toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
-                    toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
-                    toolbar.setLayoutParams(toolbarParams);
+                ViewGroup.MarginLayoutParams toolbarParams
+                        = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+                toolbarParams.leftMargin += insets.getSystemWindowInsetLeft();
+                toolbarParams.rightMargin += insets.getSystemWindowInsetRight();
+                toolbar.setLayoutParams(toolbarParams);
 
-                    container.setPadding(container.getPaddingStart() + insets.getSystemWindowInsetLeft(),
-                            container.getPaddingTop(),
-                            container.getPaddingEnd() + insets.getSystemWindowInsetRight(),
-                            container.getPaddingBottom() + insets.getSystemWindowInsetBottom());
+                container.setPadding(container.getPaddingStart() + insets.getSystemWindowInsetLeft(),
+                        container.getPaddingTop(),
+                        container.getPaddingEnd() + insets.getSystemWindowInsetRight(),
+                        container.getPaddingBottom() + insets.getSystemWindowInsetBottom());
 
-                    // clear this listener so insets aren't re-applied
-                    rootView.setOnApplyWindowInsetsListener(null);
-                    return insets.consumeSystemWindowInsets();
-                }
+                // clear this listener so insets aren't re-applied
+                rootView.setOnApplyWindowInsetsListener(null);
+                return insets.consumeSystemWindowInsets();
             });
         } else {
             rootView.getViewTreeObserver()
@@ -121,12 +115,7 @@ public class SettingsActivity extends ThemeableActivity {
                 .replace(R.id.preference_fragment_container, fragment)
                 .commit();
 
-        fragment.setCallback(new SettingsFragment.OnSettingChangedCallback() {
-            @Override
-            public void onSettingChanged() {
-                setResult(RESULT_OK);
-            }
-        });
+        fragment.setCallback(() -> setResult(RESULT_OK));
 
         setSystemUiFlags();
     }
@@ -225,8 +214,7 @@ public class SettingsActivity extends ThemeableActivity {
             initAnimationsPref(settings.showAnimations());
             initMaxBrightnessPref(settings.isMaxBrightness());
 
-            if (savedInstanceState != null
-                    && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
+            if (savedInstanceState != null && savedInstanceState.containsKey(SHOWN_DIALOG_FRAGMENT)) {
                 int shownDialogFragment = savedInstanceState.getInt(SHOWN_DIALOG_FRAGMENT);
                 Preference preference = null;
                 if (shownDialogFragment == STYLE_DIALOG_FRAGMENT) {
@@ -243,31 +231,25 @@ public class SettingsActivity extends ThemeableActivity {
 
         private void initExcludedPathsPref() {
             Preference pref = findPreference(getString(R.string.pref_key_excluded_paths));
-            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (callback != null) {
-                        callback.onSettingChanged();
-                    }
-                    Intent intent = new Intent(getContext(), ExcludePathsActivity.class);
-                    getContext().startActivity(intent);
-                    return false;
+            pref.setOnPreferenceClickListener(preference -> {
+                if (callback != null) {
+                    callback.onSettingChanged();
                 }
+                Intent intent = new Intent(getContext(), ExcludePathsActivity.class);
+                getContext().startActivity(intent);
+                return false;
             });
         }
 
         private void initVirtualDirectoriesPref() {
             Preference pref = findPreference(getString(R.string.pref_key_virtual_directories));
-            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (callback != null) {
-                        callback.onSettingChanged();
-                    }
-                    Intent intent = new Intent(getContext(), VirtualAlbumsActivity.class);
-                    getContext().startActivity(intent);
-                    return false;
+            pref.setOnPreferenceClickListener(preference -> {
+                if (callback != null) {
+                    callback.onSettingChanged();
                 }
+                Intent intent = new Intent(getContext(), VirtualAlbumsActivity.class);
+                getContext().startActivity(intent);
+                return false;
             });
         }
 
@@ -374,8 +356,7 @@ public class SettingsActivity extends ThemeableActivity {
             super.onPause();
 
             if (getActivity().isChangingConfigurations()) {
-                Fragment fragment =
-                        getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG);
+                Fragment fragment = getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG);
                 if (fragment != null && fragment instanceof DialogFragment) {
                     /*if (fragment instanceof StylePreferenceDialogFragment) {
                         shownDialogFragment = STYLE_DIALOG_FRAGMENT;
@@ -396,7 +377,8 @@ public class SettingsActivity extends ThemeableActivity {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
-            Log.d("SettingsActivity", "onPreferenceChange() called with: preference = [" + preference + "], o = [" + o + "]");
+            Log.d("SettingsActivity",
+                    "onPreferenceChange() called with: preference = [" + preference + "], o = [" + o + "]");
             if (callback != null) {
                 callback.onSettingChanged();
             }

@@ -258,7 +258,7 @@ public abstract class Provider {
     public static boolean isDirExcludedBecauseParentDirIsExcluded
             (String path, ArrayList<String> excludedPaths) {
         if (!isDirExcluded(path, excludedPaths)) {
-            return false;
+            return true;
         }
 
         boolean excludedBecauseParent = true;
@@ -268,7 +268,7 @@ public abstract class Provider {
                 break;
             }
         }
-        return excludedBecauseParent;
+        return !excludedBecauseParent;
     }
 
     public static ArrayList<String> getExcludedPaths() {
@@ -313,11 +313,10 @@ public abstract class Provider {
     }
 
     private static ArrayList<String> loadPathsArrayList(Context context, String filename) throws IOException {
-        ArrayList<String> paths = new ArrayList<>();
 
         //read file
         ArrayList<String> lines = readFromFile(context, filename);
-        paths.addAll(lines);
+        ArrayList<String> paths = new ArrayList<>(lines);
 
         return paths;
     }
@@ -360,12 +359,7 @@ public abstract class Provider {
     }
 
     public static File[] getDirectoriesToSearch(Context context) {
-        FileFilter filter = new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file != null && Provider.searchDir(file.getPath());
-            }
-        };
+        FileFilter filter = file -> file != null && Provider.searchDir(file.getPath());
 
         //external Directory
         File dir = Environment.getExternalStorageDirectory();
@@ -375,11 +369,9 @@ public abstract class Provider {
         }
 
         //handle removable storage (e.g. SDCards)
-        ArrayList<File> temp = new ArrayList<>();
-        temp.addAll(Arrays.asList(dirs));
+        ArrayList<File> temp = new ArrayList<>(Arrays.asList(dirs));
         File[] removableStorageRoots = StorageUtil.getRemovableStorageRoots(context);
-        for (int i = 0; i < removableStorageRoots.length; i++) {
-            File root = removableStorageRoots[i];
+        for (File root : removableStorageRoots) {
             File[] files = root.listFiles(filter);
             if (files != null) {
                 Collections.addAll(temp, files);

@@ -2,7 +2,6 @@ package us.koller.cameraroll.data.models;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Parcel;
 import android.support.v7.app.AlertDialog;
@@ -181,24 +180,21 @@ public class VirtualAlbum extends Album {
             final AlertDialog dialog = new AlertDialog.Builder(context, theme.getDialogThemeRes())
                     .setTitle(R.string.create_virtual_album)
                     .setView(dialogLayout)
-                    .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which) {
-                            String name = editText.getText().toString();
-                            ArrayList<VirtualAlbum> virtualAlbums = Provider.getVirtualAlbums(context);
-                            for (int i = 0; i < virtualAlbums.size(); i++) {
-                                if (virtualAlbums.get(i).getName().equals(name)) {
-                                    Toast.makeText(context, R.string.virtual_album_different_name, Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
+                    .setPositiveButton(R.string.create, (dialogInterface, which) -> {
+                        String name = editText.getText().toString();
+                        ArrayList<VirtualAlbum> virtualAlbums = Provider.getVirtualAlbums(context);
+                        for (int i = 0; i < virtualAlbums.size(); i++) {
+                            if (virtualAlbums.get(i).getName().equals(name)) {
+                                Toast.makeText(context, R.string.virtual_album_different_name, Toast.LENGTH_SHORT).show();
+                                return;
                             }
-                            VirtualAlbum virtualAlbum = new VirtualAlbum(name, new String[]{});
-                            Provider.addVirtualAlbum(context, virtualAlbum);
-                            Provider.saveVirtualAlbums(context);
-                            callback.onVirtualAlbumCreated(virtualAlbum);
-                            String message = context.getString(R.string.virtual_album_created, name);
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
+                        VirtualAlbum virtualAlbum = new VirtualAlbum(name, new String[]{});
+                        Provider.addVirtualAlbum(context, virtualAlbum);
+                        Provider.saveVirtualAlbums(context);
+                        callback.onVirtualAlbumCreated(virtualAlbum);
+                        String message = context.getString(R.string.virtual_album_created, name);
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .create();
@@ -210,12 +206,9 @@ public class VirtualAlbum extends Album {
         public static AlertDialog getAddToVirtualAlbumDialog(final Context context, final String path) {
             ArrayList virtualAlbums = Provider.getVirtualAlbums(context);
             if (virtualAlbums.size() == 0) {
-                return getCreateVirtualAlbumDialog(context, new OnCreateVirtualAlbumCallback() {
-                    @Override
-                    public void onVirtualAlbumCreated(VirtualAlbum virtualAlbum) {
-                        virtualAlbum.addDirectory(path);
-                        Provider.saveVirtualAlbums(context);
-                    }
+                return getCreateVirtualAlbumDialog(context, virtualAlbum -> {
+                    virtualAlbum.addDirectory(path);
+                    Provider.saveVirtualAlbums(context);
                 });
             }
 
@@ -228,19 +221,13 @@ public class VirtualAlbum extends Album {
             final AlertDialog dialog = new AlertDialog.Builder(context, theme.getDialogThemeRes())
                     .setTitle(R.string.add_path_to_virtual_album)
                     .setView(dialogLayout)
-                    .setNeutralButton(R.string.create_virtual_album, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which) {
-                            dialogInterface.dismiss();
-                            AlertDialog dialog = getCreateVirtualAlbumDialog(context, new OnCreateVirtualAlbumCallback() {
-                                @Override
-                                public void onVirtualAlbumCreated(VirtualAlbum virtualAlbum) {
-                                    virtualAlbum.addDirectory(path);
-                                    Provider.saveVirtualAlbums(context);
-                                }
-                            });
-                            dialog.show();
-                        }
+                    .setNeutralButton(R.string.create_virtual_album, (dialogInterface, which) -> {
+                        dialogInterface.dismiss();
+                        AlertDialog dialog1 = getCreateVirtualAlbumDialog(context, virtualAlbum -> {
+                            virtualAlbum.addDirectory(path);
+                            Provider.saveVirtualAlbums(context);
+                        });
+                        dialog1.show();
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .create();
@@ -249,17 +236,13 @@ public class VirtualAlbum extends Album {
 
             RecyclerView recyclerView = dialogLayout.findViewById(R.id.recyclerView);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new RecyclerViewAdapter(context,
-                    new RecyclerViewAdapter.OnVirtualAlbumSelectedCallback() {
-                        @Override
-                        public void onVirtualAlbumSelected(VirtualAlbum virtualAlbum) {
-                            virtualAlbum.addDirectory(path);
-                            Provider.saveVirtualAlbums(context);
-                            dialog.dismiss();
-                            String message = context
-                                    .getString(R.string.added_path_to_virtual_album, virtualAlbum.getName());
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        }
+            recyclerView.setAdapter(new RecyclerViewAdapter(context, virtualAlbum -> {
+                virtualAlbum.addDirectory(path);
+                Provider.saveVirtualAlbums(context);
+                dialog.dismiss();
+                String message = context
+                        .getString(R.string.added_path_to_virtual_album, virtualAlbum.getName());
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }));
 
             final View scrollIndicatorTop = dialogLayout.findViewById(R.id.scroll_indicator_top);
@@ -315,12 +298,7 @@ public class VirtualAlbum extends Album {
 
                 void bind(final VirtualAlbum album) {
                     textView.setText(album.getName());
-                    itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            callback.onVirtualAlbumSelected(album);
-                        }
-                    });
+                    itemView.setOnClickListener(view -> callback.onVirtualAlbumSelected(album));
                 }
             }
 

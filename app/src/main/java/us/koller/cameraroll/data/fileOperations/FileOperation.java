@@ -39,9 +39,9 @@ import java.util.Locale;
 
 import us.koller.cameraroll.R;
 import us.koller.cameraroll.data.ContentObserver;
+import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.AlbumItem;
 import us.koller.cameraroll.data.models.File_POJO;
-import us.koller.cameraroll.data.Settings;
 import us.koller.cameraroll.data.models.Video;
 import us.koller.cameraroll.util.ExifUtil;
 import us.koller.cameraroll.util.MediaType;
@@ -98,13 +98,10 @@ public abstract class FileOperation extends IntentService implements Parcelable 
         if (autoSendDoneBroadcast()) {
             if (pathsToScan.size() > 0) {
                 onProgress(-1, -1);
-                scanPaths(getApplicationContext(), new Util.MediaScannerCallback() {
-                    @Override
-                    public void onAllPathsScanned() {
-                        sendDoneBroadcast();
-                        stopForeground(true);
+                scanPaths(getApplicationContext(), () -> {
+                    sendDoneBroadcast();
+                    stopForeground(true);
 
-                    }
                 });
             } else {
                 sendDoneBroadcast();
@@ -223,12 +220,7 @@ public abstract class FileOperation extends IntentService implements Parcelable 
     }
 
     public void showToast(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show());
     }
 
     public void runOnUiThread(Runnable r) {
@@ -394,8 +386,8 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             if (file.exists()) {
                 if (file.isDirectory()) {
                     File[] children = file.listFiles();
-                    for (int i = 0; i < children.length; i++) {
-                        getAllChildPaths(paths, children[i].getPath());
+                    for (File aChildren : children) {
+                        getAllChildPaths(paths, aChildren.getPath());
                     }
                 } else {
                     paths.add(path);
@@ -440,66 +432,58 @@ public abstract class FileOperation extends IntentService implements Parcelable 
             final NotificationManager manager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < paths.length; i++) {
-                        String path = paths[i];
-                        if (MediaType.isMedia(path)) {
-                            Uri contentUri = MediaStore.Files.getContentUri("external");
-                            ContentResolver resolver = context.getContentResolver();
-                            if (new File(path).exists()) {
-                                AlbumItem albumItem = AlbumItem.getInstance(path);
-                                ContentValues values = new ContentValues();
-                                if (albumItem instanceof Video) {
-                                    values.put(MediaStore.Video.Media.DATA, path);
-                                    values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
-                                } else {
-                                    values.put(MediaStore.Images.Media.DATA, path);
-                                    values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
-                                    try {
-                                        ExifInterface exif = new ExifInterface(path);
-                                        Locale locale = us.koller.cameraroll.util.Util.getLocale(context);
-                                        String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
-                                        try {
-                                            Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
-                                            long dateTaken = date.getTime();
-                                            values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
-                                        } catch (ParseException ignored) {
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                resolver.insert(contentUri, values);
+            AsyncTask.execute(() -> {
+                for (int i = 0; i < paths.length; i++) {
+                    String path = paths[i];
+                    if (MediaType.isMedia(path)) {
+                        Uri contentUri = MediaStore.Files.getContentUri("external");
+                        ContentResolver resolver = context.getContentResolver();
+                        if (new File(path).exists()) {
+                            AlbumItem albumItem = AlbumItem.getInstance(path);
+                            ContentValues values = new ContentValues();
+                            if (albumItem instanceof Video) {
+                                values.put(MediaStore.Video.Media.DATA, path);
+                                values.put(MediaStore.Video.Media.MIME_TYPE, MediaType.getMimeType(path));
                             } else {
-                                resolver.delete(contentUri,
-                                        MediaStore.MediaColumns.DATA + "='" + path + "'",
-                                        null);
+                                values.put(MediaStore.Images.Media.DATA, path);
+                                values.put(MediaStore.Images.Media.MIME_TYPE, MediaType.getMimeType(path));
+                                try {
+                                    ExifInterface exif = new ExifInterface(path);
+                                    Locale locale = us.koller.cameraroll.util.Util.getLocale(context);
+                                    String dateString = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_DATETIME));
+                                    try {
+                                        Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", locale).parse(dateString);
+                                        long dateTaken = date.getTime();
+                                        values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
+                                    } catch (ParseException ignored) {
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
+                            resolver.insert(contentUri, values);
+                        } else {
+                            resolver.delete(contentUri,
+                                    MediaStore.MediaColumns.DATA + "='" + path + "'",
+                                    null);
                         }
+                    }
 
-                        if (withNotification) {
-                            notifBuilder.setProgress(paths.length, i, false);
-                            if (manager != null) {
-                                manager.notify(NOTIFICATION_ID, notifBuilder.build());
-                            }
+                    if (withNotification) {
+                        notifBuilder.setProgress(paths.length, i, false);
+                        if (manager != null) {
+                            manager.notify(NOTIFICATION_ID, notifBuilder.build());
                         }
-
                     }
 
-                    if (manager != null) {
-                        manager.cancel(NOTIFICATION_ID);
-                    }
+                }
 
-                    if (callback != null) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onAllPathsScanned();
-                            }
-                        });
-                    }
+                if (manager != null) {
+                    manager.cancel(NOTIFICATION_ID);
+                }
+
+                if (callback != null) {
+                    new Handler(Looper.getMainLooper()).post(callback::onAllPathsScanned);
                 }
             });
         }

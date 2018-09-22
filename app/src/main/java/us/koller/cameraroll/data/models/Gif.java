@@ -9,7 +9,6 @@ import us.koller.cameraroll.util.Util;
 
 public class Gif extends AlbumItem implements Parcelable {
     Gif() {
-
     }
 
     Gif(Parcel parcel) {

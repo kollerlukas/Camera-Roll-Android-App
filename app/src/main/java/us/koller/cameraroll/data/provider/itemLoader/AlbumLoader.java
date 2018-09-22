@@ -42,12 +42,9 @@ public class AlbumLoader extends ItemLoader {
 
         //loading dateTaken timeStamps asynchronously
         if (dateRetriever != null && dateRetriever.getCallback() == null) {
-            dateRetriever.setCallback(new DateTakenRetriever.Callback() {
-                @Override
-                public void done() {
-                    Intent intent = new Intent(MainActivity.RESORT);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
+            dateRetriever.setCallback(() -> {
+                Intent intent = new Intent(MainActivity.RESORT);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             });
         }
     }
