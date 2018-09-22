@@ -27,7 +27,8 @@
                     android:orientation="vertical"
                     android:padding="32dp"
                     android:elevation="4dp"
-                    tools:ignore="UseCompoundDrawables">
+                    tools:ignore="UseCompoundDrawables"
+                    tools:targetApi="lollipop">
 
                     <TextView
                         android:id="@+id/version"

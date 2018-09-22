@@ -1,8 +1,8 @@
 <resources>
     <!--error messages-->
-    <string name="read_permission_denied">Camera Roll needs permission to access your Storage to be able to depict your pictures.</string>
+    <string name="read_permission_denied">Camera Roll needs permission to access your storage to be able to depict your pictures.</string>
     <string name="grant_removable_storage_permission">Grant removable Storage Permission</string>
-    <string name="grant_removable_storage_permission_message">Please select the root folder of your removable Storage device (e.g. SD Card) on the next screen.</string>
+    <string name="grant_removable_storage_permission_message">Please select the root folder of your removable storage device (e.g. SD Card) on the next screen.</string>
     <!--general-->
     <string name="photo">Photo</string>
     <string name="raw_image">RAW Image</string>
