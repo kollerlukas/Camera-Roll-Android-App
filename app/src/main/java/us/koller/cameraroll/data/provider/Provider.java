@@ -21,13 +21,13 @@ import us.koller.cameraroll.util.StorageUtil;
 public abstract class Provider {
 
     //prevent StorageRetriever from querying Android-Folder
-    private static final String[] permanentlyExcludedPaths
-            = {Environment.getExternalStorageDirectory().getPath() + "/Android"}; // "/storage/emulated/0/Android"
+    private static final String[] permanentlyExcludedPaths = {}; // "/storage/emulated/0/Android"
 
     // by default excluded folders:
     // not expecting relevant media in alarms, music or ringtone folder
     private static final String[] defaultExcludedPaths = {
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS).getPath(),
+            Environment.getExternalStorageDirectory().getPath() + "/Android",
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(),
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES).getPath()};
 
