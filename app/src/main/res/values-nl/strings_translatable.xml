@@ -9,7 +9,7 @@
     <string name="gif">GIF</string>
     <string name="video">Video</string>
     <string name="pick_photo">Kies een foto</string>
-    <string name="pick_photos">Kies foto's</string>
+    <string name="pick_photos">Kies foto\'s</string>
     <string name="loading">Bezig met laden…</string>
     <string name="loading_failed">Laden mislukt</string>
     <string name="ok">Oké</string>
@@ -94,8 +94,8 @@
     <string name="use_8_bit_color_summary">8-bit-kleuren gebruiken bij het tonen van afbeeldingen. Hierdoor kan het laden langer duren en het geheugengebruik van de app neemt toe.</string>
     <string name="show_animations">Animaties tonen</string>
     <string name="show_animations_summary">SharedElementTransition en PageTransformer uitschakelen</string>
-    <string name="show_videos">Video's tonen</string>
-    <string name="show_videos_summary">Video's tonen in de galerij</string>
+    <string name="show_videos">Video\'s tonen</string>
+    <string name="show_videos_summary">Video\'s tonen in de galerij</string>
     <string name="maximum_brightness">Maximale helderheid</string>
     <string name="maximum_brightness_summary">Schermhelderheid instellen op maximaal tijdens het tonen van afbeeldingen</string>
     <!--EditImageActivity-->

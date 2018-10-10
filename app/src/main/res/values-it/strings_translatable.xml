@@ -83,9 +83,9 @@
     <string name="column_count">Numero di colonne</string>
     <string name="other">Altro</string>
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Cerca manualmente nella Memoria invece di affidarti all\'Api del MediaStore.Cio' potrebbe aiutare nel caso manchino delle immagini.</string> <!--This string cannot be fully read in-app. Too long?-->
+    <string name="media_retriever_summary">Cerca manualmente nella Memoria invece di affidarti all\'Api del MediaStore.Cio\' potrebbe aiutare nel caso manchino delle immagini.</string> <!--This string cannot be fully read in-app. Too long?-->
     <string name="use_8_bit_color">Colori a 8-Bit</string>
-    <string name="use_8_bit_color_summary">Usa i colori a 8-Bit quando mostra le immagini. Queste potrebbero prendere piu\' tempo a caricare.Cio' aumentera' anche l'ammontare di memoria usata mentre l'app e' in esecuzione.</string> <!--This string cannot be fully read in-app. Too long?-->
+    <string name="use_8_bit_color_summary">Usa i colori a 8-Bit quando mostra le immagini. Queste potrebbero prendere piu\' tempo a caricare.Cio\' aumentera\' anche l\'ammontare di memoria usata mentre l\'app e\' in esecuzione.</string> <!--This string cannot be fully read in-app. Too long?-->
     <!--EditImageActivity-->
     <string name="rotate">Ruota</string>
     <string name="restore">Ripristina</string>
