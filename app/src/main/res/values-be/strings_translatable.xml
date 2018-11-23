@@ -145,7 +145,7 @@
     <string name="info_filename">Назва файла: </string>
     <string name="info_filepath">Шлях да файла: </string>
     <string name="info_size">Памер: </string>
-    <string name="info_dimensions">Разрознасць: </string>
+    <string name="info_dimensions">Раздзяляльнасць: </string>
     <string name="info_date">Дата: </string>
     <string name="info_location">Месцазнаходжанне: </string>
     <string name="info_focal_length">Фокусная адлегласць: </string>
