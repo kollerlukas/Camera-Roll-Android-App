@@ -5,18 +5,18 @@
     <string name="grant_removable_storage_permission_message">Выберыце, на наступным экране, каранёвы каталог вашага здымнага сховішча (напр. sdcard1).</string>
     <!--general-->
     <string name="photo">Фота</string>
-    <string name="raw_image">RAW выява</string>
+    <string name="raw_image">RAW відарыс</string>
     <string name="gif">Gif</string>
     <string name="video">Відэа</string>
-    <string name="pick_photo">Выберыце выяву </string>
-    <string name="pick_photos">Выберыце выявы</string>
+    <string name="pick_photo">Выберыце відарыс</string>
+    <string name="pick_photos">Выберыце відарысы</string>
     <string name="loading">Загрузка…</string>
     <string name="loading_failed">Няўдалая загрузка</string>
     <string name="ok">Добра</string>
     <string name="remove">Выдаліць</string> 
     <string name="cancel">Скасаваць</string>
     <string name="no">Не</string>
-    <string name="undo">Адмяніць</string>
+    <string name="undo">Адрабіць</string>
     <string name="done">Гатова</string>
     <string name="retry">Паўтарыць</string>
     <string name="excluded">Выключыць</string>
@@ -27,12 +27,12 @@
     <!--MainActivity-->
     <string name="refresh">Абнавіць</string>
     <string name="sort_by">Сартаваць па…</string>
-    <string name="by_name">Імя</string>
+    <string name="by_name">Назва</string>
     <string name="by_size">Памер</string>
     <string name="by_date">Дата</string>
     <string name="hidden_folders">Схаваць папку</string>
-    <string name="file_explorer">Файлавы мэнэджар</string>
-    <string name="about">Пра праграму</string>
+    <string name="file_explorer">Файлавы менеджар</string>
+    <string name="about">Аб праграме</string>
     <string name="settings">Налады</string>
     <string name="camera_shortcut">Ярлык камеры</string>
     <string name="item_count">%1$d Элемент</string>
@@ -42,16 +42,16 @@
     <string name="pin_album">Замацаваць альбом </string>
     <string name="file_deleted">%1$d файл выдалены</string>
     <string name="files_deleted">%1$d файлаў выдалена</string>
-    <string name="select_all">Вылучыць усё</string>
+    <string name="select_all">Вылучыць усе</string>
     <!--ItemActivity-->
     <string name="set_as">Задаць як…</string>
     <string name="open_with">Адкрыць з дапамогай…</string>
     <string name="open_with_error">Не знойдзена праграм для прагляду %1$s</string>
     <string name="print">Друкаваць</string>
     <string name="info">Інфармацыя</string>
-    <string name="share">Падзяліцца</string>
-    <string name="share_item">Падзяліцца %1$s</string>
-    <string name="share_error">Не знойдзена праграм для адпраўкі %1$s</string>
+    <string name="share">Абагуліць</string>
+    <string name="share_item">Абагуліць у %1$s</string>
+    <string name="share_error">Не знойдзена праграм для абагулення %1$s</string>
     <string name="edit">Рэдагаваць</string>
     <string name="edit_item">Рэдагаваць %1$s</string>
     <string name="edit_error">Не знойдзена праграм для рэдагавання %1$s</string>
@@ -83,49 +83,55 @@
     <string name="delete_file">Выдаліць %1$d файл</string>
     <string name="paste_error">Вы не можаце капіяваць файлы сюды!</string>
     <!--SettingsActivity-->
-    <string name="appearance">Выгляд</string>
+    <string name="appearance">Афармленне</string>
     <string name="theme">Тэма</string>
     <string name="style">Стыль</string>
     <string name="column_count">Колькасць слупкоў</string>
     <string name="other">Іншыя</string>
     <string name="media_retriever">MediaRetriever</string>
-    <string name="media_retriever_summary">Самастойны пошук мыдыя замест выкарыстання MediaStore API. Гэта можа дапамагчы, калі нейкія выявы нябачныя.</string>
+    <string name="media_retriever_summary">Самастойны пошук мыдыя замест выкарыстання MediaStore API. Гэта можа дапамагчы, калі нейкія відарысы нябачныя.</string>
     <string name="use_8_bit_color">8-біт колер</string>
-    <string name="use_8_bit_color_summary">Выкарыстоўваць 8-біт колер для адлюстравання выяў. Выявы могуць загружацца дольш. Таксама гэта можа павялічыць выкарыстанне памяці падчас работы праграмы.</string>
-    <!--EditImageActivity-->
+    <string name="use_8_bit_color_summary">Выкарыстоўваць 8-біт колер для адлюстравання відарысаў. Відарысы могуць загружацца даўжэй. Таксама гэта можа павялічыць выкарыстанне памяці падчас работы праграмы.</string>
     <string name="show_animations">Паказваць анімацыі</string>
-    <string name="show_animations_summary">Адключае анімацыі выбару і гартання выяваў</string>
+    <string name="show_animations_summary">Адключае анімацыі выбару і гартання відарысаў</string>
     <string name="show_videos">Паказваць відэа</string>
     <string name="show_videos_summary">Паказваць відэа ў галерэі</string>
+    <string name="maximum_brightness">Максімальная яркасць</string>
+    <string name="maximum_brightness_summary">Задаць яркасць экрана максімальнай падчас прагляду відарысаў</string>
+    <!--EditImageActivity-->
     <string name="rotate">Павярнуць</string>
     <string name="restore">Аднавіць</string>
-    <string name="save_edit">Захаваць</string> 
-    <string name="export">Экспартаваць</string>   
-    <string name="overwrite">Перазапісаць</string>
-    <string name="save_as_copy">Захаваць як копію</string> 
+    <string name="save_edit">Захаваць</string>
+    <string name="export">Экспартаваць</string>
     <string name="editing_file_format_not_supported">Гэты фармат файла нельга рэдагаваць</string>
     <string name="success">Паспяхова!</string>
+    <string name="aspect_ratio_free">Вольна</string>
+    <string name="aspect_ratio_original">Арыгінал</string>
+    <string name="aspect_ratio_square">Квадрат</string>
+    <string name="aspect_ratio_3_2" translatable="false">3:2</string>
+    <string name="aspect_ratio_4_3" translatable="false">4:3</string>
+    <string name="aspect_ratio_16_9" translatable="false">16:9</string>   
     <!--SetWallpaperActivity-->
     <string name="wallpaper">Шпалеры</string>
     <string name="set_wallpaper">Задаць шпалеры</string>
     <string name="wallpaper_file_format_not_supported">Гэты файл нельга задаць як шпалеры</string>
     <string name="home_screen">Дамашні экран</string>
-    <string name="lock_screen">Экран блакавання</string>
+    <string name="lock_screen">Экран блакіроўкі</string>
     <string name="both">Абодва</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">Exif рэдактар</string>
     <string name="edit_exif">рэдагаваць Exif</string>
     <string name="save">Захаваць</string>
     <string name="changes_saved">Змены захаваны</string>
-    <string name="clear_exif_data">Ачысціць Exif дадзеныя</string>  
+    <string name="clear_exif_data">Ачысціць Exif даныя</string>  
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Выключаныя папкі</string>
     <!--VirtualAlbumsActivity-->
     <string name="virtual_albums">Віртуальныя альбомы</string>
     <string name="create_virtual_album">Стварыць вірт. альбом</string>
     <string name="virtual_album_created">Віртуальны альбом %1$s створаны</string>
-    <string name="virtual_album_different_name">Калі ласка іншую назву</string>
-    <string name="add_path_to_virtual_album">Дадаць папку да вірт. альбома</string>
+    <string name="virtual_album_different_name">Выберыце іншую назву</string>
+    <string name="add_path_to_virtual_album">Дадаць папку ў вірт. альбом</string>
     <string name="added_path_to_virtual_album">Шлях дададзены да віртуальнага альбома %1$s</string>
     <string name="virtual_album_deleted">Віртуальны альбом %1$s выдалены</string>
     <string name="path_removed">Шлях да папкі выдалены</string>
@@ -135,11 +141,11 @@
     <string name="tags">Тэгі: </string>
     <string name="new_tag">Новы тэг</string>
     <string name="add_tag">Дадаць тэг</string>
-    <string name="tag_already_added">Тэг ужо даданы</string>
-    <string name="info_filename">Імя файла: </string>
+    <string name="tag_already_added">Тэг ужо дададзены</string>
+    <string name="info_filename">Назва файла: </string>
     <string name="info_filepath">Шлях да файла: </string>
     <string name="info_size">Памер: </string>
-    <string name="info_dimensions">Разрознасць: </string>
+    <string name="info_dimensions">Раздзяляльнасць: </string>
     <string name="info_date">Дата: </string>
     <string name="info_location">Месцазнаходжанне: </string>
     <string name="info_focal_length">Фокусная адлегласць: </string>
