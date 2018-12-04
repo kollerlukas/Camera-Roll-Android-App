@@ -143,10 +143,6 @@ public class MainActivity extends ThemeableActivity {
             albums = new ArrayList<>();
         }
 
-        if (savedInstanceState == null) {
-            refreshPhotos();
-        }
-
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(!pick_photos ? toolbarColor : accentColor);
@@ -539,6 +535,12 @@ public class MainActivity extends ThemeableActivity {
 
         mediaProvider = new MediaProvider(this);
         mediaProvider.loadAlbums(MainActivity.this, hiddenFolders, callback);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        refreshPhotos();
     }
 
     @Override
