@@ -91,6 +91,12 @@
     <string name="media_retriever_summary">Производить поиск изображений самостоятельно, вместо использования MediaStore API. Может быть полезным, если некоторые фотографии не видны в галерее.</string>
     <string name="use_8_bit_color">8-бит цвет</string>
     <string name="use_8_bit_color_summary">Использовать 8-бит палитру для отображения фотографий. Это повлияет на скорость показа фотографий, а также увеличит количество потребляемой ОЗУ.</string>
+    <string name="show_animations">Просмотр анимаций</string>
+    <string name="show_animations_summary">Отключить SharedElementTransition и PageTransformer</string>
+    <string name="show_videos">Просмотр видео</string>
+    <string name="show_videos_summary">Показывать видео в галерее</string>
+    <string name="maximum_brightness">Максимальная яркость</string>
+    <string name="maximum_brightness_summary">Настроить яркость на максимум при просмотре изображений</string>
     <!--EditImageActivity-->
     <string name="rotate">Повернуть</string>
     <string name="restore">Восстановить</string>
