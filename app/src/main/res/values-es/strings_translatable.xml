@@ -13,6 +13,7 @@
     <string name="loading">Cargando…</string>
     <string name="loading_failed">Carga fallida</string>
     <string name="ok">OK</string>
+    <string name="remove">Eliminar</string>
     <string name="cancel">Cancelar</string>
     <string name="no">No</string>
     <string name="undo">Deshacer</string>
@@ -91,20 +92,35 @@
     <string name="media_retriever_summary">Busque manualmente el almacenamiento en lugar de depender de la API de MediaStore. Esto podría ayudarle si le falta alguna imagen.</string>
     <string name="use_8_bit_color">Color de 8-Bits</string>
     <string name="use_8_bit_color_summary">Utilice Color de 8-Bits al mostrar las imágenes. Las imágenes pueden tardar más en cargarse. Esto también aumenta la cantidad de memoria que se utiliza cuando la aplicación se está ejecutando.</string>
+    <string name="show_animations">Mostrar animaciones</string>
+    <string name="show_animations_summary">Desactivar SharedElementTransition y PageTransformer</string>
+    <string name="show_videos">Mostrar videos</string>
+    <string name="show_videos_summary">Mostrar los videos en la galería</string>
+    <string name="maximum_brightness">Brillo máximo</string>
+    <string name="maximum_brightness_summary">Aplicar el brillo de pantalla al máximo cuando se miran imágenes</string>
     <!--EditImageActivity-->
     <string name="rotate">Girar</string>
     <string name="restore">Restaurar</string>
+    <string name="save_edit">Guardar</string>
+    <string name="export">Exportar</string>
     <string name="editing_file_format_not_supported">Este formato de archivo no es compatible con la edición</string>
     <string name="success">Cambios guardados</string>
+    <string name="aspect_ratio_free">Libre</string>
+    <string name="aspect_ratio_original">Original</string>
+    <string name="aspect_ratio_square">Cuadrado</string>
     <!--SetWallpaperActivity-->
     <string name="wallpaper">Fondo de pantalla</string>
     <string name="set_wallpaper">Establecer fondo de pantalla</string>
     <string name="wallpaper_file_format_not_supported">Este formato de archivo no es compatible con fondo de pantalla</string>
+    <string name="home_screen">Pantalla de inicio</string>
+    <string name="lock_screen">Pantalla de bloqueo</string>
+    <string name="both">Ambos</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">Editor Exif</string>
     <string name="edit_exif">Editar Exif</string>
     <string name="save">Guardar</string>
     <string name="changes_saved">Cambios guardados</string>
+    <string name="clear_exif_data">Limpiar datos Exif</string>
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Rutas excluidas</string>
     <!--VirtualAlbumsActivity-->
@@ -119,17 +135,21 @@
     <string name="no_paths">No hay rutas incluidas</string>
     <string name="no_virtual_albums">No hay álbumes virtuales</string>
     <!--info Dialog Strings-->
-    <string name="info_filename">Nombre del archivo: </string>
-    <string name="info_filepath">Ruta del archivo: </string>
-    <string name="info_size">Peso: </string>
-    <string name="info_dimensions">Tamaño: </string>
-    <string name="info_date">Fecha: </string>
-    <string name="info_location">Ubicación: </string>
-    <string name="info_focal_length">Longitud focal: </string>
-    <string name="info_exposure">Exposición: </string>
-    <string name="info_camera_model">Modelo de cámara: </string>
-    <string name="info_aperture">Apertura: </string>
-    <string name="info_iso">ISO: </string>
-    <string name="info_frame_rate">Cuadros por segundo: </string>
+    <string name="tags">Etiquetas:</string>
+    <string name="new_tag">Nueva etiqueta</string>
+    <string name="add_tag">Agregar etiqueta</string>
+    <string name="tag_already_added">Etiqueta ya agregada</string>
+    <string name="info_filename">Nombre del archivo:</string>
+    <string name="info_filepath">Ruta del archivo:</string>
+    <string name="info_size">Peso:</string>
+    <string name="info_dimensions">Tamaño:</string>
+    <string name="info_date">Fecha:</string>
+    <string name="info_location">Ubicación:</string>
+    <string name="info_focal_length">Longitud focal:</string>
+    <string name="info_exposure">Exposición:</string>
+    <string name="info_camera_model">Modelo de cámara:</string>
+    <string name="info_aperture">Apertura:</string>
+    <string name="info_iso">ISO:</string>
+    <string name="info_frame_rate">Cuadros por segundo:</string>
     <string name="copied_to_clipboard">Copiado al portapapeles</string>
 </resources>

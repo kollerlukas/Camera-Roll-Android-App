@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--"app_name" defined in build.gradle to have different names for .debug and normal version
+    -->
+
+    <!--About Text-->
+    
+
+    <!--Toolbar transitionName-->
+    
+
+    <!--Preference Keys-->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    <!--Notification Channel-->
+    <string name="file_op_channel_id">file_op_channel_id</string>
+</resources>
