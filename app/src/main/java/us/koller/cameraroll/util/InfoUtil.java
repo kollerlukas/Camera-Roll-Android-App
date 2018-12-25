@@ -178,7 +178,7 @@ public class InfoUtil {
     }
 
     public static InfoItem retrieveExposure(Context context, ExifInterface exif) {
-        Object exposureObject = String.valueOf(ExifUtil.getCastValue(exif, ExifInterface.TAG_EXPOSURE_TIME));
+        Object exposureObject = ExifUtil.getCastValue(exif, ExifInterface.TAG_EXPOSURE_TIME);
         String exposure;
         if (exposureObject != null) {
             exposure = Parser.parseExposureTime(String.valueOf(exposureObject));
