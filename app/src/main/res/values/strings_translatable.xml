@@ -73,6 +73,7 @@
     <string name="successfully_renamed_file">successfully renamed file</string>
     <!--FileExplorerActivity-->
     <string name="no_files">no files</string>
+    <string name="storage_roots">Storage roots</string>
     <string name="storage">Storage</string>
     <string name="scan">Scan</string>
     <string name="scanning">Scanning…</string>
