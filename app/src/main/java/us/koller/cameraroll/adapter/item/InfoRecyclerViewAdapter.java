@@ -213,7 +213,11 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
 
         void bind(InfoUtil.InfoItem infoItem) {
             type.setText(infoItem.getType());
-            value.setText(infoItem.getValue());
+            if (ExifUtil.NO_DATA.equals(infoItem.getValue())) {
+                value.setText(R.string.unknown);
+            } else {
+                value.setText(infoItem.getValue());
+            }
             setIcon(infoItem);
         }
 
@@ -246,18 +250,20 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
             setIcon(infoItem);
             if (infoItem instanceof InfoUtil.LocationItem) {
                 locationItem = (InfoUtil.LocationItem) infoItem;
-                value.setText(locationItem.getValue());
-                retrieveAddress(itemView.getContext(), locationItem.getValue());
 
-                if (!locationItem.getValue().equals(ExifUtil.NO_DATA)) {
+                if (!ExifUtil.NO_DATA.equals(locationItem.getValue())) {
+                    value.setText(locationItem.getValue());
                     itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             launchLocation();
                         }
                     });
+                    retrieveAddress(itemView.getContext(), locationItem.getValue());
                 } else {
+                    value.setText(R.string.unknown);
                     itemView.setOnClickListener(null);
+                    itemView.setClickable(false);
                 }
             }
         }
@@ -298,7 +304,11 @@ public class InfoRecyclerViewAdapter extends RecyclerView.Adapter {
                     value.post(new Runnable() {
                         @Override
                         public void run() {
-                            value.setText(finalValueText);
+                            if (ExifUtil.NO_DATA.equals(finalValueText)) {
+                                value.setText(R.string.unknown);
+                            } else {
+                                value.setText(finalValueText);
+                            }
                         }
                     });
                 }
