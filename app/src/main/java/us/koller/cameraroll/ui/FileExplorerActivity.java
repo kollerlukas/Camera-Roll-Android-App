@@ -903,7 +903,11 @@ public class FileExplorerActivity extends ThemeableActivity
                     new ColorFade.ToolbarTitleFadeCallback() {
                         @Override
                         public void setTitle(Toolbar toolbar) {
-                            toolbar.setTitle(currentDir.getPath());
+                            if (STORAGE_ROOTS.equals(currentDir.getPath())) {
+                                toolbar.setTitle(R.string.storage_roots);
+                            } else {
+                                toolbar.setTitle(currentDir.getPath());
+                            }
                         }
                     });
         }

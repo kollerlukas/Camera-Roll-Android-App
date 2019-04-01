@@ -74,7 +74,7 @@ public class ExifEditorActivity extends ThemeableActivity {
 
         String mimeType = MediaType.getMimeType(this, albumItem.getUri(this));
         if (!MediaType.doesSupportWritingExifMimeType(mimeType)) {
-            Toast.makeText(this, "Editing Exif values is only supported for JPEG images", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.exif_file_format_not_supported, Toast.LENGTH_SHORT).show();
             this.finish();
             return;
         }

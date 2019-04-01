@@ -5,7 +5,7 @@
     <item
         android:id="@+id/set_aspect_ratio"
         android:icon="@drawable/ic_image_aspect_ratio_white"
-        android:title="@string/sort_by"
+        android:title="@string/resize"
         app:showAsAction="ifRoom">
 
         <menu>

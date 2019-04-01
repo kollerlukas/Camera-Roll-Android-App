@@ -73,6 +73,7 @@
     <string name="successfully_renamed_file">successfully renamed file</string>
     <!--FileExplorerActivity-->
     <string name="no_files">no files</string>
+    <string name="storage_roots">Storage roots</string>
     <string name="storage">Storage</string>
     <string name="scan">Scan</string>
     <string name="scanning">Scanning…</string>
@@ -99,6 +100,7 @@
     <string name="maximum_brightness">Maximum Brightness</string>
     <string name="maximum_brightness_summary">Set Screen Brightness to maximum when viewing images</string>
     <!--EditImageActivity-->
+    <string name="resize">Resize</string>
     <string name="rotate">Rotate</string>
     <string name="restore">Restore</string>
     <string name="save_edit">Save</string>
@@ -124,6 +126,7 @@
     <string name="save">Save</string>
     <string name="changes_saved">Changes saved</string>
     <string name="clear_exif_data">Clear Exif Data</string>
+    <string name="exif_file_format_not_supported">Editing Exif values is only supported for JPEG images</string>
     <!--ExcludedPathsActivity-->
     <string name="excluded_paths">Excluded Paths</string>
     <!--VirtualAlbumsActivity-->
@@ -155,4 +158,5 @@
     <string name="info_iso">ISO: </string>
     <string name="info_frame_rate">Frame rate: </string>
     <string name="copied_to_clipboard">Copied to Clipboard</string>
+    <string name="unknown">Unknown</string>
 </resources>
