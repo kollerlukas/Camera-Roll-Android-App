@@ -7,10 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -272,6 +275,19 @@ public class ItemActivity extends ThemeableActivity {
         } else {
             album = getIntent().getExtras().getParcelable(ALBUM);
             onAlbumLoaded(savedInstanceState);
+        }
+        setupNfc();
+    }
+
+    private void setupNfc() {
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
+            NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            mNfcAdapter.setBeamPushUrisCallback(new NfcAdapter.CreateBeamUrisCallback() {
+                @Override
+                public Uri[] createBeamUris(NfcEvent nfcEvent) {
+                    return new Uri[] {albumItem.getUri(ItemActivity.this)};
+                }
+            }, this);
         }
     }
 
