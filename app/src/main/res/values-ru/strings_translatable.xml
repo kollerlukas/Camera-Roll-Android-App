@@ -13,6 +13,7 @@
     <string name="loading">Загрузка…</string>
     <string name="loading_failed">Ошибка загрузки</string>
     <string name="ok">OK</string>
+    <string name="remove">Удалить</string>
     <string name="cancel">Отмена</string>
     <string name="no">Нет</string>
     <string name="undo">Отменить</string>
@@ -57,11 +58,11 @@
     <string name="delete">Удалить</string>
     <string name="delete_item">Удалить %1$s</string>
     <string name="delete_files">Удалить %1$d файлов</string>
-    <string name="move">Перемещение</string>
+    <string name="move">Переместить</string>
     <string name="move_item_to">Перемещение %1$d элемента в:</string>
     <string name="move_items_to">Перемещение %1$d элементов в:</string>
-    <string name="move_error">Перемещение файлов с/на SD не поддерживается. Скопируйте файл в нужное место, и удалите оригинал.</string>
-    <string name="copy">Копирование</string>
+    <string name="move_error">Перемещение файлов с/на SD не поддерживается. Скопируйте файл в нужное место и удалите оригинал.</string>
+    <string name="copy">Копировать</string>
     <string name="copy_item_to">Копирование %1$d элемента в:</string>
     <string name="copy_items_to">Копирование %1$d элементов в:</string>
     <string name="create">Создать</string>
@@ -72,8 +73,9 @@
     <string name="successfully_renamed_file">файл успешно переименован</string>
     <!--FileExplorerActivity-->
     <string name="no_files">НЕТ ФАЙЛОВ</string>
+    <string name="storage_roots">Хранилища</string>
     <string name="storage">Внутр. общий накопитель</string>
-    <string name="scan">Скан</string>
+    <string name="scan">Сканировать</string>
     <string name="scanning">Сканирование…</string>
     <string name="copy_file">Копировать %1$d файл</string>
     <string name="copy_files">Копирование %1$d файлов</string>
@@ -89,30 +91,41 @@
     <string name="other">Прочее</string>
     <string name="media_retriever">MediaRetriever</string>
     <string name="media_retriever_summary">Производить поиск изображений самостоятельно, вместо использования MediaStore API. Может быть полезным, если некоторые фотографии не видны в галерее.</string>
-    <string name="use_8_bit_color">8-бит цвет</string>
-    <string name="use_8_bit_color_summary">Использовать 8-бит палитру для отображения фотографий. Это повлияет на скорость показа фотографий, а также увеличит количество потребляемой ОЗУ.</string>
-    <string name="show_animations">Просмотр анимаций</string>
+    <string name="use_8_bit_color">8-битный цвет</string>
+    <string name="use_8_bit_color_summary">Использовать 8-битную палитру для отображения фотографий. Это повлияет на скорость показа фотографий, а также увеличит количество потребляемой ОЗУ.</string>
+    <string name="show_animations">Использовать анимации</string>
     <string name="show_animations_summary">Отключить SharedElementTransition и PageTransformer</string>
-    <string name="show_videos">Просмотр видео</string>
+    <string name="show_videos">Показывать видео</string>
     <string name="show_videos_summary">Показывать видео в галерее</string>
     <string name="maximum_brightness">Максимальная яркость</string>
     <string name="maximum_brightness_summary">Настроить яркость на максимум при просмотре изображений</string>
     <!--EditImageActivity-->
+    <string name="resize">Изменить размер</string>
     <string name="rotate">Повернуть</string>
     <string name="restore">Восстановить</string>
+    <string name="save_edit">Сохранить</string>
+    <string name="export">Экспортировать</string>
     <string name="editing_file_format_not_supported">Редактирование данного формата файлов не поддерживается</string>
     <string name="success">Успешно!</string>
+    <string name="aspect_ratio_free">Свободное</string>
+    <string name="aspect_ratio_original">Оригинал</string>
+    <string name="aspect_ratio_square">Квадрат</string>
     <!--SetWallpaperActivity-->
     <string name="wallpaper">Обои</string>
     <string name="set_wallpaper">Установить обои</string>
     <string name="wallpaper_file_format_not_supported">Этот формат файла нельзя установить как обои</string>
+    <string name="home_screen">Домашний экран</string>
+    <string name="lock_screen">Экран блокировки</string>
+    <string name="both">Оба</string>
     <!--ExifEditorActivity-->
     <string name="exif_editor">Редактор Exif</string>
     <string name="edit_exif">изменить Exif</string>
     <string name="save">Сохранить</string>
     <string name="changes_saved">Изменения сохранены</string>
+    <string name="clear_exif_data">Очистить данные Exif</string>
+    <string name="exif_file_format_not_supported">Редактирование Exif поддерживается только для JPEG-изображений</string>
     <!--ExcludedPathsActivity-->
-    <string name="excluded_paths">Исключенные папки</string>
+    <string name="excluded_paths">Исключённые папки</string>
     <!--VirtualAlbumsActivity-->
     <string name="virtual_albums">Виртуальные альбомы</string>
     <string name="create_virtual_album">Создать вирт. альбом</string>
@@ -125,17 +138,22 @@
     <string name="no_paths">Нет сохраненных путей</string>
     <string name="no_virtual_albums">Нет виртуальных альбомов</string>
     <!--info Dialog Strings-->
+    <string name="tags">Теги: </string>
+    <string name="new_tag">Новый тег</string>
+    <string name="add_tag">Добавить тег</string>
+    <string name="tag_already_added">Тег уже добавлен</string>
     <string name="info_filename">Имя файла: </string>
     <string name="info_filepath">Путь: </string>
     <string name="info_size">Размер: </string>
-    <string name="info_dimensions">Плотность пикс: </string>
+    <string name="info_dimensions">Габариты: </string>
     <string name="info_date">Дата: </string>
     <string name="info_location">Место съёмки: </string>
-    <string name="info_focal_length">Фокальная длина: </string>
-    <string name="info_exposure">Экспозиция: </string>
+    <string name="info_focal_length">Фокусное расстояние: </string>
+    <string name="info_exposure">Выдержка: </string>
     <string name="info_camera_model">Модель камеры: </string>
-    <string name="info_aperture">Ампертура: </string>
+    <string name="info_aperture">Апертура: </string>
     <string name="info_iso">ISO: </string>
     <string name="info_frame_rate">Частота кадров: </string>
     <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
+    <string name="unknown">Неизвестно</string>
 </resources>
