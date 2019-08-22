@@ -20,7 +20,7 @@
     <string name="retry">Réessayer</string>
     <string name="excluded">Exclu</string>
     <string name="error">Erreur</string>
-    <string name="selected_count">%1$d sélctionnés</string>
+    <string name="selected_count">%1$d sélectionnés</string>
     <string name="file_op_channel_name">Opérations sur des fichiers</string>
     <string name="file_op_channel_description">Montre le status courrant d\'une opération sur un fichier.</string>
     <!--MainActivity-->
@@ -33,12 +33,12 @@
     <string name="file_explorer">Gestionnaire de fichiers</string>
     <string name="about">À propos</string>
     <string name="settings">Paramètres</string>
-    <string name="camera_shortcut">Raccourci Appareil photo</string>
+    <string name="camera_shortcut">Raccourci appareil photo</string>
     <string name="item_count">%1$d Objet</string>
     <string name="items_count">%1$d Objets</string>
     <!--AlbumActivity-->
     <string name="exclude">Exclure</string>
-    <string name="pin_album">Épingler album</string>
+    <string name="pin_album">Épingler un album</string>
     <string name="file_deleted">%1$d fichier supprimé</string>
     <string name="files_deleted">%1$d fichiers supprimés</string>
     <string name="select_all">Tout sélectionner</string>
